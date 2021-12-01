@@ -1,17 +1,20 @@
 package com.wtb.dashTracker
 
 import android.os.Bundle
+import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.bottomnav.databinding.ActivityMainBinding
-import com.example.bottomnav.ui.daily.DailyFragment
-import com.example.bottomnav.ui.edit_details.DetailFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.wtb.gigtracker.repository.Repository
+import com.wtb.dashTracker.databinding.ActivityMainBinding
+import com.wtb.dashTracker.ui.daily.DailyFragment
+import com.wtb.dashTracker.ui.edit_details.DetailFragment
+import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.MainActivityViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -31,14 +34,14 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
         val navView: BottomNavigationView = binding.navView
         navView.background = null
 
-        val navController = findNavController(com.example.bottomnav.R.id.nav_host_fragment_activity_main)
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                com.example.bottomnav.R.id.navigation_home,
-                com.example.bottomnav.R.id.navigation_dashboard,
-                com.example.bottomnav.R.id.navigation_notifications
+                R.id.navigation_home,
+                R.id.navigation_dashboard,
+                R.id.navigation_notifications
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -49,6 +52,16 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
             setOnClickListener {
                 DetailFragment().show(supportFragmentManager, "new_entry_dialog")
             }
+        }
+
+        val viewModel: MainActivityViewModel by viewModels()
+
+        viewModel.hourly.observe(this) {
+            binding.actMainHourly.text = getString(R.string.currency_unit, it)
+        }
+
+        viewModel.thisWeek.observe(this) {
+            binding.actMainThisWeek.text = getString(R.string.currency_unit, it)
         }
     }
 

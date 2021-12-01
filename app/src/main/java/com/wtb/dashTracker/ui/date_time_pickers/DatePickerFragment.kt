@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.widget.DatePicker
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import com.example.bottomnav.ui.daily.DailyFragment.Companion.dtfDate
-import com.example.bottomnav.ui.edit_details.toDateOrNull
+import com.wtb.dashTracker.ui.daily.DailyFragment.Companion.dtfDate
+import com.wtb.dashTracker.ui.edit_details.toDateOrNull
 import java.time.LocalDate
 import java.util.*
 

@@ -27,9 +27,9 @@
     <string name="lbl_hourly">Hourly</string>
     <string name="lbl_this_week">This Week</string>
     <string name="desc_add_entry">Add Entry</string>
-    <string name="odometer_range">%.0f-%.0f</string>
+    <string name="odometer_range" formatted="true">%.0f-%.0f</string>
     <string name="hourly_rate">$%.2f/hr</string>
-    <string name="time_range">%s - %s</string>
+    <string name="time_range" formatted="false">%s - %s</string>
     <string name="avg_delivery">$%.2f/del</string>
     <string name="dels_per_hour">%.2f dels/hr</string>
     <string name="format_hours">%.2fh</string>

@@ -26,14 +26,17 @@ abstract class DashDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: DashDatabase? = null
+        private const val DATABASE_NAME = "dash-database"
+
 
         fun getInstance(context: Context): DashDatabase = INSTANCE ?: synchronized(this) {
             val executor = Executors.newSingleThreadExecutor()
             return Room.databaseBuilder(
                 context.applicationContext,
                 DashDatabase::class.java,
-                "dash-database"
+                DATABASE_NAME
             )
+                .createFromAsset(DATABASE_NAME)
                 .addMigrations(
                     object : Migration(1, 2) {
                         override fun migrate(database: SupportSQLiteDatabase) {

@@ -21,9 +21,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.MainActivity.Companion.APP
-import com.example.bottomnav.R
-import com.example.bottomnav.database.DashEntry
-import com.example.bottomnav.ui.edit_details.DetailFragment
+import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.DashEntry
+import com.wtb.dashTracker.ui.edit_details.DetailFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

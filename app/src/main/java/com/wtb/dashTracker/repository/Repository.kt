@@ -1,13 +1,13 @@
-package com.wtb.gigtracker.repository
+package com.wtb.dashTracker.repository
 
 import android.content.Context
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.wtb.dashTracker.MainActivity.Companion.APP
-import com.example.bottomnav.database.DashDatabase
-import com.example.bottomnav.database.DashEntry
-import com.example.bottomnav.database.DashEntryDao
+import com.wtb.dashTracker.database.DashDatabase
+import com.wtb.dashTracker.database.DashEntry
+import com.wtb.dashTracker.database.DashEntryDao
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate

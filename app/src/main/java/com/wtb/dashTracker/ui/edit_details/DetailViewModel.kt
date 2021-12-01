@@ -2,10 +2,10 @@ package com.wtb.gigtracker.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bottomnav.database.AUTO_ID
-import com.example.bottomnav.database.DashEntry
-import com.example.bottomnav.database.DataModel
-import com.wtb.gigtracker.repository.Repository
+import com.wtb.dashTracker.database.AUTO_ID
+import com.wtb.dashTracker.database.DashEntry
+import com.wtb.dashTracker.database.DataModel
+import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
