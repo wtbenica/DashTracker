@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">DashTracker</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string name="hours">%.2fh</string>
+    <string name="distance_unit">%.1fmi</string>
+    <string name="currency_unit">$%.2f</string>
+    <string name="lbl_date">Date</string>
+    <string name="lbl_start_time">Start Time</string>
+    <string name="desc_open_date_picker">Open date picker</string>
+    <string name="desc_open_time_picker">Open time picker</string>
+    <string name="lbl_start_mileage">Start Mileage</string>
+    <string name="lbl_end_time">End Time</string>
+    <string name="lbl_ends_on_following_day">Ends on following day</string>
+    <string name="lbl_end_mileage">End Mileage</string>
+    <string name="lbl_total_mileage">Total Mileage</string>
+    <string name="lbl_pay">Pay</string>
+    <string name="lbl_cash_tips">Cash Tips</string>
+    <string name="lbl_num_deliveries">Num. Deliveries</string>
+    <string name="desc_delete_entry">Delete entry</string>
+    <string name="desc_new_entry">New Entry</string>
+    <string name="desc_save_entry">Save entry</string>
+    <string name="lbl_hours">Hours</string>
+    <string name="lbl_miles">Miles</string>
+    <string name="lbl_hourly">Hourly</string>
+    <string name="lbl_this_week">This Week</string>
+    <string name="desc_add_entry">Add Entry</string>
+    <string name="odometer_range">%.0f-%.0f</string>
+    <string name="hourly_rate">$%.2f/hr</string>
+    <string name="time_range">%s - %s</string>
+    <string name="avg_delivery">$%.2f/del</string>
+    <string name="dels_per_hour">%.2f dels/hr</string>
+    <string name="format_hours">%.2fh</string>
+    <string name="lbl_other_pay">Other Pay</string>
+    <string name="title_daily">Daily</string>
+</resources>

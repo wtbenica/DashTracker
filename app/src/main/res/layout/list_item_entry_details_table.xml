@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingEnd="0dp"
+    android:paddingBottom="16dp"
+    tools:showIn="@layout/list_item_entry">
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hours" />
+
+        <TextView
+            style="@style/SecondaryField"
+            android:id="@+id/list_item_entry_hours_range"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            tools:text="7:03p - 9:56p" />
+
+        <TextView
+            android:id="@+id/list_item_entry_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="2.93h" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mileage" />
+
+        <TextView
+            android:id="@+id/list_item_entry_mileage_range"
+            style="@style/SecondaryField"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            tools:text="203863 - 203904" />
+
+        <TextView
+            android:id="@+id/list_item_entry_mileage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="41mi" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:text="Num Deliveries" />
+
+        <TextView
+            android:id="@+id/list_item_entry_num_deliveries"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="8" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:text="$/hr" />
+
+        <TextView
+            android:id="@+id/list_item_entry_hourly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="$22.41/hr" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:text="$/del" />
+
+        <TextView
+            android:id="@+id/list_item_entry_avd_del"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="$9.25/del" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:text="Dels/hr" />
+
+        <TextView
+            android:id="@+id/list_item_entry_hourly_dels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="2.38" />
+    </TableRow>
+</TableLayout>
+    
