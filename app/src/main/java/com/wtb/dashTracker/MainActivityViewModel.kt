@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.ui
+package com.wtb.dashTracker
 
 import android.util.Log
 import androidx.lifecycle.LiveData

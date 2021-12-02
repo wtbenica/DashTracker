@@ -86,11 +86,25 @@ data class DashEntry(
     val totalEarned: Float?
         get() = pay?.let { p -> p + (otherPay ?: 0f) + (cashTips ?: 0f) }
 
-//    val dayEarned: Float?
-//        get() = dayHours?.let { dh -> hourly?.let { h -> h * dh } }
-//
-//    val nightEarned: Float?
-//        get() = nightHours?.let { dh -> hourly?.let { h -> h * dh } }
+    val dayEarned: Float?
+        get() = dayHours?.let { dh -> hourly?.let { h -> h * dh } }
+
+    val nightEarned: Float?
+        get() = nightHours?.let { dh -> hourly?.let { h -> h * dh } }
+
+    val dayDels: Float?
+        get() = dayHours?.let { dh ->
+            totalHours?.let { th ->
+                numDeliveries?.let { nd -> nd * (dh / th) }
+            }
+        }
+
+    val nightDels: Float?
+        get() = nightHours?.let { nh ->
+            totalHours?.let { th ->
+                numDeliveries?.let { nd -> nd * (nh / th) }
+            }
+        }
 
     val hourly: Float?
         get() = totalHours?.let { th ->

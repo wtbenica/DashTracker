@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.wtb.dashTracker.ui.dashboard.DashboardFragment"
+        android:name="com.wtb.dashTracker.ui.daily_stats.DailyStatsFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_daily_stats" />
 
     <fragment
         android:id="@+id/navigation_notifications"
