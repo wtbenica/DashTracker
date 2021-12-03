@@ -1,13 +1,9 @@
 package com.wtb.dashTracker.ui.daily_stats
 
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.TableRow
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -31,6 +27,8 @@ class DailyStatsFragment : Fragment() {
     private var _entries: List<DashEntry>? = null
 
     companion object {
+        private const val SKIP_ROWS = 1
+
         fun newInstance() = DailyStatsFragment()
     }
 
@@ -59,6 +57,11 @@ class DailyStatsFragment : Fragment() {
 
     private fun updateUI() {
         _entries?.let { entries ->
+            binding.dailyStatsFragmentTable.removeAllViews()
+            binding.dailyStatsFragmentTable.addView(binding.dailyStatsFragmentLabelHourly)
+            binding.dailyStatsFragmentTable.addView(binding.dailyStatsFragmentLabelAvgDel)
+            binding.dailyStatsFragmentTable.addView(binding.dailyStatsFragmentLabelDph)
+
             DayOfWeek.values().forEach { day ->
                 val d = entries.filter { de ->
                     de.startDateTime?.dayOfWeek == day
@@ -74,7 +77,7 @@ class DailyStatsFragment : Fragment() {
                     )
                 }
 
-                binding.dailyStatsFragmentTable.addView(DailyStatsRow(context!!, null, d))
+                DailyStatsRow(context!!, null, d).addToGridLayout(binding.dailyStatsFragmentTable, SKIP_ROWS)
             }
         }
     }

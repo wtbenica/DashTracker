@@ -3,7 +3,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
-    <string name="currency_unit">$%.2f</string>
+    <string name="currency_unit">$%5.2f</string>
     <string name="lbl_date">Date</string>
     <string name="lbl_start_time">Start Time</string>
     <string name="lbl_start_mileage">Start Mileage</string>
@@ -30,5 +30,6 @@
     <string name="hourly_rate_null">$ - /hr</string>
     <string name="avg_delivery_null">$ - /del</string>
     <string name="dels_per_hour_null">- dels/hr</string>
+    <string name="float_fmt">%.2f</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

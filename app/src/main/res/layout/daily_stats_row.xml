@@ -1,91 +1,104 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.GridLayout">
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/daily_stats_row_day_of_week"
+        android:layout_row="0"
+        android:layout_rowSpan="2"
+        android:layout_column="0"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical"
+        android:padding="2dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Monday" />
 
-        <TextView
-            android:id="@+id/daily_stats_row_day_of_week"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_marginEnd="8dp"
-            tools:text="Monday" />
+    <TextView
+        android:id="@+id/daily_stats_row_label_am"
+        android:layout_row="0"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="4dp"
+        android:background="#FFFF88"
+        android:padding="2dp"
+        android:text="AM"
+        android:textAlignment="center" />
 
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/daily_stats_row_am_hourly"
+        android:layout_row="0"
+        android:layout_column="2"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="4dp"
+        android:background="#FFFFAA"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="$19.38/hr" />
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/daily_stats_row_am_avg_delivery"
+        android:layout_row="0"
+        android:layout_column="3"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="4dp"
+        android:background="#FFFFAA"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="$9.21/del" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="AM" />
+    <TextView
+        android:id="@+id/daily_stats_row_am_dels_per_hour"
+        android:layout_row="0"
+        android:layout_column="4"
+        android:layout_columnWeight="1"
+        android:background="#FFFFAA"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="2.36 dels/hr" />
 
-                <TextView
-                    android:id="@+id/daily_stats_row_am_hourly"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="$19.38/hr" />
+    <TextView
+        android:id="@+id/daily_stats_row_label_pm"
+        android:layout_row="1"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#AADDFF"
+        android:padding="2dp"
+        android:text="PM"
+        android:textAlignment="center" />
 
-                <TextView
-                    android:id="@+id/daily_stats_row_am_avg_delivery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="$9.21/del" />
+    <TextView
+        android:id="@+id/daily_stats_row_pm_hourly"
+        android:layout_row="1"
+        android:layout_column="2"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#DDEEFF"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="$19.38/hr" />
 
-                <TextView
-                    android:id="@+id/daily_stats_row_am_dels_per_hour"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="2.36 dels/hr" />
-            </TableRow>
+    <TextView
+        android:id="@+id/daily_stats_row_pm_avg_delivery"
+        android:layout_row="1"
+        android:layout_column="3"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#DDEEFF"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="$9.21/del" />
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="PM" />
-
-                <TextView
-                    android:id="@+id/daily_stats_row_pm_hourly"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="$19.38/hr" />
-
-                <TextView
-                    android:id="@+id/daily_stats_row_pm_avg_delivery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="$9.21/del" />
-
-                <TextView
-                    android:id="@+id/daily_stats_row_pm_dels_per_hour"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    tools:text="2.36 dels/hr" />
-            </TableRow>
-        </TableLayout>
-    </TableRow>
-
-    <TableRow
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-    </TableRow>
+    <TextView
+        android:id="@+id/daily_stats_row_pm_dels_per_hour"
+        android:layout_row="1"
+        android:layout_column="4"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#DDEEFF"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="2.36 dels/hr" />
 </merge>
