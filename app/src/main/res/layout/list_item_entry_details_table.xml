@@ -16,17 +16,10 @@
         <TextView
             style="@style/RowHeader"
             android:layout_width="wrap_content"
+            android:layout_span="2"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Hours" />
-
-        <TextView
-            style="@style/SecondaryField"
-            android:id="@+id/list_item_entry_hours_range"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            tools:text="7:03p - 9:56p" />
 
         <TextView
             android:id="@+id/list_item_entry_hours"

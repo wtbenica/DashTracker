@@ -1,0 +1,104 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.GridLayout">
+
+    <TextView
+        android:id="@+id/daily_stats_row_day_of_week"
+        android:layout_row="0"
+        android:layout_rowSpan="2"
+        android:layout_column="0"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical"
+        android:padding="2dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Monday" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_label_am"
+        android:layout_row="0"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="4dp"
+        android:background="#FFFF88"
+        android:padding="2dp"
+        android:text="AM"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_am_hourly"
+        android:layout_row="0"
+        android:layout_column="2"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="4dp"
+        android:background="#FFFFAA"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="$19.38/hr" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_am_avg_delivery"
+        android:layout_row="0"
+        android:layout_column="3"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="4dp"
+        android:background="#FFFFAA"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="$9.21/del" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_am_dels_per_hour"
+        android:layout_row="0"
+        android:layout_column="4"
+        android:layout_columnWeight="1"
+        android:background="#FFFFAA"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="2.36 dels/hr" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_label_pm"
+        android:layout_row="1"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#AADDFF"
+        android:padding="2dp"
+        android:text="PM"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_pm_hourly"
+        android:layout_row="1"
+        android:layout_column="2"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#DDEEFF"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="$19.38/hr" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_pm_avg_delivery"
+        android:layout_row="1"
+        android:layout_column="3"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#DDEEFF"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="$9.21/del" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_pm_dels_per_hour"
+        android:layout_row="1"
+        android:layout_column="4"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#DDEEFF"
+        android:padding="2dp"
+        android:textAlignment="textEnd"
+        tools:text="2.36 dels/hr" />
+</merge>

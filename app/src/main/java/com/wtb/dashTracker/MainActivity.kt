@@ -1,7 +1,6 @@
 package com.wtb.dashTracker
 
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -14,7 +13,6 @@ import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.ui.daily.DailyFragment
 import com.wtb.dashTracker.ui.edit_details.DetailFragment
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.MainActivityViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 import java.time.LocalDate

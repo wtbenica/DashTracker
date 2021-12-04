@@ -90,7 +90,6 @@ class DetailFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val entryId = entry?.entryId
 
         detailViewModel.loadEntry(entryId)
@@ -148,6 +147,8 @@ class DetailFragment(
                 clearFields()
             }
         }
+
+        updateUI()
 
         return view
     }
