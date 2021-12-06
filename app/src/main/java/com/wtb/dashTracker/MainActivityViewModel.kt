@@ -30,7 +30,6 @@ class MainActivityViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             repository.allEntries.collectLatest {
-                Log.d(TAG, "NUM_ENTRIES_A: ${it.size}")
                 _hourly.value = getHourly(it)
             }
         }
@@ -38,7 +37,6 @@ class MainActivityViewModel : ViewModel() {
         viewModelScope.launch {
             val (startDate, endDate) = getThisWeeksDateRange()
             repository.getEntriesByDate(startDate, endDate).collectLatest {
-                Log.d(TAG, "NUM_ENTRIES_B: ${it.size}")
                 _thisWeek.value = getTotalPay(it)
             }
         }
@@ -62,8 +60,6 @@ class MainActivityViewModel : ViewModel() {
             val reduce: Float = if (map.isNotEmpty())
                 map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) } ?: 0f
             else 0f
-
-            Log.d(TAG, "ENTRIES: ${entries.size} $map $reduce")
 
             return reduce
         }

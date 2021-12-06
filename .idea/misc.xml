@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.37916666666666665" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.15260416666666668" />
         <entry key="app/src/main/res/drawable/add.xml" value="0.14166666666666666" />
         <entry key="app/src/main/res/drawable/calendar.xml" value="0.15833333333333333" />
@@ -12,8 +13,10 @@
         <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.17592592592592593" />
         <entry key="app/src/main/res/font/coda.xml" value="0.225" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/activity_main_fab_menu.xml" value="0.5241057542768274" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.33" />
         <entry key="app/src/main/res/layout/daily_stats_row.xml" value="0.75" />
+        <entry key="app/src/main/res/layout/fab_flyout_button.xml" value="0.35" />
         <entry key="app/src/main/res/layout/fragment_daily_stats.xml" value="0.35" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_entry.xml" value="0.35052083333333334" />

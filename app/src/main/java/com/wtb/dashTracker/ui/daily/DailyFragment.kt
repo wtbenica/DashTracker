@@ -77,6 +77,15 @@ class DailyFragment : Fragment() {
 
     inner class EntryAdapter :
         PagingDataAdapter<DashEntry, EntryHolder>(DIFF_CALLBACK) {
+        override fun onBindViewHolder(
+            holder: EntryHolder,
+            position: Int,
+            payloads: MutableList<Any>
+        ) {
+            super.onBindViewHolder(holder, position, payloads)
+            getItem(position)?.let { holder.bind(it, payloads)}
+        }
+
         override fun onBindViewHolder(holder: EntryHolder, position: Int) {
             getItem(position)?.let { holder.bind(it) }
         }
@@ -161,10 +170,13 @@ class DailyFragment : Fragment() {
         override fun onClick(v: View?) {
             val currentVisibility = detailsTable.visibility
             detailsTable.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
+            bindingAdapter?.notifyItemChanged(bindingAdapterPosition, detailsTable.visibility)
         }
 
-        fun bind(item: DashEntry) {
+        fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
             this.entry = item
+
+            val detailsTableVisibility = (payloads?.let { if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) it[0] else null } ?: GONE) as Int
 
             val color =
                 if (this.entry.isThisWeek())
@@ -214,6 +226,8 @@ class DailyFragment : Fragment() {
                     R.string.dels_per_hour,
                     "-",
                     this.entry.totalHours?.let { this.entry.hourlyDeliveries })
+
+            detailsTable.visibility = detailsTableVisibility
         }
     }
 

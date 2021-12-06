@@ -126,7 +126,6 @@ data class DashEntry(
 
     fun isThisWeek(): Boolean {
         val (start, end) = getThisWeeksDateRange()
-        Log.d(TAG, "D: $date S: $start E: $end")
         return date in start..end
     }
 
