@@ -1,11 +1,13 @@
 package com.wtb.dashTracker
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.activity.viewModels
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.navigation.findNavController
@@ -28,6 +30,8 @@ import java.time.LocalDate
 class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
 
     private lateinit var binding: ActivityMainBinding
+    private var fabMenuIsVisible = false
+    private var fabMenuItems = mutableListOf<FabMenuButton>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +60,11 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
         fab.apply {
             setOnClickListener {
 //                DetailFragment().show(supportFragmentManager, "new_entry_dialog")
-                makeFabMenu()
+                if (fabMenuIsVisible)
+                    hideFabMenu()
+                else
+                    makeFabMenu()
+                fabMenuIsVisible = !fabMenuIsVisible
             }
         }
 
@@ -71,33 +79,45 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
         }
     }
 
-    private fun makeFabMenu() {
-        val menuItems: List<FabMenuButtonInfo> = listOf(
-            FabMenuButtonInfo(
-                "Add Entry",
-                R.drawable.calendar,
-                { DetailFragment().show(supportFragmentManager, "new_entry_dialog") }
-            )
-        )
+    private fun hideFabMenu() {
+        for (item in fabMenuItems) {
+            item.visibility = GONE
+        }
+    }
 
-        var itemAnchor: View = binding.fab
-        for (item in menuItems) {
-            Log.d(TAG, "Adding menu item, I think")
-            val newMenuItem = FabMenuButton.newInstance(this, item).apply {
-                elevation = R.dimen.fab_menu_spacing.toFloat()
-                setBackgroundResource(R.color.brick)
-            }
-            binding.root.addView(
-                newMenuItem,
-                CoordinatorLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-//                    .apply {
-//                        anchorId = itemAnchor.id
-//                        anchorGravity = Gravity.BOTTOM or Gravity.END
-//                        gravity = Gravity.BOTTOM
-//                        bottomMargin = R.dimen.fab_menu_spacing
-//                    }
+    private fun makeFabMenu() {
+
+        if (fabMenuItems.isEmpty()) {
+            val menuItems: List<FabMenuButtonInfo> = listOf(
+                FabMenuButtonInfo(
+                    "Add Entry",
+                    R.drawable.calendar,
+                    { DetailFragment().show(supportFragmentManager, "new_entry_dialog") }
+                )
             )
-            itemAnchor = newMenuItem
+
+            @IdRes var itemAnchor: Int = binding.fab.id
+            for (item in menuItems) {
+                val newMenuItem: FabMenuButton =
+                    FabMenuButton.newInstance(this, item, binding.root).apply {
+                        elevation = R.dimen.fab_menu_spacing.toFloat()
+                        id = View.generateViewId()
+                    }
+                fabMenuItems.add(newMenuItem)
+                binding.root.addView(
+                    newMenuItem,
+                    CoordinatorLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                        anchorId = itemAnchor
+                        anchorGravity = Gravity.TOP or Gravity.END
+                        gravity = Gravity.TOP
+                    })
+
+                itemAnchor = newMenuItem.id
+            }
+        } else {
+            for (fabMenuItem in fabMenuItems) {
+                fabMenuItem.visibility = VISIBLE
+            }
         }
     }
 

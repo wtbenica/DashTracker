@@ -144,6 +144,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/desc_add_entry"
         android:src="@drawable/add"
+        app:hideOnScroll="true"
         app:layout_anchor="@id/nav_view"
         app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
         app:tint="@color/white" />
@@ -156,7 +157,8 @@
         app:fabAlignmentMode="end"
         app:fabCradleMargin="4dp"
         app:fabCradleRoundedCornerRadius="10dp"
-        app:fabCradleVerticalOffset="4dp"
+        app:fabCradleVerticalOffset="0dp"
+        app:fabAnimationMode="slide"
         app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
