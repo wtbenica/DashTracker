@@ -179,7 +179,7 @@ class DailyFragment : Fragment() {
             val detailsTableVisibility = (payloads?.let { if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) it[0] else null } ?: GONE) as Int
 
             val color =
-                if (this.entry.isThisWeek())
+                if (this.entry.isXWeeksAgo(0))
                     Color.WHITE
                 else
                     Color.parseColor("#EEEEEE")

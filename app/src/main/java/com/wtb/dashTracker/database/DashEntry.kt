@@ -1,15 +1,14 @@
 package com.wtb.dashTracker.database
 
-import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.wtb.dashTracker.MainActivity.Companion.APP
-import com.wtb.dashTracker.MainActivity.Companion.getThisWeeksDateRange
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.WeekFields
 
 val AUTO_ID = 0
 
@@ -124,10 +123,11 @@ data class DashEntry(
     val mileage: Float?
         get() = totalMileage ?: startOdometer?.let { so -> endOdometer?.let { eo -> eo - so } }
 
-    fun isThisWeek(): Boolean {
-        val (start, end) = getThisWeeksDateRange()
-        return date in start..end
-    }
+    val weekOfYear: Int?
+        get() = startDateTime?.get(WeekFields.ISO.weekOfWeekBasedYear())
+
+    fun isXWeeksAgo(x: Int): Boolean =
+        LocalDate.now().get(WeekFields.ISO.weekOfWeekBasedYear()) - x == weekOfYear
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

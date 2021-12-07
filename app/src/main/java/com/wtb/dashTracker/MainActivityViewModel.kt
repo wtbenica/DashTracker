@@ -1,6 +1,5 @@
 package com.wtb.dashTracker
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,6 +26,10 @@ class MainActivityViewModel : ViewModel() {
     val thisWeek: LiveData<Float>
         get() = _thisWeek
 
+    private val _lastWeek = MutableLiveData(0f)
+    val lastWeek: LiveData<Float>
+        get() = _lastWeek
+
     init {
         viewModelScope.launch {
             repository.allEntries.collectLatest {
@@ -35,6 +38,10 @@ class MainActivityViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
+            repository.allEntries.collectLatest { entries ->
+                _thisWeek.value = getTotalPay(entries.filter { it.isXWeeksAgo(0) })
+                _lastWeek.value = getTotalPay(entries.filter { it.isXWeeksAgo(1) })
+            }
             val (startDate, endDate) = getThisWeeksDateRange()
             repository.getEntriesByDate(startDate, endDate).collectLatest {
                 _thisWeek.value = getTotalPay(it)

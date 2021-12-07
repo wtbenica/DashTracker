@@ -31,5 +31,6 @@
     <string name="avg_delivery_null">$ - /del</string>
     <string name="dels_per_hour_null">- dels/hr</string>
     <string name="float_fmt">%.2f</string>
+    <string name="lbl_last_week">Last Week</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

@@ -108,6 +108,10 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
             binding.actMainThisWeek.text = getString(R.string.currency_unit, it)
         }
 
+        viewModel.lastWeek.observe(this) {
+            binding.actMainLastWeek.text = getString(R.string.currency_unit, it)
+        }
+
         initFabMenu()
     }
 
