@@ -5,5 +5,8 @@
     <color name="brick">#CC7777</color>
     <color name="brick_light">#EEAAAA</color>
 
-    <color name="freddy_iz_fine">#03dac5</color>
+    <color name="freddy_iz_fine">#77ccff</color>
+
+    <color name="malamute">#588</color>
+    <color name="shadow">#9AA</color>
 </resources>

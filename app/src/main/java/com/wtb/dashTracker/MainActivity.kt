@@ -4,7 +4,6 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.util.TypedValue
@@ -113,17 +112,46 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
     }
 
     private fun hideFabMenu() {
-        fabMenuItems.forEachIndexed { index, item ->
-            item.animate()
-                .alpha(0f)
-                .setStartDelay(ANIM_DELAY * (fabMenuItems.size - index))
-                .setDuration(ANIM_LENGTH)
-                .withStartAction { item.visibility = VISIBLE }
-        }
+        fadeOutFab()
+        saturateFab()
+        runFabIconCollapseAnimation()
 
+        fabMenuIsVisible = false
+    }
+
+    private fun showFabMenu() {
+        fadeInFabMenu()
+        desaturateFab()
+        runFabIconExpandAnimation()
+
+        fabMenuIsVisible = true
+    }
+
+    private fun runFabIconCollapseAnimation() {
+        binding.fab.setImageResource(R.drawable.anim_fab_collapse)
+        when (val d = binding.fab.drawable) {
+            is AnimatedVectorDrawableCompat -> d.start()
+            is AnimatedVectorDrawable -> d.start()
+        }
+    }
+
+    private fun runFabIconExpandAnimation() {
+        binding.fab.setImageResource(R.drawable.anim_fab_expand)
+        when (val d = binding.fab.drawable) {
+            is AnimatedVectorDrawableCompat -> d.start()
+            is AnimatedVectorDrawable -> d.start()
+        }
+    }
+
+    private fun saturateFab() {
         @ColorInt val accent = getColorAccent(this)
-        @ColorInt val gray = Color.parseColor("#333344")
-        ValueAnimator.ofObject(ArgbEvaluator(), gray, accent).apply {
+        @ColorInt val gray = getColor(R.color.shadow)
+
+        animateFabColor(gray, accent)
+    }
+
+    private fun animateFabColor(fromColor: Int, toColor: Int) {
+        ValueAnimator.ofObject(ArgbEvaluator(), fromColor, toColor).apply {
             duration = ANIM_LENGTH
             addUpdateListener {
                 val i = animatedValue as Int
@@ -131,41 +159,36 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
             }
             start()
         }
-        binding.fab.setImageResource(R.drawable.close_fab)
-        when (val d = binding.fab.drawable) {
-            is AnimatedVectorDrawableCompat -> d.start()
-            is AnimatedVectorDrawable -> d.start()
-        }
-
-        fabMenuIsVisible = false
     }
 
-    private fun showFabMenu() {
+    private fun desaturateFab() {
+        @ColorInt val accent = getColorAccent(this)
+        @ColorInt val gray = getColor(R.color.shadow)
+
+        animateFabColor(accent, gray)
+    }
+
+    private fun fadeInFabMenu() {
         fabMenuItems.forEachIndexed { index, item ->
             item.animate()
                 .alpha(1f)
+                .translationY(0f)
                 .setStartDelay(ANIM_DELAY * index)
                 .setDuration(ANIM_LENGTH)
                 .withStartAction { item.visibility = VISIBLE }
         }
+    }
 
-        @ColorInt val accent = getColorAccent(this)
-        @ColorInt val gray = Color.parseColor("#333344")
-        val anim = ValueAnimator.ofObject(ArgbEvaluator(), accent, gray)
-        anim.duration = ANIM_LENGTH
-        anim.addUpdateListener {
-            val i = anim.animatedValue as Int
-            binding.fab.backgroundTintList = ColorStateList.valueOf(i)
+    private fun fadeOutFab() {
+        val dimension = resources.getDimension(R.dimen.fab_menu_offset)
+        fabMenuItems.forEachIndexed { index, item ->
+            item.animate()
+                .alpha(0f)
+                .translationY(dimension)
+                .setStartDelay(ANIM_DELAY * (fabMenuItems.size - index - 1))
+                .setDuration(ANIM_LENGTH)
+                .withEndAction { item.visibility = GONE }
         }
-        anim.start()
-
-        binding.fab.setImageResource(R.drawable.avd_anim)
-        when (val d = binding.fab.drawable) {
-            is AnimatedVectorDrawableCompat -> d.start()
-            is AnimatedVectorDrawable -> d.start()
-        }
-
-        fabMenuIsVisible = true
     }
 
     private fun initFabMenu() {
@@ -173,8 +196,9 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
         for (item in getMenuItems(supportFragmentManager)) {
             val newMenuItem: FabMenuButton =
                 FabMenuButton.newInstance(this, item, binding.root).apply {
-                    elevation = R.dimen.fab_menu_spacing.toFloat()
+//                    elevation = resources.getDimension(R.dimen.fab_menu_spacing)
                     id = View.generateViewId()
+                    translationY = resources.getDimension(R.dimen.fab_menu_offset)
                 }
             fabMenuItems.add(newMenuItem)
             binding.root.addView(
@@ -195,8 +219,8 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
     companion object {
         const val APP = "GT_"
         const val TAG = APP + "MainActivity"
-        const val ANIM_LENGTH = 300L
-        const val ANIM_DELAY = 25L
+        const val ANIM_LENGTH = 100L
+        const val ANIM_DELAY = 50L
 
         private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
             FabMenuButtonInfo(
