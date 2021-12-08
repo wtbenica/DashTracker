@@ -2,9 +2,9 @@ package com.wtb.gigtracker.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wtb.dashTracker.database.AUTO_ID
-import com.wtb.dashTracker.database.DashEntry
-import com.wtb.dashTracker.database.DataModel
+import com.wtb.dashTracker.database.models.AUTO_ID
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
 @ExperimentalCoroutinesApi
-class DetailViewModel: ViewModel() {
+class DetailViewModel : ViewModel() {
     private val repository = Repository.get()
 
     private val _entryId = MutableStateFlow(AUTO_ID)

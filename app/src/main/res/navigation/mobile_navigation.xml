@@ -7,19 +7,13 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.wtb.dashTracker.ui.daily.DailyFragment"
+        android:name="com.wtb.dashTracker.ui.entry_list.EntryListFragment"
         android:label="@string/title_daily"
         tools:layout="@layout/fragment_entry_list" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.wtb.dashTracker.ui.daily_stats.DailyStatsFragment"
-        android:label="@string/title_dashboard"
+        android:id="@+id/navigation_best_days"
+        android:name="com.wtb.dashTracker.ui.insight_daily_stats.DailyStatsFragment"
+        android:label="@string/title_daily_stats"
         tools:layout="@layout/fragment_daily_stats" />
-
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.wtb.dashTracker.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
 </navigation>

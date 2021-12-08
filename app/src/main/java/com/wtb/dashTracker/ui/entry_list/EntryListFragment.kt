@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.ui.daily
+package com.wtb.dashTracker.ui.entry_list
 
 import android.content.Context
 import android.graphics.Color
@@ -12,18 +12,18 @@ import android.widget.*
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.DashEntry
-import com.wtb.dashTracker.ui.edit_details.DetailFragment
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.ui.dialog_edit_details.DetailFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -31,16 +31,16 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @ExperimentalCoroutinesApi
-class DailyFragment : Fragment() {
+class EntryListFragment : Fragment() {
 
-    private val viewModel: DailyViewModel by viewModels()
-    private var callback: DailyFragmentCallback? = null
+    private val viewModel: EntryListViewModel by viewModels()
+    private var callback: EntryListFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = context as DailyFragmentCallback
+        callback = context as EntryListFragmentCallback
     }
 
     override fun onCreateView(
@@ -83,7 +83,7 @@ class DailyFragment : Fragment() {
             payloads: MutableList<Any>
         ) {
             super.onBindViewHolder(holder, position, payloads)
-            getItem(position)?.let { holder.bind(it, payloads)}
+            getItem(position)?.let { holder.bind(it, payloads) }
         }
 
         override fun onBindViewHolder(holder: EntryHolder, position: Int) {
@@ -106,7 +106,7 @@ class DailyFragment : Fragment() {
             *args
         ) else ifNull
 
-    interface DailyFragmentCallback
+    interface EntryListFragmentCallback
 
     inner class EntryHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.list_item_entry, parent, false)
@@ -176,7 +176,13 @@ class DailyFragment : Fragment() {
         fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
             this.entry = item
 
-            val detailsTableVisibility = (payloads?.let { if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) it[0] else null } ?: GONE) as Int
+            val detailsTableVisibility = (payloads?.let {
+                if (it.size == 1 && it[0] in listOf(
+                        VISIBLE,
+                        GONE
+                    )
+                ) it[0] else null
+            } ?: GONE) as Int
 
             val color =
                 if (this.entry.isXWeeksAgo(0))
@@ -234,7 +240,7 @@ class DailyFragment : Fragment() {
     companion object {
         private const val TAG = APP + "MainFragment"
 
-        fun newInstance() = DailyFragment()
+        fun newInstance() = EntryListFragment()
 
         val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd, yyyy")
         val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd")

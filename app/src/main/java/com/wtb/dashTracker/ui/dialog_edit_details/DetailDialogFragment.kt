@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.ui.edit_details
+package com.wtb.dashTracker.ui.dialog_edit_details
 
 import android.os.Bundle
 import android.text.Editable
@@ -18,14 +18,14 @@ import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.AUTO_ID
-import com.wtb.gigtracker.ui.main.DetailViewModel
-import com.wtb.dashTracker.database.DashEntry
-import com.wtb.dashTracker.ui.daily.DailyFragment.Companion.dtfDate
-import com.wtb.dashTracker.ui.daily.DailyFragment.Companion.dtfDateThisYear
-import com.wtb.dashTracker.ui.daily.DailyFragment.Companion.dtfTime
+import com.wtb.dashTracker.database.models.AUTO_ID
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfDate
+import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfDateThisYear
+import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfTime
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
+import com.wtb.gigtracker.ui.main.DetailViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

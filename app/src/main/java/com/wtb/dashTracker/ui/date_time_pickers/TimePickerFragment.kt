@@ -7,8 +7,8 @@ import android.text.format.DateFormat
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
-import com.wtb.dashTracker.ui.daily.DailyFragment.Companion.dtfTime
-import com.wtb.dashTracker.ui.edit_details.toTimeOrNull
+import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfTime
+import com.wtb.dashTracker.ui.dialog_edit_details.toTimeOrNull
 import java.time.LocalTime
 import java.util.*
 

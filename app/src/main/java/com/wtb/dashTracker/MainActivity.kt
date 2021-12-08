@@ -12,8 +12,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
+import android.view.animation.*
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
@@ -30,8 +29,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.daily.DailyFragment
-import com.wtb.dashTracker.ui.edit_details.DetailFragment
+import com.wtb.dashTracker.ui.entry_list.EntryListFragment
+import com.wtb.dashTracker.ui.dialog_edit_details.DetailFragment
 import com.wtb.dashTracker.views.FabMenuButton
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,7 +53,7 @@ fun getAttrColor(context: Context, @AttrRes id: Int): Int {
 }
 
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
+class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCallback {
 
     private lateinit var binding: ActivityMainBinding
     private var fabMenuIsVisible = false
@@ -80,8 +79,7 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
-                R.id.navigation_dashboard,
-                R.id.navigation_notifications
+                R.id.navigation_best_days,
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -179,6 +177,7 @@ class MainActivity : AppCompatActivity(), DailyFragment.DailyFragmentCallback {
                 .translationY(0f)
                 .setStartDelay(ANIM_DELAY * index)
                 .setDuration(ANIM_LENGTH)
+                .setInterpolator(OvershootInterpolator())
                 .withStartAction { item.visibility = VISIBLE }
         }
     }

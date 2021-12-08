@@ -1,22 +1,20 @@
 package com.wtb.dashTracker.database
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.wtb.dashTracker.database.daos.DashEntryDao
+import com.wtb.dashTracker.database.models.BasePayAdjustment
+import com.wtb.dashTracker.database.models.DashEntry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.io.Serializable
-import java.time.LocalDate
 import java.util.concurrent.Executors
 
 
 @ExperimentalCoroutinesApi
 @Database(
-    entities = [DashEntry::class],
-    version = 2,
+    version = 3,
+    entities = [DashEntry::class, BasePayAdjustment::class],
     exportSchema = true,
 )
 @TypeConverters(DbTypeConverters::class)
@@ -41,9 +39,21 @@ abstract class DashDatabase : RoomDatabase() {
                     object : Migration(1, 2) {
                         override fun migrate(database: SupportSQLiteDatabase) {
                             database.execSQL(
-                                """ALTER TABLE dashentry
+                                """ALTER TABLE DashEntry
                                     ADD COLUMN otherPay REAL
                                 """
+                            )
+                        }
+                    },
+                    object : Migration(2, 3) {
+                        override fun migrate(database: SupportSQLiteDatabase) {
+                            database.execSQL(
+                                """CREATE TABLE BasePayAdjustment(
+                                        adjustmentId INTEGER PRIMARY KEY NOT NULL,
+                                        date TEXT NOT NULL,
+                                        amount REAL NOT NULL,
+                                        lastUpdated TEXT NOT NULL
+                                    )"""
                             )
                         }
                     }
@@ -53,9 +63,4 @@ abstract class DashDatabase : RoomDatabase() {
                 }
         }
     }
-}
-
-sealed class DataModel(var lastUpdated: LocalDate = LocalDate.now()) : Serializable {
-
-    abstract val id: Int
 }

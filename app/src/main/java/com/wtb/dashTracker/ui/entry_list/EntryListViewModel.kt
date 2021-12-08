@@ -1,14 +1,14 @@
-package com.wtb.dashTracker.ui.daily
+package com.wtb.dashTracker.ui.entry_list
 
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
-import com.wtb.dashTracker.database.DashEntry
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class DailyViewModel : ViewModel() {
+class EntryListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()
 
     val entryList: Flow<PagingData<DashEntry>> = repository.allEntriesPaged

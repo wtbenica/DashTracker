@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.daily_stats.DailyStatsFragment">
+    tools:context=".ui.insight_daily_stats.DailyStatsFragment">
 
     <GridLayout
         android:id="@+id/daily_stats_fragment_table"

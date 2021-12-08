@@ -6,8 +6,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.DashDatabase
-import com.wtb.dashTracker.database.DashEntry
-import com.wtb.dashTracker.database.DashEntryDao
+import com.wtb.dashTracker.database.daos.DashEntryDao
+import com.wtb.dashTracker.database.models.DashEntry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -20,7 +20,10 @@ class Repository private constructor(context: Context) {
     private val entryDao: DashEntryDao
         get() = db.entryDao()
 
-    fun getEntriesByDate(startDate: LocalDate = LocalDate.MIN, endDate: LocalDate = LocalDate.MAX): Flow<List<DashEntry>> =
+    fun getEntriesByDate(
+        startDate: LocalDate = LocalDate.MIN,
+        endDate: LocalDate = LocalDate.MAX
+    ): Flow<List<DashEntry>> =
         entryDao.getEntriesByDate(startDate, endDate)
 
     val allEntries: Flow<List<DashEntry>> = entryDao.getAll()

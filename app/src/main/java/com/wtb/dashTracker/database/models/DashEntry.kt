@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.database
+package com.wtb.dashTracker.database.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.ui.daily_stats
+package com.wtb.dashTracker.ui.insight_daily_stats
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.wtb.dashTracker.database.DashEntry
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.DailyStatsFragmentBinding
 import com.wtb.dashTracker.views.DailyStats
 import com.wtb.dashTracker.views.DailyStatsRow
@@ -77,7 +77,10 @@ class DailyStatsFragment : Fragment() {
                     )
                 }
 
-                DailyStatsRow(context!!, null, d).addToGridLayout(binding.dailyStatsFragmentTable, SKIP_ROWS)
+                DailyStatsRow(context!!, null, d).addToGridLayout(
+                    binding.dailyStatsFragmentTable,
+                    SKIP_ROWS
+                )
             }
         }
     }

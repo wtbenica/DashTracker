@@ -1,11 +1,10 @@
-package com.wtb.dashTracker.database
+package com.wtb.dashTracker.database.daos
 
 import androidx.room.*
-import androidx.room.Dao
-import androidx.room.RawQuery
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.database.models.DataModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
@@ -13,40 +12,31 @@ private const val TAG = APP + "BaseDao"
 
 @ExperimentalCoroutinesApi
 @Dao
-abstract class BaseDao(private val tableName: String) {
+abstract class BaseDao<T : DataModel>(private val tableName: String) {
 
     @RawQuery
-    protected abstract fun getDataModelByQuery(query: SupportSQLiteQuery): DashEntry?
+    protected abstract fun getDataModelByQuery(query: SupportSQLiteQuery): T?
 
-    @RawQuery(observedEntities = [DashEntry::class])
-    protected abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<DashEntry?>
-
-    fun get(id: Int): DashEntry? {
-        val query = SimpleSQLiteQuery("SELECT * FROM dashentry WHERE entryId = $id")
+    fun get(id: Int): T? {
+        val query = SimpleSQLiteQuery("SELECT * FROM $tableName WHERE ${tableName + "ID"} = $id")
 
         return getDataModelByQuery(query)
     }
 
-    fun getFlow(id: Int): Flow<DashEntry?> {
-        val query = SimpleSQLiteQuery("SELECT * FROM dashentry WHERE entryId = $id")
-
-        return getDataModelFlowByQuery(query)
-    }
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract fun insert(obj: T): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insert(obj: DashEntry): Long
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insert(obj: List<DashEntry>): List<Long>
+    abstract fun insert(obj: List<T>): List<Long>
 
     @Update
-    abstract fun update(obj: DashEntry)
+    abstract fun update(obj: T)
 
     @Delete
-    abstract fun delete(obj: DashEntry)
+    abstract fun delete(obj: T)
 
     @Transaction
-    open fun upsert(obj: DashEntry) {
+    open fun upsert(obj: T) {
         val id = insert(obj)
         if (id == -1L) {
             update(obj)
