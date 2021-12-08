@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/frag_entry_toolbar"
+        android:layout_width="0dp"
+        android:background="?attr/colorPrimary"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/frag_entry_title"
+            android:layout_width="match_parent"
+            android:textColor="?attr/colorOnSecondary"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_adjust_title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <TableLayout
+        android:id="@+id/frag_entry_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                style="@style/HeaderBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:labelFor="@id/frag_entry_date"
+                android:text="@string/lbl_date" />
+
+            <TextView
+                android:id="@+id/frag_entry_date"
+                style="@style/FragmentEntryTextView"
+                android:layout_width="0dp"
+                tools:text="Mon Nov 23, 2021" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                style="@style/HeaderBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:labelFor="@id/frag_entry_start_time"
+                android:text="@string/label_amount" />
+
+            <TextView
+                android:id="@+id/frag_entry_start_time"
+                style="@style/FragmentEntryTextView"
+                android:layout_width="0dp"
+                tools:text="11:23a" />
+        </TableRow>
+    </TableLayout>
+
+    <ImageButton
+        android:id="@+id/frag_entry_btn_delete"
+        style="@style/FragmentEntryImageButton"
+        android:contentDescription="@string/desc_delete_entry"
+        android:src="@drawable/delete"
+        app:layout_constraintEnd_toStartOf="@id/frag_entry_btn_cancel"
+        app:layout_constraintTop_toBottomOf="@id/frag_entry_table" />
+
+    <ImageButton
+        android:id="@+id/frag_entry_btn_cancel"
+        style="@style/FragmentEntryImageButton"
+        android:contentDescription="@string/desc_new_entry"
+        android:src="@drawable/reset"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frag_entry_table" />
+</androidx.constraintlayout.widget.ConstraintLayout>

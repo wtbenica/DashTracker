@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -15,20 +14,24 @@ class FabMenuButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     private val buttonInfo: FabMenuButtonInfo? = null,
-    parent: ViewGroup? = null
+    private val callback: FabMenuButtonCallback? = null
 ) : LinearLayout(context, attrs) {
-
-    val isVisible = false
 
     init {
         val binding = FabFlyoutButtonBinding.inflate(LayoutInflater.from(context), this, true)
         binding.fabFlyoutLabel.text = buttonInfo?.label
         buttonInfo?.resId?.let {
             val drawable = AppCompatResources.getDrawable(context, it)
-
             binding.fabFlyoutButtonButton.setImageDrawable(drawable)
         }
-        binding.fabFlyoutButtonButton.setOnClickListener(buttonInfo?.action)
+        binding.fabFlyoutButtonButton.setOnClickListener {
+            callback?.fabMenuClicked()
+            buttonInfo?.action?.invoke(it)
+        }
+    }
+
+    interface FabMenuButtonCallback {
+        fun fabMenuClicked()
     }
 
     companion object {
@@ -37,9 +40,9 @@ class FabMenuButton @JvmOverloads constructor(
         fun newInstance(
             context: Context,
             buttonInfo: FabMenuButtonInfo,
-            parent: ViewGroup
+            callback: FabMenuButtonCallback
         ): FabMenuButton {
-            return FabMenuButton(context, buttonInfo = buttonInfo, parent = parent)
+            return FabMenuButton(context, buttonInfo = buttonInfo, callback = callback)
         }
     }
 }

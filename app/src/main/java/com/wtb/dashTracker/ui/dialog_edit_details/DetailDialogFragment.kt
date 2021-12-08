@@ -25,7 +25,6 @@ import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfDateThis
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfTime
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
-import com.wtb.gigtracker.ui.main.DetailViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -66,7 +65,6 @@ class DetailFragment(
     private val detailViewModel: DetailViewModel by viewModels()
 
     private lateinit var dateTextView: TextView
-
     private lateinit var startTimeTextView: TextView
     private lateinit var endTimeTextView: TextView
     private lateinit var endsNextDayCheckBox: CheckBox
@@ -100,7 +98,7 @@ class DetailFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_entry, container, false)
+        val view = inflater.inflate(R.layout.dialog_frag_entry, container, false)
 
         dateTextView = view.findViewById<TextView>(R.id.frag_entry_date).apply {
             setOnClickListener {
@@ -178,7 +176,7 @@ class DetailFragment(
         super.onViewCreated(view, savedInstanceState)
 
         CoroutineScope(Dispatchers.Default).launch {
-            detailViewModel.entry.collectLatest {
+            detailViewModel.item.collectLatest {
                 Log.d(TAG, "Changing entry: $it")
                 entry = it
                 updateUI()
@@ -196,9 +194,9 @@ class DetailFragment(
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = entry
             if (tempEntry != null) {
-                dateTextView.setText(tempEntry.date.format(dtfDate))
-                tempEntry.startTime?.let { st -> startTimeTextView.setText(st.format(dtfTime)) }
-                tempEntry.endTime?.let { et -> endTimeTextView.setText(et.format(dtfTime)) }
+                dateTextView.text = tempEntry.date.format(dtfDate)
+                tempEntry.startTime?.let { st -> startTimeTextView.text = st.format(dtfTime) }
+                tempEntry.endTime?.let { et -> endTimeTextView.text = et.format(dtfTime) }
                 endsNextDayCheckBox.isChecked =
                     tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
                 tempEntry.startOdometer?.let { so -> startMileageEditText.setText(so.toString()) }
@@ -215,7 +213,7 @@ class DetailFragment(
     }
 
     private fun clearFields() {
-        dateTextView.setText(LocalDate.now().format(dtfDate))
+        dateTextView.text = LocalDate.now().format(dtfDate)
         startTimeTextView.text = ""
         endTimeTextView.text = ""
         startMileageEditText.text.clear()

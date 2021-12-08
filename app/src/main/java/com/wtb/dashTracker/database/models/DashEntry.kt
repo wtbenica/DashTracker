@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.WeekFields
 
-val AUTO_ID = 0
+const val AUTO_ID = 0
 
 @ExperimentalCoroutinesApi
 @Entity
@@ -37,7 +37,7 @@ data class DashEntry(
     val startDateTime
         get() = startTime?.let { st -> LocalDateTime.of(date, st) }
 
-    val endDateTime
+    private val endDateTime
         get() = endTime?.let { et -> LocalDateTime.of(endDate, et) }
 
     val totalHours: Float?
@@ -123,7 +123,7 @@ data class DashEntry(
     val mileage: Float?
         get() = totalMileage ?: startOdometer?.let { so -> endOdometer?.let { eo -> eo - so } }
 
-    val weekOfYear: Int?
+    private val weekOfYear: Int?
         get() = startDateTime?.get(WeekFields.ISO.weekOfWeekBasedYear())
 
     fun isXWeeksAgo(x: Int): Boolean =

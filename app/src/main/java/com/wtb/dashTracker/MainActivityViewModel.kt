@@ -16,7 +16,7 @@ import java.time.LocalDate
 @ExperimentalCoroutinesApi
 class MainActivityViewModel : ViewModel() {
 
-    val repository = Repository.get()
+    private val repository = Repository.get()
 
     private val _hourly = MutableLiveData(0f)
     val hourly: LiveData<Float>
@@ -64,11 +64,12 @@ class MainActivityViewModel : ViewModel() {
 
         fun getTotalPay(entries: List<DashEntry>): Float {
             val map = entries.map { (it.pay ?: 0f) + (it.otherPay ?: 0f) }
-            val reduce: Float = if (map.isNotEmpty())
-                map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) } ?: 0f
-            else 0f
 
-            return reduce
+            return if (map.isNotEmpty()) {
+                map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) }
+            } else {
+                0f
+            }
         }
 
         fun getHourly(entries: List<DashEntry>): Float {

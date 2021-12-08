@@ -27,8 +27,6 @@ class TimePickerFragment(private val timeTextView: TextView) : DialogFragment(),
     }
 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        timeTextView.setText(
-            LocalTime.of(hourOfDay, minute).format(dtfTime)
-        )
+        timeTextView.text = LocalTime.of(hourOfDay, minute).format(dtfTime)
     }
 }

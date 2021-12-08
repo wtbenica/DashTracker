@@ -18,13 +18,7 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry") {
     abstract fun getAll(): Flow<List<DashEntry>>
 
     @RawQuery(observedEntities = [DashEntry::class])
-    protected abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<DashEntry?>
-
-    fun getFlow(id: Int): Flow<DashEntry?> {
-        val query = SimpleSQLiteQuery("SELECT * FROM DashEntry WHERE entryId = $id")
-
-        return getDataModelFlowByQuery(query)
-    }
+    override abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<DashEntry?>
 
     @Query("SELECT * FROM DashEntry WHERE date >= :startDate AND date <= :endDate ORDER BY date desc, startTime desc")
     abstract fun getEntriesByDate(

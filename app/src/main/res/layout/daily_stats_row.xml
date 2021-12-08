@@ -23,7 +23,7 @@
         android:layout_marginBottom="4dp"
         android:background="#FFFF88"
         android:padding="2dp"
-        android:text="AM"
+        android:text="@string/ante_meridiem"
         android:textAlignment="center" />
 
     <TextView
@@ -66,7 +66,7 @@
         android:layout_marginBottom="16dp"
         android:background="#AADDFF"
         android:padding="2dp"
-        android:text="PM"
+        android:text="@string/post_meridiem"
         android:textAlignment="center" />
 
     <TextView

@@ -8,11 +8,12 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.animation.*
+import android.view.animation.OvershootInterpolator
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
@@ -28,40 +29,23 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.databinding.ActivityMainBinding
+import com.wtb.dashTracker.ui.extensions.isTouchTarget
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment
 import com.wtb.dashTracker.ui.dialog_edit_details.DetailFragment
+import com.wtb.dashTracker.ui.entry_list.EntryListFragment
 import com.wtb.dashTracker.views.FabMenuButton
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-@ColorInt
-fun getColorAccent(context: Context) = getAttrColor(context, R.attr.colorAccent)
-
-@ColorInt
-fun getColorPrimary(context: Context) = getAttrColor(context, R.attr.colorPrimary)
-
-@ColorInt
-fun getAttrColor(context: Context, @AttrRes id: Int): Int {
-    val tv = TypedValue()
-    val arr = context.obtainStyledAttributes(tv.data, intArrayOf(id))
-    @ColorInt val color = arr.getColor(0, 0)
-    arr.recycle()
-    return color
-}
-
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCallback {
+class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCallback,
+    FabMenuButton.FabMenuButtonCallback {
 
     private lateinit var binding: ActivityMainBinding
     private var fabMenuIsVisible = false
     private var fabMenuItems = mutableListOf<FabMenuButton>()
-    private val fabOpenAnimation: Animation
-        get() = AnimationUtils.loadAnimation(this, R.anim.open_fab_menu)
-    private val fabCloseAnimation: Animation
-        get() = AnimationUtils.loadAnimation(this, R.anim.close_fab_menu)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +54,42 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initBottomNavBar()
+        initFab()
+        initObservers()
+        initFabMenu()
+    }
+
+    private fun initObservers() {
+        val viewModel: MainActivityViewModel by viewModels()
+
+        viewModel.hourly.observe(this) {
+            binding.actMainHourly.text = getString(R.string.currency_unit, it)
+        }
+
+        viewModel.thisWeek.observe(this) {
+            binding.actMainThisWeek.text = getString(R.string.currency_unit, it)
+        }
+
+        viewModel.lastWeek.observe(this) {
+            binding.actMainLastWeek.text = getString(R.string.currency_unit, it)
+        }
+    }
+
+    private fun initFab() {
+        val fab: FloatingActionButton = binding.fab
+        fab.apply {
+            setOnClickListener {
+    //                DetailFragment().show(supportFragmentManager, "new_entry_dialog")
+                if (fabMenuIsVisible)
+                    hideFabMenu()
+                else
+                    showFabMenu()
+            }
+        }
+    }
+
+    private fun initBottomNavBar() {
         val navView: BottomNavigationView = binding.navView
         navView.background = null
 
@@ -84,40 +104,26 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
 
-        val fab: FloatingActionButton = binding.fab
-        fab.apply {
-            setOnClickListener {
-//                DetailFragment().show(supportFragmentManager, "new_entry_dialog")
-                if (fabMenuIsVisible)
-                    hideFabMenu()
-                else
-                    showFabMenu()
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        super.dispatchTouchEvent(ev)
+        if (fabMenuIsVisible && ev?.action == MotionEvent.ACTION_DOWN) {
+            val views = fabMenuItems + binding.fab
+            for (v in views) {
+                if (v.isTouchTarget(ev)) {
+                    return false
+                }
             }
+            hideFabMenu()
         }
-
-        val viewModel: MainActivityViewModel by viewModels()
-
-        viewModel.hourly.observe(this) {
-            binding.actMainHourly.text = getString(R.string.currency_unit, it)
-        }
-
-        viewModel.thisWeek.observe(this) {
-            binding.actMainThisWeek.text = getString(R.string.currency_unit, it)
-        }
-
-        viewModel.lastWeek.observe(this) {
-            binding.actMainLastWeek.text = getString(R.string.currency_unit, it)
-        }
-
-        initFabMenu()
+        return false
     }
 
     private fun hideFabMenu() {
         fadeOutFab()
         saturateFab()
         runFabIconCollapseAnimation()
-
         fabMenuIsVisible = false
     }
 
@@ -198,8 +204,7 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
         @IdRes var itemAnchor: Int = binding.fab.id
         for (item in getMenuItems(supportFragmentManager)) {
             val newMenuItem: FabMenuButton =
-                FabMenuButton.newInstance(this, item, binding.root).apply {
-//                    elevation = resources.getDimension(R.dimen.fab_menu_spacing)
+                FabMenuButton.newInstance(this, item, this).apply {
                     id = View.generateViewId()
                     translationY = resources.getDimension(R.dimen.fab_menu_offset)
                 }
@@ -232,15 +237,28 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
             ) { DetailFragment().show(fm, "new_entry_dialog") },
             FabMenuButtonInfo(
                 "Add Adjustment",
-                R.drawable.alert,
-                { }
-            ),
+                R.drawable.alert
+            ) { },
             FabMenuButtonInfo(
                 "Add Payout",
-                R.drawable.chart,
-                { }
-            )
+                R.drawable.chart
+            ) { }
         )
+
+        @ColorInt
+        fun getColorAccent(context: Context) = getAttrColor(context, R.attr.colorAccent)
+
+        @ColorInt
+        fun getColorPrimary(context: Context) = getAttrColor(context, R.attr.colorPrimary)
+
+        @ColorInt
+        fun getAttrColor(context: Context, @AttrRes id: Int): Int {
+            val tv = TypedValue()
+            val arr = context.obtainStyledAttributes(tv.data, intArrayOf(id))
+            @ColorInt val color = arr.getColor(0, 0)
+            arr.recycle()
+            return color
+        }
 
         fun getThisWeeksDateRange(): Pair<LocalDate, LocalDate> {
             val todayIs = LocalDate.now().dayOfWeek
@@ -251,4 +269,9 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
             return Pair(startDate, endDate)
         }
     }
+
+    override fun fabMenuClicked() {
+        hideFabMenu()
+    }
 }
+

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.wtb.dashTracker.database.daos.BasePayAdjustmentDao
 import com.wtb.dashTracker.database.daos.DashEntryDao
 import com.wtb.dashTracker.database.models.BasePayAdjustment
 import com.wtb.dashTracker.database.models.DashEntry
@@ -20,6 +21,7 @@ import java.util.concurrent.Executors
 @TypeConverters(DbTypeConverters::class)
 abstract class DashDatabase : RoomDatabase() {
     abstract fun entryDao(): DashEntryDao
+    abstract fun basePayAdjustDao(): BasePayAdjustmentDao
 
     companion object {
         @Volatile
@@ -28,7 +30,7 @@ abstract class DashDatabase : RoomDatabase() {
 
 
         fun getInstance(context: Context): DashDatabase = INSTANCE ?: synchronized(this) {
-            val executor = Executors.newSingleThreadExecutor()
+            Executors.newSingleThreadExecutor()
             return Room.databaseBuilder(
                 context.applicationContext,
                 DashDatabase::class.java,

@@ -2,7 +2,6 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_home">
 
     <fragment
@@ -15,5 +14,5 @@
         android:id="@+id/navigation_best_days"
         android:name="com.wtb.dashTracker.ui.insight_daily_stats.DailyStatsFragment"
         android:label="@string/title_daily_stats"
-        tools:layout="@layout/fragment_daily_stats" />
+        tools:layout="@layout/daily_stats_fragment" />
 </navigation>

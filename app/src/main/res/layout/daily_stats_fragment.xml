@@ -18,7 +18,7 @@
             android:layout_row="0"
             android:layout_column="2"
             android:layout_columnWeight="1"
-            android:text="$/hr"
+            android:text="@string/units_pay_rate"
             android:textAlignment="textEnd"
             android:textStyle="bold" />
 
@@ -27,7 +27,7 @@
             android:layout_row="0"
             android:layout_column="3"
             android:layout_columnWeight="1"
-            android:text="$/del"
+            android:text="@string/units_avg_delivery"
             android:textAlignment="textEnd"
             android:textStyle="bold" />
 
@@ -36,10 +36,8 @@
             android:layout_row="0"
             android:layout_column="4"
             android:layout_columnWeight="1"
-            android:text="del/hr"
+            android:text="@string/units_del_per_hr"
             android:textAlignment="textEnd"
             android:textStyle="bold" />
-
     </GridLayout>
-
 </LinearLayout>
