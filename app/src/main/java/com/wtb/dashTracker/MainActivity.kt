@@ -1,35 +1,20 @@
 package com.wtb.dashTracker
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.Gravity
 import android.view.MotionEvent
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.animation.OvershootInterpolator
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.databinding.ActivityMainBinding
-import com.wtb.dashTracker.ui.extensions.isTouchTarget
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_base_pay_adjustment.BasePayAdjustDialog
 import com.wtb.dashTracker.ui.dialog_edit_details.DetailDialog
@@ -41,8 +26,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCallback,
-    FabMenuButton.FabMenuButtonCallback {
+class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCallback {
 
     private lateinit var binding: ActivityMainBinding
     private var fabMenuIsVisible = false
@@ -56,9 +40,8 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
         setContentView(binding.root)
 
         initBottomNavBar()
-        initFab()
         initObservers()
-        initFabMenu()
+        binding.fab.initialize(getMenuItems(supportFragmentManager), binding.root)
     }
 
     private fun initObservers() {
@@ -74,19 +57,6 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
 
         viewModel.lastWeek.observe(this) {
             binding.actMainLastWeek.text = getString(R.string.currency_unit, it)
-        }
-    }
-
-    private fun initFab() {
-        val fab: FloatingActionButton = binding.fab
-        fab.apply {
-            setOnClickListener {
-    //                DetailFragment().show(supportFragmentManager, "new_entry_dialog")
-                if (fabMenuIsVisible)
-                    hideFabMenu()
-                else
-                    showFabMenu()
-            }
         }
     }
 
@@ -108,128 +78,14 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        super.dispatchTouchEvent(ev)
-        if (fabMenuIsVisible && ev?.action == MotionEvent.ACTION_DOWN) {
-            val views = fabMenuItems + binding.fab
-            for (v in views) {
-                if (v.isTouchTarget(ev)) {
-                    return false
-                }
-            }
-            hideFabMenu()
-        }
-        return false
-    }
+        binding.fab.interceptTouchEvent(ev)
+        return super.dispatchTouchEvent(ev)
 
-    private fun hideFabMenu() {
-        fadeOutFab()
-        saturateFab()
-        runFabIconCollapseAnimation()
-        fabMenuIsVisible = false
-    }
-
-    private fun showFabMenu() {
-        fadeInFabMenu()
-        desaturateFab()
-        runFabIconExpandAnimation()
-
-        fabMenuIsVisible = true
-    }
-
-    private fun runFabIconCollapseAnimation() {
-        binding.fab.setImageResource(R.drawable.anim_fab_collapse)
-        when (val d = binding.fab.drawable) {
-            is AnimatedVectorDrawableCompat -> d.start()
-            is AnimatedVectorDrawable -> d.start()
-        }
-    }
-
-    private fun runFabIconExpandAnimation() {
-        binding.fab.setImageResource(R.drawable.anim_fab_expand)
-        when (val d = binding.fab.drawable) {
-            is AnimatedVectorDrawableCompat -> d.start()
-            is AnimatedVectorDrawable -> d.start()
-        }
-    }
-
-    private fun saturateFab() {
-        @ColorInt val accent = getColorAccent(this)
-        @ColorInt val gray = getColor(R.color.shadow)
-
-        animateFabColor(gray, accent)
-    }
-
-    private fun animateFabColor(fromColor: Int, toColor: Int) {
-        ValueAnimator.ofObject(ArgbEvaluator(), fromColor, toColor).apply {
-            duration = ANIM_LENGTH
-            addUpdateListener {
-                val i = animatedValue as Int
-                binding.fab.backgroundTintList = ColorStateList.valueOf(i)
-            }
-            start()
-        }
-    }
-
-    private fun desaturateFab() {
-        @ColorInt val accent = getColorAccent(this)
-        @ColorInt val gray = getColor(R.color.shadow)
-
-        animateFabColor(accent, gray)
-    }
-
-    private fun fadeInFabMenu() {
-        fabMenuItems.forEachIndexed { index, item ->
-            item.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setStartDelay(ANIM_DELAY * index)
-                .setDuration(ANIM_LENGTH)
-                .setInterpolator(OvershootInterpolator())
-                .withStartAction { item.visibility = VISIBLE }
-        }
-    }
-
-    private fun fadeOutFab() {
-        val dimension = resources.getDimension(R.dimen.fab_menu_offset)
-        fabMenuItems.forEachIndexed { index, item ->
-            item.animate()
-                .alpha(0f)
-                .translationY(dimension)
-                .setStartDelay(ANIM_DELAY * (fabMenuItems.size - index - 1))
-                .setDuration(ANIM_LENGTH)
-                .withEndAction { item.visibility = GONE }
-        }
-    }
-
-    private fun initFabMenu() {
-        @IdRes var itemAnchor: Int = binding.fab.id
-        for (item in getMenuItems(supportFragmentManager)) {
-            val newMenuItem: FabMenuButton =
-                FabMenuButton.newInstance(this, item, this).apply {
-                    id = View.generateViewId()
-                    translationY = resources.getDimension(R.dimen.fab_menu_offset)
-                }
-            fabMenuItems.add(newMenuItem)
-            binding.root.addView(
-                newMenuItem,
-                CoordinatorLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
-                    anchorId = itemAnchor
-                    anchorGravity = Gravity.TOP or Gravity.END
-                    gravity = Gravity.TOP
-                })
-
-            itemAnchor = newMenuItem.id
-        }
-        for (item in fabMenuItems) {
-            item.visibility = GONE
-        }
     }
 
     companion object {
         const val APP = "GT_"
         private const val TAG = APP + "MainActivity"
-        const val ANIM_LENGTH = 100L
-        const val ANIM_DELAY = 50L
         private val weekEndsOn = DayOfWeek.SUNDAY
 
         private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
@@ -240,7 +96,7 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
             FabMenuButtonInfo(
                 "Add Adjustment",
                 R.drawable.alert
-            ) { BasePayAdjustDialog().show(fm, "new_adjust_dialog")},
+            ) { BasePayAdjustDialog().show(fm, "new_adjust_dialog") },
             FabMenuButtonInfo(
                 "Add Payout",
                 R.drawable.chart
@@ -273,10 +129,6 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
             val daysLeft: Long = (weekEndsOn.value - todayIs.value + 7) % 7L
             return LocalDate.now().plusDays(daysLeft)
         }
-    }
-
-    override fun fabMenuClicked() {
-        hideFabMenu()
     }
 }
 
