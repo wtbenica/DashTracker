@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:dashtracker="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -119,12 +120,14 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                 <!--    Row 4   -->
-                <RadioButton
+                <com.wtb.dashTracker.views.TableRadioButton
+                    android:id="@+id/dialog_entry_trb_start_end_odometer"
                     android:layout_row="4"
                     android:layout_rowSpan="2"
                     android:layout_column="0"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp"
+                    dashtracker:group="odometer_type" />
 
                 <TextView
                     style="@style/HeaderBar"
@@ -168,11 +171,13 @@
                     android:inputType="numberDecimal" />
 
                 <!--    Row 6   -->
-                <RadioButton
+                <com.wtb.dashTracker.views.TableRadioButton
+                    android:id="@+id/dialog_entry_trb_trip_odometer"
                     android:layout_row="6"
                     android:layout_column="0"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp"
+                    dashtracker:group="odometer_type" />
 
                 <TextView
                     style="@style/HeaderBar"
