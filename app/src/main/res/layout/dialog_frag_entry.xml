@@ -25,7 +25,6 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/frag_entry_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/frag_entry_title"
@@ -121,7 +120,6 @@
 
                 <!--    Row 4   -->
                 <RadioButton
-                    android:id="@+id/frag_entry_calc_mileage_radio"
                     android:layout_row="4"
                     android:layout_rowSpan="2"
                     android:layout_column="0"
@@ -171,7 +169,6 @@
 
                 <!--    Row 6   -->
                 <RadioButton
-                    android:id="@+id/frag_entry_total_mileage_radio"
                     android:layout_row="6"
                     android:layout_column="0"
                     android:layout_gravity="center_vertical"

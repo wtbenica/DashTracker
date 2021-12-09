@@ -22,7 +22,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import com.wtb.dashTracker.ui.extensions.toFloatOrNull
 
 @ExperimentalCoroutinesApi
 class BasePayAdjustDialog(
@@ -43,7 +42,7 @@ class BasePayAdjustDialog(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         dialog?.window?.let {
             it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }

@@ -38,7 +38,6 @@
     <string name="header_mileage">Mileage</string>
     <string name="header_num_deliveries">Num Deliveries</string>
     <string name="content_desc_fab_menu_closed">Open add item menu</string>
-    <string name="content_desc_fab_menu_open">Close add item menu</string>
     <string name="frag_entry_title">Dash Entry</string>
     <string name="label_amount">Amount</string>
     <string name="dialog_adjust_title">Base Pay Adjustment</string>

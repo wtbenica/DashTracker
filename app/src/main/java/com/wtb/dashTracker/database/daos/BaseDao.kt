@@ -28,7 +28,7 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
     protected abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<T?>
 
     fun getFlow(id: Int): Flow<T?> {
-        val query = SimpleSQLiteQuery("SELECT * FROM $tableName WHERE ${idName} = $id")
+        val query = SimpleSQLiteQuery("SELECT * FROM $tableName WHERE $idName = $id")
 
         return getDataModelFlowByQuery(query)
     }

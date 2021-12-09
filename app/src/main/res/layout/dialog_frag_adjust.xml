@@ -25,7 +25,6 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/frag_adjust_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dialog_adjust_title"
@@ -79,7 +78,9 @@
                         android:id="@+id/frag_adjust_amount"
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
-                        tools:text="11:23a" />
+                        android:autofillHints="false"
+                        android:inputType="numberDecimal"
+                        tools:text="$11.23" />
                 </TableRow>
             </TableLayout>
 

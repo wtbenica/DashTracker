@@ -45,19 +45,19 @@ class DailyStatsRow @JvmOverloads constructor(
             context.getStringOrElse(R.string.currency_unit, pmHourly)
 
         val amAvgDel = safeDiv(stats.amEarned, stats.amDels)
-        binding.dailyStatsRowAmAvgDelivery.text =
+        binding.dailyStatsRowAmAvgDel.text =
             context.getStringOrElse(R.string.currency_unit, amAvgDel)
 
         val pmAvgDel = safeDiv(stats.pmEarned, stats.pmDels)
-        binding.dailyStatsRowPmAvgDelivery.text =
+        binding.dailyStatsRowPmAvgDel.text =
             context.getStringOrElse(R.string.currency_unit, pmAvgDel)
 
         val amDelsPerHr = safeDiv(stats.amDels, stats.amHours)
-        binding.dailyStatsRowAmDelsPerHour.text =
+        binding.dailyStatsRowAmDph.text =
             context.getStringOrElse(R.string.float_fmt, amDelsPerHr)
 
         val pmDelsPerHr = safeDiv(stats.pmDels, stats.pmHours)
-        binding.dailyStatsRowPmDelsPerHour.text =
+        binding.dailyStatsRowPmDph.text =
             context.getStringOrElse(R.string.float_fmt, pmDelsPerHr)
     }
 
@@ -75,19 +75,19 @@ class DailyStatsRow @JvmOverloads constructor(
         grid.addView(binding.dailyStatsRowAmHourly.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS)
         })
-        grid.addView(binding.dailyStatsRowAmAvgDelivery.apply {
+        grid.addView(binding.dailyStatsRowAmAvgDel.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS)
         })
-        grid.addView(binding.dailyStatsRowAmDelsPerHour.apply {
+        grid.addView(binding.dailyStatsRowAmDph.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS)
         })
         grid.addView(binding.dailyStatsRowPmHourly.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
-        grid.addView(binding.dailyStatsRowPmAvgDelivery.apply {
+        grid.addView(binding.dailyStatsRowPmAvgDel.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
-        grid.addView(binding.dailyStatsRowPmDelsPerHour.apply {
+        grid.addView(binding.dailyStatsRowPmDph.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
     }

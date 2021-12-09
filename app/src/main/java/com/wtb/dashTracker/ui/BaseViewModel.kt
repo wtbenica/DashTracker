@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.*
 abstract class BaseViewModel<T: DataModel>: ViewModel() {
     protected val repository = Repository.get()
 
-    protected val _id = MutableStateFlow(AUTO_ID)
+    private val _id = MutableStateFlow(AUTO_ID)
     protected val id: StateFlow<Int>
         get() = _id
 
