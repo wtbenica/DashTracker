@@ -31,7 +31,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.ui.extensions.isTouchTarget
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_edit_details.DetailFragment
+import com.wtb.dashTracker.ui.dialog_base_pay_adjustment.BasePayAdjustDialog
+import com.wtb.dashTracker.ui.dialog_edit_details.DetailDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment
 import com.wtb.dashTracker.views.FabMenuButton
 import com.wtb.dashTracker.views.FabMenuButtonInfo
@@ -226,19 +227,20 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
 
     companion object {
         const val APP = "GT_"
-        const val TAG = APP + "MainActivity"
+        private const val TAG = APP + "MainActivity"
         const val ANIM_LENGTH = 100L
         const val ANIM_DELAY = 50L
+        private val weekEndsOn = DayOfWeek.SUNDAY
 
         private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
             FabMenuButtonInfo(
                 "Add Entry",
                 R.drawable.calendar
-            ) { DetailFragment().show(fm, "new_entry_dialog") },
+            ) { DetailDialog().show(fm, "new_entry_dialog") },
             FabMenuButtonInfo(
                 "Add Adjustment",
                 R.drawable.alert
-            ) { },
+            ) { BasePayAdjustDialog().show(fm, "new_adjust_dialog")},
             FabMenuButtonInfo(
                 "Add Payout",
                 R.drawable.chart
@@ -261,12 +263,15 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
         }
 
         fun getThisWeeksDateRange(): Pair<LocalDate, LocalDate> {
-            val todayIs = LocalDate.now().dayOfWeek
-            val weekEndsOn = DayOfWeek.SUNDAY
-            val daysLeft = (weekEndsOn.value - todayIs.value + 7) % 7L
-            val endDate = LocalDate.now().plusDays(daysLeft)
+            val endDate: LocalDate = getNextEndOfWeek()
             val startDate = endDate.minusDays(6L)
             return Pair(startDate, endDate)
+        }
+
+        fun getNextEndOfWeek(): LocalDate {
+            val todayIs: DayOfWeek = LocalDate.now().dayOfWeek
+            val daysLeft: Long = (weekEndsOn.value - todayIs.value + 7) % 7L
+            return LocalDate.now().plusDays(daysLeft)
         }
     }
 

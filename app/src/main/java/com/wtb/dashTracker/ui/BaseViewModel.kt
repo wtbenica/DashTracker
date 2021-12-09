@@ -26,7 +26,7 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
 
     abstract fun getItemFlowById(id: Int): Flow<T?>
 
-    fun loadEntry(id: Int?) {
+    fun loadDataModel(id: Int?) {
         _id.value = id ?: AUTO_ID
     }
 

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
 @Dao
-abstract class BasePayAdjustmentDao : BaseDao<BasePayAdjustment>("basepayadjustment") {
+abstract class BasePayAdjustmentDao : BaseDao<BasePayAdjustment>("basepayadjustment", "adjustmentId") {
     @Query(SQL_GET_ALL)
     abstract fun getAll(): Flow<List<BasePayAdjustment>>
 

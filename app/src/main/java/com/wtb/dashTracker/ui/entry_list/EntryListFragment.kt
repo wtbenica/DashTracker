@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.ui.dialog_edit_details.DetailFragment
+import com.wtb.dashTracker.ui.dialog_edit_details.DetailDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -153,7 +153,7 @@ class EntryListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_entry_btn_edit).apply {
                 setOnClickListener {
-                    DetailFragment(this@EntryHolder.entry).show(
+                    DetailDialog(this@EntryHolder.entry).show(
                         parentFragmentManager,
                         "edit_details"
                     )

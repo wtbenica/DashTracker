@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 @Dao
-abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry") {
+abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @Query(SQL_GET_ALL)
     abstract fun getAll(): Flow<List<DashEntry>>
 

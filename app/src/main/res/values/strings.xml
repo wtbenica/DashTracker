@@ -6,7 +6,7 @@
     <string name="lbl_start_time">Start Time</string>
     <string name="lbl_start_mileage">Start Mileage</string>
     <string name="lbl_end_time">End Time</string>
-    <string name="lbl_ends_on_following_day">Ends on following day</string>
+    <string name="lbl_ends_on_following_day">Ends the next day</string>
     <string name="lbl_end_mileage">End Mileage</string>
     <string name="lbl_total_mileage">Total Mileage</string>
     <string name="lbl_pay">Pay</string>

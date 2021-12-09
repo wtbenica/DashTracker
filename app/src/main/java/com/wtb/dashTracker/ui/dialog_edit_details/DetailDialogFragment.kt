@@ -1,19 +1,16 @@
 package com.wtb.dashTracker.ui.dialog_edit_details
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.WindowManager
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
@@ -21,48 +18,27 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfDate
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfDateThisYear
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfTime
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
+import com.wtb.dashTracker.ui.extensions.toDateOrNull
+import com.wtb.dashTracker.ui.extensions.toFloatOrNull
+import com.wtb.dashTracker.ui.extensions.toIntOrNull
+import com.wtb.dashTracker.ui.extensions.toTimeOrNull
+import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalTime
-
-fun CharSequence.toTimeOrNull() =
-    if (this.isNotEmpty()) LocalTime.parse(this, dtfTime) else null
-
-fun CharSequence.toDateOrNull() =
-    if (this.isNotEmpty()) {
-        try {
-            val df = dtfDate
-            LocalDate.parse(this, df)
-        } catch (e: Exception) {
-            try {
-                val df = dtfDateThisYear
-                LocalDate.parse(this, df)
-            } catch (e: Exception) {
-                null
-            }
-        }
-    } else {
-        null
-    }
-
-fun Editable.toFloatOrNullB() = if (this.isNotEmpty()) this.toString().toFloatOrNull() else null
-
-fun Editable.toIntOrNullB() = if (this.isNotEmpty()) this.toString().toIntOrNull() else null
 
 @ExperimentalCoroutinesApi
-class DetailFragment(
+class DetailDialog(
     private var entry: DashEntry? = null
-) : DialogFragment() {
+) : FullWidthDialogFragment() {
 
-    private val detailViewModel: DetailViewModel by viewModels()
+    private val viewModel: DetailViewModel by viewModels()
 
     private lateinit var dateTextView: TextView
     private lateinit var startTimeTextView: TextView
@@ -78,19 +54,11 @@ class DetailFragment(
     private lateinit var deleteButton: ImageButton
     private lateinit var cancelButton: ImageButton
 
-    override fun onResume() {
-        super.onResume()
-        val params: ViewGroup.LayoutParams = dialog!!.window!!.attributes
-        params.width = MATCH_PARENT
-        params.height = WRAP_CONTENT
-        dialog!!.window!!.attributes = params as WindowManager.LayoutParams
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val entryId = entry?.entryId
 
-        detailViewModel.loadEntry(entryId)
+        viewModel.loadDataModel(entryId)
     }
 
     override fun onCreateView(
@@ -99,6 +67,10 @@ class DetailFragment(
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.dialog_frag_entry, container, false)
+
+        dialog?.window?.let {
+            it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
 
         dateTextView = view.findViewById<TextView>(R.id.frag_entry_date).apply {
             setOnClickListener {
@@ -135,13 +107,13 @@ class DetailFragment(
 
         deleteButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_delete).apply {
             setOnClickListener {
-                entry?.let { e -> detailViewModel.delete(e) }
+                entry?.let { e -> viewModel.delete(e) }
             }
         }
 
         cancelButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_cancel).apply {
             setOnClickListener {
-                detailViewModel.clearEntry()
+                viewModel.clearEntry()
                 clearFields()
             }
         }
@@ -160,23 +132,23 @@ class DetailFragment(
                 ?: LocalDate.now(),
             startTime = startTimeTextView.text.toTimeOrNull(),
             endTime = endTimeTextView.text.toTimeOrNull(),
-            startOdometer = startMileageEditText.text.toFloatOrNullB(),
-            endOdometer = endMileageEditText.text.toFloatOrNullB(),
-            totalMileage = totalMileageEditText.text.toFloatOrNullB(),
-            pay = payEditText.text.toFloatOrNullB(),
-            otherPay = otherPayEditText.text.toFloatOrNullB(),
-            cashTips = cashTipsEditText.text.toFloatOrNullB(),
-            numDeliveries = numDeliveriesEditText.text.toIntOrNullB()
+            startOdometer = startMileageEditText.text.toFloatOrNull(),
+            endOdometer = endMileageEditText.text.toFloatOrNull(),
+            totalMileage = totalMileageEditText.text.toFloatOrNull(),
+            pay = payEditText.text.toFloatOrNull(),
+            otherPay = otherPayEditText.text.toFloatOrNull(),
+            cashTips = cashTipsEditText.text.toFloatOrNull(),
+            numDeliveries = numDeliveriesEditText.text.toIntOrNull()
         )
 
-        detailViewModel.upsert(e)
+        viewModel.upsert(e)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         CoroutineScope(Dispatchers.Default).launch {
-            detailViewModel.item.collectLatest {
+            viewModel.item.collectLatest {
                 Log.d(TAG, "Changing entry: $it")
                 entry = it
                 updateUI()

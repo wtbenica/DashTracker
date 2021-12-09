@@ -14,7 +14,7 @@ private const val TAG = APP + "BaseDao"
 
 @ExperimentalCoroutinesApi
 @Dao
-abstract class BaseDao<T : DataModel>(private val tableName: String) {
+abstract class BaseDao<T : DataModel>(private val tableName: String, private val idName: String = tableName + "Id") {
 
     @RawQuery
     protected abstract fun getDataModelByQuery(query: SupportSQLiteQuery): T?
@@ -28,7 +28,7 @@ abstract class BaseDao<T : DataModel>(private val tableName: String) {
     protected abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<T?>
 
     fun getFlow(id: Int): Flow<T?> {
-        val query = SimpleSQLiteQuery("SELECT * FROM $tableName WHERE entryId = $id")
+        val query = SimpleSQLiteQuery("SELECT * FROM $tableName WHERE ${idName} = $id")
 
         return getDataModelFlowByQuery(query)
     }
