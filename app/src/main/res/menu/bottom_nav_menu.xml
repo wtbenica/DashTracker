@@ -6,7 +6,7 @@
         android:title="@string/title_daily" />
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_best_days"
         android:icon="@drawable/chart"
-        android:title="@string/title_dashboard" />
+        android:title="@string/title_daily_stats" />
 </menu>

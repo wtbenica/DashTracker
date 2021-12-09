@@ -26,8 +26,18 @@
                 android:layout_height="wrap_content"
                 android:text="@string/lbl_hourly"
                 android:textAlignment="center"
-                app:layout_constraintEnd_toStartOf="@id/act_main_lbl_this_week"
+                app:layout_constraintEnd_toStartOf="@id/act_main_lbl_last_week"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/act_main_lbl_last_week"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_last_week"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toStartOf="@id/act_main_lbl_this_week"
+                app:layout_constraintStart_toEndOf="@id/act_main_lbl_hourly"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -37,7 +47,7 @@
                 android:text="@string/lbl_this_week"
                 android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/act_main_lbl_hourly"
+                app:layout_constraintStart_toEndOf="@id/act_main_lbl_last_week"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -46,10 +56,21 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toStartOf="@id/act_main_this_week"
+                app:layout_constraintEnd_toStartOf="@id/act_main_last_week"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/act_main_lbl_hourly"
                 tools:text="$4.25/hr" />
+
+            <TextView
+                android:id="@+id/act_main_last_week"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toStartOf="@id/act_main_this_week"
+                app:layout_constraintStart_toEndOf="@id/act_main_hourly"
+                app:layout_constraintTop_toBottomOf="@id/act_main_lbl_last_week"
+                tools:text="$209.00" />
 
             <TextView
                 android:id="@+id/act_main_this_week"
@@ -58,7 +79,7 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/act_main_hourly"
+                app:layout_constraintStart_toEndOf="@id/act_main_last_week"
                 app:layout_constraintTop_toBottomOf="@id/act_main_lbl_this_week"
                 tools:text="$209.00" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -68,28 +89,31 @@
         android:id="@+id/nav_host_fragment_activity_main"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:defaultNavHost="true"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         app:navGraph="@navigation/mobile_navigation" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.wtb.dashTracker.views.FabMenu
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/desc_add_entry"
-        android:src="@drawable/add"
+        android:src="@drawable/anim_fab_expand"
+        app:hideOnScroll="true"
         app:layout_anchor="@id/nav_view"
         app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
-        app:tint="@color/white" />
+        app:tint="?attr/colorOnSecondary" />
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?android:attr/actionBarSize"
         android:layout_gravity="bottom"
+        app:fabAlignmentMode="end"
+        app:fabAnimationMode="slide"
         app:fabCradleMargin="4dp"
         app:fabCradleRoundedCornerRadius="10dp"
-        app:fabCradleVerticalOffset="4dp"
+        app:fabCradleVerticalOffset="0dp"
         app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -97,6 +121,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
+            android:paddingHorizontal="88dp"
             app:menu="@menu/bottom_nav_menu" />
     </com.google.android.material.bottomappbar.BottomAppBar>
 

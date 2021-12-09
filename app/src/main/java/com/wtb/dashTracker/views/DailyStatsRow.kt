@@ -9,6 +9,8 @@ import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DailyStatsRowBinding
 import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.*
 
 fun Context.getStringOrElse(@StringRes resId: Int, formatArg: Any?): String =
     formatArg?.let {
@@ -31,25 +33,32 @@ class DailyStatsRow @JvmOverloads constructor(
         binding = DailyStatsRowBinding.bind(v)
         day = stats!!.day!!
 
-        binding.dailyStatsRowDayOfWeek.text = day.name
+        binding.dailyStatsRowDayOfWeek.text =
+            day.getDisplayName(TextStyle.SHORT, Locale.US).uppercase()
 
         val amHourly = safeDiv(stats.amEarned, stats.amHours)
-        binding.dailyStatsRowAmHourly.text = context.getStringOrElse(R.string.currency_unit, amHourly)
+        binding.dailyStatsRowAmHourly.text =
+            context.getStringOrElse(R.string.currency_unit, amHourly)
 
         val pmHourly = safeDiv(stats.pmEarned, stats.pmHours)
-        binding.dailyStatsRowPmHourly.text = context.getStringOrElse(R.string.currency_unit, pmHourly)
+        binding.dailyStatsRowPmHourly.text =
+            context.getStringOrElse(R.string.currency_unit, pmHourly)
 
         val amAvgDel = safeDiv(stats.amEarned, stats.amDels)
-        binding.dailyStatsRowAmAvgDelivery.text = context.getStringOrElse(R.string.currency_unit, amAvgDel)
+        binding.dailyStatsRowAmAvgDel.text =
+            context.getStringOrElse(R.string.currency_unit, amAvgDel)
 
         val pmAvgDel = safeDiv(stats.pmEarned, stats.pmDels)
-        binding.dailyStatsRowPmAvgDelivery.text = context.getStringOrElse(R.string.currency_unit, pmAvgDel)
+        binding.dailyStatsRowPmAvgDel.text =
+            context.getStringOrElse(R.string.currency_unit, pmAvgDel)
 
         val amDelsPerHr = safeDiv(stats.amDels, stats.amHours)
-        binding.dailyStatsRowAmDelsPerHour.text = context.getStringOrElse(R.string.float_fmt, amDelsPerHr)
+        binding.dailyStatsRowAmDph.text =
+            context.getStringOrElse(R.string.float_fmt, amDelsPerHr)
 
         val pmDelsPerHr = safeDiv(stats.pmDels, stats.pmHours)
-        binding.dailyStatsRowPmDelsPerHour.text = context.getStringOrElse(R.string.float_fmt, pmDelsPerHr)
+        binding.dailyStatsRowPmDph.text =
+            context.getStringOrElse(R.string.float_fmt, pmDelsPerHr)
     }
 
     fun addToGridLayout(grid: GridLayout, SKIP_ROWS: Int) {
@@ -66,19 +75,19 @@ class DailyStatsRow @JvmOverloads constructor(
         grid.addView(binding.dailyStatsRowAmHourly.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS)
         })
-        grid.addView(binding.dailyStatsRowAmAvgDelivery.apply {
+        grid.addView(binding.dailyStatsRowAmAvgDel.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS)
         })
-        grid.addView(binding.dailyStatsRowAmDelsPerHour.apply {
+        grid.addView(binding.dailyStatsRowAmDph.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS)
         })
         grid.addView(binding.dailyStatsRowPmHourly.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
-        grid.addView(binding.dailyStatsRowPmAvgDelivery.apply {
+        grid.addView(binding.dailyStatsRowPmAvgDel.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
-        grid.addView(binding.dailyStatsRowPmDelsPerHour.apply {
+        grid.addView(binding.dailyStatsRowPmDph.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
     }

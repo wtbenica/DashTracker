@@ -7,8 +7,10 @@
         <item name="colorOnPrimary">#F7070707</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">#009977</item>
-        <item name="colorSecondaryVariant">#00CCAA</item>
+        <item name="colorSecondaryVariant">@color/freddy_iz_fine</item>
         <item name="colorOnSecondary">#F7FFFFFF</item>
+
+        <item name="colorAccent">@color/malamute</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->

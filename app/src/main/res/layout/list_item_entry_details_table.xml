@@ -19,7 +19,7 @@
             android:layout_span="2"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Hours" />
+            android:text="@string/header_hours" />
 
         <TextView
             android:id="@+id/list_item_entry_hours"
@@ -38,7 +38,7 @@
             style="@style/RowHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mileage" />
+            android:text="@string/header_mileage" />
 
         <TextView
             android:id="@+id/list_item_entry_mileage_range"
@@ -69,7 +69,7 @@
             android:layout_column="0"
             android:layout_span="2"
             android:layout_weight="1"
-            android:text="Num Deliveries" />
+            android:text="@string/header_num_deliveries" />
 
         <TextView
             android:id="@+id/list_item_entry_num_deliveries"
@@ -91,7 +91,7 @@
             android:layout_column="0"
             android:layout_span="2"
             android:layout_weight="1"
-            android:text="$/hr" />
+            android:text="@string/units_pay_rate" />
 
         <TextView
             android:id="@+id/list_item_entry_hourly"
@@ -113,7 +113,7 @@
             android:layout_column="0"
             android:layout_span="2"
             android:layout_weight="1"
-            android:text="$/del" />
+            android:text="@string/units_avg_delivery" />
 
         <TextView
             android:id="@+id/list_item_entry_avd_del"
@@ -135,7 +135,7 @@
             android:layout_column="0"
             android:layout_span="2"
             android:layout_weight="1"
-            android:text="Dels/hr" />
+            android:text="@string/units_del_per_hr" />
 
         <TextView
             android:id="@+id/list_item_entry_hourly_dels"

@@ -23,7 +23,7 @@
         android:layout_marginBottom="4dp"
         android:background="#FFFF88"
         android:padding="2dp"
-        android:text="AM"
+        android:text="@string/ante_meridiem"
         android:textAlignment="center" />
 
     <TextView
@@ -38,7 +38,7 @@
         tools:text="$19.38/hr" />
 
     <TextView
-        android:id="@+id/daily_stats_row_am_avg_delivery"
+        android:id="@+id/daily_stats_row_am_avg_del"
         android:layout_row="0"
         android:layout_column="3"
         android:layout_columnWeight="1"
@@ -49,7 +49,7 @@
         tools:text="$9.21/del" />
 
     <TextView
-        android:id="@+id/daily_stats_row_am_dels_per_hour"
+        android:id="@+id/daily_stats_row_am_dph"
         android:layout_row="0"
         android:layout_column="4"
         android:layout_columnWeight="1"
@@ -66,7 +66,7 @@
         android:layout_marginBottom="16dp"
         android:background="#AADDFF"
         android:padding="2dp"
-        android:text="PM"
+        android:text="@string/post_meridiem"
         android:textAlignment="center" />
 
     <TextView
@@ -81,7 +81,7 @@
         tools:text="$19.38/hr" />
 
     <TextView
-        android:id="@+id/daily_stats_row_pm_avg_delivery"
+        android:id="@+id/daily_stats_row_pm_avg_del"
         android:layout_row="1"
         android:layout_column="3"
         android:layout_columnWeight="1"
@@ -92,7 +92,7 @@
         tools:text="$9.21/del" />
 
     <TextView
-        android:id="@+id/daily_stats_row_pm_dels_per_hour"
+        android:id="@+id/daily_stats_row_pm_dph"
         android:layout_row="1"
         android:layout_column="4"
         android:layout_columnWeight="1"

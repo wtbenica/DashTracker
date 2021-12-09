@@ -1,12 +1,11 @@
 package com.wtb.dashTracker
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.MainActivity.Companion.APP
-import com.wtb.dashTracker.database.DashEntry
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -17,7 +16,7 @@ import java.time.LocalDate
 @ExperimentalCoroutinesApi
 class MainActivityViewModel : ViewModel() {
 
-    val repository = Repository.get()
+    private val repository = Repository.get()
 
     private val _hourly = MutableLiveData(0f)
     val hourly: LiveData<Float>
@@ -27,18 +26,24 @@ class MainActivityViewModel : ViewModel() {
     val thisWeek: LiveData<Float>
         get() = _thisWeek
 
+    private val _lastWeek = MutableLiveData(0f)
+    val lastWeek: LiveData<Float>
+        get() = _lastWeek
+
     init {
         viewModelScope.launch {
             repository.allEntries.collectLatest {
-                Log.d(TAG, "NUM_ENTRIES_A: ${it.size}")
                 _hourly.value = getHourly(it)
             }
         }
 
         viewModelScope.launch {
+            repository.allEntries.collectLatest { entries ->
+                _thisWeek.value = getTotalPay(entries.filter { it.isXWeeksAgo(0) })
+                _lastWeek.value = getTotalPay(entries.filter { it.isXWeeksAgo(1) })
+            }
             val (startDate, endDate) = getThisWeeksDateRange()
             repository.getEntriesByDate(startDate, endDate).collectLatest {
-                Log.d(TAG, "NUM_ENTRIES_B: ${it.size}")
                 _thisWeek.value = getTotalPay(it)
             }
         }
@@ -59,13 +64,12 @@ class MainActivityViewModel : ViewModel() {
 
         fun getTotalPay(entries: List<DashEntry>): Float {
             val map = entries.map { (it.pay ?: 0f) + (it.otherPay ?: 0f) }
-            val reduce: Float = if (map.isNotEmpty())
-                map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) } ?: 0f
-            else 0f
 
-            Log.d(TAG, "ENTRIES: ${entries.size} $map $reduce")
-
-            return reduce
+            return if (map.isNotEmpty()) {
+                map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) }
+            } else {
+                0f
+            }
         }
 
         fun getHourly(entries: List<DashEntry>): Float {
