@@ -68,9 +68,7 @@ class DetailDialog(
     ): View? {
         val view = inflater.inflate(R.layout.dialog_frag_entry, container, false)
 
-        dialog?.window?.let {
-            it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         dateTextView = view.findViewById<TextView>(R.id.frag_entry_date).apply {
             setOnClickListener {

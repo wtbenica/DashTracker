@@ -47,7 +47,7 @@ class FabMenu @JvmOverloads constructor(
         initFabMenu()
     }
 
-    fun hideFabMenu() {
+    private fun hideFabMenu() {
         fadeOutFab()
         saturateFab()
         runFabIconCollapseAnimation()

@@ -43,9 +43,7 @@ class BasePayAdjustDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        dialog?.window?.let {
-            it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         binding = DialogFragAdjustBinding.inflate(layoutInflater)
 

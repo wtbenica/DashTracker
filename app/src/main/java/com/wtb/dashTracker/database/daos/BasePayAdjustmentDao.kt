@@ -15,7 +15,7 @@ abstract class BasePayAdjustmentDao : BaseDao<BasePayAdjustment>("basepayadjustm
     abstract fun getAll(): Flow<List<BasePayAdjustment>>
 
     @RawQuery(observedEntities = [BasePayAdjustment::class])
-    override abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<BasePayAdjustment?>
+    abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<BasePayAdjustment?>
 
     companion object {
         private const val SQL_GET_ALL = "SELECT * FROM BasePayAdjustment"

@@ -10,8 +10,6 @@ import com.wtb.dashTracker.database.models.DataModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
-private const val TAG = APP + "BaseDao"
-
 @ExperimentalCoroutinesApi
 @Dao
 abstract class BaseDao<T : DataModel>(private val tableName: String, private val idName: String = tableName + "Id") {
@@ -54,6 +52,8 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
     }
 
     companion object {
+        private const val TAG = APP + "BaseDao"
+
         internal fun <T : DataModel> modelsToSqlIdString(models: Collection<T>) =
             idsToSqlIdString(models.map { it.id })
 

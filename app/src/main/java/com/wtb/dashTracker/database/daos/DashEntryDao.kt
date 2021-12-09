@@ -4,7 +4,6 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
-import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.DashEntry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +17,7 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     abstract fun getAll(): Flow<List<DashEntry>>
 
     @RawQuery(observedEntities = [DashEntry::class])
-    override abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<DashEntry?>
+    abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<DashEntry?>
 
     @Query("SELECT * FROM DashEntry WHERE date >= :startDate AND date <= :endDate ORDER BY date desc, startTime desc")
     abstract fun getEntriesByDate(

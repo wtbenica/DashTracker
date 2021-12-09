@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.wtb.dashTracker.ui.insight_daily_stats
 
 import android.os.Bundle
@@ -37,7 +39,7 @@ class DailyStatsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DailyStatsFragmentBinding.inflate(inflater)
         return binding.root
     }
