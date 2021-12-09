@@ -157,10 +157,10 @@ class FabMenu @JvmOverloads constructor(
     fun interceptTouchEvent(ev: MotionEvent?) {
         if (fabMenuIsVisible && ev?.action == MotionEvent.ACTION_DOWN) {
             val views: List<View> = fabMenuViews + this
-            val menuIsTouchTarget = false
+            var menuIsTouchTarget = false
             for (v: View in views) {
                 if (v.isTouchTarget(ev)) {
-                    menuIsTouchTarget
+                    menuIsTouchTarget = true
                 }
             }
 
