@@ -43,4 +43,6 @@
     <string name="dialog_adjust_title">Base Pay Adjustment</string>
     <string name="content_desc_edit_button">Edit this entry</string>
     <string name="content_desc_remove">Remove this entry</string>
+    <string name="week_number">Week %d</string>
+    <string name="date_range">%s - %s</string>
 </resources>

@@ -16,10 +16,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_base_pay_adjustment.BasePayAdjustDialog
-import com.wtb.dashTracker.ui.dialog_edit_details.DetailDialog
+import com.wtb.dashTracker.ui.dialog_adjust.AdjustDialog
+import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment
-import com.wtb.dashTracker.views.FabMenuButton
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
@@ -29,8 +28,6 @@ import java.time.LocalDate
 class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCallback {
 
     private lateinit var binding: ActivityMainBinding
-    private var fabMenuIsVisible = false
-    private var fabMenuItems = mutableListOf<FabMenuButton>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,11 +89,11 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
             FabMenuButtonInfo(
                 "Add Entry",
                 R.drawable.calendar
-            ) { DetailDialog().show(fm, "new_entry_dialog") },
+            ) { EntryDialog().show(fm, "new_entry_dialog") },
             FabMenuButtonInfo(
                 "Add Adjustment",
                 R.drawable.alert
-            ) { BasePayAdjustDialog().show(fm, "new_adjust_dialog") },
+            ) { AdjustDialog().show(fm, "new_adjust_dialog") },
             FabMenuButtonInfo(
                 "Add Payout",
                 R.drawable.chart

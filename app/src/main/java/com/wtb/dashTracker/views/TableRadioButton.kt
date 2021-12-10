@@ -62,16 +62,28 @@ class TableRadioButton(context: Context, attrs: AttributeSet) :
 
 class TableRadioGroup(val name: String = Random().nextInt().toString()) : OnClickListener {
     private val buttons = mutableListOf<TableRadioButton>()
+    var callback: TableRadioGroupCallback? = null
 
     override fun onClick(v: View?) {
+        var selectedButton: TableRadioButton? = null
         buttons.forEach {
-            it.isChecked = it == v
+            (it == v).let { b ->
+                it.isChecked = b
+                if (b) selectedButton = it
+            }
         }
+        selectedButton?.let { callback?.onCheckChanged(it) }
     }
 
     fun addView(button: TableRadioButton) {
         Log.d(TAG, "Adding a button to $name")
         buttons.add(button)
+    }
+
+    fun setChecked(button: TableRadioButton) = onClick(button)
+
+    interface TableRadioGroupCallback {
+        fun onCheckChanged(button: TableRadioButton)
     }
 
     companion object {

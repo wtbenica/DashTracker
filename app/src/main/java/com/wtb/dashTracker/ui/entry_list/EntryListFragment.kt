@@ -23,12 +23,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.ui.dialog_edit_details.DetailDialog
+import com.wtb.dashTracker.extensions.dtfDate
+import com.wtb.dashTracker.extensions.dtfDateThisYear
+import com.wtb.dashTracker.extensions.dtfTime
+import com.wtb.dashTracker.extensions.formatted
+import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @ExperimentalCoroutinesApi
 class EntryListFragment : Fragment() {
@@ -97,9 +100,6 @@ class EntryListFragment : Fragment() {
 
     fun toVisibleIfTrueElseGone(boolean: Boolean) = if (boolean) VISIBLE else GONE
 
-    fun getDtf(date: LocalDate) =
-        if (date.year == LocalDate.now().year) dtfDateThisYear else dtfDate
-
     fun getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?) =
         if (args.map { it != null }.reduce { acc, b -> acc && b }) getString(
             resId,
@@ -153,7 +153,7 @@ class EntryListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_entry_btn_edit).apply {
                 setOnClickListener {
-                    DetailDialog(this@EntryHolder.entry).show(
+                    EntryDialog(this@EntryHolder.entry).show(
                         parentFragmentManager,
                         "edit_details"
                     )
@@ -191,7 +191,7 @@ class EntryListFragment : Fragment() {
                     Color.parseColor("#EEEEEE")
             bg.setBackgroundColor(color)
 
-            dateTextView.text = this.entry.date.let { it.format(getDtf(it)) }.uppercase()
+            dateTextView.text = this.entry.date.formatted.uppercase()
 
             payTextView.text = getStringOrElse(R.string.currency_unit, "$-", this.entry.totalEarned)
 
@@ -241,10 +241,6 @@ class EntryListFragment : Fragment() {
         private const val TAG = APP + "MainFragment"
 
         fun newInstance() = EntryListFragment()
-
-        val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd, yyyy")
-        val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd")
-        val dtfTime: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
             override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =

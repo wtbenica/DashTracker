@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.ui.extensions
+package com.wtb.dashTracker.extensions
 
 import android.view.MotionEvent
 import android.view.View

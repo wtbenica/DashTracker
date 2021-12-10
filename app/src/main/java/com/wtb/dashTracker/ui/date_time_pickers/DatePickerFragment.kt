@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.DatePicker
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfDate
+import com.wtb.dashTracker.extensions.dtfDate
 import java.time.LocalDate
 import java.util.*
 

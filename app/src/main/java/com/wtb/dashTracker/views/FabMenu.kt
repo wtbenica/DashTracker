@@ -18,7 +18,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.extensions.isTouchTarget
+import com.wtb.dashTracker.extensions.isTouchTarget
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi

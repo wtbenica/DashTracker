@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.ui.dialog_edit_details
+package com.wtb.dashTracker.ui.dialog_entry
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -17,15 +17,12 @@ import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfDate
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfTime
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
-import com.wtb.dashTracker.ui.extensions.toDateOrNull
-import com.wtb.dashTracker.ui.extensions.toFloatOrNull
-import com.wtb.dashTracker.ui.extensions.toIntOrNull
-import com.wtb.dashTracker.ui.extensions.toTimeOrNull
 import com.wtb.dashTracker.views.FullWidthDialogFragment
+import com.wtb.dashTracker.views.TableRadioButton
+import com.wtb.dashTracker.views.TableRadioGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,16 +31,18 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class DetailDialog(
+class EntryDialog(
     private var entry: DashEntry? = null
-) : FullWidthDialogFragment() {
+) : FullWidthDialogFragment(), TableRadioGroup.TableRadioGroupCallback {
 
-    private val viewModel: DetailViewModel by viewModels()
+    private val viewModel: EntryViewModel by viewModels()
 
     private lateinit var dateTextView: TextView
     private lateinit var startTimeTextView: TextView
     private lateinit var endTimeTextView: TextView
     private lateinit var endsNextDayCheckBox: CheckBox
+    private lateinit var startEndOdoTableRadioButton: TableRadioButton
+    private lateinit var tripOdoTableRadioButton: TableRadioButton
     private lateinit var startMileageEditText: EditText
     private lateinit var endMileageEditText: EditText
     private lateinit var totalMileageEditText: EditText
@@ -88,13 +87,17 @@ class DetailDialog(
             }
         }
 
-        endsNextDayCheckBox =
-            view.findViewById<CheckBox>(R.id.frag_entry_check_ends_next_day).apply {
-                setOnCheckedChangeListener { buttonView, isChecked ->
+        endsNextDayCheckBox = view.findViewById<CheckBox>(R.id.frag_entry_check_ends_next_day)
 
-                }
+        view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer)
+
+        tripOdoTableRadioButton = view.findViewById(R.id.frag_entry_trb_trip_odometer)
+        startEndOdoTableRadioButton =
+            view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer).apply {
+                val radioGroup = this.getRadioGroup()
+                radioGroup?.callback = this@EntryDialog
             }
-
+        tripOdoTableRadioButton = view.findViewById(R.id.frag_entry_trb_trip_odometer)
         startMileageEditText = view.findViewById(R.id.frag_entry_start_mileage)
         endMileageEditText = view.findViewById(R.id.frag_entry_end_mileage)
         totalMileageEditText = view.findViewById(R.id.frag_entry_total_mileage)
@@ -192,6 +195,9 @@ class DetailDialog(
         otherPayEditText.text.clear()
         cashTipsEditText.text.clear()
         numDeliveriesEditText.text.clear()
+        startEndOdoTableRadioButton.let {
+            it.getRadioGroup()?.setChecked(it)
+        }
     }
 
     private fun isEmpty() =
@@ -209,5 +215,29 @@ class DetailDialog(
 
         private const val TAG = APP + "DetailFragment"
         private const val ARG_ENTRY_ID = "arg_entry_id"
+    }
+
+    override fun onCheckChanged(button: TableRadioButton) {
+        if (button == startEndOdoTableRadioButton) {
+            disableEntryView(totalMileageEditText)
+            enableEntryView(startMileageEditText, endMileageEditText)
+        } else if (button == tripOdoTableRadioButton) {
+            disableEntryView(startMileageEditText, endMileageEditText)
+            enableEntryView(totalMileageEditText)
+        }
+    }
+
+    private fun enableEntryView(vararg view: TextView) {
+        view.forEach {
+            it.setBackgroundResource(R.drawable.background_edit_text)
+            it.isEnabled = true
+        }
+    }
+
+    private fun disableEntryView(vararg view: TextView) {
+        view.forEach {
+            it.setBackgroundResource(R.drawable.disabled_bg)
+            it.isEnabled = false
+        }
     }
 }
