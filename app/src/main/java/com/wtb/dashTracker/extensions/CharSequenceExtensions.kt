@@ -1,6 +1,5 @@
 package com.wtb.dashTracker.extensions
 
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.LocalTime
@@ -27,5 +26,5 @@ fun CharSequence.toDateOrNull() =
         null
     }
 
-fun CharSequence.toFloatOrNull(): Float? = if (this.isNotEmpty()) this.toString().toFloatOrNull() else null
-fun CharSequence.toIntOrNull(): Int? = if (this.isNotEmpty()) this.toString().toIntOrNull() else null
+fun CharSequence.toFloatOrNull(): Float? = if (this.isNotEmpty()) this.toString().toFloat() else null
+fun CharSequence.toIntOrNull(): Int? = if (this.isNotEmpty()) this.toString().toInt() else null

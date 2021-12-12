@@ -1,12 +1,15 @@
 package com.wtb.dashTracker.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 abstract class BaseViewModel<T: DataModel>: ViewModel() {
@@ -17,7 +20,9 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
         get() = _id
 
     internal val item: StateFlow<T?> = id.flatMapLatest { id ->
-        getItemFlowById(id)
+        Log.d(TAG, "This is id: $id")
+        val itemFlow = getItemFlowById(id)
+        itemFlow
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -40,4 +45,7 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
         _id.value = AUTO_ID
     }
 
+    companion object {
+        private const val TAG = APP + "BaseViewModel"
+    }
 }

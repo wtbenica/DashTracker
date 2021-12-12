@@ -27,7 +27,7 @@
     <string name="title_daily">Daily</string>
     <string name="float_fmt">%.2f</string>
     <string name="lbl_last_week">Last Week</string>
-    <string name="title_daily_stats">Best Days</string>
+    <string name="title_insights">Insights</string>
     <string name="units_pay_rate">$/hr</string>
     <string name="units_avg_delivery">$/del</string>
     <string name="units_del_per_hr">Del/hr</string>
@@ -40,9 +40,13 @@
     <string name="content_desc_fab_menu_closed">Open add item menu</string>
     <string name="frag_entry_title">Dash Entry</string>
     <string name="label_amount">Amount</string>
-    <string name="dialog_adjust_title">Base Pay Adjustment</string>
+    <string name="dialog_weekly_title">Weekly</string>
     <string name="content_desc_edit_button">Edit this entry</string>
     <string name="content_desc_remove">Remove this entry</string>
     <string name="week_number">Week %d</string>
     <string name="date_range">%s - %s</string>
+    <string name="lbl_total_earned">Total Earned</string>
+    <string name="title_weekly_list">Weekly</string>
+    <string name="header_regular_pay">Regular Pay</string>
+    <string name="header_base_pay_adjustment">Base Pay Adjustment</string>
 </resources>

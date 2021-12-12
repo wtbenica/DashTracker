@@ -27,7 +27,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/dialog_adjust_title"
+                    android:text="@string/dialog_weekly_title"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="?attr/colorOnSecondary"
                     android:textStyle="bold" />
@@ -80,6 +80,26 @@
                         android:layout_width="0dp"
                         android:autofillHints="false"
                         android:inputType="numberDecimal"
+                        tools:text="$11.23" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="@style/HeaderBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:labelFor="@id/frag_adjust_amount"
+                        android:text="@string/lbl_total_earned" />
+
+                    <TextView
+                        android:id="@+id/frag_adjust_total"
+                        style="@style/FragmentEntryTextView"
+                        android:layout_width="0dp"
+                        android:autofillHints="false"
                         tools:text="$11.23" />
                 </TableRow>
             </TableLayout>

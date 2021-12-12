@@ -1,6 +1,7 @@
 package com.wtb.dashTracker.database.daos
 
 import androidx.room.*
+import androidx.room.OnConflictStrategy.IGNORE
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.MainActivity.Companion.APP
@@ -29,10 +30,10 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
         return getDataModelFlowByQuery(query)
     }
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = IGNORE)
     abstract fun insert(obj: T): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = IGNORE)
     abstract fun insert(obj: List<T>): List<Long>
 
     @Update

@@ -23,15 +23,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.extensions.dtfDate
-import com.wtb.dashTracker.extensions.dtfDateThisYear
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.formatted
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 class EntryListFragment : Fragment() {
@@ -97,8 +95,6 @@ class EntryListFragment : Fragment() {
             EntryHolder(parent)
 
     }
-
-    fun toVisibleIfTrueElseGone(boolean: Boolean) = if (boolean) VISIBLE else GONE
 
     fun getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?) =
         if (args.map { it != null }.reduce { acc, b -> acc && b }) getString(
@@ -195,7 +191,7 @@ class EntryListFragment : Fragment() {
 
             payTextView.text = getStringOrElse(R.string.currency_unit, "$-", this.entry.totalEarned)
 
-            incompleteAlertImageView.visibility = toVisibleIfTrueElseGone(this.entry.isIncomplete)
+            incompleteAlertImageView.visibility = Companion.toVisibleIfTrueElseGone(this.entry.isIncomplete)
 
             hoursTextView.text =
                 getStringOrElse(
@@ -240,7 +236,7 @@ class EntryListFragment : Fragment() {
     companion object {
         private const val TAG = APP + "MainFragment"
 
-        fun newInstance() = EntryListFragment()
+        fun newInstance() = WeeklyListFragment()
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
             override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =
@@ -253,5 +249,7 @@ class EntryListFragment : Fragment() {
             ): Boolean =
                 oldItem == newItem
         }
+
+        fun toVisibleIfTrueElseGone(boolean: Boolean) = if (boolean) VISIBLE else GONE
     }
 }

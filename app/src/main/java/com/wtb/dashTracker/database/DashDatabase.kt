@@ -1,27 +1,30 @@
 package com.wtb.dashTracker.database
 
 import android.content.Context
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.wtb.dashTracker.database.daos.BasePayAdjustmentDao
 import com.wtb.dashTracker.database.daos.DashEntryDao
-import com.wtb.dashTracker.database.models.BasePayAdjustment
+import com.wtb.dashTracker.database.daos.WeeklyDao
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Weekly
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.Executors
 
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 3,
-    entities = [DashEntry::class, BasePayAdjustment::class],
+    version = 5,
+    entities = [DashEntry::class, Weekly::class],
     exportSchema = true,
 )
 @TypeConverters(DbTypeConverters::class)
 abstract class DashDatabase : RoomDatabase() {
     abstract fun entryDao(): DashEntryDao
-    abstract fun basePayAdjustDao(): BasePayAdjustmentDao
+    abstract fun weeklyDao(): WeeklyDao
 
     companion object {
         @Volatile
@@ -54,6 +57,36 @@ abstract class DashDatabase : RoomDatabase() {
                                         adjustmentId INTEGER PRIMARY KEY NOT NULL,
                                         date TEXT NOT NULL,
                                         amount REAL NOT NULL,
+                                        lastUpdated TEXT NOT NULL
+                                    )"""
+                            )
+                        }
+                    },
+                    object : Migration(3, 4) {
+                        override fun migrate(database: SupportSQLiteDatabase) {
+                            database.execSQL(
+                                """DROP TABLE BasePayAdjustment
+                                """
+                            )
+                            database.execSQL(
+                                """CREATE TABLE Weekly(
+                                        weeklyId INTEGER PRIMARY KEY NOT NULL,
+                                        date TEXT NOT NULL,
+                                        basePayAdjustment REAL,
+                                        weekNumber INTEGER NOT NULL,
+                                        lastUpdated TEXT NOT NULL
+                                    )"""
+                            )
+                        }
+                    },
+                    object : Migration(4, 5) {
+                        override fun migrate(database: SupportSQLiteDatabase) {
+                            database.execSQL("""DROP TABLE WEEKLY""")
+                            database.execSQL(
+                                """CREATE TABLE Weekly(
+                                        date TEXT NOT NULL PRIMARY KEY NOT NULL,
+                                        basePayAdjustment REAL,
+                                        weekNumber INTEGER NOT NULL,
                                         lastUpdated TEXT NOT NULL
                                     )"""
                             )

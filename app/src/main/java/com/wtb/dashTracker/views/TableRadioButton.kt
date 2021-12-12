@@ -22,17 +22,18 @@ class TableRadioButton(context: Context, attrs: AttributeSet) :
             val attributeName = attrs.getAttributeName(i)
             if (attributeName.equals("group")) {
                 val groupName: String = attrs.getAttributeValue(i)
-                var group = groups[groupName]
+                var group: TableRadioGroup? = groups[groupName]
 
                 if (group != null) {
                     group.addView(this)
                 } else {
                     group = TableRadioGroup()
                     group.addView(this)
-                    mGroup = groupName
 
                     groups[groupName] = group
                 }
+
+                mGroup = groupName
                 setOnClickListener(group)
                 return
             }

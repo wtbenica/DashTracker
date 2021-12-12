@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingEnd="0dp"
+    android:paddingBottom="16dp"
+    tools:showIn="@layout/list_item_weekly">
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/header_hours" />
+
+        <TextView
+            android:id="@+id/list_item_weekly_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="2.93h" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/header_regular_pay" />
+
+        <TextView
+            android:id="@+id/list_item_weekly_regular_pay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="$172.25" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:text="@string/header_base_pay_adjustment" />
+
+        <TextView
+            android:id="@+id/list_item_weekly_adjust"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="$13.58" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:text="@string/units_pay_rate" />
+
+        <TextView
+            android:id="@+id/list_item_weekly_hourly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="$22.41/hr" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:text="@string/units_avg_delivery" />
+
+        <TextView
+            android:id="@+id/list_item_weekly_avg_del"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="$9.25/del" />
+    </TableRow>
+
+    <TableRow
+        style="@style/DetailsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/RowHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_span="2"
+            android:layout_weight="1"
+            android:text="@string/units_del_per_hr" />
+
+        <TextView
+            android:id="@+id/list_item_weekly_hourly_dels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            tools:text="2.38" />
+    </TableRow>
+</TableLayout>
+    

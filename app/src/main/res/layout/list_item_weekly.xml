@@ -4,22 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="6dp"
-    android:animateLayoutChanges="true"
     android:minHeight="48dp"
     app:cardCornerRadius="18dp"
     app:cardElevation="2dp">
 
     <LinearLayout
-        android:id="@+id/list_item_entry_wrapper"
+        android:id="@+id/list_item_weekly_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/list_item_entry_bg"
+            android:id="@+id/list_item_weekly_bg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
@@ -31,33 +31,35 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/list_item_entry_date"
+                android:id="@+id/list_item_weekly_dates"
                 style="@style/HeaderBar"
                 android:layout_width="wrap_content"
+                android:layout_gravity="start|bottom"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="4dp"
                 android:textAlignment="textStart"
-                tools:text="NOV 21, 2021" />
+                tools:text="MON, NOV 21 - SUN, NOV 28" />
 
             <TextView
-                android:id="@+id/list_item_entry_hours_range"
                 style="@style/SecondaryField"
+                android:id="@+id/list_item_weekly_week_num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
                 android:layout_marginEnd="4dp"
                 android:textAlignment="center"
-                tools:text="7:03p - 9:56p" />
+                tools:text="Week 48" />
 
             <ImageView
                 android:id="@+id/list_item_incomplete_alert"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/content_desc_incomplete_entry"
-                android:src="@drawable/alert"
+                android:src="@drawable/circle"
                 app:tint="?attr/colorPrimary" />
 
             <TextView
-                android:id="@+id/list_item_entry_total"
+                android:id="@+id/list_item_weekly_total"
                 style="@style/HeaderBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -65,44 +67,44 @@
                 android:layout_weight=".5"
                 android:gravity="end"
                 android:textAlignment="textEnd"
-                tools:text="$81.25" />
+                tools:text="$181.25" />
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/list_item_entry_details"
+            android:id="@+id/list_item_weekly_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
             tools:visibility="visible">
 
             <include
-                layout="@layout/list_item_entry_details_table"
+                layout="@layout/list_item_weekly_details_table"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/list_item_entry_btn_edit"
+                app:layout_constraintEnd_toStartOf="@id/list_item_weekly_btn_edit"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_entry_bg" />
+                app:layout_constraintTop_toBottomOf="@id/list_item_weekly_bg" />
 
             <ImageButton
-                android:id="@+id/list_item_entry_btn_delete"
+                android:id="@+id/list_item_weekly_btn_delete"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@android:color/transparent"
                 android:contentDescription="@string/content_desc_remove"
+                android:background="@android:color/transparent"
                 android:src="@drawable/delete"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_entry_btn_edit"
+                app:layout_constraintTop_toBottomOf="@id/list_item_weekly_btn_edit"
                 app:tint="?attr/colorPrimary" />
 
             <ImageButton
-                android:id="@+id/list_item_entry_btn_edit"
+                android:id="@+id/list_item_weekly_btn_edit"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@android:color/transparent"
-                android:contentDescription="@string/content_desc_edit_button"
                 android:src="@drawable/edit"
+                android:contentDescription="@string/content_desc_edit_button"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_entry_bg"
+                app:layout_constraintTop_toBottomOf="@id/list_item_weekly_bg"
                 app:tint="?attr/colorPrimary" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

@@ -2,6 +2,7 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.GridLayout
 import androidx.annotation.StringRes
@@ -36,7 +37,12 @@ class DailyStatsRow @JvmOverloads constructor(
         binding.dailyStatsRowDayOfWeek.text =
             day.getDisplayName(TextStyle.SHORT, Locale.US).uppercase()
 
-        val amHourly = safeDiv(stats.amEarned, stats.amHours)
+        val c = stats.amDels
+        val b = stats.amHours
+        val a = stats.amEarned
+        Log.d(TAG, "HOURLY: ${stats.day} ${stats.amHours} ${stats.amEarned} ${safeDiv(a, b)}")
+        Log.d(TAG, "PER DEL: ${stats.day} ${stats.amHours} ${stats.amDels} ${safeDiv(a, c)}")
+        val amHourly = safeDiv(a, b)
         binding.dailyStatsRowAmHourly.text =
             context.getStringOrElse(R.string.currency_unit, amHourly)
 

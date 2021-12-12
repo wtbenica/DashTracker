@@ -16,16 +16,17 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_adjust.AdjustDialog
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment
+import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
+import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
+import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCallback {
+class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
-                R.id.navigation_best_days,
+                R.id.navigation_insights,
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -93,7 +94,7 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
             FabMenuButtonInfo(
                 "Add Adjustment",
                 R.drawable.alert
-            ) { AdjustDialog().show(fm, "new_adjust_dialog") },
+            ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
             FabMenuButtonInfo(
                 "Add Payout",
                 R.drawable.chart

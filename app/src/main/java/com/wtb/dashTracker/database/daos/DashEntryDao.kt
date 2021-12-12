@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.DashEntry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,6 +20,9 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @RawQuery(observedEntities = [DashEntry::class])
     abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<DashEntry?>
 
+    @RawQuery(observedEntities = [DashEntry::class])
+    abstract fun getEntriesByQuery(query: SupportSQLiteQuery): Flow<List<DashEntry>>
+
     @Query("SELECT * FROM DashEntry WHERE date >= :startDate AND date <= :endDate ORDER BY date desc, startTime desc")
     abstract fun getEntriesByDate(
         startDate: LocalDate = LocalDate.MIN,
@@ -33,6 +37,25 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
         startDate: LocalDate = LocalDate.MIN,
         endDate: LocalDate = LocalDate.MAX
     ): PagingSource<Int, DashEntry>
+
+    fun getEntriesByWeek(weekEnd: LocalDate): Flow<List<DashEntry>> {
+        val query =
+            """SELECT *
+            FROM DashEntry 
+            WHERE date <= ?
+            AND date >= ?
+            """
+
+        return getEntriesByQuery(
+            SimpleSQLiteQuery(
+                query,
+                arrayOf(
+                    weekEnd.toString(),
+                    weekEnd.minusDays(6).toString()
+                )
+            )
+        )
+    }
 
     companion object {
         private const val SQL_GET_ALL =

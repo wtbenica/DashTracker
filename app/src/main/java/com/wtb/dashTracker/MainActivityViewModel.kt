@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
+import kotlin.reflect.KProperty1
 
 @ExperimentalCoroutinesApi
 class MainActivityViewModel : ViewModel() {
@@ -62,13 +63,40 @@ class MainActivityViewModel : ViewModel() {
             return Pair(startDate, endDate)
         }
 
-        fun getTotalPay(entries: List<DashEntry>): Float {
-            val map = entries.map { (it.pay ?: 0f) + (it.otherPay ?: 0f) }
+        fun getTotalPay(entries: List<DashEntry>): Float? {
+            val map: List<Float?> = entries.map { entry ->
+                entry.pay?.let { pay -> pay + (entry.otherPay ?: 0f) + (entry.cashTips ?: 0f) } }
 
-            return if (map.isNotEmpty()) {
+            return if (map.isNotEmpty() && !map.contains(null)) {
                 map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) }
             } else {
-                0f
+                null
+            }
+        }
+
+        fun getTotalByField(
+            entries: List<DashEntry>,
+            kProperty1: KProperty1<DashEntry, Int?>
+        ): Int? {
+            val map = entries.map { kProperty1(it) }
+
+            return if (map.isNotEmpty() && !map.contains(null)) {
+                map.reduce { acc: Int?, fl: Int? -> (acc ?: 0) + (fl ?: 0) }
+            } else {
+                null
+            }
+        }
+
+        fun getTotalByField(
+            entries: List<DashEntry>,
+            kProperty1: KProperty1<DashEntry, Float?>
+        ): Float? {
+            val map = entries.map { kProperty1(it) }
+
+            return if (map.isNotEmpty() && !map.contains(null)) {
+                map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) }
+            } else {
+                null
             }
         }
 
