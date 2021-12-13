@@ -32,7 +32,7 @@ data class DashEntry(
         get() = entryId
 
     val isIncomplete
-        get() = startTime == null || endTime == null || pay == null
+        get() = startTime == null || endTime == null || pay == null || mileage == null || numDeliveries == null
 
     val startDateTime
         get() = startTime?.let { st -> LocalDateTime.of(date, st) }

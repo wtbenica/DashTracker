@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CardView.ListItem">
+        <item name="android:backgroundTint">?attr/colorPrimaryFaded</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">@dimen/margin_default</item>
+        <item name="android:layout_marginVertical">@dimen/margin_half</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="cardCornerRadius">@dimen/margin_default</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <style name="ListItemHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:animateLayoutChanges">true</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/margin_default</item>
+    </style>
+
+    <style name="ListItemHeaderTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ListItemHeaderTextView.Title">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="ListItemHeaderTextView.Subtitle">
+
+    </style>
+
+    <style name="ListItemHeaderIncompleteIndicator">
+        <item name="android:layout_width">@dimen/margin_half</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:src">@drawable/circle</item>
+        <item name="tint">?attr/colorPrimaryDark</item>
+    </style>
+</resources>

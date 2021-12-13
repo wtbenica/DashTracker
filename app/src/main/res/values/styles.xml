@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <style name="Widget.Design.AppBarLayout.Yojimbo">
+        <item name="background">?attr/colorPrimaryDark</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <style name="CardView.Yojimbo">
+        <item name="cardCornerRadius">@dimen/margin_default</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+</resources>

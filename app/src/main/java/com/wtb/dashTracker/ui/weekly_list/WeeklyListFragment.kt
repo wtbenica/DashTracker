@@ -27,6 +27,7 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.extensions.formatted
+import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.truncate
 import com.wtb.dashTracker.extensions.weekOfYear
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
@@ -100,12 +101,6 @@ class WeeklyListFragment : Fragment() {
             WeeklyHolder(parent)
 
     }
-
-    fun getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?) =
-        if (args.map { it != null }.reduce { acc, b -> acc && b }) getString(
-            resId,
-            *args
-        ) else ifNull
 
     interface WeeklyListFragmentCallback
 
@@ -182,8 +177,6 @@ class WeeklyListFragment : Fragment() {
                 "-",
                 weeklyDeliveries?.let { dels -> weeklyTotal?.let { total -> total / dels } })
         }
-
-        private val bg: LinearLayout = itemView.findViewById(R.id.list_item_weekly_wrapper)
 
         private val datesTextView: TextView = itemView.findViewById(R.id.list_item_weekly_dates)
 

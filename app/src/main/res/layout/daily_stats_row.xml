@@ -21,7 +21,7 @@
         android:layout_column="1"
         android:layout_columnWeight="1"
         android:layout_marginBottom="4dp"
-        android:background="#FFFF88"
+        android:background="?attr/colorDayHeader"
         android:padding="2dp"
         android:text="@string/ante_meridiem"
         android:textAlignment="center" />
@@ -32,7 +32,7 @@
         android:layout_column="2"
         android:layout_columnWeight="1"
         android:layout_marginBottom="4dp"
-        android:background="#FFFFAA"
+        android:background="?attr/colorDayValue"
         android:padding="2dp"
         android:textAlignment="textEnd"
         tools:text="$19.38/hr" />
@@ -43,7 +43,7 @@
         android:layout_column="3"
         android:layout_columnWeight="1"
         android:layout_marginBottom="4dp"
-        android:background="#FFFFAA"
+        android:background="?attr/colorDayValue"
         android:padding="2dp"
         android:textAlignment="textEnd"
         tools:text="$9.21/del" />
@@ -53,7 +53,7 @@
         android:layout_row="0"
         android:layout_column="4"
         android:layout_columnWeight="1"
-        android:background="#FFFFAA"
+        android:background="?attr/colorDayValue"
         android:padding="2dp"
         android:textAlignment="textEnd"
         tools:text="2.36 dels/hr" />
@@ -64,7 +64,7 @@
         android:layout_column="1"
         android:layout_columnWeight="1"
         android:layout_marginBottom="16dp"
-        android:background="#AADDFF"
+        android:background="?attr/colorNightHeader"
         android:padding="2dp"
         android:text="@string/post_meridiem"
         android:textAlignment="center" />
@@ -75,7 +75,7 @@
         android:layout_column="2"
         android:layout_columnWeight="1"
         android:layout_marginBottom="16dp"
-        android:background="#DDEEFF"
+        android:background="?attr/colorNightValue"
         android:padding="2dp"
         android:textAlignment="textEnd"
         tools:text="$19.38/hr" />
@@ -86,7 +86,7 @@
         android:layout_column="3"
         android:layout_columnWeight="1"
         android:layout_marginBottom="16dp"
-        android:background="#DDEEFF"
+        android:background="?attr/colorNightValue"
         android:padding="2dp"
         android:textAlignment="textEnd"
         tools:text="$9.21/del" />
@@ -97,7 +97,7 @@
         android:layout_column="4"
         android:layout_columnWeight="1"
         android:layout_marginBottom="16dp"
-        android:background="#DDEEFF"
+        android:background="?attr/colorNightValue"
         android:padding="2dp"
         android:textAlignment="textEnd"
         tools:text="2.36 dels/hr" />

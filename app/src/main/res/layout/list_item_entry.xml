@@ -2,14 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginHorizontal="12dp"
-    android:layout_marginVertical="6dp"
-    android:animateLayoutChanges="true"
-    android:minHeight="48dp"
-    app:cardCornerRadius="18dp"
-    app:cardElevation="2dp">
+    style="@style/CardView.ListItem">
 
     <LinearLayout
         android:id="@+id/list_item_entry_wrapper"
@@ -20,50 +13,33 @@
 
         <LinearLayout
             android:id="@+id/list_item_entry_bg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:gravity="bottom"
-            android:orientation="horizontal"
-            android:padding="12dp"
+            style="@style/ListItemHeader"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/list_item_entry_date"
-                style="@style/HeaderBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="4dp"
-                android:textAlignment="textStart"
+                style="@style/ListItemHeaderTextView.Title"
+                android:layout_marginEnd="@dimen/margin_half"
                 tools:text="NOV 21, 2021" />
 
             <TextView
                 android:id="@+id/list_item_entry_hours_range"
-                style="@style/SecondaryField"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:textAlignment="center"
+                style="@style/ListItemHeaderTextView.Subtitle"
+                android:layout_marginEnd="@dimen/margin_half"
                 tools:text="7:03p - 9:56p" />
 
             <ImageView
                 android:id="@+id/list_item_incomplete_alert"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/content_desc_incomplete_entry"
-                android:src="@drawable/alert"
-                app:tint="?attr/colorPrimary" />
+                style="@style/ListItemHeaderIncompleteIndicator"
+                android:contentDescription="@string/content_desc_incomplete_entry" />
 
             <TextView
                 android:id="@+id/list_item_entry_total"
-                style="@style/HeaderBar"
+                style="@style/ListItemHeaderTextView.Title"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="0dp"
-                android:layout_weight=".5"
-                android:gravity="end"
+                android:layout_weight="1"
                 android:textAlignment="textEnd"
                 tools:text="$81.25" />
         </LinearLayout>
@@ -85,25 +61,23 @@
 
             <ImageButton
                 android:id="@+id/list_item_entry_btn_delete"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/min_touch_target"
+                android:layout_height="@dimen/min_touch_target"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/content_desc_remove"
                 android:src="@drawable/delete"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_entry_btn_edit"
-                app:tint="?attr/colorPrimary" />
+                app:layout_constraintBottom_toTopOf="@id/list_item_entry_btn_edit"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <ImageButton
                 android:id="@+id/list_item_entry_btn_edit"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/min_touch_target"
+                android:layout_height="@dimen/min_touch_target"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/content_desc_edit_button"
                 android:src="@drawable/edit"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_entry_bg"
-                app:tint="?attr/colorPrimary" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

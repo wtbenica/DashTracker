@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="colorPrimaryFaded" format="reference" />
+    <attr name="colorDayHeader" format="reference" />
+    <attr name="colorDayValue" format="reference" />
+    <attr name="colorNightHeader" format="reference" />
+    <attr name="colorNightValue" format="reference" />
+    <attr name="colorDisabledFaded" format="reference" />
+    <attr name="colorDisabled" format="reference" />
+
     <declare-styleable name="TableRadioButton">
         <attr name="group" format="string" />
     </declare-styleable>

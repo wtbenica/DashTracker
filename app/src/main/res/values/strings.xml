@@ -49,4 +49,5 @@
     <string name="title_weekly_list">Weekly</string>
     <string name="header_regular_pay">Regular Pay</string>
     <string name="header_base_pay_adjustment">Base Pay Adjustment</string>
+    <string name="header_pay_and_cc_tips">Pay and CC Tips</string>
 </resources>

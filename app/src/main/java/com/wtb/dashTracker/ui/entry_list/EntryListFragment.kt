@@ -20,11 +20,14 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.formatted
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -96,16 +99,10 @@ class EntryListFragment : Fragment() {
 
     }
 
-    fun getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?) =
-        if (args.map { it != null }.reduce { acc, b -> acc && b }) getString(
-            resId,
-            *args
-        ) else ifNull
-
     interface EntryListFragmentCallback
 
     inner class EntryHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.list_item_entry, parent, false)
+        LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
     ), View.OnClickListener {
         private lateinit var entry: DashEntry
 
@@ -113,8 +110,15 @@ class EntryListFragment : Fragment() {
 
         private val dateTextView: TextView = itemView.findViewById(R.id.list_item_entry_date)
 
-        private val payTextView: TextView = itemView.findViewById(R.id.list_item_entry_total)
+        private val totalPayTextView: TextView = itemView.findViewById(R.id.list_item_entry_total)
 
+        private val payPlusCCsTextView: TextView =
+            itemView.findViewById(R.id.list_item_pay_and_cc_tips)
+        
+        private val cashTipsTextView: TextView = itemView.findViewById(R.id.list_item_cash_tips)
+        
+        private val otherPayTextView: TextView = itemView.findViewById(R.id.list_item_other_pay)
+        
         private val incompleteAlertImageView: ImageView =
             itemView.findViewById(R.id.list_item_incomplete_alert)
 
@@ -182,16 +186,27 @@ class EntryListFragment : Fragment() {
 
             val color =
                 if (this.entry.isXWeeksAgo(0))
-                    Color.WHITE
+                    MainActivity.getAttrColor(requireContext(), R.attr.colorPrimaryFaded)
                 else
-                    Color.parseColor("#EEEEEE")
+                    MainActivity.getAttrColor(requireContext(), R.attr.colorDisabledFaded)
             bg.setBackgroundColor(color)
 
             dateTextView.text = this.entry.date.formatted.uppercase()
 
-            payTextView.text = getStringOrElse(R.string.currency_unit, "$-", this.entry.totalEarned)
+            totalPayTextView.text =
+                getCurrencyString(this.entry.totalEarned)
 
-            incompleteAlertImageView.visibility = Companion.toVisibleIfTrueElseGone(this.entry.isIncomplete)
+            payPlusCCsTextView.text =
+                getCurrencyString(this.entry.pay)
+            
+            cashTipsTextView.text =
+                getCurrencyString(this.entry.cashTips)
+            
+            otherPayTextView.text =
+                getCurrencyString(this.entry.otherPay)
+            
+            incompleteAlertImageView.visibility =
+                Companion.toVisibleIfTrueElseGone(this.entry.isIncomplete)
 
             hoursTextView.text =
                 getStringOrElse(
