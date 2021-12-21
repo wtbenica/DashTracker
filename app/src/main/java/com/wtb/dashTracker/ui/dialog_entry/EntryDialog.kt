@@ -1,22 +1,28 @@
 package com.wtb.dashTracker.ui.dialog_entry
 
+import android.animation.ValueAnimator
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
@@ -143,6 +149,7 @@ class EntryDialog(
         )
 
         viewModel.upsert(e)
+        viewModel.insert(Weekly(e.date.endOfWeek))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -219,24 +226,28 @@ class EntryDialog(
 
     override fun onCheckChanged(button: TableRadioButton) {
         if (button == startEndOdoTableRadioButton) {
-            disableEntryView(totalMileageEditText)
-            enableEntryView(startMileageEditText, endMileageEditText)
+            disableEntryView(requireContext(), totalMileageEditText)
+            enableEntryView(requireContext(), startMileageEditText, endMileageEditText)
         } else if (button == tripOdoTableRadioButton) {
-            disableEntryView(startMileageEditText, endMileageEditText)
-            enableEntryView(totalMileageEditText)
+            disableEntryView(requireContext(), startMileageEditText, endMileageEditText)
+            enableEntryView(requireContext(), totalMileageEditText)
         }
     }
 
-    private fun enableEntryView(vararg view: TextView) {
+    private fun enableEntryView(context: Context, vararg view: TextView) {
         view.forEach {
-            it.setBackgroundResource(R.drawable.background_edit_text)
+            val td = ContextCompat.getDrawable(context, R.drawable.enable_textview) as TransitionDrawable
+            it.background = td
+            td.startTransition(500)
             it.isEnabled = true
         }
     }
 
-    private fun disableEntryView(vararg view: TextView) {
+    private fun disableEntryView(context: Context, vararg view: TextView) {
         view.forEach {
-            it.setBackgroundResource(R.drawable.disabled_bg)
+            val td = ContextCompat.getDrawable(context, R.drawable.disable_textview) as TransitionDrawable
+            it.background = td
+            td.startTransition(500)
             it.isEnabled = false
         }
     }

@@ -1,7 +1,6 @@
 package com.wtb.dashTracker.ui.entry_list
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,14 +18,12 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.extensions.dtfTime
-import com.wtb.dashTracker.extensions.formatted
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.databinding.ListItemEntryBinding
+import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -105,31 +101,20 @@ class EntryListFragment : Fragment() {
         LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
     ), View.OnClickListener {
         private lateinit var entry: DashEntry
+        private val binding: ListItemEntryBinding = ListItemEntryBinding.bind(itemView)
+        private val detailsBinding: ListItemEntryDetailsTableBinding =
+            ListItemEntryDetailsTableBinding.bind(itemView)
 
-        private val bg: LinearLayout = itemView.findViewById(R.id.list_item_entry_wrapper)
-
-        private val dateTextView: TextView = itemView.findViewById(R.id.list_item_entry_date)
-
-        private val totalPayTextView: TextView = itemView.findViewById(R.id.list_item_entry_total)
-
-        private val payPlusCCsTextView: TextView =
-            itemView.findViewById(R.id.list_item_pay_and_cc_tips)
-        
+        private val dateTextView: TextView = itemView.findViewById(R.id.list_item_title)
+        private val hoursTextView: TextView = itemView.findViewById(R.id.list_item_subtitle)
+        private val totalPayTextView: TextView = itemView.findViewById(R.id.list_item_title_2)
+        private val payPlusCCsTextView: TextView = itemView.findViewById(R.id.list_item_regular_pay)
         private val cashTipsTextView: TextView = itemView.findViewById(R.id.list_item_cash_tips)
-        
         private val otherPayTextView: TextView = itemView.findViewById(R.id.list_item_other_pay)
-        
         private val incompleteAlertImageView: ImageView =
-            itemView.findViewById(R.id.list_item_incomplete_alert)
-
-        private val detailsTable: ConstraintLayout =
-            itemView.findViewById(R.id.list_item_entry_details)
-
-        private val hoursTextView: TextView =
-            itemView.findViewById(R.id.list_item_entry_hours_range)
-
+            itemView.findViewById(R.id.list_item_alert)
+        private val detailsTable: ConstraintLayout = itemView.findViewById(R.id.list_item_details)
         private val totalHoursTextView: TextView = itemView.findViewById(R.id.list_item_entry_hours)
-
         private val mileageTextView: TextView =
             itemView.findViewById(R.id.list_item_entry_mileage_range)
 
@@ -151,7 +136,7 @@ class EntryListFragment : Fragment() {
         init {
             itemView.setOnClickListener(this)
 
-            itemView.findViewById<ImageButton>(R.id.list_item_entry_btn_edit).apply {
+            itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
                 setOnClickListener {
                     EntryDialog(this@EntryHolder.entry).show(
                         parentFragmentManager,
@@ -160,7 +145,7 @@ class EntryListFragment : Fragment() {
                 }
             }
 
-            itemView.findViewById<ImageButton>(R.id.list_item_entry_btn_delete).apply {
+            itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
                 setOnClickListener {
                     viewModel.delete(this@EntryHolder.entry)
                 }
@@ -170,6 +155,7 @@ class EntryListFragment : Fragment() {
         override fun onClick(v: View?) {
             val currentVisibility = detailsTable.visibility
             detailsTable.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
+            binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.list_item_background else R.drawable.list_item_expanded_background)
             bindingAdapter?.notifyItemChanged(bindingAdapterPosition, detailsTable.visibility)
         }
 
@@ -184,12 +170,7 @@ class EntryListFragment : Fragment() {
                 ) it[0] else null
             } ?: GONE) as Int
 
-            val color =
-                if (this.entry.isXWeeksAgo(0))
-                    MainActivity.getAttrColor(requireContext(), R.attr.colorPrimaryFaded)
-                else
-                    MainActivity.getAttrColor(requireContext(), R.attr.colorDisabledFaded)
-            bg.setBackgroundColor(color)
+            binding.listItemWrapper.setBackgroundResource(if (detailsTableVisibility == VISIBLE) R.drawable.list_item_expanded_background else R.drawable.list_item_background)
 
             dateTextView.text = this.entry.date.formatted.uppercase()
 
@@ -198,13 +179,13 @@ class EntryListFragment : Fragment() {
 
             payPlusCCsTextView.text =
                 getCurrencyString(this.entry.pay)
-            
+
             cashTipsTextView.text =
                 getCurrencyString(this.entry.cashTips)
-            
+
             otherPayTextView.text =
                 getCurrencyString(this.entry.otherPay)
-            
+
             incompleteAlertImageView.visibility =
                 Companion.toVisibleIfTrueElseGone(this.entry.isIncomplete)
 
@@ -217,9 +198,9 @@ class EntryListFragment : Fragment() {
                         dtfTime
                     )
                 )
+            detailsBinding.listItemAlertHours.setVisibleIfTrue(this.entry.startTime == null || this.entry.endTime == null)
 
-            totalHoursTextView.text =
-                getStringOrElse(R.string.format_hours, "-", this.entry.totalHours)
+            totalHoursTextView.text = this.entry.totalHours?.truncate(2) ?: "-"
 
             mileageTextView.text =
                 getStringOrElse(
@@ -230,19 +211,17 @@ class EntryListFragment : Fragment() {
                 )
 
             totalMileageTextView.text = "${this.entry.mileage ?: "-"}"
+            detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.entry.mileage == null)
 
-            numDeliveriesTextView.text = this.entry.numDeliveries?.toString() ?: "-"
+            numDeliveriesTextView.text = "${this.entry.numDeliveries ?: "-"}"
+            detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.entry.numDeliveries == null)
 
-            hourlyTextView.text = getStringOrElse(R.string.hourly_rate, "-", this.entry.hourly)
+            hourlyTextView.text = getStringOrElse(R.string.currency_unit, "-", this.entry.hourly)
 
             avgDeliveryTextView.text =
-                getStringOrElse(R.string.avg_delivery, "-", this.entry.avgDelivery)
+                getStringOrElse(R.string.currency_unit, "-", this.entry.avgDelivery)
 
-            hourlyDeliveriesTextView.text =
-                getStringOrElse(
-                    R.string.dels_per_hour,
-                    "-",
-                    this.entry.totalHours?.let { this.entry.hourlyDeliveries })
+            hourlyDeliveriesTextView.text = this.entry.hourlyDeliveries?.truncate(2) ?: "-"
 
             detailsTable.visibility = detailsTableVisibility
         }

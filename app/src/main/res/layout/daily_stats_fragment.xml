@@ -4,40 +4,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="@dimen/margin_default"
     tools:context=".ui.insight_daily_stats.DailyStatsFragment">
 
     <GridLayout
         android:id="@+id/daily_stats_fragment_table"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/daily_stats_fragment_label_hourly"
             android:layout_row="0"
             android:layout_column="2"
             android:layout_columnWeight="1"
+            android:paddingHorizontal="@dimen/margin_default"
             android:text="@string/units_pay_rate"
-            android:textAlignment="textEnd"
-            android:textStyle="bold" />
+            android:textAlignment="textEnd" />
 
         <TextView
             android:id="@+id/daily_stats_fragment_label_avg_del"
             android:layout_row="0"
             android:layout_column="3"
             android:layout_columnWeight="1"
+            android:paddingHorizontal="@dimen/margin_default"
             android:text="@string/units_avg_delivery"
-            android:textAlignment="textEnd"
-            android:textStyle="bold" />
+            android:textAlignment="textEnd" />
 
         <TextView
             android:id="@+id/daily_stats_fragment_label_dph"
             android:layout_row="0"
             android:layout_column="4"
             android:layout_columnWeight="1"
+            android:paddingHorizontal="@dimen/margin_default"
             android:text="@string/units_del_per_hr"
-            android:textAlignment="textEnd"
-            android:textStyle="bold" />
+            android:textAlignment="textEnd" />
+
+        <TextView
+            android:id="@+id/daily_stats_fragment_label_num_shifts"
+            android:layout_row="0"
+            android:layout_column="5"
+            android:layout_columnWeight="1"
+            android:paddingHorizontal="@dimen/margin_default"
+            android:text="@string/label_shifts"
+            android:textAlignment="textEnd" />
     </GridLayout>
 </LinearLayout>

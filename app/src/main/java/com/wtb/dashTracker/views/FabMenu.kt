@@ -33,6 +33,7 @@ class FabMenu @JvmOverloads constructor(
     private var parentLayout: CoordinatorLayout? = null
 
     init {
+        setBackgroundColor(MainActivity.getColorFab(context))
         setOnClickListener {
             if (fabMenuIsVisible)
                 hideFabMenu()
@@ -41,25 +42,57 @@ class FabMenu @JvmOverloads constructor(
         }
     }
 
-    fun initialize(menuItems: List<FabMenuButtonInfo>, parent: CoordinatorLayout) {
-        fabMenuItems = menuItems
-        parentLayout = parent
-        initFabMenu()
-    }
-
     private fun hideFabMenu() {
-        fadeOutFab()
+        fadeOut()
         saturateFab()
         runFabIconCollapseAnimation()
         fabMenuIsVisible = false
     }
 
     private fun showFabMenu() {
-        fadeInFabMenu()
+        fadeIn()
         desaturateFab()
         runFabIconExpandAnimation()
 
         fabMenuIsVisible = true
+    }
+
+    private fun fadeIn() {
+        fabMenuViews.forEachIndexed { index, item ->
+            item.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(ANIM_DELAY * index)
+                .setDuration(ANIM_LENGTH)
+                .setInterpolator(OvershootInterpolator())
+                .withStartAction { item.visibility = VISIBLE }
+        }
+    }
+
+    private fun fadeOut() {
+        val dimension = resources.getDimension(R.dimen.fab_menu_offset)
+        fabMenuViews.forEachIndexed { index, item ->
+            item.animate()
+                .alpha(0f)
+                .translationY(dimension)
+                .setStartDelay(ANIM_DELAY * (fabMenuViews.size - index - 1))
+                .setDuration(ANIM_LENGTH)
+                .withEndAction { item.visibility = GONE }
+        }
+    }
+
+    private fun saturateFab() {
+        @ColorInt val toColor = MainActivity.getColorFab(context)
+        @ColorInt val fromColor = MainActivity.getColorFabDisabled(context)
+
+        animateFabColor(fromColor, toColor)
+    }
+
+    private fun desaturateFab() {
+        @ColorInt val fromColor = MainActivity.getColorFab(context)
+        @ColorInt val toColor = MainActivity.getColorFabDisabled(context)
+
+        animateFabColor(fromColor, toColor)
     }
 
     private fun runFabIconCollapseAnimation() {
@@ -78,13 +111,6 @@ class FabMenu @JvmOverloads constructor(
         }
     }
 
-    private fun saturateFab() {
-        @ColorInt val accent = MainActivity.getColorAccent(context)
-        @ColorInt val gray = context.getColor(R.color.shadow)
-
-        animateFabColor(gray, accent)
-    }
-
     private fun animateFabColor(fromColor: Int, toColor: Int) {
         ValueAnimator.ofObject(ArgbEvaluator(), fromColor, toColor).apply {
             duration = ANIM_LENGTH
@@ -93,37 +119,6 @@ class FabMenu @JvmOverloads constructor(
                 backgroundTintList = ColorStateList.valueOf(i)
             }
             start()
-        }
-    }
-
-    private fun desaturateFab() {
-        @ColorInt val accent = MainActivity.getColorAccent(context)
-        @ColorInt val gray = context.getColor(R.color.shadow)
-
-        animateFabColor(accent, gray)
-    }
-
-    private fun fadeInFabMenu() {
-        fabMenuViews.forEachIndexed { index, item ->
-            item.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setStartDelay(ANIM_DELAY * index)
-                .setDuration(ANIM_LENGTH)
-                .setInterpolator(OvershootInterpolator())
-                .withStartAction { item.visibility = VISIBLE }
-        }
-    }
-
-    private fun fadeOutFab() {
-        val dimension = resources.getDimension(R.dimen.fab_menu_offset)
-        fabMenuViews.forEachIndexed { index, item ->
-            item.animate()
-                .alpha(0f)
-                .translationY(dimension)
-                .setStartDelay(ANIM_DELAY * (fabMenuViews.size - index - 1))
-                .setDuration(ANIM_LENGTH)
-                .withEndAction { item.visibility = GONE }
         }
     }
 
@@ -152,6 +147,12 @@ class FabMenu @JvmOverloads constructor(
         for (item in fabMenuViews) {
             item.visibility = GONE
         }
+    }
+
+    fun initialize(menuItems: List<FabMenuButtonInfo>, parent: CoordinatorLayout) {
+        fabMenuItems = menuItems
+        parentLayout = parent
+        initFabMenu()
     }
 
     fun interceptTouchEvent(ev: MotionEvent?) {

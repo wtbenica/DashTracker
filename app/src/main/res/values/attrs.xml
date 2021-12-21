@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="colorPrimaryFaded" format="reference" />
+    <attr name="colorSecondaryFaded" format="reference" />
+    <attr name="colorSecondaryDark" format="reference" />
     <attr name="colorDayHeader" format="reference" />
     <attr name="colorDayValue" format="reference" />
     <attr name="colorNightHeader" format="reference" />
     <attr name="colorNightValue" format="reference" />
     <attr name="colorDisabledFaded" format="reference" />
     <attr name="colorDisabled" format="reference" />
+    <attr name="colorListItem" format="reference" />
+    <attr name="colorBottomNavEnabled" format="reference|color" />
+    <attr name="colorBottomNavDisabled" format="reference|color" />
+    <attr name="colorUi" format="reference" />
+    <attr name="colorToolbar" format="reference" />
+    <attr name="colorListItemAccent" format="reference" />
+    <attr name="colorListItemBg" format="reference" />
+    <attr name="colorFab" format="reference|color" />
+    <attr name="colorFabDisabled" format="reference|color" />
+    <attr name="colorFabIcon" format="reference|color" />
+    <attr name="colorListBackground" format="reference" />
+    <attr name="colorOnPrimaryVariant" format="reference|color" />
 
     <declare-styleable name="TableRadioButton">
         <attr name="group" format="string" />

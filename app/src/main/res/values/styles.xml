@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Widget.Design.AppBarLayout.Yojimbo">
-        <item name="background">?attr/colorPrimaryDark</item>
-        <item name="android:elevation">0dp</item>
+    <style name="CardView.Tracker">
+        <item name="cardCornerRadius">@dimen/margin_default</item>
+        <item name="cardElevation">1dp</item>
     </style>
 
-    <style name="CardView.Yojimbo">
-        <item name="cardCornerRadius">@dimen/margin_default</item>
-        <item name="cardElevation">0dp</item>
+    <style name="TextAppearance.AppCompat.Title.Tracker">
+        <item name="android:fontFamily">@font/oswald</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primary_textcolor</item>
+    </style>
+
+    <style name="Abt" parent="Widget.AppCompat.Light.ActionBar">
+        <item name="titleTextStyle">@style/TextAppearance.AppCompat.Title.Tracker</item>
+        <item name="background">?attr/colorUi</item>
     </style>
 </resources>

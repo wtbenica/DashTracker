@@ -21,6 +21,7 @@ import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.views.FabMenuButtonInfo
+import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -46,15 +47,15 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         val viewModel: MainActivityViewModel by viewModels()
 
         viewModel.hourly.observe(this) {
-            binding.actMainHourly.text = getString(R.string.currency_unit, it)
+            binding.actMainHourly.setText(getStringOrElse(R.string.currency_unit, it))
         }
 
         viewModel.thisWeek.observe(this) {
-            binding.actMainThisWeek.text = getString(R.string.currency_unit, it)
+            binding.actMainThisWeek.setText(getStringOrElse(R.string.currency_unit, it))
         }
 
         viewModel.lastWeek.observe(this) {
-            binding.actMainLastWeek.text = getString(R.string.currency_unit, it)
+            binding.actMainLastWeek.setText(getStringOrElse(R.string.currency_unit, it))
         }
     }
 
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
+                R.id.navigation_weekly,
                 R.id.navigation_insights,
             )
         )
@@ -100,6 +102,12 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                 R.drawable.chart
             ) { }
         )
+
+        @ColorInt
+        fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)
+
+        @ColorInt
+        fun getColorFabDisabled(context: Context) = getAttrColor(context, R.attr.colorFabDisabled)
 
         @ColorInt
         fun getColorAccent(context: Context) = getAttrColor(context, R.attr.colorAccent)

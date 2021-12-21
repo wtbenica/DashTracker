@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">DashTracker</string>
 
-    <string name="currency_unit">$%5.2f</string>
+    <string name="currency_unit">$%.2f</string>
     <string name="lbl_date">Date</string>
     <string name="lbl_start_time">Start Time</string>
     <string name="lbl_start_mileage">Start Mileage</string>
@@ -9,7 +9,7 @@
     <string name="lbl_ends_on_following_day">Ends the next day</string>
     <string name="lbl_end_mileage">End Mileage</string>
     <string name="lbl_total_mileage">Total Mileage</string>
-    <string name="lbl_pay">Pay</string>
+    <string name="lbl_pay">Regular Pay</string>
     <string name="lbl_cash_tips">Cash Tips</string>
     <string name="label_num_deliveries">Num. Deliveries</string>
     <string name="desc_delete_entry">Delete entry</string>
@@ -21,7 +21,7 @@
     <string name="hourly_rate">$%.2f/hr</string>
     <string name="time_range" formatted="false">%1$s - %2$s</string>
     <string name="avg_delivery">$%.2f/del</string>
-    <string name="dels_per_hour">%.2f dels/hr</string>
+    <string name="dels">%.2f dels</string>
     <string name="format_hours">%.2fh</string>
     <string name="lbl_other_pay">Other Pay</string>
     <string name="title_daily">Daily</string>
@@ -30,13 +30,13 @@
     <string name="title_insights">Insights</string>
     <string name="units_pay_rate">$/hr</string>
     <string name="units_avg_delivery">$/del</string>
-    <string name="units_del_per_hr">Del/hr</string>
+    <string name="units_del_per_hr">del/hr</string>
     <string name="ante_meridiem">AM</string>
     <string name="post_meridiem">PM</string>
     <string name="content_desc_incomplete_entry">Incomplete entry</string>
     <string name="header_hours">Hours</string>
-    <string name="header_mileage">Mileage</string>
-    <string name="header_num_deliveries">Num Deliveries</string>
+    <string name="header_mileage">Miles</string>
+    <string name="header_num_deliveries">Deliveries</string>
     <string name="content_desc_fab_menu_closed">Open add item menu</string>
     <string name="frag_entry_title">Dash Entry</string>
     <string name="label_amount">Amount</string>
@@ -48,6 +48,7 @@
     <string name="lbl_total_earned">Total Earned</string>
     <string name="title_weekly_list">Weekly</string>
     <string name="header_regular_pay">Regular Pay</string>
-    <string name="header_base_pay_adjustment">Base Pay Adjustment</string>
+    <string name="lbl_adjust">Base Pay Adjustment</string>
     <string name="header_pay_and_cc_tips">Pay and CC Tips</string>
+    <string name="label_shifts">shifts</string>
 </resources>

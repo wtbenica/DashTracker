@@ -16,7 +16,7 @@ import java.util.*
 fun Context.getStringOrElse(@StringRes resId: Int, formatArg: Any?): String =
     formatArg?.let {
         getString(resId, it)
-    } ?: " - "
+    } ?: "-"
 
 
 class DailyStatsRow @JvmOverloads constructor(
@@ -54,6 +54,10 @@ class DailyStatsRow @JvmOverloads constructor(
         binding.dailyStatsRowAmAvgDel.text =
             context.getStringOrElse(R.string.currency_unit, amAvgDel)
 
+        binding.dailyStatsRowAmNumShifts.text =
+            stats.amNumShifts.let { if (it == 0) "-" else it.toString() }
+
+
         val pmAvgDel = safeDiv(stats.pmEarned, stats.pmDels)
         binding.dailyStatsRowPmAvgDel.text =
             context.getStringOrElse(R.string.currency_unit, pmAvgDel)
@@ -65,6 +69,9 @@ class DailyStatsRow @JvmOverloads constructor(
         val pmDelsPerHr = safeDiv(stats.pmDels, stats.pmHours)
         binding.dailyStatsRowPmDph.text =
             context.getStringOrElse(R.string.float_fmt, pmDelsPerHr)
+
+        binding.dailyStatsRowPmNumShifts.text =
+            stats.pmNumShifts.let { if (it == 0) "-" else it.toString() }
     }
 
     fun addToGridLayout(grid: GridLayout, SKIP_ROWS: Int) {
@@ -87,6 +94,9 @@ class DailyStatsRow @JvmOverloads constructor(
         grid.addView(binding.dailyStatsRowAmDph.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS)
         })
+        grid.addView(binding.dailyStatsRowAmNumShifts.apply {
+            setGridLayoutRow(day.toRow() + SKIP_ROWS)
+        })
         grid.addView(binding.dailyStatsRowPmHourly.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
@@ -94,6 +104,9 @@ class DailyStatsRow @JvmOverloads constructor(
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
         grid.addView(binding.dailyStatsRowPmDph.apply {
+            setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
+        })
+        grid.addView(binding.dailyStatsRowPmNumShifts.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
     }
@@ -130,4 +143,6 @@ data class DailyStats(
     val pmEarned: Float? = null,
     val amDels: Float? = null,
     val pmDels: Float? = null,
+    val amNumShifts: Int? = null,
+    val pmNumShifts: Int? = null
 )

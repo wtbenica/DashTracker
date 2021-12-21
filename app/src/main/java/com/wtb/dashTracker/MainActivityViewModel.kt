@@ -91,10 +91,10 @@ class MainActivityViewModel : ViewModel() {
             entries: List<DashEntry>,
             kProperty1: KProperty1<DashEntry, Float?>
         ): Float? {
-            val map = entries.map { kProperty1(it) }
+            val map = entries.mapNotNull(kProperty1)
 
-            return if (map.isNotEmpty() && !map.contains(null)) {
-                map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) }
+            return if (map.isNotEmpty()) {
+                map.reduce { acc: Float, fl: Float -> acc + fl }
             } else {
                 null
             }

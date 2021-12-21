@@ -10,5 +10,5 @@ fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args:
         *args
     ) else ifNull
 
-fun Fragment.getCurrencyString(value: Float?): String = getStringOrElse(R.string.currency_unit, "$-", value)
+fun Fragment.getCurrencyString(value: Float?): String = getStringOrElse(R.string.currency_unit, "-", value)
 

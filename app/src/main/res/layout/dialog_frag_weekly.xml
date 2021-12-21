@@ -13,96 +13,101 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_adjust_toolbar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:title="@string/dialog_weekly_title"
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Tracker" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dialog_weekly_title"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textColor="?attr/colorOnSecondary"
-                    android:textStyle="bold" />
-            </androidx.appcompat.widget.Toolbar>
-
-            <TableLayout
-                android:id="@+id/frag_adjust_table"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/frag_adjust_table_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:padding="8dp"
+                android:layout_margin="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">
 
-                <TableRow
+                <TableLayout
+                    android:id="@+id/frag_adjust_table"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:padding="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">
 
-                    <TextView
-                        style="@style/ListItemHeaderTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:labelFor="@id/frag_adjust_date"
-                        android:text="@string/lbl_date" />
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <Spinner
-                        android:id="@+id/frag_adjust_date"
-                        style="@style/FragmentEntryTextView"
-                        android:layout_width="0dp"
-                        tools:text="Mon Nov 23, 2021" />
-                </TableRow>
+                        <TextView
+                            style="@style/ListItemHeaderTextView.FragEntry"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:labelFor="@id/frag_adjust_date"
+                            android:text="@string/lbl_date" />
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                        <Spinner
+                            android:id="@+id/frag_adjust_date"
+                            style="@style/FragmentEntryTextView"
+                            android:layout_width="0dp"
+                            tools:text="Mon Nov 23, 2021" />
+                    </TableRow>
 
-                    <TextView
-                        style="@style/ListItemHeaderTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:labelFor="@id/frag_adjust_amount"
-                        android:text="@string/label_amount" />
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <EditText
-                        android:id="@+id/frag_adjust_amount"
-                        style="@style/FragmentEntryTextView"
-                        android:layout_width="0dp"
-                        android:autofillHints="false"
-                        android:inputType="numberDecimal"
-                        tools:text="$11.23" />
-                </TableRow>
+                        <TextView
+                            style="@style/ListItemHeaderTextView.FragEntry"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:labelFor="@id/frag_adjust_amount"
+                            android:text="@string/label_amount" />
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                        <EditText
+                            android:id="@+id/frag_adjust_amount"
+                            style="@style/FragmentEntryTextView"
+                            android:layout_width="0dp"
+                            android:autofillHints="false"
+                            android:inputType="numberDecimal"
+                            tools:text="$11.23" />
+                    </TableRow>
 
-                    <TextView
-                        style="@style/ListItemHeaderTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:labelFor="@id/frag_adjust_amount"
-                        android:text="@string/lbl_total_earned" />
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/frag_adjust_total"
-                        style="@style/FragmentEntryTextView"
-                        android:layout_width="0dp"
-                        android:autofillHints="false"
-                        tools:text="$11.23" />
-                </TableRow>
-            </TableLayout>
+                        <TextView
+                            style="@style/ListItemHeaderTextView.FragEntry"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:labelFor="@id/frag_adjust_amount"
+                            android:text="@string/lbl_total_earned" />
+
+                        <TextView
+                            android:id="@+id/frag_adjust_total"
+                            style="@style/FragmentEntryTextView"
+                            android:layout_width="0dp"
+                            android:autofillHints="false"
+                            android:background="@drawable/disabled_bg"
+                            android:enabled="false"
+                            tools:text="$11.23" />
+                    </TableRow>
+                </TableLayout>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -112,7 +117,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_adjust_table">
+                app:layout_constraintTop_toBottomOf="@id/frag_adjust_table_card">
 
                 <ImageButton
                     android:id="@+id/frag_adjust_btn_delete"
