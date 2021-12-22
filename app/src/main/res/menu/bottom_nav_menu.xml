@@ -11,6 +11,11 @@
         android:title="@string/title_weekly_list" />
 
     <item
+        android:id="@+id/navigation_yearly"
+        android:icon="@drawable/ante_meridiem"
+        android:title="Yearly" />
+
+    <item
         android:id="@+id/navigation_insights"
         android:icon="@drawable/insights"
         android:title="@string/title_insights" />

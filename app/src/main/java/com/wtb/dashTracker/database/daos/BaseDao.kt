@@ -50,6 +50,12 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
         }
     }
 
+    fun upsertAll(models: MutableList<T>) {
+        models.forEach {
+            upsert(it)
+        }
+    }
+
     companion object {
         private const val TAG = APP + "BaseDao"
 

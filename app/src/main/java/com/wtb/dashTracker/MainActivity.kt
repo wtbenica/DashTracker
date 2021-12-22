@@ -70,6 +70,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             setOf(
                 R.id.navigation_home,
                 R.id.navigation_weekly,
+                R.id.navigation_yearly,
                 R.id.navigation_insights,
             )
         )
@@ -97,10 +98,10 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                 "Add Adjustment",
                 R.drawable.alert
             ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
-            FabMenuButtonInfo(
-                "Add Payout",
-                R.drawable.chart
-            ) { }
+//            FabMenuButtonInfo(
+//                "Add Payout",
+//                R.drawable.chart
+//            ) { PayoutDialog().show(fm, "new_payout_dialog") }
         )
 
         @ColorInt

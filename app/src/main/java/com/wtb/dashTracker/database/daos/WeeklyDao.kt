@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.sqlite.db.SupportSQLiteQuery
+import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,7 @@ import java.time.LocalDate
 @Dao
 abstract class WeeklyDao : BaseDao<Weekly>("weekly", "date") {
     @Query(SQL_GET_ALL)
-    abstract fun getAll(): Flow<List<Weekly>>
+    abstract fun getAll(): Flow<List<CompleteWeekly>>
 
     @Query(SQL_GET_ALL)
     abstract fun getAllPagingSource(): PagingSource<Int, Weekly>

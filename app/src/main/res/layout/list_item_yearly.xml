@@ -11,32 +11,24 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:background="?attr/colorListItem"
-        android:orientation="vertical"
-        tools:background="?attr/colorPrimary">
+        tools:background="?attr/colorPrimary"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/list_item_header"
-            style="@style/ListItemHeader"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            style="@style/ListItemHeader">
 
             <TextView
                 android:id="@+id/list_item_title"
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_marginEnd="@dimen/margin_half"
-                tools:text="NOV 21, 2021" />
+                tools:text="2021" />
 
             <TextView
                 android:id="@+id/list_item_subtitle"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_marginEnd="@dimen/margin_half"
-                tools:text="7:03p - 9:56p" />
-
-            <ImageView
-                android:id="@+id/list_item_alert"
-                style="@style/ListItemHeaderIncompleteIndicator"
-                android:contentDescription="@string/content_desc_incomplete_entry" />
+                tools:text="" />
 
             <TextView
                 android:id="@+id/list_item_title_2"
@@ -44,7 +36,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textAlignment="textEnd"
-                tools:text="$81.25" />
+                tools:text="$2081.25" />
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -58,7 +50,7 @@
             tools:visibility="visible">
 
             <include
-                layout="@layout/list_item_weekly_details_table"
+                layout="@layout/list_item_yearly_details_table"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"

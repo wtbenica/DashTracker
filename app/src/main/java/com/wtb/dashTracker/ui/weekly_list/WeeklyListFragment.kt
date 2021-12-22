@@ -108,7 +108,6 @@ class WeeklyListFragment : Fragment() {
         private lateinit var weekly: Weekly
 
         init {
-
             binding = ListItemWeeklyBinding.bind(itemView)
             detailsBinding = ListItemWeeklyDetailsTableBinding.bind(itemView)
 
@@ -151,7 +150,7 @@ class WeeklyListFragment : Fragment() {
                 detailsBinding.listItemOtherPay.text = getCurrencyString(field)
             }
 
-        fun updateWeeklyTotal() {
+        private fun updateWeeklyTotal() {
             weeklyTotal = regularPay?.let { rp ->
                 rp + (cashTips ?: 0f) + (otherPay ?: 0f) + (weekly.basePayAdjustment ?: 0f)
             }

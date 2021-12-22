@@ -17,6 +17,12 @@
         tools:layout="@layout/fragment_entry_list" />
 
     <fragment
+        android:id="@+id/navigation_yearly"
+        android:name="com.wtb.dashTracker.ui.yearly_list.YearlyListFragment"
+        android:label="@string/title_yearly_list"
+        tools:layout="@layout/fragment_entry_list" />
+
+    <fragment
         android:id="@+id/navigation_insights"
         android:name="com.wtb.dashTracker.ui.insight_daily_stats.DailyStatsFragment"
         android:label="@string/title_insights"

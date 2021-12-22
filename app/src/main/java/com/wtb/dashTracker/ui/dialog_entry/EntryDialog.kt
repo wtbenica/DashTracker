@@ -23,6 +23,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
@@ -125,6 +126,11 @@ class EntryDialog(
             }
         }
 
+        DialogFragEntryBinding.bind(view).fragEntryBtnSave.setOnClickListener {
+            saveValues()
+            dismiss()
+        }
+
         updateUI()
 
         return view
@@ -145,7 +151,7 @@ class EntryDialog(
             pay = payEditText.text.toFloatOrNull(),
             otherPay = otherPayEditText.text.toFloatOrNull(),
             cashTips = cashTipsEditText.text.toFloatOrNull(),
-            numDeliveries = numDeliveriesEditText.text.toIntOrNull()
+            numDeliveries = numDeliveriesEditText.text.toIntOrNull(),
         )
 
         viewModel.upsert(e)

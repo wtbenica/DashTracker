@@ -1,17 +1,17 @@
 package com.wtb.dashTracker.repository
 
 import android.content.Context
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.DashDatabase
-import com.wtb.dashTracker.database.daos.WeeklyDao
 import com.wtb.dashTracker.database.daos.DashEntryDao
-import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.database.daos.WeeklyDao
+import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
+import com.wtb.dashTracker.database.models.Weekly
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -27,7 +27,6 @@ class Repository private constructor(context: Context) {
 
     private val weeklyDao: WeeklyDao
         get() = db.weeklyDao()
-
 
     /**
      * Dash Entry
@@ -57,7 +56,7 @@ class Repository private constructor(context: Context) {
     /**
      * Weekly
      */
-    val allWeeklies: Flow<List<Weekly>> = weeklyDao.getAll()
+    val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAll()
 
     val allWeekliesPaged: Flow<PagingData<Weekly>> = Pager(
         config = PagingConfig(

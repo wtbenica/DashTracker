@@ -15,11 +15,9 @@
     </style>
 
     <style name="FragmentEntryImageButton">
-        <item name="android:layout_marginEnd">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:layout_height">40dp</item>
-        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:layout_width">@dimen/min_touch_target</item>
         <item name="android:tint">?attr/colorOnPrimary</item>
     </style>
 

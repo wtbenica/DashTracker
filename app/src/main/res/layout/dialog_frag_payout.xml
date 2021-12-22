@@ -17,32 +17,32 @@
             android:background="?attr/colorPrimary">
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/frag_adjust_toolbar"
+                android:id="@+id/frag_payout_toolbar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:title="@string/dialog_weekly_title"
+                app:title="@string/dialog_payout_title"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Tracker" />
 
             <androidx.cardview.widget.CardView
                 style="@style/DialogContent"
-                android:id="@+id/frag_adjust_table_card"
+                android:id="@+id/frag_payout_table_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">
+                app:layout_constraintTop_toBottomOf="@id/frag_payout_toolbar">
 
                 <TableLayout
-                    android:id="@+id/frag_adjust_table"
+                    style="@style/DialogGrid"
+                    android:id="@+id/frag_payout_table"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/DialogGrid"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">
+                    app:layout_constraintTop_toBottomOf="@id/frag_payout_toolbar">
 
                     <TableRow
                         android:layout_width="match_parent"
@@ -53,11 +53,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:focusable="false"
-                            android:labelFor="@id/frag_adjust_date"
+                            android:labelFor="@id/frag_payout_date"
                             android:text="@string/lbl_date" />
 
                         <Spinner
-                            android:id="@+id/frag_adjust_date"
+                            android:id="@+id/frag_payout_date"
                             style="@style/FragmentEntryTextView"
                             android:layout_width="0dp"
                             tools:text="Mon Nov 23, 2021" />
@@ -72,37 +72,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:focusable="false"
-                            android:labelFor="@id/frag_adjust_amount"
+                            android:labelFor="@id/frag_payout_amount"
                             android:text="@string/label_amount" />
 
                         <EditText
-                            android:id="@+id/frag_adjust_amount"
+                            android:id="@+id/frag_payout_amount"
                             style="@style/FragmentEntryTextView"
                             android:layout_width="0dp"
                             android:autofillHints="false"
                             android:inputType="numberDecimal"
-                            tools:text="$11.23" />
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            style="@style/ListItemHeaderTextView.FragEntry"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:labelFor="@id/frag_adjust_amount"
-                            android:text="@string/lbl_total_earned" />
-
-                        <TextView
-                            android:id="@+id/frag_adjust_total"
-                            style="@style/FragmentEntryTextView"
-                            android:layout_width="0dp"
-                            android:autofillHints="false"
-                            android:background="@drawable/disabled_bg"
-                            android:enabled="false"
                             tools:text="$11.23" />
                     </TableRow>
                 </TableLayout>
@@ -116,22 +94,23 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_adjust_table_card">
+                app:layout_constraintTop_toBottomOf="@id/frag_payout_table_card">
 
                 <ImageButton
-                    android:id="@+id/frag_adjust_btn_delete"
+                    android:id="@+id/frag_payout_btn_delete"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/desc_delete_entry"
                     android:src="@drawable/delete" />
 
                 <ImageButton
-                    android:id="@+id/frag_adjust_btn_cancel"
+                    android:id="@+id/frag_payout_btn_cancel"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/desc_new_entry"
                     android:src="@drawable/reset" />
 
+
                 <ImageButton
-                    android:id="@+id/frag_adjust_btn_save"
+                    android:id="@+id/frag_payout_btn_save"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/desc_new_entry"
                     android:src="@drawable/save" />

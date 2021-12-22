@@ -51,4 +51,7 @@
     <string name="lbl_adjust">Base Pay Adjustment</string>
     <string name="header_pay_and_cc_tips">Pay and CC Tips</string>
     <string name="label_shifts">shifts</string>
+    <string name="lbl_reported_income">Reported Income</string>
+    <string name="dialog_payout_title">Payout</string>
+    <string name="title_yearly_list">Yearly</string>
 </resources>

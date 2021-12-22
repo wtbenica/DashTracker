@@ -1,8 +1,10 @@
 package com.wtb.dashTracker.database.models
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.extensions.endOfWeek
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration
 import java.time.LocalDate
@@ -13,7 +15,16 @@ import java.time.temporal.WeekFields
 const val AUTO_ID = 0
 
 @ExperimentalCoroutinesApi
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Weekly::class,
+            parentColumns = ["date"],
+            childColumns = ["week"],
+            onDelete = ForeignKey.SET_NULL
+        )
+    ]
+)
 data class DashEntry(
     @PrimaryKey(autoGenerate = true) val entryId: Int = AUTO_ID,
     val date: LocalDate,
@@ -26,7 +37,8 @@ data class DashEntry(
     val pay: Float?,
     val otherPay: Float?,
     val cashTips: Float?,
-    val numDeliveries: Int?
+    val numDeliveries: Int?,
+    var week: LocalDate? = date.endOfWeek
 ) : DataModel() {
     override val id: Int
         get() = entryId

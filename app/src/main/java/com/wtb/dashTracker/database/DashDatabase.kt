@@ -11,13 +11,16 @@ import com.wtb.dashTracker.database.daos.DashEntryDao
 import com.wtb.dashTracker.database.daos.WeeklyDao
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Weekly
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 5,
+    version = 6,
     entities = [DashEntry::class, Weekly::class],
     exportSchema = true,
 )
@@ -84,14 +87,48 @@ abstract class DashDatabase : RoomDatabase() {
                             database.execSQL("""DROP TABLE WEEKLY""")
                             database.execSQL(
                                 """CREATE TABLE Weekly(
-                                        date TEXT NOT NULL PRIMARY KEY NOT NULL,
+                                        date TEXT PRIMARY KEY NOT NULL,
                                         basePayAdjustment REAL,
                                         weekNumber INTEGER NOT NULL,
                                         lastUpdated TEXT NOT NULL
                                     )"""
                             )
                         }
-                    }
+                    },
+                    object : Migration(5, 6) {
+                        override fun migrate(database: SupportSQLiteDatabase) {
+                            database.execSQL(
+                                """CREATE TABLE DashEntry2(
+                                    entryId INTEGER PRIMARY KEY NOT NULL,
+                                    date TEXT NOT NULL,
+                                    endDate TEXT NOT NULL,
+                                    startTime TEXT,
+                                    endTime TEXT,
+                                    startOdometer REAL,
+                                    endOdometer REAL,
+                                    totalMileage REAL,
+                                    pay REAL,
+                                    otherPay REAL,
+                                    cashTips REAL,
+                                    numDeliveries INTEGER,
+                                    lastUpdated TEXT NOT NULL,
+                                    week TEXT REFERENCES Weekly(date) ON DELETE SET NULL
+                                    )"""
+                            )
+                            database.execSQL(
+                                """INSERT INTO DashEntry2(entryId, date, endDate, startTime, endTime, startOdometer, endOdometer, totalMileage, pay, otherPay, cashTips, numDeliveries, lastUpdated)
+                                SELECT de.entryId, de.date, de.endDate, de.startTime, de.endTime, de.startOdometer, de.endOdometer, de.totalMileage, de.pay, de.otherPay, de.cashTips, de.numDeliveries, de.lastUpdated
+                                FROM DashEntry de
+                                """
+                            )
+                            database.execSQL(
+                                """DROP TABLE DashEntry"""
+                            )
+                            database.execSQL(
+                                """ALTER TABLE DashEntry2 RENAME TO DashEntry"""
+                            )
+                        }
+                    },
                 )
                 .build().also {
                     INSTANCE = it

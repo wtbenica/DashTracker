@@ -88,6 +88,11 @@ class WeeklyDialog(
             clearFields()
         }
 
+        binding.fragAdjustBtnSave.setOnClickListener {
+            saveValues()
+            dismiss()
+        }
+
         weekly?.let { updateUI() }
 
         return binding.root

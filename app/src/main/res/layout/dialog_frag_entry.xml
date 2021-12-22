@@ -29,20 +29,19 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_entry_table_card"
+                style="@style/DialogContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
 
                 <GridLayout
+                    style="@style/DialogGrid"
                     android:id="@+id/frag_entry_table"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:columnCount="3"
-                    android:padding="8dp"
                     android:rowCount="11"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -313,6 +312,13 @@
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/desc_new_entry"
                     android:src="@drawable/reset" />
+
+
+                <ImageButton
+                    android:id="@+id/frag_entry_btn_save"
+                    style="@style/FragmentEntryImageButton"
+                    android:contentDescription="@string/desc_new_entry"
+                    android:src="@drawable/save" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
