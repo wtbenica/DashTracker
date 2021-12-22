@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
@@ -74,33 +75,33 @@ class YearlyListFragment : Fragment() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.allWeeklies.collectLatest {
+                viewModel.allWeeklies.collectLatest { cwList: List<CompleteWeekly> ->
                     yearlies.clear()
                     var numChecked = 0
                     var year = LocalDate.now().year
-                    while (numChecked < it.size) {
-                        val thisYears = it.mapNotNull {
-                            if (it.weekly.date.year == year) it else null
+                    while (numChecked < cwList.size) {
+                        val thisYears = cwList.mapNotNull { cw: CompleteWeekly ->
+                            if (cw.weekly.date.year == year) cw else null
                         }
                         numChecked += thisYears.size
                         val res = Yearly(year)
-                        thisYears.forEach {
-                            res.adjust += it.weekly.basePayAdjustment ?: 0f
-                            res.pay += it.entries.mapNotNull { entry ->
+                        thisYears.forEach { cw: CompleteWeekly ->
+                            res.adjust += cw.weekly.basePayAdjustment ?: 0f
+                            res.pay += cw.entries.mapNotNull { entry ->
                                 Log.d(TAG, "Pay: ${entry.pay}")
                                 entry.pay
                             }
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.otherPay += it.entries.mapNotNull { entry ->
+                            res.otherPay += cw.entries.mapNotNull { entry ->
                                 Log.d(TAG, "Other: ${entry.otherPay}")
                                 entry.otherPay
                             }
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.cashTips += it.entries.mapNotNull { entry -> entry.cashTips }
+                            res.cashTips += cw.entries.mapNotNull { entry -> entry.cashTips }
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.mileage += it.entries.mapNotNull { entry -> entry.mileage }
+                            res.mileage += cw.entries.mapNotNull { entry -> entry.mileage }
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.hours += it.entries.mapNotNull { entry -> entry.totalHours }
+                            res.hours += cw.entries.mapNotNull { entry -> entry.totalHours }
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
                         }
                         yearlies.add(res)

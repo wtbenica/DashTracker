@@ -47,15 +47,15 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         val viewModel: MainActivityViewModel by viewModels()
 
         viewModel.hourly.observe(this) {
-            binding.actMainHourly.setText(getStringOrElse(R.string.currency_unit, it))
+            binding.actMainHourly.text = getStringOrElse(R.string.currency_unit, it)
         }
 
         viewModel.thisWeek.observe(this) {
-            binding.actMainThisWeek.setText(getStringOrElse(R.string.currency_unit, it))
+            binding.actMainThisWeek.text = getStringOrElse(R.string.currency_unit, it)
         }
 
         viewModel.lastWeek.observe(this) {
-            binding.actMainLastWeek.setText(getStringOrElse(R.string.currency_unit, it))
+            binding.actMainLastWeek.text = getStringOrElse(R.string.currency_unit, it)
         }
     }
 
@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             return Pair(startDate, endDate)
         }
 
-        fun getNextEndOfWeek(): LocalDate {
+        private fun getNextEndOfWeek(): LocalDate {
             val todayIs: DayOfWeek = LocalDate.now().dayOfWeek
             val daysLeft: Long = (weekEndsOn.value - todayIs.value + 7) % 7L
             return LocalDate.now().plusDays(daysLeft)

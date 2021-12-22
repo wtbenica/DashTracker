@@ -94,7 +94,7 @@ class EntryDialog(
             }
         }
 
-        endsNextDayCheckBox = view.findViewById<CheckBox>(R.id.frag_entry_check_ends_next_day)
+        endsNextDayCheckBox = view.findViewById(R.id.frag_entry_check_ends_next_day)
 
         view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer)
 

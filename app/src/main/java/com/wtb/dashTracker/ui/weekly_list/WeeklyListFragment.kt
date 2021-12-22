@@ -197,7 +197,7 @@ class WeeklyListFragment : Fragment() {
             detailsBinding.listItemWeeklyAdjust.text =
                 getStringOrElse(R.string.currency_unit, "-", weekly.basePayAdjustment)
 
-            binding.listItemAlert.visibility = EntryListFragment.toVisibleIfTrueElseGone(true)
+            binding.listItemAlert.visibility = toVisibleIfTrueElseGone(true)
 
             viewModel.getEntriesByDate(this.weekly.date.minusDays(6), this.weekly.date).observe(
                 viewLifecycleOwner,

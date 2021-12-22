@@ -13,7 +13,7 @@
     <item
         android:id="@+id/navigation_yearly"
         android:icon="@drawable/ante_meridiem"
-        android:title="Yearly" />
+        android:title="@string/title_yearly_list" />
 
     <item
         android:id="@+id/navigation_insights"
