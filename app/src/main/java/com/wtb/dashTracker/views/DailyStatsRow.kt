@@ -2,6 +2,7 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.GridLayout
 import androidx.annotation.StringRes
@@ -15,7 +16,7 @@ import java.util.*
 fun Context.getStringOrElse(@StringRes resId: Int, formatArg: Any?): String =
     formatArg?.let {
         getString(resId, it)
-    } ?: " - "
+    } ?: "-"
 
 
 class DailyStatsRow @JvmOverloads constructor(
@@ -36,7 +37,12 @@ class DailyStatsRow @JvmOverloads constructor(
         binding.dailyStatsRowDayOfWeek.text =
             day.getDisplayName(TextStyle.SHORT, Locale.US).uppercase()
 
-        val amHourly = safeDiv(stats.amEarned, stats.amHours)
+        val c = stats.amDels
+        val b = stats.amHours
+        val a = stats.amEarned
+        Log.d(TAG, "HOURLY: ${stats.day} ${stats.amHours} ${stats.amEarned} ${safeDiv(a, b)}")
+        Log.d(TAG, "PER DEL: ${stats.day} ${stats.amHours} ${stats.amDels} ${safeDiv(a, c)}")
+        val amHourly = safeDiv(a, b)
         binding.dailyStatsRowAmHourly.text =
             context.getStringOrElse(R.string.currency_unit, amHourly)
 
@@ -47,6 +53,10 @@ class DailyStatsRow @JvmOverloads constructor(
         val amAvgDel = safeDiv(stats.amEarned, stats.amDels)
         binding.dailyStatsRowAmAvgDel.text =
             context.getStringOrElse(R.string.currency_unit, amAvgDel)
+
+        binding.dailyStatsRowAmNumShifts.text =
+            stats.amNumShifts.let { if (it == 0) "-" else it.toString() }
+
 
         val pmAvgDel = safeDiv(stats.pmEarned, stats.pmDels)
         binding.dailyStatsRowPmAvgDel.text =
@@ -59,6 +69,9 @@ class DailyStatsRow @JvmOverloads constructor(
         val pmDelsPerHr = safeDiv(stats.pmDels, stats.pmHours)
         binding.dailyStatsRowPmDph.text =
             context.getStringOrElse(R.string.float_fmt, pmDelsPerHr)
+
+        binding.dailyStatsRowPmNumShifts.text =
+            stats.pmNumShifts.let { if (it == 0) "-" else it.toString() }
     }
 
     fun addToGridLayout(grid: GridLayout, SKIP_ROWS: Int) {
@@ -81,6 +94,9 @@ class DailyStatsRow @JvmOverloads constructor(
         grid.addView(binding.dailyStatsRowAmDph.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS)
         })
+        grid.addView(binding.dailyStatsRowAmNumShifts.apply {
+            setGridLayoutRow(day.toRow() + SKIP_ROWS)
+        })
         grid.addView(binding.dailyStatsRowPmHourly.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
@@ -88,6 +104,9 @@ class DailyStatsRow @JvmOverloads constructor(
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
         grid.addView(binding.dailyStatsRowPmDph.apply {
+            setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
+        })
+        grid.addView(binding.dailyStatsRowPmNumShifts.apply {
             setGridLayoutRow(day.toRow() + SKIP_ROWS + 1)
         })
     }
@@ -124,4 +143,6 @@ data class DailyStats(
     val pmEarned: Float? = null,
     val amDels: Float? = null,
     val pmDels: Float? = null,
+    val amNumShifts: Int? = null,
+    val pmNumShifts: Int? = null
 )

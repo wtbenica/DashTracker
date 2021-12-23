@@ -11,8 +11,20 @@
         tools:layout="@layout/fragment_entry_list" />
 
     <fragment
-        android:id="@+id/navigation_best_days"
+        android:id="@+id/navigation_weekly"
+        android:name="com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment"
+        android:label="@string/title_weekly_list"
+        tools:layout="@layout/fragment_entry_list" />
+
+    <fragment
+        android:id="@+id/navigation_yearly"
+        android:name="com.wtb.dashTracker.ui.yearly_list.YearlyListFragment"
+        android:label="@string/title_yearly_list"
+        tools:layout="@layout/fragment_entry_list" />
+
+    <fragment
+        android:id="@+id/navigation_insights"
         android:name="com.wtb.dashTracker.ui.insight_daily_stats.DailyStatsFragment"
-        android:label="@string/title_daily_stats"
+        android:label="@string/title_insights"
         tools:layout="@layout/daily_stats_fragment" />
 </navigation>

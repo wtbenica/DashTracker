@@ -7,12 +7,14 @@ import android.text.format.DateFormat
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.dtfTime
-import com.wtb.dashTracker.ui.extensions.toTimeOrNull
+import com.wtb.dashTracker.extensions.dtfTime
+import com.wtb.dashTracker.extensions.toTimeOrNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalTime
 import java.util.*
 
 
+@ExperimentalCoroutinesApi
 class TimePickerFragment(private val timeTextView: TextView) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val c = Calendar.getInstance()

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="RowHeader" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/margin_narrow</item>
+    </style>
+
+    <style name="RowValue" parent="Widget.AppCompat.TextView">
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="DetailsRow">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingVertical">@dimen/margin_half</item>
+    </style>
+
+    <style name="PayTable">
+        <item name="android:background">@drawable/list_item_pay_table_background</item>
+        <item name="android:paddingHorizontal">@dimen/margin_default</item>
+        <item name="android:paddingVertical">@dimen/margin_half</item>
+    </style>
+
+    <style name="RowHeader.PayTable">
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+
+    <style name="RowValue.PayTable">
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">0dp</item>
+    </style>
+
+    <style name="RowValue.Secondary">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">0dp</item>
+    </style>
+</resources>

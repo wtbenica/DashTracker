@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/list_item_weekly">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="0dp">
+
+            <TableLayout
+                style="@style/PayTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="@style/RowHeader.PayTable"
+                        android:text="@string/lbl_pay" />
+
+                    <TextView
+                        style="@style/RowHeader.PayTable"
+                        android:text="@string/lbl_adjust" />
+
+                    <TextView
+                        style="@style/RowHeader.PayTable"
+                        android:text="@string/lbl_cash_tips" />
+
+                    <TextView
+                        style="@style/RowHeader.PayTable"
+                        android:text="@string/lbl_other_pay" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/list_item_regular_pay"
+                        style="@style/RowValue.PayTable"
+                        tools:text="$73.25" />
+
+                    <TextView
+                        android:id="@+id/list_item_weekly_adjust"
+                        style="@style/RowValue.PayTable"
+                        tools:text="$13.58" />
+
+                    <TextView
+                        android:id="@+id/list_item_cash_tips"
+                        style="@style/RowValue.PayTable"
+                        tools:text="$8.00" />
+
+                    <TextView
+                        android:id="@+id/list_item_other_pay"
+                        style="@style/RowValue.PayTable"
+                        tools:text="-" />
+                </TableRow>
+            </TableLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp">
+
+            <TableRow style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/RowHeader"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:text="@string/header_hours" />
+
+                <TextView
+                    android:id="@+id/list_item_weekly_hours"
+                    style="@style/RowValue"
+                    tools:text="2.93h" />
+            </TableRow>
+
+            <TableRow style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/RowHeader"
+                    android:layout_column="0"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:text="@string/units_pay_rate" />
+
+                <TextView
+                    android:id="@+id/list_item_weekly_hourly"
+                    style="@style/RowValue"
+                    tools:text="$22.41/hr" />
+            </TableRow>
+
+            <TableRow style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/RowHeader"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:text="@string/units_avg_delivery" />
+
+                <TextView
+                    android:id="@+id/list_item_weekly_avg_del"
+                    style="@style/RowValue"
+                    tools:text="$9.25/del" />
+            </TableRow>
+
+            <TableRow style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/RowHeader"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:text="@string/units_del_per_hr" />
+
+                <TextView
+                    android:id="@+id/list_item_weekly_hourly_dels"
+                    style="@style/RowValue"
+                    tools:text="2.38" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

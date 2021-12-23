@@ -16,21 +16,20 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_base_pay_adjustment.BasePayAdjustDialog
-import com.wtb.dashTracker.ui.dialog_edit_details.DetailDialog
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment
-import com.wtb.dashTracker.views.FabMenuButton
+import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
+import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
+import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.views.FabMenuButtonInfo
+import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCallback {
+class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
 
     private lateinit var binding: ActivityMainBinding
-    private var fabMenuIsVisible = false
-    private var fabMenuItems = mutableListOf<FabMenuButton>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,15 +47,15 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
         val viewModel: MainActivityViewModel by viewModels()
 
         viewModel.hourly.observe(this) {
-            binding.actMainHourly.text = getString(R.string.currency_unit, it)
+            binding.actMainHourly.text = getStringOrElse(R.string.currency_unit, it)
         }
 
         viewModel.thisWeek.observe(this) {
-            binding.actMainThisWeek.text = getString(R.string.currency_unit, it)
+            binding.actMainThisWeek.text = getStringOrElse(R.string.currency_unit, it)
         }
 
         viewModel.lastWeek.observe(this) {
-            binding.actMainLastWeek.text = getString(R.string.currency_unit, it)
+            binding.actMainLastWeek.text = getStringOrElse(R.string.currency_unit, it)
         }
     }
 
@@ -70,7 +69,9 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
-                R.id.navigation_best_days,
+                R.id.navigation_weekly,
+                R.id.navigation_yearly,
+                R.id.navigation_insights,
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -92,16 +93,22 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
             FabMenuButtonInfo(
                 "Add Entry",
                 R.drawable.calendar
-            ) { DetailDialog().show(fm, "new_entry_dialog") },
+            ) { EntryDialog().show(fm, "new_entry_dialog") },
             FabMenuButtonInfo(
                 "Add Adjustment",
                 R.drawable.alert
-            ) { BasePayAdjustDialog().show(fm, "new_adjust_dialog") },
-            FabMenuButtonInfo(
-                "Add Payout",
-                R.drawable.chart
-            ) { }
+            ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
+//            FabMenuButtonInfo(
+//                "Add Payout",
+//                R.drawable.chart
+//            ) { PayoutDialog().show(fm, "new_payout_dialog") }
         )
+
+        @ColorInt
+        fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)
+
+        @ColorInt
+        fun getColorFabDisabled(context: Context) = getAttrColor(context, R.attr.colorFabDisabled)
 
         @ColorInt
         fun getColorAccent(context: Context) = getAttrColor(context, R.attr.colorAccent)
@@ -124,7 +131,7 @@ class MainActivity : AppCompatActivity(), EntryListFragment.EntryListFragmentCal
             return Pair(startDate, endDate)
         }
 
-        fun getNextEndOfWeek(): LocalDate {
+        private fun getNextEndOfWeek(): LocalDate {
             val todayIs: DayOfWeek = LocalDate.now().dayOfWeek
             val daysLeft: Long = (weekEndsOn.value - todayIs.value + 7) % 7L
             return LocalDate.now().plusDays(daysLeft)

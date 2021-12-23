@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SummaryBar">
+        <item name="android:background">?attr/colorToolbar</item>
+        <item name="android:elevation">1dp</item>
+        <item name="android:padding">@dimen/margin_narrow</item>
+    </style>
+
+    <style name="SummaryBarItem" parent="Widget.AppCompat.TextView">
+        <item name="android:textAlignment">center</item>
+
+    </style>
+
+    <style name="SummaryBarItem.Header">
+
+    </style>
+
+    <style name="SummaryBarItem.Value">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+</resources>

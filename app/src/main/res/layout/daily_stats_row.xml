@@ -1,104 +1,93 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:parentTag="android.widget.GridLayout">
+
 
     <TextView
         android:id="@+id/daily_stats_row_day_of_week"
         android:layout_row="0"
         android:layout_rowSpan="2"
         android:layout_column="0"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="16dp"
-        android:gravity="center_vertical"
-        android:padding="2dp"
+        android:rotation="-90"
+        android:layout_columnSpan="1"
+        android:layout_gravity="center_vertical"
         android:textSize="16sp"
-        android:textStyle="bold"
-        tools:text="Monday" />
+        tools:text="MON" />
 
     <TextView
         android:id="@+id/daily_stats_row_label_am"
+        style="@style/DailyStatsRowHeader.AM"
         android:layout_row="0"
         android:layout_column="1"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="4dp"
-        android:background="#FFFF88"
-        android:padding="2dp"
+        android:background="@drawable/top_left_corner"
         android:text="@string/ante_meridiem"
         android:textAlignment="center" />
 
     <TextView
         android:id="@+id/daily_stats_row_am_hourly"
+        style="@style/DailyStatsRowValue.AM"
         android:layout_row="0"
         android:layout_column="2"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="4dp"
-        android:background="#FFFFAA"
-        android:padding="2dp"
-        android:textAlignment="textEnd"
-        tools:text="$19.38/hr" />
+        tools:text="$19.38" />
 
     <TextView
         android:id="@+id/daily_stats_row_am_avg_del"
+        style="@style/DailyStatsRowValue.AM"
         android:layout_row="0"
         android:layout_column="3"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="4dp"
-        android:background="#FFFFAA"
-        android:padding="2dp"
-        android:textAlignment="textEnd"
-        tools:text="$9.21/del" />
+        tools:text="$9.21" />
 
     <TextView
         android:id="@+id/daily_stats_row_am_dph"
+        style="@style/DailyStatsRowValue.AM"
         android:layout_row="0"
         android:layout_column="4"
-        android:layout_columnWeight="1"
-        android:background="#FFFFAA"
-        android:padding="2dp"
-        android:textAlignment="textEnd"
-        tools:text="2.36 dels/hr" />
+        tools:text="2.36" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_am_num_shifts"
+        style="@style/DailyStatsRowValue.AM"
+        android:layout_row="0"
+        android:layout_column="5"
+        android:background="@drawable/top_right_corner"
+        tools:text="4" />
 
     <TextView
         android:id="@+id/daily_stats_row_label_pm"
+        style="@style/DailyStatsRowHeader.PM"
         android:layout_row="1"
         android:layout_column="1"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="16dp"
-        android:background="#AADDFF"
-        android:padding="2dp"
+        android:background="@drawable/bottom_left_corner"
         android:text="@string/post_meridiem"
         android:textAlignment="center" />
 
     <TextView
         android:id="@+id/daily_stats_row_pm_hourly"
+        style="@style/DailyStatsRowValue.PM"
         android:layout_row="1"
         android:layout_column="2"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="16dp"
-        android:background="#DDEEFF"
-        android:padding="2dp"
-        android:textAlignment="textEnd"
-        tools:text="$19.38/hr" />
+        tools:text="$19.38" />
 
     <TextView
         android:id="@+id/daily_stats_row_pm_avg_del"
+        style="@style/DailyStatsRowValue.PM"
         android:layout_row="1"
         android:layout_column="3"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="16dp"
-        android:background="#DDEEFF"
-        android:padding="2dp"
-        android:textAlignment="textEnd"
-        tools:text="$9.21/del" />
+        tools:text="$9.21" />
 
     <TextView
         android:id="@+id/daily_stats_row_pm_dph"
+        style="@style/DailyStatsRowValue.PM"
         android:layout_row="1"
         android:layout_column="4"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="16dp"
-        android:background="#DDEEFF"
-        android:padding="2dp"
-        android:textAlignment="textEnd"
-        tools:text="2.36 dels/hr" />
+        tools:text="2.36" />
+
+    <TextView
+        android:id="@+id/daily_stats_row_pm_num_shifts"
+        style="@style/DailyStatsRowValue.PM"
+        android:layout_row="1"
+        android:layout_column="5"
+        android:background="@drawable/bottom_right_corner"
+        tools:text="2" />
 </merge>

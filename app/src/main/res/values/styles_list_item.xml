@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CardView.Tracker.ListItem">
+        <item name="android:background">?attr/colorListItem</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">@dimen/margin_half</item>
+        <item name="android:layout_marginVertical">@dimen/margin_half</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="cardCornerRadius">@dimen/radius_list_item</item>
+    </style>
+
+    <style name="ListItemHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:animateLayoutChanges">true</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/margin_default</item>
+    </style>
+
+    <style name="ListItemHeaderTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ListItemHeaderTextView.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="ListItemHeaderTextView.Subtitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="ListItemHeaderIncompleteIndicator">
+        <item name="android:layout_width">@dimen/margin_half</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:src">@drawable/circle</item>
+        <item name="android:tint">@color/alert</item>
+    </style>
+
+    <style name="ListItemButton">
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:layout_width">@dimen/min_touch_target</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:tint">?attr/colorOnPrimary</item>
+        <item name="android:padding">@dimen/margin_narrow</item>
+    </style>
+</resources>

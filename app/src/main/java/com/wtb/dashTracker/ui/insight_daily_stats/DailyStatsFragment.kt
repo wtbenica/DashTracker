@@ -63,6 +63,7 @@ class DailyStatsFragment : Fragment() {
             binding.dailyStatsFragmentTable.addView(binding.dailyStatsFragmentLabelHourly)
             binding.dailyStatsFragmentTable.addView(binding.dailyStatsFragmentLabelAvgDel)
             binding.dailyStatsFragmentTable.addView(binding.dailyStatsFragmentLabelDph)
+            binding.dailyStatsFragmentTable.addView(binding.dailyStatsFragmentLabelNumShifts)
 
             DayOfWeek.values().forEach { day ->
                 val d = entries.filter { de ->
@@ -75,7 +76,9 @@ class DailyStatsFragment : Fragment() {
                         amEarned = (a.amEarned ?: 0f) + (d.dayEarned ?: 0f),
                         pmEarned = (a.pmEarned ?: 0f) + (d.nightEarned ?: 0f),
                         amDels = (a.amDels ?: 0f) + (d.dayDels ?: 0f),
-                        pmDels = (a.pmDels ?: 0f) + (d.nightDels ?: 0f)
+                        pmDels = (a.pmDels ?: 0f) + (d.nightDels ?: 0f),
+                        amNumShifts = (a.amNumShifts ?: 0) + (if ((d.dayHours ?: 0f) > 0f) 1 else 0),
+                        pmNumShifts = (a.pmNumShifts ?: 0) + (if ((d.nightHours ?: 0f) > 0f) 1 else 0),
                     )
                 }
 

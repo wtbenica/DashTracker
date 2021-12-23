@@ -1,11 +1,10 @@
 package com.wtb.dashTracker.database.daos
 
 import androidx.room.*
+import androidx.room.OnConflictStrategy.IGNORE
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.MainActivity.Companion.APP
-import com.wtb.dashTracker.database.models.BasePayAdjustment
-import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -31,10 +30,10 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
         return getDataModelFlowByQuery(query)
     }
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = IGNORE)
     abstract fun insert(obj: T): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = IGNORE)
     abstract fun insert(obj: List<T>): List<Long>
 
     @Update
@@ -48,6 +47,12 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
         val id = insert(obj)
         if (id == -1L) {
             update(obj)
+        }
+    }
+
+    fun upsertAll(models: MutableList<T>) {
+        models.forEach {
+            upsert(it)
         }
     }
 

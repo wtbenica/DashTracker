@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ListItemHeaderTextView.FragEntry">
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="DialogContent" parent="CardView">
+        <item name="android:layout_marginHorizontal">@dimen/margin_default</item>
+        <item name="cardCornerRadius">@dimen/dialog_fragment_corner_radius</item>
+    </style>
+
+    <style name="DialogGrid">
+        <item name="android:padding">@dimen/margin_default</item>
+    </style>
+</resources>
