@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
@@ -21,7 +22,7 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
     val date: StateFlow<LocalDate>
         get() = _date
 
-    val weekly: LiveData<Weekly?> = date.flatMapLatest {
+    val weekly: LiveData<CompleteWeekly?> = date.flatMapLatest {
         repository.getWeeklyByDate(it)
     }.stateIn(
         scope = viewModelScope,
@@ -36,7 +37,7 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
     fun getEntriesByDate(startDate: LocalDate, endDate: LocalDate): LiveData<List<DashEntry>> =
         repository.getEntriesByDate(startDate, endDate).asLiveData()
 
-    fun getWeeklyFlowByDate(date: LocalDate): Flow<Weekly?> =
+    fun getWeeklyFlowByDate(date: LocalDate): Flow<CompleteWeekly?> =
         repository.getWeeklyByDate(date)
 
     val entriesByWeek: LiveData<List<DashEntry>?> = date.flatMapLatest {
@@ -47,5 +48,5 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
         initialValue = null
     ).asLiveData()
 
-    val allWeekliesPaged: Flow<PagingData<Weekly>> = repository.allWeekliesPaged
+    val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = repository.allWeekliesPaged
 }

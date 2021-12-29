@@ -30,7 +30,7 @@ class FabMenu @JvmOverloads constructor(
     private var fabMenuViews = mutableListOf<FabMenuButton>()
     private var fabMenuIsVisible = false
     private var fabMenuItems = listOf<FabMenuButtonInfo>()
-    private var parentLayout: CoordinatorLayout? = null
+    private var parentLayout: ViewGroup? = null
 
     init {
         setBackgroundColor(MainActivity.getColorFab(context))
@@ -149,7 +149,7 @@ class FabMenu @JvmOverloads constructor(
         }
     }
 
-    fun initialize(menuItems: List<FabMenuButtonInfo>, parent: CoordinatorLayout) {
+    fun initialize(menuItems: List<FabMenuButtonInfo>, parent: ViewGroup) {
         fabMenuItems = menuItems
         parentLayout = parent
         initFabMenu()

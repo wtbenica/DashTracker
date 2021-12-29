@@ -30,7 +30,7 @@ val LocalDate.endOfWeek: LocalDate
     get() = getNextDateFor(DayOfWeek.SUNDAY)
 
 val LocalDate.weekOfYear: Int
-    get() = endOfWeek.dayOfYear / 7
+    get() = endOfWeek.dayOfYear / 7 + 1
 
 
 

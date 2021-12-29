@@ -3,13 +3,13 @@
     package="com.wtb.dashTracker">
 
     <application
+        android:allowBackup="true"
         android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DasherCompanion"
-        android:allowBackup="true">
+        android:theme="@style/Theme.DasherCompanion">
         <activity
             android:name="com.wtb.dashTracker.MainActivity"
             android:exported="true"
@@ -20,6 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2598018805199505~7756228217" />
     </application>
 
 </manifest>

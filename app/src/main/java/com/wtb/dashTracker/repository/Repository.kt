@@ -58,7 +58,7 @@ class Repository private constructor(context: Context) {
      */
     val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAll()
 
-    val allWeekliesPaged: Flow<PagingData<Weekly>> = Pager(
+    val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = Pager(
         config = PagingConfig(
             pageSize = 20,
             enablePlaceholders = true
@@ -83,7 +83,7 @@ class Repository private constructor(context: Context) {
     /**
      * Weekly
      */
-    fun getWeeklyByDate(date: LocalDate): Flow<Weekly?> = weeklyDao.getWeeklyByDate(date)
+    fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?> = weeklyDao.getWeeklyByDate(date)
 
     fun saveModel(model: DataModel) {
         executor.execute {

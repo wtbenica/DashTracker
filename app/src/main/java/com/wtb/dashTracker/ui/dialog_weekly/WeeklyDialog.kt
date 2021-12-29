@@ -15,6 +15,7 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
@@ -30,7 +31,7 @@ class WeeklyDialog(
     private var date: LocalDate = LocalDate.now().endOfWeek.minusDays(7)
 ) : FullWidthDialogFragment() {
 
-    private var weekly: Weekly? = null
+    private var weekly: CompleteWeekly? = null
     private lateinit var binding: DialogFragWeeklyBinding
     private val viewModel: WeeklyViewModel by viewModels()
     private var totalEarned: Float = 0f
@@ -80,7 +81,8 @@ class WeeklyDialog(
 
 
         binding.fragAdjustBtnDelete.setOnClickListener {
-            weekly?.let { w -> viewModel.delete(w) }
+            // TODO: delete button should just set it to zero. the week should still exist
+        //            weekly?.let { w -> viewModel.delete(w) }
         }
 
         binding.fragAdjustBtnCancel.setOnClickListener {
@@ -129,10 +131,10 @@ class WeeklyDialog(
         val tempWeekly = weekly
         if (tempWeekly != null) {
             binding.fragAdjustDate.apply {
-                getSpinnerIndex(tempWeekly.date)?.let { setSelection(it) }
+                getSpinnerIndex(tempWeekly.weekly.date)?.let { setSelection(it) }
             }
 
-            binding.fragAdjustAmount.setText(tempWeekly.basePayAdjustment?.truncate(2) ?: "")
+            binding.fragAdjustAmount.setText(tempWeekly.weekly.basePayAdjustment?.truncate(2) ?: "")
         }
     }
 
@@ -146,10 +148,10 @@ class WeeklyDialog(
     }
 
     private fun saveValues() {
-        weekly?.basePayAdjustment =
+        weekly?.weekly?.basePayAdjustment =
             binding.fragAdjustAmount.text.toString().toFloatOrNull()?.truncate(2)?.toFloat()
         Log.d(TAG, "Saving $weekly")
-        weekly?.let { viewModel.upsert(it) }
+        weekly?.let { viewModel.upsert(it.weekly) }
     }
 
     private fun clearFields() {

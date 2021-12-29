@@ -36,4 +36,7 @@ data class CompleteWeekly(
 
     @Relation(parentColumn = "date", entityColumn = "week")
     val entries: List<DashEntry>
-)
+) {
+    val isEmpty: Boolean
+        get() = entries.isEmpty() && weekly.isIncomplete
+}
