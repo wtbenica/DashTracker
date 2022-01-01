@@ -5,6 +5,5 @@
     android:id="@+id/entry_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
     app:layout_dodgeInsetEdges="bottom"
     tools:listitem="@layout/list_item_entry" />

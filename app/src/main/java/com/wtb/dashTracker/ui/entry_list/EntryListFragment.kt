@@ -198,9 +198,12 @@ class EntryListFragment : Fragment() {
                         dtfTime
                     )
                 )
-            detailsBinding.listItemAlertHours.setVisibleIfTrue(this.entry.startTime == null || this.entry.endTime == null)
+            detailsBinding.listItemAlertHours.setVisibleIfTrue(
+                this.entry.startTime == null || this.entry.endTime == null
+            )
 
-            totalHoursTextView.text = this.entry.totalHours?.truncate(2) ?: "-"
+            totalHoursTextView.text =
+                getStringOrElse(R.string.float_fmt, "-", this.entry.totalHours)
 
             mileageTextView.text =
                 getStringOrElse(
@@ -221,7 +224,8 @@ class EntryListFragment : Fragment() {
             avgDeliveryTextView.text =
                 getStringOrElse(R.string.currency_unit, "-", this.entry.avgDelivery)
 
-            hourlyDeliveriesTextView.text = this.entry.hourlyDeliveries?.truncate(2) ?: "-"
+            hourlyDeliveriesTextView.text =
+                getStringOrElse(R.string.float_fmt, "-", this.entry.hourlyDeliveries)
 
             detailsTable.visibility = detailsTableVisibility
         }

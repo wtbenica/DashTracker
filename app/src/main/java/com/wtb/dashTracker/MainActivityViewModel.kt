@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -33,19 +35,20 @@ class MainActivityViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            repository.allEntries.collectLatest {
-                _hourly.value = getHourly(it)
+            repository.allWeeklies.collectLatest {
+                _hourly.value = getHourlyFromWeeklies(it)
             }
         }
 
         viewModelScope.launch {
-            repository.allEntries.collectLatest { entries ->
-                _thisWeek.value = getTotalPay(entries.filter { it.isXWeeksAgo(0) })
-                _lastWeek.value = getTotalPay(entries.filter { it.isXWeeksAgo(1) })
+            repository.getWeeklyByDate(LocalDate.now().endOfWeek).collectLatest { tw ->
+                _thisWeek.value = tw?.totalPay
             }
-            val (startDate, endDate) = getThisWeeksDateRange()
-            repository.getEntriesByDate(startDate, endDate).collectLatest {
-                _thisWeek.value = getTotalPay(it)
+        }
+
+        viewModelScope.launch {
+            repository.getWeeklyByDate(LocalDate.now().endOfWeek.minusDays(7)).collectLatest { lw ->
+                _lastWeek.value = lw?.totalPay
             }
         }
     }
@@ -54,21 +57,11 @@ class MainActivityViewModel : ViewModel() {
     companion object {
         private const val TAG = APP + "MainActivityViewModel"
 
-        fun getThisWeeksDateRange(): Pair<LocalDate, LocalDate> {
-            val todayIs = LocalDate.now().dayOfWeek
-            val weekEndsOn = DayOfWeek.SUNDAY
-            val daysLeft = (weekEndsOn.value - todayIs.value + 7) % 7L
-            val endDate = LocalDate.now().plusDays(daysLeft)
-            val startDate = endDate.minusDays(6L)
-            return Pair(startDate, endDate)
-        }
-
         fun getTotalPay(entries: List<DashEntry>): Float? {
-            val map: List<Float?> = entries.map { entry ->
-                entry.pay?.let { pay -> pay + (entry.otherPay ?: 0f) + (entry.cashTips ?: 0f) } }
+            val map: List<Float> = entries.mapNotNull { entry -> entry.totalEarned }
 
-            return if (map.isNotEmpty() && !map.contains(null)) {
-                map.reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) }
+            return if (map.isNotEmpty()) {
+                map.reduce { acc, fl -> acc + fl }
             } else {
                 null
             }
@@ -100,13 +93,14 @@ class MainActivityViewModel : ViewModel() {
             }
         }
 
-        fun getHourly(entries: List<DashEntry>): Float {
-            val hours: Float = entries.map { entry -> entry.totalHours }
-                .reduce { acc: Float?, fl: Float? -> (acc ?: 0f) + (fl ?: 0f) } ?: 0f
-            val pay: Float = entries.mapNotNull { entry -> entry.totalEarned }
-                .reduce { acc: Float, fl: Float -> acc + fl }
+        fun getHourlyFromWeeklies(list: List<CompleteWeekly>): Float {
+            val hours = list.map { w -> w.hours }.reduce { acc, fl -> acc + fl }
+            val pay = list.map { w -> w.pay }.reduce { acc, fl -> acc + fl }
+            val adjusts = list.map { it.weekly.basePayAdjustment }
+                .reduce { acc, fl -> (acc ?: 0f) + (fl ?: 0f) } ?: 0f
 
-            return pay / hours
+            return (pay + adjusts) / hours
         }
+
     }
 }

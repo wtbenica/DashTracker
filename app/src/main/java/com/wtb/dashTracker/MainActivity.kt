@@ -37,7 +37,7 @@ import java.time.LocalDate
 class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var mAdView : AdView
+    lateinit var mAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,11 +66,13 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         }
 
         viewModel.thisWeek.observe(this) {
-            binding.actMainThisWeek.text = getStringOrElse(R.string.currency_unit, it)
+            binding.actMainThisWeek.text =
+                getStringOrElse(R.string.currency_unit, it)
         }
 
         viewModel.lastWeek.observe(this) {
-            binding.actMainLastWeek.text = getStringOrElse(R.string.currency_unit, it)
+            binding.actMainLastWeek.text =
+                getStringOrElse(R.string.currency_unit, it)
         }
     }
 

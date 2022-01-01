@@ -16,7 +16,6 @@ import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
-import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.databinding.DialogWeeklySpinnerItemBinding
@@ -82,7 +81,7 @@ class WeeklyDialog(
 
         binding.fragAdjustBtnDelete.setOnClickListener {
             // TODO: delete button should just set it to zero. the week should still exist
-        //            weekly?.let { w -> viewModel.delete(w) }
+            //            weekly?.let { w -> viewModel.delete(w) }
         }
 
         binding.fragAdjustBtnCancel.setOnClickListener {
@@ -111,15 +110,6 @@ class WeeklyDialog(
                 updateUI()
             }
         )
-
-        viewModel.entriesByWeek.observe(
-            viewLifecycleOwner,
-        ) { entries: List<DashEntry>? ->
-            Log.d(TAG, "INCOMING Entry List")
-            var res = 0f
-            entries?.forEach { res += it.totalEarned ?: 0f }
-            binding.fragAdjustTotal.text = res.truncate(2)
-        }
     }
 
     override fun onDestroy() {
@@ -134,7 +124,14 @@ class WeeklyDialog(
                 getSpinnerIndex(tempWeekly.weekly.date)?.let { setSelection(it) }
             }
 
-            binding.fragAdjustAmount.setText(tempWeekly.weekly.basePayAdjustment?.truncate(2) ?: "")
+            binding.fragAdjustAmount.setText(
+                getStringOrElse(
+                    R.string.float_fmt,
+                    "",
+                    tempWeekly.weekly.basePayAdjustment
+                )
+            )
+            binding.fragAdjustTotal.text = getString(R.string.float_fmt, tempWeekly.totalPay)
         }
     }
 
@@ -148,9 +145,8 @@ class WeeklyDialog(
     }
 
     private fun saveValues() {
-        weekly?.weekly?.basePayAdjustment =
-            binding.fragAdjustAmount.text.toString().toFloatOrNull()?.truncate(2)?.toFloat()
-        Log.d(TAG, "Saving $weekly")
+        weekly?.weekly?.basePayAdjustment = binding.fragAdjustAmount.text.toFloatOrNull()
+
         weekly?.let { viewModel.upsert(it.weekly) }
     }
 

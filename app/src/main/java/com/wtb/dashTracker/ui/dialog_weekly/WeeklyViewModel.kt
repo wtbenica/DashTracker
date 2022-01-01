@@ -34,19 +34,5 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
         _date.value = date
     }
 
-    fun getEntriesByDate(startDate: LocalDate, endDate: LocalDate): LiveData<List<DashEntry>> =
-        repository.getEntriesByDate(startDate, endDate).asLiveData()
-
-    fun getWeeklyFlowByDate(date: LocalDate): Flow<CompleteWeekly?> =
-        repository.getWeeklyByDate(date)
-
-    val entriesByWeek: LiveData<List<DashEntry>?> = date.flatMapLatest {
-        repository.getEntriesByWeek(it)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = null
-    ).asLiveData()
-
     val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = repository.allWeekliesPaged
 }

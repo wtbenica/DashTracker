@@ -2,10 +2,12 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="margin_default">16dp</dimen>
     <dimen name="margin_half">8dp</dimen>
+    <dimen name="margin_narrow">4dp</dimen>
+
     <dimen name="fab_menu_offset">32dp</dimen>
     <dimen name="dialog_fragment_corner_radius">32dp</dimen>
     <dimen name="min_touch_target">48dp</dimen>
-    <dimen name="margin_narrow">4dp</dimen>
+
     <dimen name="radius_insights">16dp</dimen>
     <dimen name="radius_list_item">16dp</dimen>
 </resources>

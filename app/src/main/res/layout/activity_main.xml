@@ -117,9 +117,9 @@
             android:minHeight="?android:attr/actionBarSize"
             app:elevation="1dp"
             app:fabAlignmentMode="end"
-            app:fabAnimationMode="slide"
-            app:fabCradleMargin="2dp"
-            app:fabCradleRoundedCornerRadius="0dp"
+            app:fabAnimationMode="scale"
+            app:fabCradleMargin="0dp"
+            app:fabCradleRoundedCornerRadius="8dp"
             app:hideOnScroll="true"
             app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
 
@@ -128,12 +128,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
+                android:background="@android:color/transparent"
                 android:paddingStart="8dp"
                 android:paddingEnd="96dp"
                 app:itemIconTint="@color/bottom_nav_text_color"
                 app:itemTextColor="@color/bottom_nav_text_color"
-                app:menu="@menu/bottom_nav_menu"
-                tools:background="@android:color/transparent" />
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/bottom_nav_menu" />
         </com.google.android.material.bottomappbar.BottomAppBar>
 
 
@@ -141,11 +142,11 @@
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
-        android:paddingVertical="4dp"
-        android:background="?attr/colorUi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
+        android:background="?attr/colorUi"
+        android:paddingVertical="4dp"
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 </LinearLayout>

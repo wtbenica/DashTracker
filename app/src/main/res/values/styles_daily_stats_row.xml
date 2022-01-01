@@ -6,17 +6,17 @@
         <item name="android:layout_columnWeight">1</item>
         <item name="android:paddingVertical">@dimen/margin_narrow</item>
         <item name="android:paddingHorizontal">@dimen/margin_half</item>
-        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>
+<!--        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>-->
     </style>
 
     <style name="DailyStatsRowHeader.AM">
         <item name="android:background">?attr/colorDayHeader</item>
-        <item name="android:layout_marginTop">@dimen/margin_half</item>
+<!--        <item name="android:layout_marginTop">@dimen/margin_half</item>-->
     </style>
 
     <style name="DailyStatsRowHeader.PM">
         <item name="android:background">?attr/colorNightHeader</item>
-        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>
+        <item name="android:layout_marginBottom">@dimen/margin_half</item>
     </style>
 
     <style name="DailyStatsRowValue" parent="Widget.MaterialComponents.TextView">
@@ -25,15 +25,16 @@
         <item name="android:paddingVertical">@dimen/margin_narrow</item>
         <item name="android:paddingHorizontal">@dimen/margin_default</item>
         <item name="android:textAlignment">textEnd</item>
-        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>
+<!--        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>-->
     </style>
 
     <style name="DailyStatsRowValue.AM">
         <item name="android:background">?attr/colorDayValue</item>
-        <item name="android:layout_marginTop">@dimen/margin_half</item>
+<!--        <item name="android:layout_marginTop">@dimen/margin_half</item>-->
     </style>
 
     <style name="DailyStatsRowValue.PM">
         <item name="android:background">?attr/colorNightValue</item>
+        <item name="android:layout_marginBottom">@dimen/margin_half</item>
     </style>
 </resources>

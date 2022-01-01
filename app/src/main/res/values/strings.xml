@@ -44,7 +44,7 @@
     <string name="content_desc_edit_button">Edit this entry</string>
     <string name="content_desc_remove">Remove this entry</string>
     <string name="week_number">Week %d</string>
-    <string name="date_range">%s - %s</string>
+    <string name="date_range">%1$s - %2$s</string>
     <string name="lbl_total_earned">Total Earned</string>
     <string name="title_weekly_list">Weekly</string>
     <string name="header_regular_pay">Regular Pay</string>
@@ -54,4 +54,5 @@
     <string name="lbl_reported_income">Reported Income</string>
     <string name="dialog_payout_title">Payout</string>
     <string name="title_yearly_list">Yearly</string>
+    <string name="mileage_fmt">%.1f</string>
 </resources>

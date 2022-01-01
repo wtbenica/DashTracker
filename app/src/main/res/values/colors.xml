@@ -2,7 +2,7 @@
 <resources>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="brick_dark">#344</color>
+    <color name="brick_dark">#566</color>
     <color name="brick">#899</color>
     <color name="brick_light">#ABB</color>
     <color name="brick_faded">#CDD</color>
