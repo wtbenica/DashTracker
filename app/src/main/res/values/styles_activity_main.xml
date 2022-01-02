@@ -15,7 +15,7 @@
     </style>
 
     <style name="SummaryBarItem.Value">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/text_size_xlarge</item>
     </style>
 
     <style name="Base.Widget.AppCompat.ActionButton.Overflow.Tracker">

@@ -29,12 +29,12 @@
     </style>
 
     <style name="ListItemHeaderTextView.Title">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/text_size_xlarge</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 
     <style name="ListItemHeaderTextView.Subtitle">
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">@dimen/text_size_med</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>

@@ -43,11 +43,12 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
     abstract fun delete(obj: T)
 
     @Transaction
-    open fun upsert(obj: T) {
+    open fun upsert(obj: T): Long {
         val id = insert(obj)
         if (id == -1L) {
             update(obj)
         }
+        return if (id != -1L) id else obj.id.toLong()
     }
 
     fun upsertAll(models: MutableList<T>) {

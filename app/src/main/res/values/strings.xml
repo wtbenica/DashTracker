@@ -55,4 +55,7 @@
     <string name="dialog_payout_title">Payout</string>
     <string name="title_yearly_list">Yearly</string>
     <string name="mileage_fmt">%.1f</string>
+    <string name="confirm_delete">Do you really want to delete this entry?</string>
+    <string name="delete">Delete</string>
+    <string name="keep">No</string>
 </resources>

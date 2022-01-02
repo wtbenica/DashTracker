@@ -71,6 +71,13 @@ class Repository private constructor(context: Context) {
     fun getEntriesByWeek(date: LocalDate = LocalDate.now()): Flow<List<DashEntry>> =
         entryDao.getEntriesByWeek(date)
 
+    suspend fun upsertModelSus(model: DataModel): Long {
+        return when (model) {
+            is DashEntry -> entryDao.upsert(model)
+            is Weekly -> weeklyDao.upsert(model)
+        }
+    }
+
     fun upsertModel(model: DataModel) {
         executor.execute {
             when (model) {

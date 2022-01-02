@@ -1,6 +1,5 @@
 package com.wtb.dashTracker.ui.dialog_entry
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -10,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
@@ -27,6 +25,7 @@ import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import com.wtb.dashTracker.views.TableRadioButton
 import com.wtb.dashTracker.views.TableRadioGroup
@@ -36,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class EntryDialog(
@@ -43,6 +43,7 @@ class EntryDialog(
 ) : FullWidthDialogFragment(), TableRadioGroup.TableRadioGroupCallback {
 
     private val viewModel: EntryViewModel by viewModels()
+    private var saveOnExit = true
 
     private lateinit var dateTextView: TextView
     private lateinit var startTimeTextView: TextView
@@ -72,6 +73,20 @@ class EntryDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        childFragmentManager.setFragmentResultListener(
+            "confirmDelete",
+            viewLifecycleOwner
+        ) { requestKey, bundle ->
+            val result = bundle.getBoolean("confirm")
+            Log.d(TAG, result.toString())
+            if (result) {
+                Log.d(TAG, "Deleting and dismissing, I hope")
+                saveOnExit = false
+                dismiss()
+                entry?.let { e -> viewModel.delete(e) }
+            }
+        }
+
         val view = inflater.inflate(R.layout.dialog_frag_entry, container, false)
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -115,13 +130,13 @@ class EntryDialog(
 
         deleteButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_delete).apply {
             setOnClickListener {
-                entry?.let { e -> viewModel.delete(e) }
+                ConfirmDeleteDialog().show(childFragmentManager, ConfirmDeleteDialog.TAG)
             }
         }
 
         cancelButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_cancel).apply {
             setOnClickListener {
-                viewModel.clearEntry()
+//                viewModel.clearEntry()
                 clearFields()
             }
         }
@@ -171,7 +186,7 @@ class EntryDialog(
     }
 
     override fun onDestroy() {
-        if (!isEmpty())
+        if (!isEmpty() && saveOnExit)
             saveValues()
         super.onDestroy()
     }
@@ -200,10 +215,11 @@ class EntryDialog(
 
     private fun clearFields() {
         dateTextView.text = LocalDate.now().format(dtfDate)
-        startTimeTextView.text = ""
+        startTimeTextView.text = LocalDateTime.now().format(dtfTime)
         endTimeTextView.text = ""
         startMileageEditText.text.clear()
         endMileageEditText.text.clear()
+        totalMileageEditText.text.clear()
         payEditText.text.clear()
         otherPayEditText.text.clear()
         cashTipsEditText.text.clear()
@@ -242,7 +258,8 @@ class EntryDialog(
 
     private fun enableEntryView(context: Context, vararg view: TextView) {
         view.forEach {
-            val td = ContextCompat.getDrawable(context, R.drawable.enable_textview) as TransitionDrawable
+            val td =
+                ContextCompat.getDrawable(context, R.drawable.enable_textview) as TransitionDrawable
             it.background = td
             td.startTransition(500)
             it.isEnabled = true
@@ -251,7 +268,10 @@ class EntryDialog(
 
     private fun disableEntryView(context: Context, vararg view: TextView) {
         view.forEach {
-            val td = ContextCompat.getDrawable(context, R.drawable.disable_textview) as TransitionDrawable
+            val td = ContextCompat.getDrawable(
+                context,
+                R.drawable.disable_textview
+            ) as TransitionDrawable
             it.background = td
             td.startTransition(500)
             it.isEnabled = false

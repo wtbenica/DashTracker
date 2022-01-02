@@ -60,10 +60,10 @@
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.35104166666666664" />
         <entry key="app/src/main/res/layout/fragment_insights.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />
-        <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.5186915887850467" />
+        <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.1" />
         <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/list_item_weekly.xml" value="0.3313343328335832" />
-        <entry key="app/src/main/res/layout/list_item_weekly_details_table.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/list_item_weekly.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/list_item_weekly_details_table.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/list_item_yearly.xml" value="0.2937853107344633" />
         <entry key="app/src/main/res/layout/list_item_yearly_details_table.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/sample_daily_stats_row.xml" value="0.35052083333333334" />
