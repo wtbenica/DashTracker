@@ -2,6 +2,7 @@ package com.wtb.dashTracker.ui.entry_list
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -24,11 +26,13 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 class EntryListFragment : Fragment() {
@@ -52,17 +56,39 @@ class EntryListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.entry_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
+        setDialogListeners()
+
         return view
+    }
+
+    private fun setDialogListeners() {
+        setFragmentResultListener(
+            ConfirmationDialog.ConfirmationType.DELETE.requestKey
+        ) { requestKey, bundle ->
+            Log.d(TAG, "Receiving Delete")
+            val result = bundle.getBoolean(ARG_CONFIRM)
+            val id = bundle.getInt(ARG_EXTRA)
+            if (result) {
+                viewModel.deleteEntryById(id)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val entryAdapter = EntryAdapter()
+        val entryAdapter = EntryAdapter().apply {
+            registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    recyclerView.scrollToPosition(positionStart)
+                }
+            })
+        }
         recyclerView.adapter = entryAdapter
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                Log.d(TAG, "entry list updated")
                 viewModel.entryList.collectLatest {
                     entryAdapter.submitData(it)
                 }
@@ -92,7 +118,6 @@ class EntryListFragment : Fragment() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntryHolder =
             EntryHolder(parent)
-
     }
 
     interface EntryListFragmentCallback
@@ -101,20 +126,22 @@ class EntryListFragment : Fragment() {
         LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
     ), View.OnClickListener {
         private lateinit var entry: DashEntry
-        private val binding: ListItemEntryBinding = ListItemEntryBinding.bind(itemView)
-        private val detailsBinding: ListItemEntryDetailsTableBinding =
-            ListItemEntryDetailsTableBinding.bind(itemView)
+        private val binding = ListItemEntryBinding.bind(itemView)
+        private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
 
         private val dateTextView: TextView = itemView.findViewById(R.id.list_item_title)
         private val hoursTextView: TextView = itemView.findViewById(R.id.list_item_subtitle)
         private val totalPayTextView: TextView = itemView.findViewById(R.id.list_item_title_2)
-        private val payPlusCCsTextView: TextView = itemView.findViewById(R.id.list_item_regular_pay)
+        private val payPlusCCsTextView: TextView =
+            itemView.findViewById(R.id.list_item_regular_pay)
         private val cashTipsTextView: TextView = itemView.findViewById(R.id.list_item_cash_tips)
         private val otherPayTextView: TextView = itemView.findViewById(R.id.list_item_other_pay)
         private val incompleteAlertImageView: ImageView =
             itemView.findViewById(R.id.list_item_alert)
-        private val detailsTable: ConstraintLayout = itemView.findViewById(R.id.list_item_details)
-        private val totalHoursTextView: TextView = itemView.findViewById(R.id.list_item_entry_hours)
+        private val detailsTable: ConstraintLayout =
+            itemView.findViewById(R.id.list_item_details)
+        private val totalHoursTextView: TextView =
+            itemView.findViewById(R.id.list_item_entry_hours)
         private val mileageTextView: TextView =
             itemView.findViewById(R.id.list_item_entry_mileage_range)
 
@@ -124,7 +151,8 @@ class EntryListFragment : Fragment() {
         private val numDeliveriesTextView: TextView =
             itemView.findViewById(R.id.list_item_entry_num_deliveries)
 
-        private val hourlyTextView: TextView = itemView.findViewById(R.id.list_item_entry_hourly)
+        private val hourlyTextView: TextView =
+            itemView.findViewById(R.id.list_item_entry_hourly)
 
         private val avgDeliveryTextView: TextView =
             itemView.findViewById(R.id.list_item_entry_avd_del)
@@ -147,7 +175,10 @@ class EntryListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
                 setOnClickListener {
-                    viewModel.delete(this@EntryHolder.entry)
+                    ConfirmationDialog(
+                        ConfirmationDialog.ConfirmationType.DELETE,
+                        this@EntryHolder.entry.entryId
+                    ).show(parentFragmentManager, null)
                 }
             }
         }
@@ -219,7 +250,8 @@ class EntryListFragment : Fragment() {
             numDeliveriesTextView.text = "${this.entry.numDeliveries ?: "-"}"
             detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.entry.numDeliveries == null)
 
-            hourlyTextView.text = getStringOrElse(R.string.currency_unit, "-", this.entry.hourly)
+            hourlyTextView.text =
+                getStringOrElse(R.string.currency_unit, "-", this.entry.hourly)
 
             avgDeliveryTextView.text =
                 getStringOrElse(R.string.currency_unit, "-", this.entry.avgDelivery)

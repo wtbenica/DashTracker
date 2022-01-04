@@ -12,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 abstract class BaseViewModel<T: DataModel>: ViewModel() {
@@ -42,14 +41,14 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
 
     fun upsert(dataModel: DataModel) {
         CoroutineScope(Dispatchers.Default).launch {
-            val id = repository.upsertModelSus(dataModel)
+            val id = repository.upsertModel(dataModel)
             if (id != -1L) {
                 _id.value = id.toInt()
             }
         }
     }
 
-    suspend fun upsertSus(dataModel: DataModel) = repository.upsertModelSus(dataModel)
+    suspend fun upsertSus(dataModel: DataModel) = repository.upsertModel(dataModel)
 
     fun delete(dataModel: DataModel) = repository.deleteModel(dataModel)
 

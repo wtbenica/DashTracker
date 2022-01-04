@@ -11,6 +11,7 @@
     <dimen name="radius_insights">16dp</dimen>
     <dimen name="radius_list_item">16dp</dimen>
 
+    <dimen name="text_size_xxl">19sp</dimen>
     <dimen name="text_size_xlarge">17sp</dimen>
     <dimen name="text_size_large">15sp</dimen>
     <dimen name="text_size_med">13sp</dimen>

@@ -8,7 +8,6 @@
         <item name="android:layout_marginHorizontal">@dimen/margin_half</item>
         <item name="android:layout_marginVertical">@dimen/margin_half</item>
         <item name="android:minHeight">@dimen/min_touch_target</item>
-        <item name="cardCornerRadius">@dimen/radius_list_item</item>
     </style>
 
     <style name="ListItemHeader">

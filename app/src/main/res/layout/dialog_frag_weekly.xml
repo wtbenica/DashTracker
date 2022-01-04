@@ -14,7 +14,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary">
+            android:background="?attr/colorSecondary">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_adjust_toolbar"
@@ -24,11 +24,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:title="@string/dialog_weekly_title"
-                app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Tracker" />
+                app:titleMarginStart="24dp"
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Tracker"
+                app:titleTextColor="?attr/colorOnSecondary" />
 
             <androidx.cardview.widget.CardView
-                style="@style/DialogContent"
                 android:id="@+id/frag_adjust_table_card"
+                style="@style/DialogContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -37,9 +39,9 @@
 
                 <TableLayout
                     android:id="@+id/frag_adjust_table"
+                    style="@style/DialogGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/DialogGrid"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">

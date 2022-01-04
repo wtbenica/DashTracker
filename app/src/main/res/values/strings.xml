@@ -45,7 +45,7 @@
     <string name="content_desc_remove">Remove this entry</string>
     <string name="week_number">Week %d</string>
     <string name="date_range">%1$s - %2$s</string>
-    <string name="lbl_total_earned">Total Earned</string>
+    <string name="lbl_total_earned">Total\nEarned</string>
     <string name="title_weekly_list">Weekly</string>
     <string name="header_regular_pay">Regular Pay</string>
     <string name="lbl_adjust">Base Pay Adjustment</string>
@@ -55,7 +55,13 @@
     <string name="dialog_payout_title">Payout</string>
     <string name="title_yearly_list">Yearly</string>
     <string name="mileage_fmt">%.1f</string>
-    <string name="confirm_delete">Do you really want to delete this entry?</string>
+    <string name="confirm_delete">The information will not be recoverable</string>
     <string name="delete">Delete</string>
     <string name="keep">No</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="confirm_save">Do you want to save this entry?</string>
+    <string name="confirm_dialog">Confirm %s</string>
+    <string name="reset">Reset</string>
+    <string name="save">Save</string>
 </resources>

@@ -181,7 +181,7 @@ class WeeklyDialog(
             val weekOfYear = endWeek.weekOfYear
             viewHolder?.weekNumber?.text = getString(R.string.week_number, weekOfYear)
             viewHolder?.dates?.text =
-                getString(R.string.date_range, startWeek.formatted, endWeek.formatted)
+                getString(R.string.date_range, startWeek.shortFormat, endWeek.shortFormat)
 
             return cv
         }
@@ -208,7 +208,7 @@ class WeeklyDialog(
             val weekOfYear = endWeek.weekOfYear
             viewHolder?.weekNumber?.text = getString(R.string.week_number, weekOfYear)
             viewHolder?.dates?.text =
-                getString(R.string.date_range, startWeek.formatted, endWeek.formatted)
+                getString(R.string.date_range, startWeek.shortFormat, endWeek.shortFormat)
             return cv
         }
     }

@@ -1,5 +1,6 @@
 package com.wtb.dashTracker.ui.dialog_entry
 
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -14,6 +15,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
@@ -25,10 +27,10 @@ import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.ConfirmationType
 import com.wtb.dashTracker.views.FullWidthDialogFragment
-import com.wtb.dashTracker.views.TableRadioButton
-import com.wtb.dashTracker.views.TableRadioGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,17 +42,20 @@ import java.time.LocalDateTime
 @ExperimentalCoroutinesApi
 class EntryDialog(
     private var entry: DashEntry? = null
-) : FullWidthDialogFragment(), TableRadioGroup.TableRadioGroupCallback {
+) : FullWidthDialogFragment() {
 
     private val viewModel: EntryViewModel by viewModels()
     private var saveOnExit = true
+    private var startTimeChanged = false
+    private var saveConfirmed = false
 
     private lateinit var dateTextView: TextView
     private lateinit var startTimeTextView: TextView
     private lateinit var endTimeTextView: TextView
     private lateinit var endsNextDayCheckBox: CheckBox
-    private lateinit var startEndOdoTableRadioButton: TableRadioButton
-    private lateinit var tripOdoTableRadioButton: TableRadioButton
+
+    //    private lateinit var startEndOdoTableRadioButton: TableRadioButton
+//    private lateinit var tripOdoTableRadioButton: TableRadioButton
     private lateinit var startMileageEditText: EditText
     private lateinit var endMileageEditText: EditText
     private lateinit var totalMileageEditText: EditText
@@ -73,19 +78,8 @@ class EntryDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        childFragmentManager.setFragmentResultListener(
-            "confirmDelete",
-            viewLifecycleOwner
-        ) { requestKey, bundle ->
-            val result = bundle.getBoolean("confirm")
-            Log.d(TAG, result.toString())
-            if (result) {
-                Log.d(TAG, "Deleting and dismissing, I hope")
-                saveOnExit = false
-                dismiss()
-                entry?.let { e -> viewModel.delete(e) }
-            }
-        }
+
+        setDialogListeners()
 
         val view = inflater.inflate(R.layout.dialog_frag_entry, container, false)
 
@@ -93,13 +87,14 @@ class EntryDialog(
 
         dateTextView = view.findViewById<TextView>(R.id.frag_entry_date).apply {
             setOnClickListener {
-                DatePickerFragment(this).show(parentFragmentManager, "date_picker")
+                DatePickerFragment(this).show(childFragmentManager, "date_picker")
             }
         }
 
         startTimeTextView = view.findViewById<TextView>(R.id.frag_entry_start_time).apply {
             setOnClickListener {
-                TimePickerFragment(this).show(parentFragmentManager, "time_picker_start")
+                TimePickerFragment(this).show(childFragmentManager, "time_picker_start")
+                startTimeChanged = true
             }
         }
 
@@ -111,15 +106,16 @@ class EntryDialog(
 
         endsNextDayCheckBox = view.findViewById(R.id.frag_entry_check_ends_next_day)
 
-        view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer)
+//        view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer)
+//
+//        tripOdoTableRadioButton = view.findViewById(R.id.frag_entry_trb_trip_odometer)
+//        startEndOdoTableRadioButton =
+//            view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer).apply {
+//                val radioGroup = this.getRadioGroup()
+//                radioGroup?.callback = this@EntryDialog
+//            }
 
-        tripOdoTableRadioButton = view.findViewById(R.id.frag_entry_trb_trip_odometer)
-        startEndOdoTableRadioButton =
-            view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer).apply {
-                val radioGroup = this.getRadioGroup()
-                radioGroup?.callback = this@EntryDialog
-            }
-        tripOdoTableRadioButton = view.findViewById(R.id.frag_entry_trb_trip_odometer)
+//        tripOdoTableRadioButton = view.findViewById(R.id.frag_entry_trb_trip_odometer)
         startMileageEditText = view.findViewById(R.id.frag_entry_start_mileage)
         endMileageEditText = view.findViewById(R.id.frag_entry_end_mileage)
         totalMileageEditText = view.findViewById(R.id.frag_entry_total_mileage)
@@ -130,14 +126,13 @@ class EntryDialog(
 
         deleteButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_delete).apply {
             setOnClickListener {
-                ConfirmDeleteDialog().show(childFragmentManager, ConfirmDeleteDialog.TAG)
+                ConfirmationDialog(ConfirmationType.DELETE).show(parentFragmentManager, null)
             }
         }
 
         cancelButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_cancel).apply {
             setOnClickListener {
-//                viewModel.clearEntry()
-                clearFields()
+                ConfirmationDialog(ConfirmationType.RESET).show(parentFragmentManager, null)
             }
         }
 
@@ -146,9 +141,51 @@ class EntryDialog(
             dismiss()
         }
 
+        disableEntryView(requireContext(), totalMileageEditText)
+
         updateUI()
 
         return view
+    }
+
+    private fun setDialogListeners() {
+        setFragmentResultListener(
+            ConfirmationType.DELETE.requestKey,
+        ) { requestKey, bundle ->
+            Log.d(TAG, "Receiving Delete")
+            val result = bundle.getBoolean(ARG_CONFIRM)
+            Log.d(TAG, "Result: $result")
+            if (result) {
+                saveOnExit = false
+                dismiss()
+                entry?.let { e -> viewModel.delete(e) }
+            }
+        }
+
+        setFragmentResultListener(
+            ConfirmationType.RESET.requestKey,
+        ) { requestKey, bundle ->
+            Log.d(TAG, "Receiving Reset")
+            val result = bundle.getBoolean(ARG_CONFIRM)
+            Log.d(TAG, "Result: $result")
+            Log.d(TAG, result.toString())
+            if (result) {
+                clearFields()
+            }
+        }
+
+        setFragmentResultListener(
+            ConfirmationType.SAVE.requestKey,
+        ) { requestKey, bundle ->
+            Log.d(TAG, "Receiving Reset")
+            val result = bundle.getBoolean(ARG_CONFIRM)
+            Log.d(TAG, "Result: $result")
+            Log.d(TAG, result.toString())
+            if (result) {
+                saveConfirmed = true
+            }
+            dismiss()
+        }
     }
 
     private fun saveValues() {
@@ -169,8 +206,8 @@ class EntryDialog(
             numDeliveries = numDeliveriesEditText.text.toIntOrNull(),
         )
 
-        viewModel.upsert(e)
         viewModel.insert(Weekly(e.date.endOfWeek))
+        viewModel.upsert(e)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -185,9 +222,21 @@ class EntryDialog(
         }
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+        object : Dialog(requireContext(), theme) {
+            override fun onBackPressed() {
+                if (isEmpty() && !saveConfirmed)
+                    ConfirmationDialog(ConfirmationType.SAVE).show(parentFragmentManager, null)
+                else
+                    super.onBackPressed()
+            }
+        }
+
     override fun onDestroy() {
-        if (!isEmpty() && saveOnExit)
+        if (saveOnExit && (!isEmpty() || saveConfirmed)) {
             saveValues()
+        }
+
         super.onDestroy()
     }
 
@@ -196,7 +245,9 @@ class EntryDialog(
             val tempEntry = entry
             if (tempEntry != null) {
                 dateTextView.text = tempEntry.date.format(dtfDate)
-                tempEntry.startTime?.let { st -> startTimeTextView.text = st.format(dtfTime) }
+                tempEntry.startTime?.let { st ->
+                    startTimeTextView.text = st.format(dtfTime)
+                }
                 tempEntry.endTime?.let { et -> endTimeTextView.text = et.format(dtfTime) }
                 endsNextDayCheckBox.isChecked =
                     tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
@@ -224,14 +275,14 @@ class EntryDialog(
         otherPayEditText.text.clear()
         cashTipsEditText.text.clear()
         numDeliveriesEditText.text.clear()
-        startEndOdoTableRadioButton.let {
-            it.getRadioGroup()?.setChecked(it)
-        }
+//        startEndOdoTableRadioButton.let {
+//            it.getRadioGroup()?.setChecked(it)
+//        }
     }
 
     private fun isEmpty() =
         dateTextView.text == LocalDate.now().format(dtfDate) &&
-                startTimeTextView.text.isBlank() &&
+                !startTimeChanged &&
                 endTimeTextView.text.isBlank() &&
                 startMileageEditText.text.isBlank() &&
                 endMileageEditText.text.isBlank() &&
@@ -242,24 +293,26 @@ class EntryDialog(
 
     companion object {
 
-        private const val TAG = APP + "DetailFragment"
-        private const val ARG_ENTRY_ID = "arg_entry_id"
+        private const val TAG = APP + "EntryDialog"
     }
 
-    override fun onCheckChanged(button: TableRadioButton) {
-        if (button == startEndOdoTableRadioButton) {
-            disableEntryView(requireContext(), totalMileageEditText)
-            enableEntryView(requireContext(), startMileageEditText, endMileageEditText)
-        } else if (button == tripOdoTableRadioButton) {
-            disableEntryView(requireContext(), startMileageEditText, endMileageEditText)
-            enableEntryView(requireContext(), totalMileageEditText)
-        }
-    }
+//    override fun onCheckChanged(button: TableRadioButton) {
+//        if (button == startEndOdoTableRadioButton) {
+//            disableEntryView(requireContext(), totalMileageEditText)
+//            enableEntryView(requireContext(), startMileageEditText, endMileageEditText)
+//        } else if (button == tripOdoTableRadioButton) {
+//            disableEntryView(requireContext(), startMileageEditText, endMileageEditText)
+//            enableEntryView(requireContext(), totalMileageEditText)
+//        }
+//    }
 
     private fun enableEntryView(context: Context, vararg view: TextView) {
         view.forEach {
             val td =
-                ContextCompat.getDrawable(context, R.drawable.enable_textview) as TransitionDrawable
+                ContextCompat.getDrawable(
+                    context,
+                    R.drawable.enable_textview
+                ) as TransitionDrawable
             it.background = td
             td.startTransition(500)
             it.isEnabled = true

@@ -19,7 +19,7 @@
         <item name="colorAccent">@color/accent</item>
 
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorDisabled">?attr/colorSecondary</item>
+        <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
         <item name="colorToolbar">?attr/colorPrimaryVariant</item>
@@ -46,9 +46,9 @@
         <item name="colorNightHeader">@color/nighttime_solid</item>
         <item name="colorNightValue">@color/nighttime_light</item>
 
-        <item name="colorFab">?attr/colorAccent</item>
-        <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorFabIcon">?attr/colorOnPrimary</item>
+        <item name="colorFab">?attr/colorSecondaryDark</item>
+        <item name="colorFabDisabled">?attr/colorSecondaryVariant</item>
+        <item name="colorFabIcon">?attr/colorOnSecondary</item>
 
         <item name="colorSurface">@color/secondary_textcolor</item>
         <item name="colorOnSurface">@color/primary_textcolor</item>

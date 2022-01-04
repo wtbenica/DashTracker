@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:dashtracker="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,7 +14,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary">
+            android:background="?attr/colorSecondary">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_entry_toolbar"
@@ -25,6 +24,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:title="Dash Entry"
+                app:titleTextColor="?attr/colorOnSecondary"
+                app:titleMarginStart="24dp"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Tracker" />
 
             <androidx.cardview.widget.CardView
@@ -37,8 +38,8 @@
                 app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
 
                 <GridLayout
-                    style="@style/DialogGrid"
                     android:id="@+id/frag_entry_table"
+                    style="@style/DialogGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:columnCount="3"
@@ -123,15 +124,15 @@
                         android:textColor="?attr/colorOnPrimary" />
 
                     <!--    Row 4   -->
-                    <com.wtb.dashTracker.views.TableRadioButton
-                        android:id="@+id/frag_entry_trb_start_end_odometer"
-                        android:layout_row="4"
-                        android:layout_rowSpan="2"
-                        android:layout_column="0"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="8dp"
-                        android:buttonTint="?attr/colorOnPrimary"
-                        dashtracker:group="odometer_type" />
+                    <!--                    <com.wtb.dashTracker.views.TableRadioButton-->
+                    <!--                        android:id="@+id/frag_entry_trb_start_end_odometer"-->
+                    <!--                        android:layout_row="4"-->
+                    <!--                        android:layout_rowSpan="2"-->
+                    <!--                        android:layout_column="0"-->
+                    <!--                        android:layout_gravity="center_vertical"-->
+                    <!--                        android:layout_marginEnd="8dp"-->
+                    <!--                        android:buttonTint="?attr/colorOnPrimary"-->
+                    <!--                        dashtracker:group="odometer_type" />-->
 
                     <TextView
                         style="@style/ListItemHeaderTextView.FragEntry"
@@ -175,14 +176,14 @@
                         android:inputType="numberDecimal" />
 
                     <!--    Row 6   -->
-                    <com.wtb.dashTracker.views.TableRadioButton
-                        android:id="@+id/frag_entry_trb_trip_odometer"
-                        android:layout_row="6"
-                        android:layout_column="0"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="8dp"
-                        android:buttonTint="?attr/colorOnPrimary"
-                        dashtracker:group="odometer_type" />
+                    <!--                    <com.wtb.dashTracker.views.TableRadioButton-->
+                    <!--                        android:id="@+id/frag_entry_trb_trip_odometer"-->
+                    <!--                        android:layout_row="6"-->
+                    <!--                        android:layout_column="0"-->
+                    <!--                        android:layout_gravity="center_vertical"-->
+                    <!--                        android:layout_marginEnd="8dp"-->
+                    <!--                        android:buttonTint="?attr/colorOnPrimary"-->
+                    <!--                        dashtracker:group="odometer_type" />-->
 
                     <TextView
                         style="@style/ListItemHeaderTextView.FragEntry"

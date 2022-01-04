@@ -2,10 +2,10 @@
 <resources>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="brick_dark">#566</color>
-    <color name="brick">#899</color>
-    <color name="brick_light">#ABB</color>
-    <color name="brick_faded">#CDD</color>
+    <color name="brick_dark">#567</color>
+    <color name="brick">#789</color>
+    <color name="brick_light">#ABC</color>
+    <color name="brick_faded">#CDE</color>
 
     <color name="accent">#0CF</color>
 
@@ -20,4 +20,7 @@
     <color name="nighttime_light">#CCEEEE</color>
 
     <color name="alert">#EE5522</color>
+    <color name="alert_faded">#FFAA88</color>
+
+    <color name="ferro">#357</color>
 </resources>
