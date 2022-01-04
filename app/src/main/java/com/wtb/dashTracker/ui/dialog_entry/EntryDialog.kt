@@ -137,6 +137,7 @@ class EntryDialog(
         }
 
         DialogFragEntryBinding.bind(view).fragEntryBtnSave.setOnClickListener {
+            saveOnExit = false
             saveValues()
             dismiss()
         }
@@ -177,7 +178,7 @@ class EntryDialog(
         setFragmentResultListener(
             ConfirmationType.SAVE.requestKey,
         ) { requestKey, bundle ->
-            Log.d(TAG, "Receiving Reset")
+            Log.d(TAG, "Receiving Save")
             val result = bundle.getBoolean(ARG_CONFIRM)
             Log.d(TAG, "Result: $result")
             Log.d(TAG, result.toString())

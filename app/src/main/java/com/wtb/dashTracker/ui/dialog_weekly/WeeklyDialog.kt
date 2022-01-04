@@ -68,8 +68,9 @@ class WeeklyDialog(
                     position: Int,
                     id: Long
                 ) {
+                    saveValues()
                     val selectedDate = binding.fragAdjustDate.adapter.getItem(position) as LocalDate
-                    viewModel.insert(Weekly(date = selectedDate))
+                    viewModel.insert(Weekly(date = selectedDate, isNew = true))
                     viewModel.loadDate(selectedDate)
                 }
 
@@ -78,11 +79,6 @@ class WeeklyDialog(
                 }
             }
 
-
-        binding.fragAdjustBtnDelete.setOnClickListener {
-            // TODO: delete button should just set it to zero. the week should still exist
-            //            weekly?.let { w -> viewModel.delete(w) }
-        }
 
         binding.fragAdjustBtnCancel.setOnClickListener {
             viewModel.clearEntry()
@@ -145,10 +141,13 @@ class WeeklyDialog(
     }
 
     private fun saveValues() {
-        weekly?.weekly?.basePayAdjustment = binding.fragAdjustAmount.text.toFloatOrNull()
-
+        weekly?.weekly?.apply {
+            basePayAdjustment = binding.fragAdjustAmount.text.toFloatOrNull()
+            isNew = false
+        }
         weekly?.let { viewModel.upsert(it.weekly) }
     }
+
 
     private fun clearFields() {
         binding.fragAdjustDate.setSelection(0)

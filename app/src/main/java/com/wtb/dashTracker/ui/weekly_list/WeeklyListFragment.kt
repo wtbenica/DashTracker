@@ -58,7 +58,13 @@ class WeeklyListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val entryAdapter = EntryAdapter()
+        val entryAdapter = EntryAdapter().apply {
+            registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    recyclerView.scrollToPosition(positionStart)
+                }
+            })
+        }
         recyclerView.adapter = entryAdapter
 
         lifecycleScope.launch {

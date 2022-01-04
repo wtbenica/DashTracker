@@ -264,9 +264,7 @@ class EntryListFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = APP + "MainFragment"
-
-        fun newInstance() = WeeklyListFragment()
+        private const val TAG = APP + "EntryListFragment"
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
             override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =

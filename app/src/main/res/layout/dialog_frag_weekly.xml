@@ -121,12 +121,6 @@
                 app:layout_constraintTop_toBottomOf="@id/frag_adjust_table_card">
 
                 <ImageButton
-                    android:id="@+id/frag_adjust_btn_delete"
-                    style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/desc_delete_entry"
-                    android:src="@drawable/delete" />
-
-                <ImageButton
                     android:id="@+id/frag_adjust_btn_cancel"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/desc_new_entry"

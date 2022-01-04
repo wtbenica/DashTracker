@@ -15,7 +15,8 @@ import kotlin.reflect.KProperty1
 data class Weekly(
     @PrimaryKey val date: LocalDate,
     var basePayAdjustment: Float? = null,
-    val weekNumber: Int = date.weekOfYear
+    val weekNumber: Int = date.weekOfYear,
+    var isNew: Boolean = false
 ) : DataModel() {
     override val id: Int
         get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toInt()
@@ -39,7 +40,7 @@ data class CompleteWeekly(
     val entries: List<DashEntry>
 ) {
     val isEmpty: Boolean
-        get() = entries.isEmpty() && weekly.isIncomplete
+        get() = entries.isEmpty() && weekly.isIncomplete && !weekly.isNew
 
     internal val hours: Float
         get() = getTotalForWeek(DashEntry::totalHours)
