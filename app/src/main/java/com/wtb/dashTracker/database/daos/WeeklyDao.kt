@@ -18,13 +18,13 @@ abstract class WeeklyDao : BaseDao<Weekly>("weekly", "date") {
     abstract fun getAll(): Flow<List<CompleteWeekly>>
 
     @Query(SQL_GET_ALL)
-    abstract fun getAllPagingSource(): PagingSource<Int, Weekly>
+    abstract fun getAllPagingSource(): PagingSource<Int, CompleteWeekly>
 
     @RawQuery(observedEntities = [Weekly::class])
     abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<Weekly?>
 
     @Query("SELECT * FROM Weekly WHERE date = :date LIMIT 1")
-    abstract fun getWeeklyByDate(date: LocalDate): Flow<Weekly?>
+    abstract fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?>
 
     companion object {
         private const val SQL_GET_ALL = "SELECT * FROM Weekly ORDER BY date DESC"

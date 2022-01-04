@@ -1,8 +1,11 @@
 package com.wtb.dashTracker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.Menu
+import android.view.MenuItem
 import android.view.MotionEvent
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
@@ -13,6 +16,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
@@ -30,17 +37,25 @@ import java.time.LocalDate
 class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
 
     private lateinit var binding: ActivityMainBinding
+    lateinit var mAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Repository.initialize(this)
+        supportActionBar?.title = "DashTracker"
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        MobileAds.initialize(this) {}
+
+        mAdView = binding.adView
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
+
         initBottomNavBar()
         initObservers()
-        binding.fab.initialize(getMenuItems(supportFragmentManager), binding.root)
+        binding.fab.initialize(getMenuItems(supportFragmentManager), binding.container)
     }
 
     private fun initObservers() {
@@ -51,11 +66,13 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         }
 
         viewModel.thisWeek.observe(this) {
-            binding.actMainThisWeek.text = getStringOrElse(R.string.currency_unit, it)
+            binding.actMainThisWeek.text =
+                getStringOrElse(R.string.currency_unit, it)
         }
 
         viewModel.lastWeek.observe(this) {
-            binding.actMainLastWeek.text = getStringOrElse(R.string.currency_unit, it)
+            binding.actMainLastWeek.text =
+                getStringOrElse(R.string.currency_unit, it)
         }
     }
 
@@ -82,6 +99,19 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         binding.fab.interceptTouchEvent(ev)
         return super.dispatchTouchEvent(ev)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_licenses -> {
+            startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     companion object {

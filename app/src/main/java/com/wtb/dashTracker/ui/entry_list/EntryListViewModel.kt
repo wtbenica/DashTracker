@@ -14,4 +14,6 @@ class EntryListViewModel : ViewModel() {
     val entryList: Flow<PagingData<DashEntry>> = repository.allEntriesPaged
 
     fun delete(entry: DashEntry) = repository.deleteModel(entry)
+
+    fun deleteEntryById(id: Int) = repository.deleteEntryById(id)
 }

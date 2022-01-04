@@ -18,16 +18,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.MainActivity.Companion.APP
-import com.wtb.dashTracker.MainActivityViewModel.Companion.getTotalByField
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.toVisibleIfTrueElseGone
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -61,7 +58,13 @@ class WeeklyListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val entryAdapter = EntryAdapter()
+        val entryAdapter = EntryAdapter().apply {
+            registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    recyclerView.scrollToPosition(positionStart)
+                }
+            })
+        }
         recyclerView.adapter = entryAdapter
 
         lifecycleScope.launch {
@@ -79,7 +82,7 @@ class WeeklyListFragment : Fragment() {
     }
 
     inner class EntryAdapter :
-        PagingDataAdapter<Weekly, WeeklyHolder>(DIFF_CALLBACK) {
+        PagingDataAdapter<CompleteWeekly, WeeklyHolder>(DIFF_CALLBACK) {
         override fun onBindViewHolder(
             holder: WeeklyHolder,
             position: Int,
@@ -105,7 +108,7 @@ class WeeklyListFragment : Fragment() {
     ), View.OnClickListener {
         private val binding: ListItemWeeklyBinding
         private val detailsBinding: ListItemWeeklyDetailsTableBinding
-        private lateinit var weekly: Weekly
+        private lateinit var compWeekly: CompleteWeekly
 
         init {
             binding = ListItemWeeklyBinding.bind(itemView)
@@ -115,58 +118,13 @@ class WeeklyListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
                 setOnClickListener {
-                    WeeklyDialog(this@WeeklyHolder.weekly.date).show(
+                    WeeklyDialog(this@WeeklyHolder.compWeekly.weekly.date).show(
                         parentFragmentManager,
                         "edit_details"
                     )
                 }
             }
         }
-
-        private var weeklyTotal: Float? = null
-            set(value) {
-                field = value
-                updateWeeklyTotalText()
-            }
-
-        private var regularPay: Float? = null
-            set(value) {
-                field = value
-                updateWeeklyTotal()
-                detailsBinding.listItemRegularPay.text = getCurrencyString(field)
-            }
-
-        private var cashTips: Float? = null
-            set(value) {
-                field = value
-                updateWeeklyTotal()
-                detailsBinding.listItemCashTips.text = getCurrencyString(field)
-            }
-
-        private var otherPay: Float? = null
-            set(value) {
-                field = value
-                updateWeeklyTotal()
-                detailsBinding.listItemOtherPay.text = getCurrencyString(field)
-            }
-
-        private fun updateWeeklyTotal() {
-            weeklyTotal = regularPay?.let { rp ->
-                rp + (cashTips ?: 0f) + (otherPay ?: 0f) + (weekly.basePayAdjustment ?: 0f)
-            }
-        }
-
-        private var weeklyHours: Float? = null
-            set(value) {
-                field = value
-                updateWeeklyHoursText()
-            }
-
-        private var weeklyDeliveries: Int? = null
-            set(value) {
-                field = value
-                updateWeeklyDelsTexts()
-            }
 
         override fun onClick(v: View?) {
             val currentVisibility = binding.listItemDetails.visibility
@@ -178,8 +136,12 @@ class WeeklyListFragment : Fragment() {
             )
         }
 
-        fun bind(item: Weekly, payloads: MutableList<Any>? = null) {
-            this.weekly = item
+        fun bind(item: CompleteWeekly, payloads: MutableList<Any>? = null) {
+            if (item.isEmpty) {
+                viewModel.delete(item.weekly)
+            }
+
+            this.compWeekly = item
 
             val listItemDetailsVisibility = (payloads?.let {
                 if (it.size == 1 && it[0] in listOf(
@@ -191,77 +153,55 @@ class WeeklyListFragment : Fragment() {
 
             binding.listItemWrapper.setBackgroundResource(if (listItemDetailsVisibility == VISIBLE) R.drawable.list_item_expanded_background else R.drawable.list_item_background)
 
+            binding.listItemTitle2.text =
+                getCurrencyString(
+                    if (compWeekly.totalPay != 0f) {
+                        compWeekly.totalPay
+                    } else {
+                        null
+                    }
+                )
+
+
             binding.listItemSubtitle.text =
-                getString(R.string.week_number, weekly.date.weekOfYear)
+                getString(R.string.week_number, compWeekly.weekly.date.weekOfYear)
 
             detailsBinding.listItemWeeklyAdjust.text =
-                getStringOrElse(R.string.currency_unit, "-", weekly.basePayAdjustment)
+                getStringOrElse(R.string.currency_unit, "-", compWeekly.weekly.basePayAdjustment)
 
             binding.listItemAlert.visibility = toVisibleIfTrueElseGone(true)
 
-            viewModel.getEntriesByDate(this.weekly.date.minusDays(6), this.weekly.date).observe(
-                viewLifecycleOwner,
-                { entries ->
-                    regularPay = getTotalByField(entries, DashEntry::pay)
-                    cashTips = getTotalByField(entries, DashEntry::cashTips)
-                    otherPay = getTotalByField(entries, DashEntry::otherPay)
-                    weeklyDeliveries = getTotalByField(entries, DashEntry::numDeliveries)
-                    weeklyHours = getTotalByField(entries, DashEntry::totalHours)
-                }
-            )
+            detailsBinding.listItemRegularPay.text = getCurrencyString(compWeekly.regularPay)
 
-            binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.weekly.isIncomplete)
+            detailsBinding.listItemWeeklyAdjust.text =
+                getCurrencyString(compWeekly.weekly.basePayAdjustment)
+
+            detailsBinding.listItemCashTips.text = getCurrencyString(compWeekly.cashTips)
+
+            detailsBinding.listItemOtherPay.text = getCurrencyString(compWeekly.otherPay)
+
+            detailsBinding.listItemWeeklyHours.text =
+                getStringOrElse(R.string.float_fmt, "-", compWeekly.hours)
+
+            detailsBinding.listItemWeeklyHourly.text = getCurrencyString(compWeekly.hourly)
+
+            detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(compWeekly.avgDelivery)
+
+            detailsBinding.listItemWeeklyHourlyDels.text =
+                getStringOrElse(R.string.float_fmt, "-", compWeekly.delPerHour)
+
+            binding.listItemAlert.visibility =
+                toVisibleIfTrueElseGone(this.compWeekly.weekly.isIncomplete)
 
             binding.listItemTitle.text =
                 getStringOrElse(
                     R.string.time_range,
                     "",
-                    this.weekly.date.minusDays(6).formatted.uppercase(),
-                    this.weekly.date.formatted.uppercase()
+                    this.compWeekly.weekly.date.minusDays(6).shortFormat.uppercase(),
+                    this.compWeekly.weekly.date.shortFormat.uppercase()
                 )
 
             binding.listItemDetails.visibility = listItemDetailsVisibility
-        }
-
-        private fun updateWeeklyDelsTexts() {
-            updateAvgDelivery()
-            updateHourlyDeliveries()
-        }
-
-        private fun updateWeeklyHoursText() {
-            detailsBinding.listItemWeeklyHours.text = weeklyHours?.truncate(2) ?: "-"
-            updateHourlyText()
-            updateAvgDelivery()
-        }
-
-        private fun updateWeeklyTotalText() {
-            binding.listItemTitle2.text = getStringOrElse(
-                R.string.currency_unit,
-                "-",
-                weeklyTotal
-            )
-            updateAvgDelivery()
-            updateHourlyText()
-        }
-
-        private fun updateHourlyText() {
-            detailsBinding.listItemWeeklyHourly.text = getStringOrElse(
-                R.string.currency_unit,
-                "-",
-                weeklyHours?.let { hours -> weeklyTotal?.let { total -> total / hours } })
-        }
-
-        private fun updateAvgDelivery() {
-            detailsBinding.listItemWeeklyAvgDel.text = getStringOrElse(
-                R.string.currency_unit,
-                "-",
-                weeklyDeliveries?.let { dels -> weeklyTotal?.let { total -> total / dels } })
-        }
-
-        private fun updateHourlyDeliveries() {
-            detailsBinding.listItemWeeklyHourlyDels.text =
-                weeklyDeliveries?.let { dels -> weeklyHours?.let { hours -> dels / hours } }
-                    ?.truncate(2) ?: "-"
         }
     }
 
@@ -270,16 +210,19 @@ class WeeklyListFragment : Fragment() {
 
         fun newInstance() = WeeklyListFragment()
 
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Weekly>() {
-            override fun areItemsTheSame(oldItem: Weekly, newItem: Weekly): Boolean =
-                oldItem.id == newItem.id
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CompleteWeekly>() {
+            override fun areItemsTheSame(
+                oldItem: CompleteWeekly,
+                newItem: CompleteWeekly
+            ): Boolean =
+                oldItem.weekly.id == newItem.weekly.id
 
 
             override fun areContentsTheSame(
-                oldItem: Weekly,
-                newItem: Weekly
+                oldItem: CompleteWeekly,
+                newItem: CompleteWeekly
             ): Boolean =
-                oldItem == newItem
+                oldItem.weekly == newItem.weekly
         }
     }
 }

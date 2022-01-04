@@ -18,7 +18,7 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>
-        <item name="android:tint">?attr/colorOnPrimary</item>
+        <item name="android:tint">?attr/colorOnSecondary</item>
     </style>
 
 </resources>

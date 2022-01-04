@@ -11,16 +11,13 @@ import com.wtb.dashTracker.database.daos.DashEntryDao
 import com.wtb.dashTracker.database.daos.WeeklyDao
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Weekly
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 6,
+    version = 7,
     entities = [DashEntry::class, Weekly::class],
     exportSchema = true,
 )
@@ -126,6 +123,15 @@ abstract class DashDatabase : RoomDatabase() {
                             )
                             database.execSQL(
                                 """ALTER TABLE DashEntry2 RENAME TO DashEntry"""
+                            )
+                        }
+                    },
+                    object : Migration(6, 7) {
+                        override fun migrate(database: SupportSQLiteDatabase) {
+                            database.execSQL(
+                                """ALTER TABLE Weekly
+                                ADD COLUMN isNew INTEGER NOT NULL DEFAULT 0
+                                """
                             )
                         }
                     },

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -23,7 +22,7 @@ import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.truncate
+import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -78,7 +77,7 @@ class YearlyListFragment : Fragment() {
                 viewModel.allWeeklies.collectLatest { cwList: List<CompleteWeekly> ->
                     yearlies.clear()
                     var numChecked = 0
-                    var year = LocalDate.now().year
+                    var year = cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year + 1
                     while (numChecked < cwList.size) {
                         val thisYears = cwList.mapNotNull { cw: CompleteWeekly ->
                             if (cw.weekly.date.year == year) cw else null
@@ -180,7 +179,7 @@ class YearlyListFragment : Fragment() {
             detailsBinding.listItemReportedIncome.text =
                 getCurrencyString(yearly.reportedPay)
             detailsBinding.listItemCashTips.text = getCurrencyString(yearly.cashTips)
-            detailsBinding.listItemYearlyMileage.text = yearly.mileage.truncate(1)
+            detailsBinding.listItemYearlyMileage.text = getMileageString(yearly.mileage)
             detailsBinding.listItemYearlyHours.text = getString(R.string.format_hours, yearly.hours)
             detailsBinding.listItemYearlyHourly.text = getCurrencyString(yearly.hourly)
             binding.listItemDetails.visibility = listItemDetailsVisibility

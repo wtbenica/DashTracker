@@ -23,6 +23,15 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @RawQuery(observedEntities = [DashEntry::class])
     abstract fun getEntriesByQuery(query: SupportSQLiteQuery): Flow<List<DashEntry>>
 
+    @RawQuery(observedEntities = [DashEntry::class])
+    abstract fun executeRawQuery(query: SupportSQLiteQuery): Int
+
+    fun deleteById(id: Int): Int {
+        val query = SimpleSQLiteQuery("DELETE FROM DashEntry WHERE entryId = $id")
+
+        return executeRawQuery(query)
+    }
+
     @Query("SELECT * FROM DashEntry WHERE date >= :startDate AND date <= :endDate ORDER BY date desc, startTime desc")
     abstract fun getEntriesByDate(
         startDate: LocalDate = LocalDate.MIN,

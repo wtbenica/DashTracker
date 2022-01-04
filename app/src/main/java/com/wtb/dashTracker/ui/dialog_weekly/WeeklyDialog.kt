@@ -15,7 +15,7 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.databinding.DialogWeeklySpinnerItemBinding
@@ -30,7 +30,7 @@ class WeeklyDialog(
     private var date: LocalDate = LocalDate.now().endOfWeek.minusDays(7)
 ) : FullWidthDialogFragment() {
 
-    private var weekly: Weekly? = null
+    private var weekly: CompleteWeekly? = null
     private lateinit var binding: DialogFragWeeklyBinding
     private val viewModel: WeeklyViewModel by viewModels()
     private var totalEarned: Float = 0f
@@ -68,8 +68,9 @@ class WeeklyDialog(
                     position: Int,
                     id: Long
                 ) {
+                    saveValues()
                     val selectedDate = binding.fragAdjustDate.adapter.getItem(position) as LocalDate
-                    viewModel.insert(Weekly(date = selectedDate))
+                    viewModel.insert(Weekly(date = selectedDate, isNew = true))
                     viewModel.loadDate(selectedDate)
                 }
 
@@ -78,10 +79,6 @@ class WeeklyDialog(
                 }
             }
 
-
-        binding.fragAdjustBtnDelete.setOnClickListener {
-            weekly?.let { w -> viewModel.delete(w) }
-        }
 
         binding.fragAdjustBtnCancel.setOnClickListener {
             viewModel.clearEntry()
@@ -109,15 +106,6 @@ class WeeklyDialog(
                 updateUI()
             }
         )
-
-        viewModel.entriesByWeek.observe(
-            viewLifecycleOwner,
-        ) { entries: List<DashEntry>? ->
-            Log.d(TAG, "INCOMING Entry List")
-            var res = 0f
-            entries?.forEach { res += it.totalEarned ?: 0f }
-            binding.fragAdjustTotal.text = res.truncate(2)
-        }
     }
 
     override fun onDestroy() {
@@ -129,10 +117,17 @@ class WeeklyDialog(
         val tempWeekly = weekly
         if (tempWeekly != null) {
             binding.fragAdjustDate.apply {
-                getSpinnerIndex(tempWeekly.date)?.let { setSelection(it) }
+                getSpinnerIndex(tempWeekly.weekly.date)?.let { setSelection(it) }
             }
 
-            binding.fragAdjustAmount.setText(tempWeekly.basePayAdjustment?.truncate(2) ?: "")
+            binding.fragAdjustAmount.setText(
+                getStringOrElse(
+                    R.string.float_fmt,
+                    "",
+                    tempWeekly.weekly.basePayAdjustment
+                )
+            )
+            binding.fragAdjustTotal.text = getString(R.string.float_fmt, tempWeekly.totalPay)
         }
     }
 
@@ -146,11 +141,13 @@ class WeeklyDialog(
     }
 
     private fun saveValues() {
-        weekly?.basePayAdjustment =
-            binding.fragAdjustAmount.text.toString().toFloatOrNull()?.truncate(2)?.toFloat()
-        Log.d(TAG, "Saving $weekly")
-        weekly?.let { viewModel.upsert(it) }
+        weekly?.weekly?.apply {
+            basePayAdjustment = binding.fragAdjustAmount.text.toFloatOrNull()
+            isNew = false
+        }
+        weekly?.let { viewModel.upsert(it.weekly) }
     }
+
 
     private fun clearFields() {
         binding.fragAdjustDate.setSelection(0)
@@ -183,7 +180,7 @@ class WeeklyDialog(
             val weekOfYear = endWeek.weekOfYear
             viewHolder?.weekNumber?.text = getString(R.string.week_number, weekOfYear)
             viewHolder?.dates?.text =
-                getString(R.string.date_range, startWeek.formatted, endWeek.formatted)
+                getString(R.string.date_range, startWeek.shortFormat, endWeek.shortFormat)
 
             return cv
         }
@@ -210,7 +207,7 @@ class WeeklyDialog(
             val weekOfYear = endWeek.weekOfYear
             viewHolder?.weekNumber?.text = getString(R.string.week_number, weekOfYear)
             viewHolder?.dates?.text =
-                getString(R.string.date_range, startWeek.formatted, endWeek.formatted)
+                getString(R.string.date_range, startWeek.shortFormat, endWeek.shortFormat)
             return cv
         }
     }

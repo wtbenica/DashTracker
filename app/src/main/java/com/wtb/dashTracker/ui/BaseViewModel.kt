@@ -7,9 +7,11 @@ import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import java.time.LocalDate
+import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 abstract class BaseViewModel<T: DataModel>: ViewModel() {
@@ -37,7 +39,16 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
 
     fun insert(dataModel: DataModel) = repository.saveModel(dataModel)
 
-    fun upsert(dataModel: DataModel) = repository.upsertModel(dataModel)
+    fun upsert(dataModel: DataModel) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val id = repository.upsertModel(dataModel)
+            if (id != -1L) {
+                _id.value = id.toInt()
+            }
+        }
+    }
+
+    suspend fun upsertSus(dataModel: DataModel) = repository.upsertModel(dataModel)
 
     fun delete(dataModel: DataModel) = repository.deleteModel(dataModel)
 

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.DashEntryDao
@@ -33,15 +34,30 @@ class Repository private constructor(context: Context) {
      */
     val allEntries: Flow<List<DashEntry>> = entryDao.getAll()
 
+    val entryPagingSources = mutableListOf<PagingSource<Int, DashEntry>>()
+
     val allEntriesPaged: Flow<PagingData<DashEntry>> = Pager(
         config = PagingConfig(
             pageSize = 20,
             enablePlaceholders = true
         ),
         pagingSourceFactory = {
-            entryDao.getAllPagingSource()
+            val ps = entryDao.getAllPagingSource()
+            entryPagingSources.add(ps)
+            ps
         }
     ).flow
+
+    fun deleteEntryById(id: Int) {
+        executor.execute {
+            entryDao.deleteById(id)
+            invalidateEntryPagingSources()
+        }
+    }
+
+    private fun invalidateEntryPagingSources() {
+        entryPagingSources.forEach { it.invalidate() }
+    }
 
     fun getEntryFlowById(id: Int) = entryDao.getFlow(id)
 
@@ -58,7 +74,7 @@ class Repository private constructor(context: Context) {
      */
     val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAll()
 
-    val allWeekliesPaged: Flow<PagingData<Weekly>> = Pager(
+    val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = Pager(
         config = PagingConfig(
             pageSize = 20,
             enablePlaceholders = true
@@ -71,19 +87,17 @@ class Repository private constructor(context: Context) {
     fun getEntriesByWeek(date: LocalDate = LocalDate.now()): Flow<List<DashEntry>> =
         entryDao.getEntriesByWeek(date)
 
-    fun upsertModel(model: DataModel) {
-        executor.execute {
-            when (model) {
-                is DashEntry -> entryDao.upsert(model)
-                is Weekly -> weeklyDao.upsert(model)
-            }
+    fun upsertModel(model: DataModel): Long {
+        return when (model) {
+            is DashEntry -> entryDao.upsert(model)
+            is Weekly -> weeklyDao.upsert(model)
         }
     }
 
     /**
      * Weekly
      */
-    fun getWeeklyByDate(date: LocalDate): Flow<Weekly?> = weeklyDao.getWeeklyByDate(date)
+    fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?> = weeklyDao.getWeeklyByDate(date)
 
     fun saveModel(model: DataModel) {
         executor.execute {
@@ -120,3 +134,4 @@ class Repository private constructor(context: Context) {
         }
     }
 }
+

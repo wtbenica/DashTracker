@@ -1,132 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/SummaryBar"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways">
+            android:fitsSystemWindows="true"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/act_main_lbl_hourly"
-                style="@style/SummaryBarItem.Header"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                style="@style/SummaryBar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lbl_hourly"
-                app:layout_constraintEnd_toStartOf="@id/act_main_lbl_last_week"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_scrollFlags="scroll|enterAlways">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/act_main_lbl_last_week"
-                style="@style/SummaryBarItem.Header"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/lbl_last_week"
-                app:layout_constraintEnd_toStartOf="@id/act_main_lbl_this_week"
-                app:layout_constraintStart_toEndOf="@id/act_main_lbl_hourly"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/act_main_lbl_hourly"
+                    style="@style/SummaryBarItem.Header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_hourly"
+                    app:layout_constraintEnd_toStartOf="@id/act_main_lbl_last_week"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/act_main_lbl_this_week"
-                style="@style/SummaryBarItem.Header"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/lbl_this_week"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/act_main_lbl_last_week"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/act_main_lbl_last_week"
+                    style="@style/SummaryBarItem.Header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_last_week"
+                    app:layout_constraintEnd_toStartOf="@id/act_main_lbl_this_week"
+                    app:layout_constraintStart_toEndOf="@id/act_main_lbl_hourly"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/act_main_hourly"
-                style="@style/SummaryBarItem.Value"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/act_main_last_week"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/act_main_lbl_hourly"
-                tools:text="$4.25/hr" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/act_main_lbl_this_week"
+                    style="@style/SummaryBarItem.Header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_this_week"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/act_main_lbl_last_week"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/act_main_last_week"
-                style="@style/SummaryBarItem.Value"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/act_main_this_week"
-                app:layout_constraintStart_toEndOf="@id/act_main_hourly"
-                app:layout_constraintTop_toBottomOf="@id/act_main_lbl_last_week"
-                tools:text="$209.00" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/act_main_hourly"
+                    style="@style/SummaryBarItem.Value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@id/act_main_last_week"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/act_main_lbl_hourly"
+                    tools:text="$4.25/hr" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/act_main_this_week"
-                style="@style/SummaryBarItem.Value"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/act_main_last_week"
-                app:layout_constraintTop_toBottomOf="@id/act_main_lbl_this_week"
-                tools:text="$209.00" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/act_main_last_week"
+                    style="@style/SummaryBarItem.Value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@id/act_main_this_week"
+                    app:layout_constraintStart_toEndOf="@id/act_main_hourly"
+                    app:layout_constraintTop_toBottomOf="@id/act_main_lbl_last_week"
+                    tools:text="$209.00" />
 
-    <fragment
-        android:id="@+id/nav_host_fragment_activity_main"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:defaultNavHost="true"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-        app:navGraph="@navigation/mobile_navigation" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/act_main_this_week"
+                    style="@style/SummaryBarItem.Value"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/act_main_last_week"
+                    app:layout_constraintTop_toBottomOf="@id/act_main_lbl_this_week"
+                    tools:text="$209.00" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-    <com.wtb.dashTracker.views.FabMenu
-        android:id="@+id/fab"
-        app:elevation="1dp"
-        style="@style/Widget.Design.FloatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:contentDescription="@string/desc_add_entry"
-        android:src="@drawable/anim_fab_expand"
-        app:layout_anchor="@id/nav_view"
-        app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
-        app:tint="?attr/colorFabIcon" />
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="1dp"
-        android:layout_gravity="bottom"
-        android:animateLayoutChanges="true"
-        android:backgroundTint="?attr/colorUi"
-        android:minHeight="?android:attr/actionBarSize"
-        app:fabAlignmentMode="end"
-        app:fabAnimationMode="slide"
-        app:fabCradleRoundedCornerRadius="0dp"
-        app:fabCradleMargin="2dp"
-        app:hideOnScroll="true"
-        app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/nav_view"
+        <fragment
+            android:id="@+id/nav_host_fragment_activity_main"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            app:defaultNavHost="true"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:navGraph="@navigation/mobile_navigation" />
+
+        <com.wtb.dashTracker.views.FabMenu
+            android:id="@+id/fab"
+            style="@style/Widget.Design.FloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/desc_add_entry"
+            android:src="@drawable/anim_fab_expand"
+            app:elevation="1dp"
+            app:layout_anchor="@id/nav_view"
+            app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
+            app:tint="?attr/colorFabIcon" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:animateLayoutChanges="true"
-            android:paddingStart="8dp"
-            android:paddingEnd="96dp"
-            app:itemIconTint="@color/bottom_nav_text_color"
-            app:itemTextColor="@color/bottom_nav_text_color"
-            app:menu="@menu/bottom_nav_menu"
-            tools:background="@android:color/transparent" />
-    </com.google.android.material.bottomappbar.BottomAppBar>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:backgroundTint="?attr/colorUi"
+            android:minHeight="?android:attr/actionBarSize"
+            app:elevation="1dp"
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="scale"
+            app:fabCradleMargin="0dp"
+            app:fabCradleRoundedCornerRadius="8dp"
+            app:hideOnScroll="true"
+            app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/nav_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                android:background="@android:color/transparent"
+                android:paddingStart="8dp"
+                android:paddingEnd="96dp"
+                app:itemIconTint="@color/bottom_nav_text_color"
+                app:itemTextColor="@color/bottom_nav_text_color"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/bottom_nav_menu" />
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="?attr/colorUi"
+        android:paddingVertical="4dp"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+</LinearLayout>

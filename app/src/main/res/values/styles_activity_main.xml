@@ -8,15 +8,21 @@
 
     <style name="SummaryBarItem" parent="Widget.AppCompat.TextView">
         <item name="android:textAlignment">center</item>
-
+        <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 
     <style name="SummaryBarItem.Header">
-
     </style>
 
     <style name="SummaryBarItem.Value">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/text_size_xlarge</item>
     </style>
 
+    <style name="Base.Widget.AppCompat.ActionButton.Overflow.Tracker">
+        <item name="tint">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.AppCompat.PopupMenu.Overflow.Tracker">
+        <item name="android:popupBackground">@drawable/overflow_bg</item>
+    </style>
 </resources>

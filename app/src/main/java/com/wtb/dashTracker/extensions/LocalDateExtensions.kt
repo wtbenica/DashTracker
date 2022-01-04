@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter
 
 val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd, yyyy")
 val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd")
+val dtfShortDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
+val dtfShortDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
 val dtfTime: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
 //val LocalDate.weekOfYear: Int
@@ -21,6 +23,13 @@ val LocalDate.formatted: String
         format(dtfDate)
     }
 
+val LocalDate.shortFormat: String
+    get() = if (year == LocalDate.now().year) {
+        format(dtfShortDateThisYear)
+    } else {
+        format(dtfShortDate)
+    }
+
 fun LocalDate.getNextDateFor(untilDay: DayOfWeek): LocalDate {
     val daysUntil = (untilDay.value + 7 - dayOfWeek.value) % 7
     return plusDays(daysUntil.toLong())
@@ -30,7 +39,7 @@ val LocalDate.endOfWeek: LocalDate
     get() = getNextDateFor(DayOfWeek.SUNDAY)
 
 val LocalDate.weekOfYear: Int
-    get() = endOfWeek.dayOfYear / 7
+    get() = endOfWeek.dayOfYear / 7 + 1
 
 
 

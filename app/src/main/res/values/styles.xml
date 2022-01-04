@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="CardView.Tracker">
-        <item name="cardCornerRadius">@dimen/margin_default</item>
+        <item name="cardCornerRadius">@dimen/dialog_fragment_corner_radius</item>
         <item name="cardElevation">1dp</item>
     </style>
 
     <style name="TextAppearance.AppCompat.Title.Tracker">
-        <item name="android:fontFamily">@font/oswald</item>
+        <item name="android:textSize">@dimen/text_size_xxl</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/primary_textcolor</item>
     </style>
 
     <style name="Abt" parent="Widget.AppCompat.Light.ActionBar">
         <item name="titleTextStyle">@style/TextAppearance.AppCompat.Title.Tracker</item>
         <item name="background">?attr/colorUi</item>
+    </style>
+
+    <style name="Theme.MaterialComponents.Light.Dialog.Alert.Tracker">
+        <item name="android:colorPrimary">?attr/colorPrimary</item>
+        <item name="android:colorAccent">?attr/colorAccent</item>
     </style>
 </resources>

@@ -9,12 +9,14 @@ import com.wtb.dashTracker.extensions.weekOfYear
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.temporal.WeekFields
+import kotlin.reflect.KProperty1
 
 @Entity
 data class Weekly(
     @PrimaryKey val date: LocalDate,
     var basePayAdjustment: Float? = null,
-    val weekNumber: Int = date.weekOfYear
+    val weekNumber: Int = date.weekOfYear,
+    var isNew: Boolean = false
 ) : DataModel() {
     override val id: Int
         get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toInt()
@@ -36,4 +38,56 @@ data class CompleteWeekly(
 
     @Relation(parentColumn = "date", entityColumn = "week")
     val entries: List<DashEntry>
-)
+) {
+    val isEmpty: Boolean
+        get() = entries.isEmpty() && weekly.isIncomplete && !weekly.isNew
+
+    internal val hours: Float
+        get() = getTotalForWeek(DashEntry::totalHours)
+
+    internal val regularPay: Float
+        get() = getTotalForWeek(DashEntry::pay)
+
+    internal val cashTips: Float
+        get() = getTotalForWeek(DashEntry::cashTips)
+
+    internal val otherPay: Float
+        get() = getTotalForWeek(DashEntry::otherPay)
+
+    internal val pay: Float
+        get() = getTotalForWeek(DashEntry::totalEarned)
+
+    internal val numDeliveries: Int
+        get() = getTotalForWeek(DashEntry::numDeliveries)
+
+    private fun getTotalForWeek(field: KProperty1<DashEntry, Float?>) = entries.map(field)
+        .fold(0f) { acc, fl -> acc + (fl ?: 0f) }
+
+    private fun getTotalForWeek(field: KProperty1<DashEntry, Int?>) = entries.map(field)
+        .fold(0) { acc, fl -> acc + (fl ?: 0) }
+
+    internal val totalPay: Float
+        get() = pay + (weekly.basePayAdjustment ?: 0f)
+
+    val hourly: Float?
+        get() = if (hours > 0f) {
+            totalPay / hours
+        } else {
+            null
+        }
+
+    val avgDelivery: Float?
+        get() = if (numDeliveries > 0) {
+            totalPay / numDeliveries
+        } else {
+            null
+        }
+
+    val delPerHour: Float?
+        get() = if (numDeliveries > 0 && hours > 0f) {
+            numDeliveries / hours
+        } else {
+            null
+        }
+
+}

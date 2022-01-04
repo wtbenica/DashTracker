@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -17,6 +18,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.MainActivity
+import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.isTouchTarget
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,10 +32,11 @@ class FabMenu @JvmOverloads constructor(
     private var fabMenuViews = mutableListOf<FabMenuButton>()
     private var fabMenuIsVisible = false
     private var fabMenuItems = listOf<FabMenuButtonInfo>()
-    private var parentLayout: CoordinatorLayout? = null
+    private var parentLayout: ViewGroup? = null
 
     init {
-        setBackgroundColor(MainActivity.getColorFab(context))
+//        setBackgroundColor(MainActivity.getColorFab(context))
+        backgroundTintList = ColorStateList.valueOf(MainActivity.getColorFab(context))
         setOnClickListener {
             if (fabMenuIsVisible)
                 hideFabMenu()
@@ -86,6 +89,7 @@ class FabMenu @JvmOverloads constructor(
         @ColorInt val fromColor = MainActivity.getColorFabDisabled(context)
 
         animateFabColor(fromColor, toColor)
+        Log.d(TAG, "Animating from $fromColor to $toColor")
     }
 
     private fun desaturateFab() {
@@ -93,6 +97,7 @@ class FabMenu @JvmOverloads constructor(
         @ColorInt val toColor = MainActivity.getColorFabDisabled(context)
 
         animateFabColor(fromColor, toColor)
+        Log.d(TAG, "Animating from $fromColor to $toColor")
     }
 
     private fun runFabIconCollapseAnimation() {
@@ -149,7 +154,7 @@ class FabMenu @JvmOverloads constructor(
         }
     }
 
-    fun initialize(menuItems: List<FabMenuButtonInfo>, parent: CoordinatorLayout) {
+    fun initialize(menuItems: List<FabMenuButtonInfo>, parent: ViewGroup) {
         fabMenuItems = menuItems
         parentLayout = parent
         initFabMenu()
@@ -174,6 +179,7 @@ class FabMenu @JvmOverloads constructor(
     }
 
     companion object {
+        private const val TAG = APP + "FabMenu"
         private const val ANIM_LENGTH = 100L
         private const val ANIM_DELAY = 50L
     }
