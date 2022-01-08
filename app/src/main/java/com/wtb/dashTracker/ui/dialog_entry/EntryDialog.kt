@@ -22,7 +22,6 @@ import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
@@ -106,16 +105,6 @@ class EntryDialog(
 
         endsNextDayCheckBox = view.findViewById(R.id.frag_entry_check_ends_next_day)
 
-//        view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer)
-//
-//        tripOdoTableRadioButton = view.findViewById(R.id.frag_entry_trb_trip_odometer)
-//        startEndOdoTableRadioButton =
-//            view.findViewById<TableRadioButton>(R.id.frag_entry_trb_start_end_odometer).apply {
-//                val radioGroup = this.getRadioGroup()
-//                radioGroup?.callback = this@EntryDialog
-//            }
-
-//        tripOdoTableRadioButton = view.findViewById(R.id.frag_entry_trb_trip_odometer)
         startMileageEditText = view.findViewById(R.id.frag_entry_start_mileage)
         endMileageEditText = view.findViewById(R.id.frag_entry_end_mileage)
         totalMileageEditText = view.findViewById(R.id.frag_entry_total_mileage)
@@ -137,8 +126,7 @@ class EntryDialog(
         }
 
         DialogFragEntryBinding.bind(view).fragEntryBtnSave.setOnClickListener {
-            saveOnExit = false
-            saveValues()
+            saveConfirmed = true
             dismiss()
         }
 
@@ -152,7 +140,7 @@ class EntryDialog(
     private fun setDialogListeners() {
         setFragmentResultListener(
             ConfirmationType.DELETE.requestKey,
-        ) { requestKey, bundle ->
+        ) { _, bundle ->
             Log.d(TAG, "Receiving Delete")
             val result = bundle.getBoolean(ARG_CONFIRM)
             Log.d(TAG, "Result: $result")
@@ -165,19 +153,20 @@ class EntryDialog(
 
         setFragmentResultListener(
             ConfirmationType.RESET.requestKey,
-        ) { requestKey, bundle ->
+        ) { _, bundle ->
             Log.d(TAG, "Receiving Reset")
             val result = bundle.getBoolean(ARG_CONFIRM)
             Log.d(TAG, "Result: $result")
             Log.d(TAG, result.toString())
             if (result) {
-                clearFields()
+                updateUI()
+                //                clearFields()
             }
         }
 
         setFragmentResultListener(
             ConfirmationType.SAVE.requestKey,
-        ) { requestKey, bundle ->
+        ) { _, bundle ->
             Log.d(TAG, "Receiving Save")
             val result = bundle.getBoolean(ARG_CONFIRM)
             Log.d(TAG, "Result: $result")
@@ -190,11 +179,12 @@ class EntryDialog(
     }
 
     private fun saveValues() {
-        val date = dateTextView.text.toDateOrNull()
+
+        val currDate = dateTextView.text.toDateOrNull()
         val e = DashEntry(
             entryId = entry?.entryId ?: AUTO_ID,
-            date = date ?: LocalDate.now(),
-            endDate = (if (endsNextDayCheckBox.isChecked) date?.plusDays(1) else date)
+            date = currDate ?: LocalDate.now(),
+            endDate = (if (endsNextDayCheckBox.isChecked) currDate?.plusDays(1) else currDate)
                 ?: LocalDate.now(),
             startTime = startTimeTextView.text.toTimeOrNull(),
             endTime = endTimeTextView.text.toTimeOrNull(),
@@ -207,7 +197,6 @@ class EntryDialog(
             numDeliveries = numDeliveriesEditText.text.toIntOrNull(),
         )
 
-        viewModel.insert(Weekly(e.date.endOfWeek))
         viewModel.upsert(e)
     }
 
@@ -227,7 +216,10 @@ class EntryDialog(
         object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 if (isEmpty() && !saveConfirmed)
-                    ConfirmationDialog(ConfirmationType.SAVE).show(parentFragmentManager, null)
+                    ConfirmationDialog(
+                        ConfirmationType.SAVE,
+                        message = "This entry is incomplete. Do you want to save it anyways?"
+                    ).show(parentFragmentManager, null)
                 else
                     super.onBackPressed()
             }
@@ -276,9 +268,6 @@ class EntryDialog(
         otherPayEditText.text.clear()
         cashTipsEditText.text.clear()
         numDeliveriesEditText.text.clear()
-//        startEndOdoTableRadioButton.let {
-//            it.getRadioGroup()?.setChecked(it)
-//        }
     }
 
     private fun isEmpty() =
@@ -295,29 +284,6 @@ class EntryDialog(
     companion object {
 
         private const val TAG = APP + "EntryDialog"
-    }
-
-//    override fun onCheckChanged(button: TableRadioButton) {
-//        if (button == startEndOdoTableRadioButton) {
-//            disableEntryView(requireContext(), totalMileageEditText)
-//            enableEntryView(requireContext(), startMileageEditText, endMileageEditText)
-//        } else if (button == tripOdoTableRadioButton) {
-//            disableEntryView(requireContext(), startMileageEditText, endMileageEditText)
-//            enableEntryView(requireContext(), totalMileageEditText)
-//        }
-//    }
-
-    private fun enableEntryView(context: Context, vararg view: TextView) {
-        view.forEach {
-            val td =
-                ContextCompat.getDrawable(
-                    context,
-                    R.drawable.enable_textview
-                ) as TransitionDrawable
-            it.background = td
-            td.startTransition(500)
-            it.isEnabled = true
-        }
     }
 
     private fun disableEntryView(context: Context, vararg view: TextView) {

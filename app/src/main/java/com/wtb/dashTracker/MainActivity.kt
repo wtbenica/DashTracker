@@ -7,10 +7,12 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -30,12 +32,14 @@ import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentC
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
 
+    private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     lateinit var mAdView: AdView
 
@@ -59,8 +63,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     }
 
     private fun initObservers() {
-        val viewModel: MainActivityViewModel by viewModels()
-
         viewModel.hourly.observe(this) {
             binding.actMainHourly.text = getStringOrElse(R.string.currency_unit, it)
         }
@@ -111,8 +113,14 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             startActivity(Intent(this, OssLicensesMenuActivity::class.java))
             true
         }
+        R.id.action_export_to_csv -> {
+            exportDatabaseToCSV()
+            true
+        }
         else -> super.onOptionsItemSelected(item)
     }
+
+    private fun exportDatabaseToCSV() = viewModel.export()
 
     companion object {
         const val APP = "GT_"

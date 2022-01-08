@@ -64,7 +64,7 @@ class EntryListFragment : Fragment() {
     private fun setDialogListeners() {
         setFragmentResultListener(
             ConfirmationDialog.ConfirmationType.DELETE.requestKey
-        ) { requestKey, bundle ->
+        ) { _, bundle ->
             Log.d(TAG, "Receiving Delete")
             val result = bundle.getBoolean(ARG_CONFIRM)
             val id = bundle.getInt(ARG_EXTRA)

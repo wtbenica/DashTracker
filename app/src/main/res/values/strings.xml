@@ -64,4 +64,9 @@
     <string name="confirm_dialog">Confirm %s</string>
     <string name="reset">Reset</string>
     <string name="save">Save</string>
+    <string name="confirm_reset">Any changes will be permanently lost</string>
+    <string name="action_licenses">Licenses</string>
+    <string name="action_export_to_csv">Export to CSV</string>
+    <string name="csv_generation_failed">CSV generation failed</string>
+    <string name="csv_generations_success">CSV generation success</string>
 </resources>

@@ -13,13 +13,15 @@ import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.util.ExportCSV
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
-class Repository private constructor(context: Context) {
+class Repository private constructor(private val context: Context) {
     private val executor = Executors.newSingleThreadExecutor()
     private val db = DashDatabase.getInstance(context)
 
@@ -34,7 +36,9 @@ class Repository private constructor(context: Context) {
      */
     val allEntries: Flow<List<DashEntry>> = entryDao.getAll()
 
-    val entryPagingSources = mutableListOf<PagingSource<Int, DashEntry>>()
+    suspend fun allEntriesLiveData(): List<DashEntry> = entryDao.getAllLiveData()
+
+    private var entryPagingSource: PagingSource<Int, DashEntry>? = null
 
     val allEntriesPaged: Flow<PagingData<DashEntry>> = Pager(
         config = PagingConfig(
@@ -43,31 +47,28 @@ class Repository private constructor(context: Context) {
         ),
         pagingSourceFactory = {
             val ps = entryDao.getAllPagingSource()
-            entryPagingSources.add(ps)
+            entryPagingSource = ps
             ps
         }
     ).flow
 
     fun deleteEntryById(id: Int) {
-        executor.execute {
-            entryDao.deleteById(id)
-            invalidateEntryPagingSources()
+        CoroutineScope(Dispatchers.Default).launch {
+            withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+                entryDao.deleteById(id)
+            }.let {
+                entryPagingSource?.invalidate()
+            }
+//            executor.execute {
+//                entryDao.deleteById(id)
+//                entryPagingSource?.invalidate()
+//            }
         }
-    }
-
-    private fun invalidateEntryPagingSources() {
-        entryPagingSources.forEach { it.invalidate() }
     }
 
     fun getEntryFlowById(id: Int) = entryDao.getFlow(id)
 
     fun getBasePayAdjustFlowById(id: Int) = weeklyDao.getFlow(id)
-
-    fun getEntriesByDate(
-        startDate: LocalDate = LocalDate.MIN,
-        endDate: LocalDate = LocalDate.MAX
-    ): Flow<List<DashEntry>> =
-        entryDao.getEntriesByDate(startDate, endDate)
 
     /**
      * Weekly
@@ -84,12 +85,16 @@ class Repository private constructor(context: Context) {
         }
     ).flow
 
-    fun getEntriesByWeek(date: LocalDate = LocalDate.now()): Flow<List<DashEntry>> =
-        entryDao.getEntriesByWeek(date)
-
     fun upsertModel(model: DataModel): Long {
         return when (model) {
-            is DashEntry -> entryDao.upsert(model)
+            is DashEntry -> {
+                var res: Long = -1L
+                db.runInTransaction {
+                    weeklyDao.insert(Weekly(model.date.endOfWeek))
+                    res = entryDao.upsert(model)
+                }
+                return res
+            }
             is Weekly -> weeklyDao.upsert(model)
         }
     }
@@ -114,6 +119,12 @@ class Repository private constructor(context: Context) {
                 is DashEntry -> entryDao.delete(model)
                 is Weekly -> weeklyDao.delete(model)
             }
+        }
+    }
+
+    fun export() {
+        CoroutineScope(Dispatchers.Default).launch {
+            ExportCSV().exportDatabaseToCSVFile(context, allEntriesLiveData())
         }
     }
 

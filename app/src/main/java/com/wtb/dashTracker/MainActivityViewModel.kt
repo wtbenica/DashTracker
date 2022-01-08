@@ -18,7 +18,6 @@ import kotlin.reflect.KProperty1
 
 @ExperimentalCoroutinesApi
 class MainActivityViewModel : ViewModel() {
-
     private val repository = Repository.get()
 
     private val _hourly = MutableLiveData(0f)
@@ -53,6 +52,10 @@ class MainActivityViewModel : ViewModel() {
         }
     }
 
+
+    fun export() {
+        repository.export()
+    }
 
     companion object {
         private const val TAG = APP + "MainActivityViewModel"

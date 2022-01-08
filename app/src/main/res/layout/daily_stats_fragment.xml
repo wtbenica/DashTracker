@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/margin_half"
+    android:paddingBottom="?attr/actionBarSize"
     tools:context=".ui.insight_daily_stats.DailyStatsFragment">
 
     <GridLayout
         android:id="@+id/daily_stats_fragment_table"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingStart="0dp"
+        android:paddingBottom="72dp"
+        android:paddingTop="@dimen/margin_half"
+        android:paddingEnd="@dimen/margin_half">
 
         <TextView
             android:id="@+id/daily_stats_fragment_label_hourly"
+            style="@style/DailyStatsFragmentHeader"
             android:layout_row="0"
             android:layout_column="2"
             android:layout_columnWeight="1"
-            android:paddingHorizontal="@dimen/margin_default"
-            android:text="@string/units_pay_rate"
-            android:textAlignment="textEnd" />
+            android:text="@string/units_pay_rate" />
 
         <TextView
             android:id="@+id/daily_stats_fragment_label_avg_del"
+            style="@style/DailyStatsFragmentHeader"
             android:layout_row="0"
             android:layout_column="3"
             android:layout_columnWeight="1"
-            android:paddingHorizontal="@dimen/margin_default"
-            android:text="@string/units_avg_delivery"
-            android:textAlignment="textEnd" />
+            android:text="@string/units_avg_delivery" />
 
         <TextView
             android:id="@+id/daily_stats_fragment_label_dph"
+            style="@style/DailyStatsFragmentHeader"
             android:layout_row="0"
             android:layout_column="4"
             android:layout_columnWeight="1"
-            android:paddingHorizontal="@dimen/margin_default"
-            android:text="@string/units_del_per_hr"
-            android:textAlignment="textEnd" />
+            android:text="@string/units_del_per_hr" />
 
         <TextView
             android:id="@+id/daily_stats_fragment_label_num_shifts"
+            style="@style/DailyStatsFragmentHeader"
             android:layout_row="0"
             android:layout_column="5"
             android:layout_columnWeight="1"
-            android:paddingHorizontal="@dimen/margin_default"
-            android:text="@string/label_shifts"
-            android:textAlignment="textEnd" />
+            android:text="@string/label_shifts" />
     </GridLayout>
-</LinearLayout>
+</ScrollView>

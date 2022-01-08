@@ -15,7 +15,11 @@ import com.wtb.dashTracker.databinding.DialogFragConfirmBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 
-class ConfirmationDialog(val type: ConfirmationType, private val confirmId: Int? = null) :
+class ConfirmationDialog(
+    val type: ConfirmationType,
+    private val confirmId: Int? = null,
+    private val message: String? = null
+) :
     FullWidthDialogFragment() {
 
     override fun onCreateView(
@@ -29,8 +33,12 @@ class ConfirmationDialog(val type: ConfirmationType, private val confirmId: Int?
 
         binding.fragEntryToolbar.title =
             getString(R.string.confirm_dialog, getString(type.posButton))
+
         binding.theQuestion.setVisibleIfTrue(type.text != null)
+
         type.text?.let { binding.theQuestion.setText(it) }
+        message?.let { binding.theQuestion.text = it }
+
         binding.noButton.apply {
             setText(type.negButton)
             setOnClickListener {
@@ -49,10 +57,14 @@ class ConfirmationDialog(val type: ConfirmationType, private val confirmId: Int?
                 if (confirmId == null) {
                     setFragmentResult(type.requestKey, bundleOf(ARG_CONFIRM to true))
                 } else {
-                    setFragmentResult(type.requestKey, bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId))
+                    setFragmentResult(
+                        type.requestKey,
+                        bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId)
+                    )
                 }
             }
         }
+
         return binding.root
     }
 
@@ -69,7 +81,7 @@ class ConfirmationDialog(val type: ConfirmationType, private val confirmId: Int?
         @StringRes val negButton: Int = R.string.cancel
     ) {
         DELETE(R.string.confirm_delete, "confirmDelete", R.string.delete),
-        RESET(R.string.confirm_delete, "confirmReset", R.string.reset),
+        RESET(R.string.confirm_reset, "confirmReset", R.string.reset),
         SAVE(null, "confirmSave", R.string.save, R.string.keep)
     }
 }

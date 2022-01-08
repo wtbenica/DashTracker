@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_licenses"
-        android:title="Licenses"
+        android:title="@string/action_licenses"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_export_to_csv"
+        android:title="@string/action_export_to_csv"
         app:showAsAction="never" />
 </menu>
