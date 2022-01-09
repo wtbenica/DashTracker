@@ -71,4 +71,6 @@
     <string name="csv_generations_success">CSV generation success</string>
     <string name="no_spreadsheet">In order to view the file, you must have a spreadsheet app. Would you like to go find one on Google Play?</string>
     <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>
+    <string name="action_import_entries_from_csv">Import Entries from CSV</string>
+    <string name="action_import_weeklies_from_csv">Import Weeklies from CSV</string>
 </resources>

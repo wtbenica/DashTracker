@@ -141,8 +141,6 @@ class YearlyListFragment : Fragment() {
         private lateinit var yearly: Yearly
 
         init {
-
-
             itemView.setOnClickListener(this)
         }
 

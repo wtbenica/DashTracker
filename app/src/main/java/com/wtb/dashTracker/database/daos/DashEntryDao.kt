@@ -23,6 +23,9 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @Query(SQL_GET_ALL)
     abstract suspend fun getAllLiveData(): List<DashEntry>
 
+    @Query("DELETE FROM DashEntry")
+    abstract override fun clear()
+
     @RawQuery(observedEntities = [DashEntry::class])
     abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<DashEntry?>
 

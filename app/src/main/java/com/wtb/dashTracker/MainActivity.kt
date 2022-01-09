@@ -2,17 +2,18 @@ package com.wtb.dashTracker
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -29,10 +30,11 @@ import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
+import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ENTRIES
+import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_WEEKLIES
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -42,6 +44,30 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
+
+    val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        contentResolver.query(it, null, null, null, null)
+            ?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                cursor.moveToFirst()
+                val fileName = cursor.getString(nameIndex)
+                if (fileName == FILE_ENTRIES) {
+                    importCSVtoDatabase(entriesPath = it)
+                }
+            }
+    }
+
+    val getContentWeekly = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        contentResolver.query(it, null, null, null, null)
+            ?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                cursor.moveToFirst()
+                val fileName = cursor.getString(nameIndex)
+                if (fileName == FILE_WEEKLIES) {
+                    importCSVtoDatabase(weekliesPath = it)
+                }
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,8 +143,22 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             exportDatabaseToCSV()
             true
         }
+        R.id.action_import_from_csv -> {
+            getContent.launch("text/comma-separated-values")
+            true
+        }
+        R.id.action_import_weeklies_from_csv -> {
+            getContentWeekly.launch("text/comma-separated-values")
+            true
+        }
         else -> super.onOptionsItemSelected(item)
     }
+
+    private fun importCSVtoDatabase(entriesPath: Uri? = null, weekliesPath: Uri? = null) =
+        viewModel.import(
+            entriesPath?.let { contentResolver.openInputStream(it) },
+            weekliesPath?.let { contentResolver.openInputStream(it) }
+        )
 
     private fun exportDatabaseToCSV() = viewModel.export()
 

@@ -1,5 +1,6 @@
 package com.wtb.dashTracker
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +13,7 @@ import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
+import java.io.InputStream
 import java.time.LocalDate
 import kotlin.reflect.KProperty1
 
@@ -57,6 +58,10 @@ class MainActivityViewModel : ViewModel() {
         repository.export()
     }
 
+    fun import(entriesPath: InputStream? = null, weekliesPath: InputStream? = null) {
+        repository.import(entriesPath = entriesPath, weekliesPath = weekliesPath)
+    }
+
     companion object {
         private const val TAG = APP + "MainActivityViewModel"
 
@@ -97,13 +102,16 @@ class MainActivityViewModel : ViewModel() {
         }
 
         fun getHourlyFromWeeklies(list: List<CompleteWeekly>): Float {
-            val hours = list.map { w -> w.hours }.reduce { acc, fl -> acc + fl }
-            val pay = list.map { w -> w.pay }.reduce { acc, fl -> acc + fl }
-            val adjusts = list.map { it.weekly.basePayAdjustment }
-                .reduce { acc, fl -> (acc ?: 0f) + (fl ?: 0f) } ?: 0f
+            return if (list.isNotEmpty()) {
+                val hours = list.map { w -> w.hours }.reduce { acc, fl -> acc + fl }
+                val pay = list.map { w -> w.pay }.reduce { acc, fl -> acc + fl }
+                val adjusts = list.map { it.weekly.basePayAdjustment }
+                    .reduce { acc, fl -> (acc ?: 0f) + (fl ?: 0f) } ?: 0f
 
-            return (pay + adjusts) / hours
+                (pay + adjusts) / hours
+            } else {
+                0f
+            }
         }
-
     }
 }
