@@ -57,7 +57,7 @@ data class CompleteWeekly(
     internal val pay: Float
         get() = getTotalForWeek(DashEntry::totalEarned)
 
-    internal val numDeliveries: Int
+    private val numDeliveries: Int
         get() = getTotalForWeek(DashEntry::numDeliveries)
 
     private fun getTotalForWeek(field: KProperty1<DashEntry, Float?>) = entries.map(field)

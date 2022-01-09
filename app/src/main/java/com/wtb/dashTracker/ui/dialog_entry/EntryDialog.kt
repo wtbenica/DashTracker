@@ -26,9 +26,11 @@ import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmResetDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmSaveDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.ConfirmationType
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -115,13 +117,13 @@ class EntryDialog(
 
         deleteButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_delete).apply {
             setOnClickListener {
-                ConfirmationDialog(ConfirmationType.DELETE).show(parentFragmentManager, null)
+                ConfirmDeleteDialog(null).show(parentFragmentManager, null)
             }
         }
 
         cancelButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_cancel).apply {
             setOnClickListener {
-                ConfirmationDialog(ConfirmationType.RESET).show(parentFragmentManager, null)
+                ConfirmResetDialog().show(parentFragmentManager, null)
             }
         }
 
@@ -139,7 +141,7 @@ class EntryDialog(
 
     private fun setDialogListeners() {
         setFragmentResultListener(
-            ConfirmationType.DELETE.requestKey,
+            ConfirmType.DELETE.key,
         ) { _, bundle ->
             Log.d(TAG, "Receiving Delete")
             val result = bundle.getBoolean(ARG_CONFIRM)
@@ -152,7 +154,7 @@ class EntryDialog(
         }
 
         setFragmentResultListener(
-            ConfirmationType.RESET.requestKey,
+            ConfirmType.RESET.key,
         ) { _, bundle ->
             Log.d(TAG, "Receiving Reset")
             val result = bundle.getBoolean(ARG_CONFIRM)
@@ -165,7 +167,7 @@ class EntryDialog(
         }
 
         setFragmentResultListener(
-            ConfirmationType.SAVE.requestKey,
+            ConfirmType.SAVE.key,
         ) { _, bundle ->
             Log.d(TAG, "Receiving Save")
             val result = bundle.getBoolean(ARG_CONFIRM)
@@ -215,13 +217,13 @@ class EntryDialog(
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
-                if (isEmpty() && !saveConfirmed)
-                    ConfirmationDialog(
-                        ConfirmationType.SAVE,
-                        message = "This entry is incomplete. Do you want to save it anyways?"
+                if (isEmpty() && !saveConfirmed) {
+                    ConfirmSaveDialog(
+                        text = R.string.confirm_save_entry_incomplete
                     ).show(parentFragmentManager, null)
-                else
+                } else {
                     super.onBackPressed()
+                }
             }
         }
 

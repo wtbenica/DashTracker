@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
     private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
-    lateinit var mAdView: AdView
+    private lateinit var mAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

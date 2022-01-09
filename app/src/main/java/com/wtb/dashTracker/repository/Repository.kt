@@ -36,7 +36,8 @@ class Repository private constructor(private val context: Context) {
      */
     val allEntries: Flow<List<DashEntry>> = entryDao.getAll()
 
-    suspend fun allEntriesLiveData(): List<DashEntry> = entryDao.getAllLiveData()
+    private suspend fun allEntriesLiveData(): List<DashEntry> = entryDao.getAllLiveData()
+    private suspend fun allWeekliesLiveData(): List<Weekly> = weeklyDao.getAllLiveData()
 
     private var entryPagingSource: PagingSource<Int, DashEntry>? = null
 
@@ -124,7 +125,7 @@ class Repository private constructor(private val context: Context) {
 
     fun export() {
         CoroutineScope(Dispatchers.Default).launch {
-            ExportCSV().exportDatabaseToCSVFile(context, allEntriesLiveData())
+            ExportCSV().exportDatabaseToCSVFile(context, allEntriesLiveData(), allWeekliesLiveData())
         }
     }
 

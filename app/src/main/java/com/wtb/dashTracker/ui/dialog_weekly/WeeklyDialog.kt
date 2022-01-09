@@ -23,8 +23,9 @@ import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.databinding.DialogWeeklySpinnerItemBinding
 import com.wtb.dashTracker.databinding.DialogWeeklySpinnerItemSingleLineBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmResetDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
-import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -91,7 +92,7 @@ class WeeklyDialog(
 
 
         binding.fragAdjustBtnCancel.setOnClickListener {
-            ConfirmationDialog(ConfirmationDialog.ConfirmationType.RESET).show(parentFragmentManager, null)
+            ConfirmResetDialog().show(parentFragmentManager, null)
         }
 
         binding.fragAdjustBtnSave.setOnClickListener {
@@ -106,7 +107,7 @@ class WeeklyDialog(
 
     private fun setDialogListeners() {
         setFragmentResultListener(
-            ConfirmationDialog.ConfirmationType.RESET.requestKey,
+            ConfirmType.RESET.key,
         ) { _, bundle ->
             Log.d(TAG, "Receiving Reset")
             val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)

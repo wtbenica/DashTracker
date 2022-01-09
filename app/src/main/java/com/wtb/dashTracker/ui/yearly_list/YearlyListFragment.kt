@@ -77,7 +77,8 @@ class YearlyListFragment : Fragment() {
                 viewModel.allWeeklies.collectLatest { cwList: List<CompleteWeekly> ->
                     yearlies.clear()
                     var numChecked = 0
-                    var year = cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year + 1
+                    var year =
+                        cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year + 1
                     while (numChecked < cwList.size) {
                         val thisYears = cwList.mapNotNull { cw: CompleteWeekly ->
                             if (cw.weekly.date.year == year) cw else null
@@ -134,13 +135,13 @@ class YearlyListFragment : Fragment() {
         LayoutInflater.from(parent.context).inflate(R.layout.list_item_yearly, parent, false)
     ),
         View.OnClickListener {
-        private val binding: ListItemYearlyBinding
-        private val detailsBinding: ListItemYearlyDetailsTableBinding
+        private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
+        private val detailsBinding: ListItemYearlyDetailsTableBinding =
+            ListItemYearlyDetailsTableBinding.bind(itemView)
         private lateinit var yearly: Yearly
 
         init {
-            binding = ListItemYearlyBinding.bind(itemView)
-            detailsBinding = ListItemYearlyDetailsTableBinding.bind(itemView)
+
 
             itemView.setOnClickListener(this)
         }

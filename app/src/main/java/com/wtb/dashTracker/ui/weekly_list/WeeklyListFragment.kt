@@ -106,14 +106,12 @@ class WeeklyListFragment : Fragment() {
     inner class WeeklyHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.list_item_weekly, parent, false)
     ), View.OnClickListener {
-        private val binding: ListItemWeeklyBinding
-        private val detailsBinding: ListItemWeeklyDetailsTableBinding
+        private val binding: ListItemWeeklyBinding = ListItemWeeklyBinding.bind(itemView)
+        private val detailsBinding: ListItemWeeklyDetailsTableBinding =
+            ListItemWeeklyDetailsTableBinding.bind(itemView)
         private lateinit var compWeekly: CompleteWeekly
 
         init {
-            binding = ListItemWeeklyBinding.bind(itemView)
-            detailsBinding = ListItemWeeklyDetailsTableBinding.bind(itemView)
-
             itemView.setOnClickListener(this)
 
             itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
