@@ -1,7 +1,6 @@
 package com.wtb.dashTracker.repository
 
 import android.content.Context
-import android.net.Uri
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -127,13 +126,13 @@ class Repository private constructor(private val context: Context) {
 
     fun export() {
         CoroutineScope(Dispatchers.Default).launch {
-            CSVUtils().exportDatabaseToCSVFile(context, allEntriesLiveData(), allWeekliesLiveData())
+            CSVUtils().exportDb(context, allEntriesLiveData(), allWeekliesLiveData())
         }
     }
 
     fun import(entriesPath: InputStream? = null, weekliesPath: InputStream? = null) {
         CoroutineScope(Dispatchers.Default).launch {
-            val res = CSVUtils().importFromCSV(entriesPath = entriesPath, weekliesPath = weekliesPath)
+            val res = CSVUtils().importCsv(entriesPath = entriesPath, weekliesPath = weekliesPath)
             res.first?.let {
                 entryDao.clear()
                 entryDao.upsertAll(it)

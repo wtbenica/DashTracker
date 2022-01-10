@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.time.LocalDate
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
 @ExperimentalCoroutinesApi

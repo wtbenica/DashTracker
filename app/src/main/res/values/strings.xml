@@ -73,4 +73,9 @@
     <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>
     <string name="action_import_entries_from_csv">Import Entries from CSV</string>
     <string name="action_import_weeklies_from_csv">Import Weeklies from CSV</string>
+    <string name="confirm_export">There will be two files created which you can open in any spreadsheet app. You can also use them to transfer or restore your data by importing them into the app. You will be given the choice of where to save or send the files.</string>
+    <string name="export">Export</string>
+    <string name="confirm_import_entry">An entries file\'s name starts with \'dash_tracker_entries_\' and its extension is \'csv\'. Please locate the file you would like to import.</string>
+    <string name="confirm_import_weeklies">A weeklies file\'s name starts with \'dash_tracker_weeklies_\' and its extension is \'csv\'. Please locate the file you would like to import.</string>
+    <string name="ok">OK</string>
 </resources>

@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
@@ -24,8 +25,11 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
@@ -37,6 +41,7 @@ import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 import java.time.LocalDate
+import kotlin.reflect.KClass
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
@@ -45,29 +50,29 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
 
-    val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        contentResolver.query(it, null, null, null, null)
-            ?.use { cursor ->
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                cursor.moveToFirst()
-                val fileName = cursor.getString(nameIndex)
-                if (fileName == FILE_ENTRIES) {
-                    importCSVtoDatabase(entriesPath = it)
-                }
-            }
-    }
+    private val getContentEntry: ActivityResultLauncher<String> =
+        getContent(FILE_ENTRIES) { importCSVtoDatabase(entriesPath = it) }
 
-    val getContentWeekly = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        contentResolver.query(it, null, null, null, null)
-            ?.use { cursor ->
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                cursor.moveToFirst()
-                val fileName = cursor.getString(nameIndex)
-                if (fileName == FILE_WEEKLIES) {
-                    importCSVtoDatabase(weekliesPath = it)
-                }
+    private val getContentWeekly: ActivityResultLauncher<String> =
+        getContent(FILE_WEEKLIES) { importCSVtoDatabase(weekliesPath = it) }
+
+    private fun getContent(
+        filePrefix: String,
+        function: (Uri) -> Unit
+    ): ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                contentResolver.query(it, null, null, null, null)
+                    ?.use { cursor ->
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        cursor.moveToFirst()
+                        val fileName = cursor.getString(nameIndex)
+                        if (fileName.startsWith(filePrefix)) {
+                            function(it)
+                        }
+                    }
             }
-    }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,14 +149,42 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             true
         }
         R.id.action_import_from_csv -> {
-            getContent.launch("text/comma-separated-values")
+            showImportEntriesConfirmationDialog()
             true
         }
         R.id.action_import_weeklies_from_csv -> {
-            getContentWeekly.launch("text/comma-separated-values")
+            showImportWeekliesConfirmationDialog()
             true
         }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun showImportWeekliesConfirmationDialog() {
+        ConfirmationDialog(
+            text = R.string.confirm_import_entry,
+            requestKey = "confirmImportWeekly",
+            posButton = R.string.ok,
+            negButton = R.string.cancel,
+            message = "Import Weeklies",
+            posAction = {
+                getContentWeekly.launch("text/comma-separated-values")
+            },
+            negAction = { }
+        ).show(supportFragmentManager, null)
+    }
+
+    private fun showImportEntriesConfirmationDialog() {
+        ConfirmationDialog(
+            text = R.string.confirm_import_entry,
+            requestKey = "confirmImportEntry",
+            posButton = R.string.ok,
+            negButton = R.string.cancel,
+            message = "Import Entries",
+            posAction = {
+                getContentEntry.launch("text/comma-separated-values")
+            },
+            negAction = { }
+        ).show(supportFragmentManager, null)
     }
 
     private fun importCSVtoDatabase(entriesPath: Uri? = null, weekliesPath: Uri? = null) =
