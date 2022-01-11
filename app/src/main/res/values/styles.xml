@@ -17,8 +17,4 @@
         <item name="background">?attr/colorUi</item>
     </style>
 
-    <style name="Theme.MaterialComponents.Light.Dialog.Alert.Tracker">
-        <item name="android:colorPrimary">?attr/colorPrimary</item>
-        <item name="android:colorAccent">?attr/colorAccent</item>
-    </style>
 </resources>

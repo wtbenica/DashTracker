@@ -24,6 +24,9 @@ abstract class WeeklyDao : BaseDao<Weekly>("weekly", "date") {
     @Query(SQL_GET_ALL)
     abstract suspend fun getAllLiveData(): List<Weekly>
 
+    @Query("DELETE FROM Weekly")
+    abstract override fun clear()
+
     @RawQuery(observedEntities = [Weekly::class])
     abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<Weekly?>
 

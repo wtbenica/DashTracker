@@ -14,9 +14,10 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
-import com.wtb.dashTracker.util.ExportCSV
+import com.wtb.dashTracker.util.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import java.io.InputStream
 import java.time.LocalDate
 import java.util.concurrent.Executors
 
@@ -123,9 +124,26 @@ class Repository private constructor(private val context: Context) {
         }
     }
 
-    fun export() {
+    fun export(encrypted: Boolean) {
         CoroutineScope(Dispatchers.Default).launch {
-            ExportCSV().exportDatabaseToCSVFile(context, allEntriesLiveData(), allWeekliesLiveData())
+            CSVUtils().exportDb(context, allEntriesLiveData(), allWeekliesLiveData(), encrypted)
+        }
+    }
+
+    fun import(
+        entriesPath: InputStream? = null,
+        weekliesPath: InputStream? = null
+    ) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val res = CSVUtils().importCsv(entriesPath = entriesPath, weekliesPath = weekliesPath)
+            res.first?.let {
+                entryDao.clear()
+                entryDao.upsertAll(it)
+            }
+            res.second?.let {
+                weeklyDao.clear()
+                weeklyDao.upsertAll(it)
+            }
         }
     }
 
