@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_authenticate">
 
     <fragment
         android:id="@+id/navigation_home"
@@ -27,4 +27,10 @@
         android:name="com.wtb.dashTracker.ui.insight_daily_stats.DailyStatsFragment"
         android:label="@string/title_insights"
         tools:layout="@layout/daily_stats_fragment" />
+
+    <fragment
+        android:id="@+id/navigation_authenticate"
+        android:name="com.wtb.dashTracker.ui.login.AuthenticateFragment"
+        android:label="Authenticate"
+        tools:layout="@layout/fragment_authenticate" />
 </navigation>

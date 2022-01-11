@@ -3,8 +3,11 @@ package com.wtb.dashTracker
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.provider.Settings
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -15,6 +18,11 @@ import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -44,6 +52,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.util.concurrent.Executor
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -54,6 +63,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
+    private lateinit var executor: Executor
+    private lateinit var biometricPrompt: BiometricPrompt
+    private lateinit var promptInfo: BiometricPrompt.PromptInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,17 +73,71 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         supportActionBar?.title = "DashTracker"
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+        binding.fab.initialize(getMenuItems(supportFragmentManager), binding.container)
         setContentView(binding.root)
 
-        MobileAds.initialize(this) {}
+        initBiometrics()
+        initBottomNavBar()
+        initObservers()
+        initMobileAds()
+    }
+
+    private fun initMobileAds() {
+        MobileAds.initialize(this@MainActivity)
 
         mAdView = binding.adView
         val adRequest = AdRequest.Builder().build()
         mAdView.loadAd(adRequest)
+    }
 
-        initBottomNavBar()
-        initObservers()
-        binding.fab.initialize(getMenuItems(supportFragmentManager), binding.container)
+    override fun onResume() {
+        super.onResume()
+//        val bp = BiometricPrompt(this, executor,
+//            object : BiometricPrompt.AuthenticationCallback() {
+//                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+//                    super.onAuthenticationSucceeded(result)
+//
+//                }
+//            })
+//        val pi = BiometricPrompt.PromptInfo.Builder()
+//            .setTitle("Login for DashTracker")
+//            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+//            .build()
+//        bp.authenticate(pi)
+    }
+
+    private fun initBiometrics() {
+        val biometricManager = BiometricManager.from(this)
+        when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
+            BiometricManager.BIOMETRIC_SUCCESS ->
+                Log.d(TAG, "App can authenticate using biometrics.")
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
+                Log.e(TAG, "No biometric features available on this device.")
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
+                Log.e(TAG, "Biometric features are currently unavailable.")
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                        putExtra(
+                            Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                            BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+                        )
+                    }
+                    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }.launch(
+                        enrollIntent
+                    )
+                }
+            }
+            BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
+                Log.e(TAG, "Biometric features are currently unavailable. (update required)")
+            }
+            BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
+                Log.e(TAG, "Biometric features are currently unavailable. (unsupported)")
+            }
+            BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
+                Log.e(TAG, "Biometric features are currently unavailable. (unknown)")
+            }
+        }
     }
 
     private fun initObservers() {
