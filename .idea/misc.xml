@@ -9,6 +9,7 @@
         <entry key="app/src/main/res/drawable/anim_fab_collapse.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/anim_fab_expand.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/background_edit_text.xml" value="0.175" />
+        <entry key="app/src/main/res/drawable/background_image_button.xml" value="0.15625" />
         <entry key="app/src/main/res/drawable/bottom_border_bg.xml" value="0.9" />
         <entry key="app/src/main/res/drawable/bottom_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/bottom_nav_item.xml" value="0.2898148148148148" />

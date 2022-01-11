@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="DailyStatsFragmentHeader" parent="Base.Widget.AppCompat.TextView">
+        <item name="android:paddingHorizontal">@dimen/margin_half</item>
+        <item name="android:textAlignment">textEnd</item>
+    </style>
+</resources>

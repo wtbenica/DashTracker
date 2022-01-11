@@ -26,11 +26,11 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -63,8 +63,8 @@ class EntryListFragment : Fragment() {
 
     private fun setDialogListeners() {
         setFragmentResultListener(
-            ConfirmationDialog.ConfirmationType.DELETE.requestKey
-        ) { requestKey, bundle ->
+            ConfirmType.DELETE.key
+        ) { _, bundle ->
             Log.d(TAG, "Receiving Delete")
             val result = bundle.getBoolean(ARG_CONFIRM)
             val id = bundle.getInt(ARG_EXTRA)
@@ -175,10 +175,8 @@ class EntryListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
                 setOnClickListener {
-                    ConfirmationDialog(
-                        ConfirmationDialog.ConfirmationType.DELETE,
-                        this@EntryHolder.entry.entryId
-                    ).show(parentFragmentManager, null)
+                    ConfirmDeleteDialog(confirmId = this@EntryHolder.entry.entryId)
+                        .show(parentFragmentManager, null)
                 }
             }
         }

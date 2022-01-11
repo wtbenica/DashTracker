@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.AUTO_ID
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.CoroutineScope
@@ -47,8 +48,6 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
             }
         }
     }
-
-    suspend fun upsertSus(dataModel: DataModel) = repository.upsertModel(dataModel)
 
     fun delete(dataModel: DataModel) = repository.deleteModel(dataModel)
 

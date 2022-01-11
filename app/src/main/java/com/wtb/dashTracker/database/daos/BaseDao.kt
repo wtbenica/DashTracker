@@ -22,6 +22,8 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
         return getDataModelByQuery(query)
     }
 
+    abstract fun clear()
+
     protected abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<T?>
 
     fun getFlow(id: Int): Flow<T?> {
@@ -51,7 +53,7 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
         return if (id != -1L) id else obj.id.toLong()
     }
 
-    fun upsertAll(models: MutableList<T>) {
+    fun upsertAll(models: List<T>) {
         models.forEach {
             upsert(it)
         }

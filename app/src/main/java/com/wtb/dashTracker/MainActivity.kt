@@ -2,11 +2,15 @@ package com.wtb.dashTracker
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
@@ -23,21 +27,33 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
+import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ENTRIES
+import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_WEEKLIES
+import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
 
+    private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
-    lateinit var mAdView: AdView
+    private lateinit var mAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +75,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     }
 
     private fun initObservers() {
-        val viewModel: MainActivityViewModel by viewModels()
-
         viewModel.hourly.observe(this) {
             binding.actMainHourly.text = getStringOrElse(R.string.currency_unit, it)
         }
@@ -98,7 +112,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         binding.fab.interceptTouchEvent(ev)
         return super.dispatchTouchEvent(ev)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -106,12 +119,91 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_licenses -> {
-            startActivity(Intent(this, OssLicensesMenuActivity::class.java))
-            true
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.action_licenses -> {
+                startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+                true
+            }
+            R.id.action_export_to_csv -> {
+                exportDatabaseToCSV()
+                true
+            }
+            R.id.action_import_from_csv -> {
+                showImportCsvConfirmationDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-        else -> super.onOptionsItemSelected(item)
+
+    private fun exportDatabaseToCSV(encrypted: Boolean = false) = viewModel.export(encrypted)
+
+    private fun extractZip(it: Uri) {
+        ZipInputStream(contentResolver.openInputStream(it)).use { zipIn ->
+            var nextEntry: ZipEntry? = zipIn.nextEntry
+            while (nextEntry != null) {
+                val destFile = File(filesDir, nextEntry.name)
+                FileOutputStream(destFile).use { t ->
+                    zipIn.copyTo(t, 1024)
+                }
+                val inputStream = FileInputStream(destFile)
+
+                nextEntry.name?.let {
+                    when {
+                        it.startsWith(FILE_ENTRIES, false) -> {
+                            importCsv(entriesPath = inputStream)
+                        }
+                        it.startsWith(FILE_WEEKLIES, false) -> {
+                            importCsv(weekliesPath = inputStream)
+                        }
+                    }
+                }
+
+                nextEntry = zipIn.nextEntry
+            }
+            zipIn.closeEntry()
+        }
+    }
+
+    private fun importCsv(entriesPath: InputStream? = null, weekliesPath: InputStream? = null) =
+        viewModel.import(
+            entriesPath?.let { entriesPath },
+            weekliesPath?.let { weekliesPath }
+        )
+
+    private val getContentZip: ActivityResultLauncher<String> =
+        getContent(FILE_ZIP) { extractZip(it) }
+
+    private fun getContent(
+        filePrefix: String,
+        function: (Uri) -> Unit
+    ): ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                contentResolver.query(it, null, null, null, null)
+                    ?.use { cursor ->
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        cursor.moveToFirst()
+                        val fileName = cursor.getString(nameIndex)
+                        if (fileName.startsWith(filePrefix)) {
+                            function(it)
+                        }
+                    }
+            }
+        }
+
+    private fun showImportCsvConfirmationDialog() {
+        ConfirmationDialog(
+            text = R.string.confirm_import,
+            requestKey = "confirmImportEntry",
+            posButton = R.string.ok,
+            negButton = R.string.cancel,
+            message = "Import from CSV",
+            posAction = {
+                getContentZip.launch("application/zip")
+            },
+            negAction = { }
+        ).show(supportFragmentManager, null)
     }
 
     companion object {

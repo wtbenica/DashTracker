@@ -4,8 +4,10 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.weekOfYear
+import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.temporal.WeekFields
@@ -29,6 +31,32 @@ data class Weekly(
 
     val isIncomplete: Boolean
         get() = basePayAdjustment == null
+
+    companion object : CSVConvertible<Weekly> {
+        override val headerList: List<String>
+            get() = listOf(
+                "Start of Week",
+                "Base Pay Adjustment",
+                "Week Number",
+                "isNew"
+            )
+
+        override fun fromCSV(row: Map<String, String>): Weekly =
+            Weekly(
+                date = LocalDate.parse(row["Start of Week"]),
+                basePayAdjustment = row["Base Pay Adjustment"]?.toFloatOrNull(),
+                isNew = row["isNew"]?.toBoolean() ?: false,
+            )
+
+        override fun Weekly.asList(): List<*> =
+            listOf(
+                date,
+                basePayAdjustment,
+                weekNumber,
+                isNew
+            )
+    }
+
 }
 
 @ExperimentalCoroutinesApi
@@ -57,7 +85,7 @@ data class CompleteWeekly(
     internal val pay: Float
         get() = getTotalForWeek(DashEntry::totalEarned)
 
-    internal val numDeliveries: Int
+    private val numDeliveries: Int
         get() = getTotalForWeek(DashEntry::numDeliveries)
 
     private fun getTotalForWeek(field: KProperty1<DashEntry, Float?>) = entries.map(field)

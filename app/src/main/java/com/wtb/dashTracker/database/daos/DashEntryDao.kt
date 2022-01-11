@@ -1,5 +1,6 @@
 package com.wtb.dashTracker.database.daos
 
+import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
@@ -7,6 +8,8 @@ import androidx.room.RawQuery
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.extensions.endOfWeek
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -16,6 +19,12 @@ import java.time.LocalDate
 abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @Query(SQL_GET_ALL)
     abstract fun getAll(): Flow<List<DashEntry>>
+
+    @Query(SQL_GET_ALL)
+    abstract suspend fun getAllLiveData(): List<DashEntry>
+
+    @Query("DELETE FROM DashEntry")
+    abstract override fun clear()
 
     @RawQuery(observedEntities = [DashEntry::class])
     abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<DashEntry?>

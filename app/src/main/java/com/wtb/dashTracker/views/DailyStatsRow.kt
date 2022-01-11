@@ -2,7 +2,6 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.GridLayout
 import androidx.annotation.StringRes
@@ -37,12 +36,7 @@ class DailyStatsRow @JvmOverloads constructor(
         binding.dailyStatsRowDayOfWeek.text =
             day.getDisplayName(TextStyle.SHORT, Locale.US).uppercase()
 
-        val c = stats.amDels
-        val b = stats.amHours
-        val a = stats.amEarned
-        Log.d(TAG, "HOURLY: ${stats.day} ${stats.amHours} ${stats.amEarned} ${safeDiv(a, b)}")
-        Log.d(TAG, "PER DEL: ${stats.day} ${stats.amHours} ${stats.amDels} ${safeDiv(a, c)}")
-        val amHourly = safeDiv(a, b)
+        val amHourly = safeDiv(stats.amEarned, stats.amHours)
         binding.dailyStatsRowAmHourly.text =
             context.getStringOrElse(R.string.currency_unit, amHourly)
 
@@ -55,8 +49,13 @@ class DailyStatsRow @JvmOverloads constructor(
             context.getStringOrElse(R.string.currency_unit, amAvgDel)
 
         binding.dailyStatsRowAmNumShifts.text =
-            stats.amNumShifts.let { if (it == 0) "-" else it.toString() }
-
+            stats.amHours.let {
+                if (it == null || it == 0f) "-" else context.getString(
+                    R.string.format_hours,
+                    it
+                )
+            }
+//            stats.amNumShifts.let { if (it == 0) "-" else it.toString() }
 
         val pmAvgDel = safeDiv(stats.pmEarned, stats.pmDels)
         binding.dailyStatsRowPmAvgDel.text =
@@ -71,7 +70,13 @@ class DailyStatsRow @JvmOverloads constructor(
             context.getStringOrElse(R.string.float_fmt, pmDelsPerHr)
 
         binding.dailyStatsRowPmNumShifts.text =
-            stats.pmNumShifts.let { if (it == 0) "-" else it.toString() }
+            stats.pmHours.let {
+                if (it == 0f) "-" else context.getString(
+                    R.string.format_hours,
+                    it
+                )
+            }
+//            stats.pmNumShifts.let { if (it == 0) "-" else it.toString() }
     }
 
     fun addToGridLayout(grid: GridLayout, SKIP_ROWS: Int) {

@@ -15,7 +15,16 @@ import com.wtb.dashTracker.databinding.DialogFragConfirmBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 
-class ConfirmationDialog(val type: ConfirmationType, private val confirmId: Int? = null) :
+open class ConfirmationDialog(
+    @StringRes val text: Int?,
+    val requestKey: String,
+    @StringRes val posButton: Int = R.string.yes,
+    @StringRes val negButton: Int = R.string.cancel,
+    private val confirmId: Int? = null,
+    private val message: String? = null,
+    var posAction: (() -> Unit)? = null,
+    var negAction: (() -> Unit)? = null,
+) :
     FullWidthDialogFragment() {
 
     override fun onCreateView(
@@ -28,31 +37,46 @@ class ConfirmationDialog(val type: ConfirmationType, private val confirmId: Int?
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         binding.fragEntryToolbar.title =
-            getString(R.string.confirm_dialog, getString(type.posButton))
-        binding.theQuestion.setVisibleIfTrue(type.text != null)
-        type.text?.let { binding.theQuestion.setText(it) }
+            message ?: getString(R.string.confirm_dialog, getString(posButton))
+
+        binding.theQuestion.setVisibleIfTrue(text != null)
+
+        text?.let { binding.theQuestion.setText(it) }
+
+        val mNegAction = negAction ?: {
+            setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
+        }
+
         binding.noButton.apply {
-            setText(type.negButton)
+            setText(negButton)
             setOnClickListener {
                 dismiss()
-                setFragmentResult(type.requestKey, bundleOf(ARG_CONFIRM to false))
+                mNegAction()
+            }
+        }
+
+        val mPosAction = posAction ?: {
+            val bundlePairs = bundleOf()
+            bundlePairs.putBoolean(ARG_CONFIRM, true)
+            confirmId?.let { bundlePairs.putInt(ARG_EXTRA, it) }
+            if (confirmId == null) {
+                setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+            } else {
+                setFragmentResult(
+                    requestKey,
+                    bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId)
+                )
             }
         }
 
         binding.yesButton.apply {
-            setText(type.posButton)
+            setText(posButton)
             setOnClickListener {
                 dismiss()
-                val bundlePairs = bundleOf()
-                bundlePairs.putBoolean(ARG_CONFIRM, true)
-                confirmId?.let { bundlePairs.putInt(ARG_EXTRA, it) }
-                if (confirmId == null) {
-                    setFragmentResult(type.requestKey, bundleOf(ARG_CONFIRM to true))
-                } else {
-                    setFragmentResult(type.requestKey, bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId))
-                }
+                mPosAction()
             }
         }
+
         return binding.root
     }
 
@@ -61,15 +85,32 @@ class ConfirmationDialog(val type: ConfirmationType, private val confirmId: Int?
         const val ARG_CONFIRM = "confirm"
         const val ARG_EXTRA = "extra"
     }
-
-    enum class ConfirmationType(
-        @StringRes val text: Int?,
-        val requestKey: String,
-        @StringRes val posButton: Int = R.string.yes,
-        @StringRes val negButton: Int = R.string.cancel
-    ) {
-        DELETE(R.string.confirm_delete, "confirmDelete", R.string.delete),
-        RESET(R.string.confirm_delete, "confirmReset", R.string.reset),
-        SAVE(null, "confirmSave", R.string.save, R.string.keep)
-    }
 }
+
+enum class ConfirmType(val key: String) {
+    DELETE("confirmDelete"),
+    RESET("confirmReset"),
+    SAVE("confirmSave")
+}
+
+class ConfirmDeleteDialog(confirmId: Int? = null) : ConfirmationDialog(
+    text = R.string.confirm_delete,
+    requestKey = ConfirmType.DELETE.key,
+    posButton = R.string.delete,
+    confirmId = confirmId
+)
+
+class ConfirmResetDialog : ConfirmationDialog(
+    text = R.string.confirm_reset,
+    requestKey = ConfirmType.RESET.key,
+    posButton = R.string.reset
+)
+
+class ConfirmSaveDialog(
+    @StringRes text: Int? = null,
+) : ConfirmationDialog(
+    text = text,
+    requestKey = ConfirmType.SAVE.key,
+    posButton = R.string.save,
+    negButton = R.string.no
+)

@@ -63,7 +63,7 @@ class TableRadioButton(context: Context, attrs: AttributeSet) :
 
 class TableRadioGroup(val name: String = Random().nextInt().toString()) : OnClickListener {
     private val buttons = mutableListOf<TableRadioButton>()
-    var callback: TableRadioGroupCallback? = null
+    private var callback: TableRadioGroupCallback? = null
 
     override fun onClick(v: View?) {
         var selectedButton: TableRadioButton? = null

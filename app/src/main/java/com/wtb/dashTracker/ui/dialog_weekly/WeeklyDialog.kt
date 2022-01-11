@@ -12,6 +12,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
@@ -21,6 +23,9 @@ import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.databinding.DialogWeeklySpinnerItemBinding
 import com.wtb.dashTracker.databinding.DialogWeeklySpinnerItemSingleLineBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmResetDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -46,6 +51,8 @@ class WeeklyDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setDialogListeners()
+
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         binding = DialogFragWeeklyBinding.inflate(layoutInflater)
@@ -79,10 +86,13 @@ class WeeklyDialog(
                 }
             }
 
+        binding.fragAdjustAmount.doOnTextChanged { text, start, before, count ->
+            updateSaveButtonIsEnabled(text)
+        }
+
 
         binding.fragAdjustBtnCancel.setOnClickListener {
-            viewModel.clearEntry()
-            clearFields()
+            ConfirmResetDialog().show(parentFragmentManager, null)
         }
 
         binding.fragAdjustBtnSave.setOnClickListener {
@@ -93,6 +103,31 @@ class WeeklyDialog(
         weekly?.let { updateUI() }
 
         return binding.root
+    }
+
+    private fun setDialogListeners() {
+        setFragmentResultListener(
+            ConfirmType.RESET.key,
+        ) { _, bundle ->
+            Log.d(TAG, "Receiving Reset")
+            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
+            Log.d(TAG, "Result: $result")
+            Log.d(TAG, result.toString())
+            if (result) {
+                updateUI()
+            }
+        }
+
+    }
+
+    private fun updateSaveButtonIsEnabled(text: CharSequence?) {
+        if (text == null || text.isEmpty()) {
+            binding.fragAdjustBtnSave.alpha = 0.7f
+            binding.fragAdjustBtnSave.isClickable = false
+        } else {
+            binding.fragAdjustBtnSave.alpha = 1.0f
+            binding.fragAdjustBtnSave.isClickable = true
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -120,13 +155,14 @@ class WeeklyDialog(
                 getSpinnerIndex(tempWeekly.weekly.date)?.let { setSelection(it) }
             }
 
-            binding.fragAdjustAmount.setText(
-                getStringOrElse(
-                    R.string.float_fmt,
-                    "",
-                    tempWeekly.weekly.basePayAdjustment
-                )
+            val text = getStringOrElse(
+                R.string.float_fmt,
+                "",
+                tempWeekly.weekly.basePayAdjustment
             )
+            binding.fragAdjustAmount.setText(text)
+            updateSaveButtonIsEnabled(text)
+
             binding.fragAdjustTotal.text = getString(R.string.float_fmt, tempWeekly.totalPay)
         }
     }
