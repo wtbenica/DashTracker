@@ -12,6 +12,8 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -52,7 +54,6 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.util.concurrent.Executor
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -63,9 +64,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
-    private lateinit var executor: Executor
-    private lateinit var biometricPrompt: BiometricPrompt
-    private lateinit var promptInfo: BiometricPrompt.PromptInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,9 +75,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         setContentView(binding.root)
 
         initBiometrics()
+        initMobileAds()
         initBottomNavBar()
         initObservers()
-        initMobileAds()
     }
 
     private fun initMobileAds() {
@@ -92,18 +90,31 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
     override fun onResume() {
         super.onResume()
-//        val bp = BiometricPrompt(this, executor,
-//            object : BiometricPrompt.AuthenticationCallback() {
-//                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-//                    super.onAuthenticationSucceeded(result)
-//
-//                }
-//            })
-//        val pi = BiometricPrompt.PromptInfo.Builder()
-//            .setTitle("Login for DashTracker")
-//            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
-//            .build()
-//        bp.authenticate(pi)
+        if (!isAuthenticated) {
+            val executor = ContextCompat.getMainExecutor(this)
+
+            val biometricPrompt = BiometricPrompt(this, executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        super.onAuthenticationSucceeded(result)
+                        isAuthenticated = true
+                        this@MainActivity.binding.root.visibility = VISIBLE
+                    }
+                })
+
+            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Login for DashTracker")
+                .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+                .build()
+
+            biometricPrompt.authenticate(promptInfo)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isAuthenticated = false
+        binding.root.visibility = INVISIBLE
     }
 
     private fun initBiometrics() {
@@ -142,7 +153,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
     private fun initObservers() {
         viewModel.hourly.observe(this) {
-            binding.actMainHourly.text = getStringOrElse(R.string.currency_unit, it)
+            binding.actMainHourly.text =
+                getStringOrElse(R.string.currency_unit, it)
         }
 
         viewModel.thisWeek.observe(this) {
@@ -204,6 +216,23 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
     private fun exportDatabaseToCSV(encrypted: Boolean = false) = viewModel.export(encrypted)
 
+    private fun showImportCsvConfirmationDialog() {
+        ConfirmationDialog(
+            text = R.string.confirm_import,
+            requestKey = "confirmImportEntry",
+            posButton = R.string.ok,
+            negButton = R.string.cancel,
+            message = "Import from CSV",
+            posAction = {
+                getContentZip.launch("application/zip")
+            },
+            negAction = { }
+        ).show(supportFragmentManager, null)
+    }
+
+    private val getContentZip: ActivityResultLauncher<String> =
+        getContent(FILE_ZIP) { extractZip(it) }
+
     private fun extractZip(it: Uri) {
         ZipInputStream(contentResolver.openInputStream(it)).use { zipIn ->
             var nextEntry: ZipEntry? = zipIn.nextEntry
@@ -237,13 +266,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             weekliesPath?.let { weekliesPath }
         )
 
-    private val getContentZip: ActivityResultLauncher<String> =
-        getContent(FILE_ZIP) { extractZip(it) }
-
-    private fun getContent(
-        filePrefix: String,
-        function: (Uri) -> Unit
-    ): ActivityResultLauncher<String> =
+    private fun getContent(prefix: String, action: (Uri) -> Unit): ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
                 contentResolver.query(it, null, null, null, null)
@@ -251,31 +274,18 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                         val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                         cursor.moveToFirst()
                         val fileName = cursor.getString(nameIndex)
-                        if (fileName.startsWith(filePrefix)) {
-                            function(it)
+                        if (fileName.startsWith(prefix)) {
+                            action(it)
                         }
                     }
             }
         }
 
-    private fun showImportCsvConfirmationDialog() {
-        ConfirmationDialog(
-            text = R.string.confirm_import,
-            requestKey = "confirmImportEntry",
-            posButton = R.string.ok,
-            negButton = R.string.cancel,
-            message = "Import from CSV",
-            posAction = {
-                getContentZip.launch("application/zip")
-            },
-            negAction = { }
-        ).show(supportFragmentManager, null)
-    }
-
     companion object {
         const val APP = "GT_"
         private const val TAG = APP + "MainActivity"
         private val weekEndsOn = DayOfWeek.SUNDAY
+        var isAuthenticated = false
 
         private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
             FabMenuButtonInfo(
