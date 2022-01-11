@@ -25,8 +25,6 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
@@ -36,12 +34,19 @@ import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCall
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ENTRIES
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_WEEKLIES
+import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.time.DayOfWeek
 import java.time.LocalDate
-import kotlin.reflect.KClass
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
@@ -49,30 +54,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
-
-    private val getContentEntry: ActivityResultLauncher<String> =
-        getContent(FILE_ENTRIES) { importCSVtoDatabase(entriesPath = it) }
-
-    private val getContentWeekly: ActivityResultLauncher<String> =
-        getContent(FILE_WEEKLIES) { importCSVtoDatabase(weekliesPath = it) }
-
-    private fun getContent(
-        filePrefix: String,
-        function: (Uri) -> Unit
-    ): ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let {
-                contentResolver.query(it, null, null, null, null)
-                    ?.use { cursor ->
-                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                        cursor.moveToFirst()
-                        val fileName = cursor.getString(nameIndex)
-                        if (fileName.startsWith(filePrefix)) {
-                            function(it)
-                        }
-                    }
-            }
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,7 +112,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         binding.fab.interceptTouchEvent(ev)
         return super.dispatchTouchEvent(ev)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -139,61 +119,92 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_licenses -> {
-            startActivity(Intent(this, OssLicensesMenuActivity::class.java))
-            true
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.action_licenses -> {
+                startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+                true
+            }
+            R.id.action_export_to_csv -> {
+                exportDatabaseToCSV()
+                true
+            }
+            R.id.action_import_from_csv -> {
+                showImportCsvConfirmationDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-        R.id.action_export_to_csv -> {
-            exportDatabaseToCSV()
-            true
+
+    private fun exportDatabaseToCSV(encrypted: Boolean = false) = viewModel.export(encrypted)
+
+    private fun extractZip(it: Uri) {
+        ZipInputStream(contentResolver.openInputStream(it)).use { zipIn ->
+            var nextEntry: ZipEntry? = zipIn.nextEntry
+            while (nextEntry != null) {
+                val destFile = File(filesDir, nextEntry.name)
+                FileOutputStream(destFile).use { t ->
+                    zipIn.copyTo(t, 1024)
+                }
+                val inputStream = FileInputStream(destFile)
+
+                nextEntry.name?.let {
+                    when {
+                        it.startsWith(FILE_ENTRIES, false) -> {
+                            importCsv(entriesPath = inputStream)
+                        }
+                        it.startsWith(FILE_WEEKLIES, false) -> {
+                            importCsv(weekliesPath = inputStream)
+                        }
+                    }
+                }
+
+                nextEntry = zipIn.nextEntry
+            }
+            zipIn.closeEntry()
         }
-        R.id.action_import_from_csv -> {
-            showImportEntriesConfirmationDialog()
-            true
-        }
-        R.id.action_import_weeklies_from_csv -> {
-            showImportWeekliesConfirmationDialog()
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
     }
 
-    private fun showImportWeekliesConfirmationDialog() {
-        ConfirmationDialog(
-            text = R.string.confirm_import_entry,
-            requestKey = "confirmImportWeekly",
-            posButton = R.string.ok,
-            negButton = R.string.cancel,
-            message = "Import Weeklies",
-            posAction = {
-                getContentWeekly.launch("text/comma-separated-values")
-            },
-            negAction = { }
-        ).show(supportFragmentManager, null)
-    }
+    private fun importCsv(entriesPath: InputStream? = null, weekliesPath: InputStream? = null) =
+        viewModel.import(
+            entriesPath?.let { entriesPath },
+            weekliesPath?.let { weekliesPath }
+        )
 
-    private fun showImportEntriesConfirmationDialog() {
+    private val getContentZip: ActivityResultLauncher<String> =
+        getContent(FILE_ZIP) { extractZip(it) }
+
+    private fun getContent(
+        filePrefix: String,
+        function: (Uri) -> Unit
+    ): ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                contentResolver.query(it, null, null, null, null)
+                    ?.use { cursor ->
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        cursor.moveToFirst()
+                        val fileName = cursor.getString(nameIndex)
+                        if (fileName.startsWith(filePrefix)) {
+                            function(it)
+                        }
+                    }
+            }
+        }
+
+    private fun showImportCsvConfirmationDialog() {
         ConfirmationDialog(
-            text = R.string.confirm_import_entry,
+            text = R.string.confirm_import,
             requestKey = "confirmImportEntry",
             posButton = R.string.ok,
             negButton = R.string.cancel,
-            message = "Import Entries",
+            message = "Import from CSV",
             posAction = {
-                getContentEntry.launch("text/comma-separated-values")
+                getContentZip.launch("application/zip")
             },
             negAction = { }
         ).show(supportFragmentManager, null)
     }
-
-    private fun importCSVtoDatabase(entriesPath: Uri? = null, weekliesPath: Uri? = null) =
-        viewModel.import(
-            entriesPath?.let { contentResolver.openInputStream(it) },
-            weekliesPath?.let { contentResolver.openInputStream(it) }
-        )
-
-    private fun exportDatabaseToCSV() = viewModel.export()
 
     companion object {
         const val APP = "GT_"

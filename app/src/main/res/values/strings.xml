@@ -18,10 +18,7 @@
     <string name="lbl_this_week">This Week</string>
     <string name="desc_add_entry">Add Entry</string>
     <string name="odometer_range" formatted="true">%1$.0f-%2$.0f</string>
-    <string name="hourly_rate">$%.2f/hr</string>
     <string name="time_range" formatted="false">%1$s - %2$s</string>
-    <string name="avg_delivery">$%.2f/del</string>
-    <string name="dels">%.2f dels</string>
     <string name="format_hours">%.2fh</string>
     <string name="lbl_other_pay">Other Pay</string>
     <string name="title_daily">Daily</string>
@@ -38,7 +35,6 @@
     <string name="header_mileage">Miles</string>
     <string name="header_num_deliveries">Deliveries</string>
     <string name="content_desc_fab_menu_closed">Open add item menu</string>
-    <string name="frag_entry_title">Dash Entry</string>
     <string name="label_amount">Amount</string>
     <string name="dialog_weekly_title">Weekly</string>
     <string name="content_desc_edit_button">Edit this entry</string>
@@ -47,12 +43,9 @@
     <string name="date_range">%1$s - %2$s</string>
     <string name="lbl_total_earned">Total\nEarned</string>
     <string name="title_weekly_list">Weekly</string>
-    <string name="header_regular_pay">Regular Pay</string>
     <string name="lbl_adjust">Base Pay Adjustment</string>
-    <string name="header_pay_and_cc_tips">Pay and CC Tips</string>
     <string name="label_shifts">shifts</string>
     <string name="lbl_reported_income">Reported Income</string>
-    <string name="dialog_payout_title">Payout</string>
     <string name="title_yearly_list">Yearly</string>
     <string name="mileage_fmt">%.1f</string>
     <string name="confirm_delete">The information will not be recoverable</string>
@@ -60,22 +53,18 @@
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
-    <string name="confirm_save">Do you want to save this entry?</string>
     <string name="confirm_dialog">Confirm %s</string>
     <string name="reset">Reset</string>
     <string name="save">Save</string>
     <string name="confirm_reset">Any changes will be permanently lost</string>
     <string name="action_licenses">Licenses</string>
-    <string name="action_export_to_csv">Export to CSV</string>
+    <string name="label_action_export_to_csv">Export to CSV</string>
     <string name="csv_generation_failed">CSV generation failed</string>
-    <string name="csv_generations_success">CSV generation success</string>
-    <string name="no_spreadsheet">In order to view the file, you must have a spreadsheet app. Would you like to go find one on Google Play?</string>
     <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>
-    <string name="action_import_entries_from_csv">Import Entries from CSV</string>
+    <string name="label_action_import_from_csv">Import from CSV</string>
     <string name="action_import_weeklies_from_csv">Import Weeklies from CSV</string>
-    <string name="confirm_export">There will be two files created which you can open in any spreadsheet app. You can also use them to transfer or restore your data by importing them into the app. You will be given the choice of where to save or send the files.</string>
+    <string name="confirm_export">This will create a zip file containing CSV backups of your data. <b>The file is neither encrypted nor password-protected.</b></string>
     <string name="export">Export</string>
-    <string name="confirm_import_entry">An entries file\'s name starts with \'dash_tracker_entries_\' and its extension is \'csv\'. Please locate the file you would like to import.</string>
-    <string name="confirm_import_weeklies">A weeklies file\'s name starts with \'dash_tracker_weeklies_\' and its extension is \'csv\'. Please locate the file you would like to import.</string>
+    <string name="confirm_import">A backup file\'s name starts with \'dash_tracker_\' and its extension is \'zip\'. Please locate the file you would like to import.</string>
     <string name="ok">OK</string>
 </resources>

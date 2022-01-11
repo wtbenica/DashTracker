@@ -1,14 +1,11 @@
 package com.wtb.dashTracker
 
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.CompleteWeekly
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,8 +13,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.time.LocalDate
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty1
 
 @ExperimentalCoroutinesApi
 class MainActivityViewModel : ViewModel() {
@@ -56,52 +51,17 @@ class MainActivityViewModel : ViewModel() {
     }
 
 
-    fun export() {
-        repository.export()
-    }
+    fun export(encrypted: Boolean) = repository.export(encrypted)
 
-    fun import(entriesPath: InputStream? = null, weekliesPath: InputStream? = null) {
+    fun import(
+        entriesPath: InputStream? = null,
+        weekliesPath: InputStream? = null
+    ) {
         repository.import(entriesPath = entriesPath, weekliesPath = weekliesPath)
     }
 
     companion object {
         private const val TAG = APP + "MainActivityViewModel"
-
-        fun getTotalPay(entries: List<DashEntry>): Float? {
-            val map: List<Float> = entries.mapNotNull { entry -> entry.totalEarned }
-
-            return if (map.isNotEmpty()) {
-                map.reduce { acc, fl -> acc + fl }
-            } else {
-                null
-            }
-        }
-
-        fun getTotalByField(
-            entries: List<DashEntry>,
-            kProperty1: KProperty1<DashEntry, Int?>
-        ): Int? {
-            val map = entries.map { kProperty1(it) }
-
-            return if (map.isNotEmpty() && !map.contains(null)) {
-                map.reduce { acc: Int?, fl: Int? -> (acc ?: 0) + (fl ?: 0) }
-            } else {
-                null
-            }
-        }
-
-        fun getTotalByField(
-            entries: List<DashEntry>,
-            kProperty1: KProperty1<DashEntry, Float?>
-        ): Float? {
-            val map = entries.mapNotNull(kProperty1)
-
-            return if (map.isNotEmpty()) {
-                map.reduce { acc: Float, fl: Float -> acc + fl }
-            } else {
-                null
-            }
-        }
 
         fun getHourlyFromWeeklies(list: List<CompleteWeekly>): Float {
             return if (list.isNotEmpty()) {

@@ -8,16 +8,11 @@
 
     <item
         android:id="@+id/action_export_to_csv"
-        android:title="@string/action_export_to_csv"
+        android:title="@string/label_action_export_to_csv"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_import_from_csv"
-        android:title="@string/action_import_entries_from_csv"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_import_weeklies_from_csv"
-        android:title="@string/action_import_weeklies_from_csv"
+        android:title="@string/label_action_import_from_csv"
         app:showAsAction="never" />
 </menu>

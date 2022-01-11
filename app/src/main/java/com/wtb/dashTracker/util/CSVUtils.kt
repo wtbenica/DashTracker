@@ -18,14 +18,20 @@ import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.database.models.Weekly.Companion.asList
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.io.File
-import java.io.InputStream
+import java.io.*
 import java.time.LocalDate
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 
 @ExperimentalCoroutinesApi
 class CSVUtils {
-    fun exportDb(context: Context, entries: List<DashEntry>?, weeklies: List<Weekly>?) {
+    fun exportDb(
+        context: Context,
+        entries: List<DashEntry>?,
+        weeklies: List<Weekly>?,
+        encrypted: Boolean
+    ) {
 
         val dailyFile: File? = generateFile(context, getEntriesFileName())
         val weeklyFile: File? = generateFile(context, getWeekliesFileName())
@@ -34,7 +40,9 @@ class CSVUtils {
             exportEntries(dailyFile, entries)
             exportWeeklies(weeklyFile, weeklies)
 
-            val sendFilesIntent = getSendFilesIntent(context = context, dailyFile, weeklyFile)
+            val zipFile: File = zipFiles(context, encrypted, dailyFile, weeklyFile)
+
+            val sendFilesIntent = getSendFilesIntent(context = context, zipFile)
 
             (context as MainActivity).runOnUiThread {
                 ConfirmationDialog(
@@ -43,7 +51,11 @@ class CSVUtils {
                     posButton = R.string.export,
                     negButton = R.string.cancel,
                     posAction = {
-                        startActivity(context, Intent.createChooser(sendFilesIntent, null), null)
+                        startActivity(
+                            context,
+                            Intent.createChooser(sendFilesIntent, null),
+                            null
+                        )
                     },
                     negAction = { }
                 ).show(context.supportFragmentManager, null)
@@ -57,6 +69,27 @@ class CSVUtils {
                 ).show()
             }
         }
+    }
+
+    private fun zipFiles(context: Context, encrypted: Boolean, vararg file: File): File {
+        val outFile = File(context.filesDir, getZipFileName())
+        val zipOut = ZipOutputStream(BufferedOutputStream(outFile.outputStream()))
+
+        file.forEach { f ->
+            val fi = FileInputStream(f)
+            val origin = BufferedInputStream(fi)
+            val entry = ZipEntry(f.name)
+            zipOut.putNextEntry(entry)
+            origin.copyTo(zipOut, 1024)
+            origin.close()
+        }
+        zipOut.close()
+
+        return outFile
+    }
+
+    private fun unzipFiles() {
+
     }
 
     fun importCsv(
@@ -73,9 +106,7 @@ class CSVUtils {
         function: (Map<String, String>) -> T
     ): List<T>? =
         path?.let {
-            csvReader().readAllWithHeader(it).map {
-                function(it)
-            }
+            csvReader().readAllWithHeader(it).map { function(it) }
         }
 
     private fun getSendFilesIntent(context: Context, vararg file: File): Intent {
@@ -125,10 +156,15 @@ class CSVUtils {
     }
 
     companion object {
+        const val FILE_ZIP = "dash_tracker_"
+        const val FILE_BACKUP = "dash_tracker_"
         const val FILE_ENTRIES = "dash_tracker_entries_"
         const val FILE_WEEKLIES = "dash_tracker_weeklies_"
         fun getEntriesFileName() =
             "$FILE_ENTRIES${LocalDate.now().toString().replace('-', '_')}.csv"
+
+        fun getZipFileName() =
+            "$FILE_ZIP${LocalDate.now().toString().replace('-', '_')}.zip"
 
         fun getWeekliesFileName() =
             "$FILE_WEEKLIES${LocalDate.now().toString().replace('-', '_')}.csv"
