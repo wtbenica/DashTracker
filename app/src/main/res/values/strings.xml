@@ -58,14 +58,26 @@
     <string name="save">Save</string>
     <string name="confirm_reset">Any changes will be permanently lost</string>
     <string name="action_licenses">Licenses</string>
-    <string name="label_action_export_to_csv">Export to CSV</string>
+    <string name="label_action_export_to_csv">Export…</string>
     <string name="csv_generation_failed">CSV generation failed</string>
-    <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>
+    <string name="confirm_save_entry_incomplete">
+        This entry is incomplete. Do you want to save it anyways?
+    </string>
     <string name="label_action_import_from_csv">Import from CSV</string>
     <string name="action_import_weeklies_from_csv">Import Weeklies from CSV</string>
-    <string name="confirm_export">This will create a zip file containing CSV backups of your data. <b>The file is neither encrypted nor password-protected.</b></string>
+    <string name="confirm_export">Your data is already backed up automatically, so a manual backup
+        is not necessary under most circumstances.\n\n<b>Export encrypted backup:</b> Create an
+        encrypted backup of your data. The file can only be opened by the DashTracker app.
+        \n\n<b>Export to CSV:</b> Create a zip file containing your data in CSV format. You can open
+         the CSV files in any spreadsheet app. These files are not encrypted and are not
+        password-protected, so anyone with access to the ZIP file or CSV files will be able to view
+        their contents.
+    </string>
     <string name="export">Export</string>
-    <string name="confirm_import">A backup file\'s name starts with \'dash_tracker_\' and its extension is \'zip\'. Please locate the file you would like to import.</string>
+    <string name="confirm_import">
+        A backup file\'s name starts with \'dash_tracker_\' and its
+        extension is \'zip\'. Please locate the file you would like to import.
+    </string>
     <string name="ok">OK</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -78,4 +90,5 @@
     <string name="login_failed">"Login failed"</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="label_action_backup">Export encrypted backup</string>
 </resources>

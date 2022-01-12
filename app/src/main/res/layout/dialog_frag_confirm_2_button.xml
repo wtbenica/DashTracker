@@ -77,12 +77,12 @@
                         android:layout_height="0dp"
                         android:background="?attr/colorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/yes_button"
+                        app:layout_constraintEnd_toStartOf="@id/yes_button_1"
                         app:layout_constraintStart_toEndOf="@id/no_button"
                         app:layout_constraintTop_toBottomOf="@id/divider_hor" />
 
                     <Button
-                        android:id="@+id/yes_button"
+                        android:id="@+id/yes_button_1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"

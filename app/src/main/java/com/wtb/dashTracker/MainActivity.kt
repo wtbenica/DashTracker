@@ -54,6 +54,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -88,8 +89,25 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         mAdView.loadAd(adRequest)
     }
 
+    fun cleanupFiles() {
+        if (fileList().isNotEmpty()) {
+            fileList().forEach { name ->
+                val date = name.split(".")[0].removePrefix("dash_tracker_")
+                val parsedDate = LocalDate.parse(
+                    date, DateTimeFormatter.ofPattern("yyyy_MM_dd")
+                )
+                if (parsedDate <= LocalDate.now().minusDays(2)) {
+                    val file = File(filesDir, name)
+                    file.delete()
+                }
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "onResume")
+        cleanupFiles()
         if (!isAuthenticated) {
             val executor = ContextCompat.getMainExecutor(this)
 
@@ -99,11 +117,13 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                         super.onAuthenticationSucceeded(result)
                         isAuthenticated = true
                         this@MainActivity.binding.root.visibility = VISIBLE
+                        Log.d(TAG, "Authentication succeeded!")
                     }
                 })
 
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Login for DashTracker")
+                .setTitle("Unlock to access DashTracker")
+                .setSubtitle("Use device login")
                 .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
                 .build()
 
@@ -220,12 +240,12 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         ConfirmationDialog(
             text = R.string.confirm_import,
             requestKey = "confirmImportEntry",
-            posButton = R.string.ok,
-            negButton = R.string.cancel,
             message = "Import from CSV",
+            posButton = R.string.ok,
             posAction = {
                 getContentZip.launch("application/zip")
             },
+            negButton = R.string.cancel,
             negAction = { }
         ).show(supportFragmentManager, null)
     }
