@@ -27,7 +27,7 @@ open class ConfirmationDialog(
     @StringRes val negButton: Int = R.string.cancel,
     var negAction: (() -> Unit)? = null,
     @StringRes val posButton2: Int? = null,
-    val posAction2: (() -> Unit)? = null,
+    private val posAction2: (() -> Unit)? = null,
 ) : FullWidthDialogFragment() {
 
     override fun onCreateView(

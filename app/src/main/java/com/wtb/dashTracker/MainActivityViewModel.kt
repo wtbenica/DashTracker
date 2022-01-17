@@ -51,7 +51,7 @@ class MainActivityViewModel : ViewModel() {
     }
 
 
-    fun export(encrypted: Boolean) = repository.export()
+    fun export() = repository.export()
 
     fun import(
         entriesPath: InputStream? = null,

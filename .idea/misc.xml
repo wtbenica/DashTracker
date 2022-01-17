@@ -51,6 +51,7 @@
         <entry key="app/src/main/res/layout/dialog_adjust_week_spinner_item_single_line.xml" value="0.35104166666666664" />
         <entry key="app/src/main/res/layout/dialog_frag_adjust.xml" value="0.11646586345381527" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm.xml" value="0.3137598597721297" />
+        <entry key="app/src/main/res/layout/dialog_frag_confirm_2_button.xml" value="0.19114583333333332" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_3_button.xml" value="0.35104166666666664" />
         <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.5877061469265368" />
         <entry key="app/src/main/res/layout/dialog_frag_payout.xml" value="0.1" />

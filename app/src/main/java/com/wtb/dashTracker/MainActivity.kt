@@ -25,11 +25,14 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKey
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -48,10 +51,7 @@ import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
+import java.io.*
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -89,10 +89,10 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         mAdView.loadAd(adRequest)
     }
 
-    fun cleanupFiles() {
+    private fun cleanupFiles() {
         if (fileList().isNotEmpty()) {
             fileList().forEach { name ->
-                val date = name.split(".")[0].removePrefix("dash_tracker_")
+                val date = Regex("^[A-Za-z_]*_").replace(name.split(".")[0], "")
                 val parsedDate = LocalDate.parse(
                     date, DateTimeFormatter.ofPattern("yyyy_MM_dd")
                 )
@@ -234,27 +234,73 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             else -> super.onOptionsItemSelected(item)
         }
 
-    private fun exportDatabaseToCSV(encrypted: Boolean = false) = viewModel.export(encrypted)
+    private fun exportDatabaseToCSV() = viewModel.export()
 
     private fun showImportCsvConfirmationDialog() {
         ConfirmationDialog(
             text = R.string.confirm_import,
             requestKey = "confirmImportEntry",
-            message = "Import from CSV",
-            posButton = R.string.ok,
+            message = "Confirm Import",
+            posButton = R.string.label_action_import_csv,
             posAction = {
                 getContentZip.launch("application/zip")
             },
             negButton = R.string.cancel,
-            negAction = { }
+            negAction = { },
         ).show(supportFragmentManager, null)
     }
 
     private val getContentZip: ActivityResultLauncher<String> =
         getContent(FILE_ZIP) { extractZip(it) }
 
-    private fun extractZip(it: Uri) {
-        ZipInputStream(contentResolver.openInputStream(it)).use { zipIn ->
+    private val getContentBackup: ActivityResultLauncher<String> =
+        getContent(FILE_ZIP) { extractZip(it, true) }
+
+    private fun extractZip(uriIn: Uri, encrypted: Boolean = false) {
+        var uri = uriIn
+        if (encrypted) {
+            val masterKey = getMasterKey(this)
+
+            val inFile = File(filesDir, "dash_tracker_bak_${getDateForFileName()}")
+            if (inFile.exists()) {
+                inFile.delete()
+            }
+
+            contentResolver.openInputStream(uri)?.bufferedReader()?.use { reader ->
+                inFile.outputStream().bufferedWriter().use { writer ->
+                    reader.copyTo(writer, 1024)
+                    writer.flush()
+                }
+            }
+
+            val encryptedFile = EncryptedFile.Builder(
+                this,
+                inFile,
+                masterKey,
+                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            )
+                .setKeysetPrefName(BACKUP_PREFS)
+                .setKeysetAlias(BACKUP_KEY)
+                .build()
+
+            val zipFile = File(filesDir, "dash_tracker_backup_${getDateForFileName()}")
+            if (zipFile.exists()) {
+                zipFile.delete()
+            }
+            zipFile.createNewFile()
+
+            encryptedFile.openFileInput().bufferedReader().use { inFileReader ->
+                zipFile.outputStream().bufferedWriter().use { writer ->
+                    inFileReader.copyTo(writer, 1024)
+                    writer.flush()
+                }
+            }
+
+
+            uri = zipFile.toUri()
+        }
+
+        ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
             var nextEntry: ZipEntry? = zipIn.nextEntry
             while (nextEntry != null) {
                 val destFile = File(filesDir, nextEntry.name)
@@ -280,6 +326,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         }
     }
 
+    private fun getDateForFileName() =
+        LocalDate.now().format(DateTimeFormatter.ofPattern("_yyyy_MM_dd"))
+
     private fun importCsv(entriesPath: InputStream? = null, weekliesPath: InputStream? = null) =
         viewModel.import(
             entriesPath?.let { entriesPath },
@@ -304,6 +353,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     companion object {
         const val APP = "GT_"
         private const val TAG = APP + "MainActivity"
+        const val BACKUP_KEY = "backup_key"
+        const val BACKUP_PREFS = "prefs_bak"
         private val weekEndsOn = DayOfWeek.SUNDAY
         var isAuthenticated = false
 
@@ -354,6 +405,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             val daysLeft: Long = (weekEndsOn.value - todayIs.value + 7) % 7L
             return LocalDate.now().plusDays(daysLeft)
         }
+
+        fun getMasterKey(context: Context) =
+            MasterKey.Builder(context).apply {
+                setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            }.build()
     }
 }
 

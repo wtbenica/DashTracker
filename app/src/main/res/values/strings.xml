@@ -1,7 +1,12 @@
 <resources>
     <string name="app_name">DashTracker</string>
 
-    <string name="currency_unit">$%.2f</string>
+    <string name="title_app"><b>DashTracker ></b> </string>
+    <string name="title_daily">Daily</string>
+    <string name="title_weekly_list">Weekly</string>
+    <string name="title_insights">Insights</string>
+    <string name="title_yearly_list">Yearly</string>
+
     <string name="lbl_date">Date</string>
     <string name="lbl_start_time">Start Time</string>
     <string name="lbl_start_mileage">Start Mileage</string>
@@ -12,60 +17,73 @@
     <string name="lbl_pay">Regular Pay</string>
     <string name="lbl_cash_tips">Cash Tips</string>
     <string name="label_num_deliveries">Num. Deliveries</string>
-    <string name="desc_delete_entry">Delete entry</string>
-    <string name="desc_new_entry">New Entry</string>
     <string name="lbl_hourly">Hourly</string>
     <string name="lbl_this_week">This Week</string>
+    <string name="lbl_other_pay">Other Pay</string>
+    <string name="lbl_last_week">Last Week</string>
+    <string name="lbl_amount">Amount</string>
+    <string name="lbl_total_earned">Total\nEarned</string>
+    <string name="lbl_adjust">Base Pay Adjustment</string>
+    <string name="lbl_shifts">shifts</string>
+    <string name="lbl_reported_income">Reported Income</string>
+
+    <string name="desc_new_entry">New Entry</string>
+    <string name="desc_delete_entry">Delete entry</string>
     <string name="desc_add_entry">Add Entry</string>
+
+    <string name="currency_unit">$%.2f</string>
     <string name="odometer_range" formatted="true">%1$.0f-%2$.0f</string>
     <string name="time_range" formatted="false">%1$s - %2$s</string>
     <string name="format_hours">%.2fh</string>
-    <string name="lbl_other_pay">Other Pay</string>
-    <string name="title_daily">Daily</string>
     <string name="float_fmt">%.2f</string>
-    <string name="lbl_last_week">Last Week</string>
-    <string name="title_insights">Insights</string>
+    <string name="week_number">Week %d</string>
+    <string name="date_range">%1$s - %2$s</string>
+    <string name="mileage_fmt">%.1f</string>
+
     <string name="units_pay_rate">$/hr</string>
     <string name="units_avg_delivery">$/del</string>
     <string name="units_del_per_hr">del/hr</string>
     <string name="ante_meridiem">AM</string>
     <string name="post_meridiem">PM</string>
-    <string name="content_desc_incomplete_entry">Incomplete entry</string>
+
     <string name="header_hours">Hours</string>
     <string name="header_mileage">Miles</string>
     <string name="header_num_deliveries">Deliveries</string>
+
+    <string name="content_desc_incomplete_entry">Incomplete entry</string>
     <string name="content_desc_fab_menu_closed">Open add item menu</string>
-    <string name="label_amount">Amount</string>
-    <string name="dialog_weekly_title">Weekly</string>
     <string name="content_desc_edit_button">Edit this entry</string>
     <string name="content_desc_remove">Remove this entry</string>
-    <string name="week_number">Week %d</string>
-    <string name="date_range">%1$s - %2$s</string>
-    <string name="lbl_total_earned">Total\nEarned</string>
-    <string name="title_weekly_list">Weekly</string>
-    <string name="lbl_adjust">Base Pay Adjustment</string>
-    <string name="label_shifts">shifts</string>
-    <string name="lbl_reported_income">Reported Income</string>
-    <string name="title_yearly_list">Yearly</string>
-    <string name="mileage_fmt">%.1f</string>
-    <string name="confirm_delete">The information will not be recoverable</string>
-    <string name="delete">Delete</string>
+
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
-    <string name="yes">Yes</string>
-    <string name="confirm_dialog">Confirm %s</string>
+    <string name="delete">Delete</string>
     <string name="reset">Reset</string>
     <string name="save">Save</string>
-    <string name="confirm_reset">Any changes will be permanently lost</string>
+
     <string name="action_licenses">Licenses</string>
-    <string name="label_action_export_to_csv">Export…</string>
+    <string name="label_action_export">Export…</string>
+    <string name="label_action_import">Import…</string>
+
+    <string name="label_action_backup">Export encrypted backup</string>
+    <string name="label_action_export_csv">Export</string>
+    <string name="label_action_restore">Restore backup</string>
+    <string name="label_action_import_csv">Import</string>
+
+    <string name="confirm_delete">The information will not be recoverable</string>
+    <string name="confirm_reset">Any changes will be permanently lost</string>
     <string name="csv_generation_failed">CSV generation failed</string>
+
+    <string name="dialog_weekly_title">Weekly</string>
+
+    <string name="confirm_dialog">Confirm %s</string>
     <string name="confirm_save_entry_incomplete">
         This entry is incomplete. Do you want to save it anyways?
     </string>
-    <string name="label_action_import_from_csv">Import from CSV</string>
     <string name="action_import_weeklies_from_csv">Import Weeklies from CSV</string>
-    <string name="confirm_export">Your data is already backed up automatically, so a manual backup
+    <string name="confirm_export_with_encrypted">Your data is already backed up automatically, so a manual backup
         is not necessary under most circumstances.\n\n<b>Export encrypted backup:</b> Create an
         encrypted backup of your data. The file can only be opened by the DashTracker app.
         \n\n<b>Export to CSV:</b> Create a zip file containing your data in CSV format. You can open
@@ -73,22 +91,26 @@
         password-protected, so anyone with access to the ZIP file or CSV files will be able to view
         their contents.
     </string>
+    <string name="confirm_export"><b>This will create a ZIP file containing two CSV files: one
+        for individual dashes, and another that tracks weekly base pay adjustments.</b>
+        \nYou can use this to back up your data, or to view your data in a spreadsheet app.
+        \n\n<i>Choose a secure location to save the ZIP file and any extracted files, as anyone with
+        access to them will be able to open them.</i>
+        \n\n<i>For Backup</i>
+        \nCreating a manual backup is purely optional, because Android already periodically backs up
+        your app data, if you have it enabled in <b>Settings > System > Backup</b>. Any time you
+        reinstall the app, your data will be automatically restored to its previous state.\n\n
+    </string>
     <string name="export">Export</string>
     <string name="confirm_import">
-        A backup file\'s name starts with \'dash_tracker_\' and its
-        extension is \'zip\'. Please locate the file you would like to import.
+        Please locate the ZIP file you would like to import. The imported data will overwrite any
+        existing data.
+        \n\n<i>If you have modified the CSV files:</i>
+        \n* If you have extracted the CSV files, you must put them back into a zip file in order to
+        import.
+        \n\n* If you have renamed the CSV files, you must change the names so they start with
+        <b>dash_tracker_entries_</b> or <b>dash_tracker_weeklies_</b>.
+        \n\n* If you have removed the header row of either of the CSV files, they must be put back. To
+        see what the correct headers should be, create a new export to use for reference.
     </string>
-    <string name="ok">OK</string>
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="label_action_backup">Export encrypted backup</string>
 </resources>

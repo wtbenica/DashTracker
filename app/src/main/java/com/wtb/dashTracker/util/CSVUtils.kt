@@ -3,17 +3,16 @@ package com.wtb.dashTracker.util
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.EXTRA_STREAM
-import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import androidx.security.crypto.EncryptedFile
-import androidx.security.crypto.MasterKey
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.MainActivity.Companion.BACKUP_KEY
+import com.wtb.dashTracker.MainActivity.Companion.getMasterKey
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DashEntry.Companion.asList
@@ -34,28 +33,31 @@ class CSVUtils {
         private const val TAG = APP + "CSVUtils"
 
         private fun encrypt(context: Context, file: File): File {
-            val keyAlias = MasterKey.Builder(context).apply {
-                setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            }.build()
+            val masterKey = getMasterKey(context)
 
-            val res = File(context.filesDir, getZipFileName() + ".bak")
-            if (res.exists()) {
-                res.delete()
+            val outFile = File(context.filesDir, getZipFileName().replace(".zip", ".bak"))
+            if (outFile.exists()) {
+                outFile.delete()
             }
+
             val encryptedFile = EncryptedFile.Builder(
                 context,
-                res,
-                keyAlias,
+                outFile,
+                masterKey,
                 EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-            ).build()
+            )
+                .setKeysetPrefName(MainActivity.BACKUP_PREFS)
+                .setKeysetAlias(BACKUP_KEY)
+                .build()
 
             encryptedFile.openFileOutput().bufferedWriter().use { writer ->
                 file.bufferedReader().use { reader ->
                     writer.write(reader.read())
+                    writer.flush()
                 }
             }
 
-            return res
+            return outFile
         }
 
         fun exportDb(
@@ -84,24 +86,16 @@ class CSVUtils {
                         text = R.string.confirm_export,
                         requestKey = "confirmExport",
                         message = "Confirm Export",
-                        posButton = R.string.label_action_backup,
+                        posButton = R.string.label_action_export_csv,
                         posAction = {
-                            startActivity(
-                                context,
-                                Intent.createChooser(sendFilesIntent(true), null),
-                                null
-                            )
-                        },
-                        negButton = R.string.cancel,
-                        negAction = { },
-                        posButton2 = R.string.label_action_export_to_csv,
-                        posAction2 = {
                             startActivity(
                                 context,
                                 Intent.createChooser(sendFilesIntent(), null),
                                 null
                             )
-                        }
+                        },
+                        negButton = R.string.cancel,
+                        negAction = { },
                     ).show(context.supportFragmentManager, null)
                 }
             } else {
@@ -156,17 +150,15 @@ class CSVUtils {
         private fun getSendFilesIntent(
             context: Context,
             encrypted: Boolean,
-            vararg file: File
+            file: File
         ): Intent {
-            val intent = Intent(Intent.ACTION_SEND_MULTIPLE)
-            val contentUri = arrayListOf<Uri>()
-            file.forEach {
-                contentUri.add(
-                    FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", it)
-                )
-            }
-            intent.type = if (encrypted) "*/*" else "application/zip"
-            intent.putParcelableArrayListExtra(EXTRA_STREAM, contentUri)
+            val intent = Intent(Intent.ACTION_SEND)
+            val contentUri =
+                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+
+            intent.data = contentUri
+//            intent.type = if (encrypted) "*/*" else "application/zip"
+            intent.putExtra(EXTRA_STREAM, contentUri)
 
             intent.flags =
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
