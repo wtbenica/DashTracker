@@ -124,9 +124,9 @@ class Repository private constructor(private val context: Context) {
         }
     }
 
-    fun export(encrypted: Boolean) {
+    fun export() {
         CoroutineScope(Dispatchers.Default).launch {
-            CSVUtils().exportDb(context, allEntriesLiveData(), allWeekliesLiveData(), encrypted)
+            CSVUtils.exportDb(context, allEntriesLiveData(), allWeekliesLiveData())
         }
     }
 
@@ -135,7 +135,7 @@ class Repository private constructor(private val context: Context) {
         weekliesPath: InputStream? = null
     ) {
         CoroutineScope(Dispatchers.Default).launch {
-            val res = CSVUtils().importCsv(entriesPath = entriesPath, weekliesPath = weekliesPath)
+            val res = CSVUtils.importCsv(entriesPath = entriesPath, weekliesPath = weekliesPath)
             res.first?.let {
                 entryDao.clear()
                 entryDao.upsertAll(it)
