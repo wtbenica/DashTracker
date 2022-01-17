@@ -4,8 +4,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.wtb.dashTracker.MainActivity.Companion.APP
-import com.wtb.dashTracker.extensions.dtfDate
-import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -180,7 +178,7 @@ data class DashEntry(
 
     override fun toString(): String = "$date: $startTime - $endTime $$totalEarned"
 
-    companion object: CSVConvertible<DashEntry> {
+    companion object : CSVConvertible<DashEntry> {
         private const val TAG = APP + "DashEntry"
         private val daySplitTime = LocalTime.of(17, 0)
         private val nightSplitTime = daySplitTime.minusHours(12)
@@ -189,7 +187,9 @@ data class DashEntry(
             date = LocalDate.parse(row["Start Date"]),
             endDate = LocalDate.parse(row["End Date"]),
             startTime = LocalTime.parse(row["Start Time"]),
-            endTime = LocalTime.parse(row["End Time"]),
+            endTime = row["End Time"]?.let {
+                if (it == "") null else LocalTime.parse(row["End Time"])
+            },
             startOdometer = row["Start Odometer"]?.toFloatOrNull(),
             endOdometer = row["End Odometer"]?.toFloatOrNull(),
             totalMileage = row["Total Mileage"]?.toFloatOrNull(),

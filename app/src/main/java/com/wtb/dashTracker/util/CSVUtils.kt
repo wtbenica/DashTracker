@@ -198,13 +198,13 @@ class CSVUtils {
         const val FILE_BACKUP = "dash_tracker_"
         const val FILE_ENTRIES = "dash_tracker_entries_"
         const val FILE_WEEKLIES = "dash_tracker_weeklies_"
-        fun getEntriesFileName() =
+        private fun getEntriesFileName() =
             "$FILE_ENTRIES${LocalDate.now().toString().replace('-', '_')}.csv"
 
-        fun getZipFileName() =
+        private fun getZipFileName() =
             "$FILE_ZIP${LocalDate.now().toString().replace('-', '_')}.zip"
 
-        fun getWeekliesFileName() =
+        private fun getWeekliesFileName() =
             "$FILE_WEEKLIES${LocalDate.now().toString().replace('-', '_')}.csv"
     }
 }
