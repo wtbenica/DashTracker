@@ -8,7 +8,7 @@
 
     <style name="SummaryBarItem" parent="Widget.AppCompat.TextView">
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColor">?attr/colorSummaryBarItemText</item>
     </style>
 
     <style name="SummaryBarItem.Header">
@@ -19,7 +19,7 @@
     </style>
 
     <style name="Base.Widget.AppCompat.ActionButton.Overflow.Tracker">
-        <item name="tint">?attr/colorOnPrimary</item>
+        <item name="tint">?attr/colorSummaryBarItemText</item>
     </style>
 
     <style name="Widget.AppCompat.PopupMenu.Overflow.Tracker">

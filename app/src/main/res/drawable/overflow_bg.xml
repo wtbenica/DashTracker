@@ -3,5 +3,5 @@
     <corners
         android:radius="@dimen/margin_default"/>
     <solid
-        android:color="?attr/colorSecondaryFaded" />
+        android:color="?attr/colorOverflowMenu" />
 </shape>

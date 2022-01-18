@@ -380,24 +380,12 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         fun getColorFabDisabled(context: Context) = getAttrColor(context, R.attr.colorFabDisabled)
 
         @ColorInt
-        fun getColorAccent(context: Context) = getAttrColor(context, R.attr.colorAccent)
-
-        @ColorInt
-        fun getColorPrimary(context: Context) = getAttrColor(context, R.attr.colorPrimary)
-
-        @ColorInt
         fun getAttrColor(context: Context, @AttrRes id: Int): Int {
             val tv = TypedValue()
             val arr = context.obtainStyledAttributes(tv.data, intArrayOf(id))
             @ColorInt val color = arr.getColor(0, 0)
             arr.recycle()
             return color
-        }
-
-        fun getThisWeeksDateRange(): Pair<LocalDate, LocalDate> {
-            val endDate: LocalDate = getNextEndOfWeek()
-            val startDate = endDate.minusDays(6L)
-            return Pair(startDate, endDate)
         }
 
         private fun getNextEndOfWeek(): LocalDate {

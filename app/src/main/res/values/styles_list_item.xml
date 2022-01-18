@@ -29,13 +29,13 @@
 
     <style name="ListItemHeaderTextView.Title">
         <item name="android:textSize">@dimen/text_size_xlarge</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColor">?attr/colorListItemTitle</item>
     </style>
 
     <style name="ListItemHeaderTextView.Subtitle">
         <item name="android:textSize">@dimen/text_size_med</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColor">?attr/colorListItemSubtitle</item>
     </style>
 
     <style name="ListItemHeaderIncompleteIndicator">
@@ -50,7 +50,7 @@
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:tint">?attr/colorOnPrimary</item>
+        <item name="android:tint">?attr/colorListItemTitle</item>
         <item name="android:padding">@dimen/margin_narrow</item>
     </style>
 </resources>

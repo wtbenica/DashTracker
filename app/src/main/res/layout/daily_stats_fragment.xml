@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="0dp"
-        android:paddingBottom="72dp"
+        android:paddingBottom="@dimen/fragmentPaddingForBottomNav"
         android:paddingTop="@dimen/margin_half"
         android:paddingEnd="@dimen/margin_half">
 

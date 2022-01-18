@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:visibility="gone"
+    android:background="?attr/colorUIBackground"
     tools:visibility="visible">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -108,7 +109,8 @@
             app:elevation="1dp"
             app:layout_anchor="@id/nav_view"
             app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
-            app:tint="?attr/colorFabIcon" />
+            app:tint="?attr/colorFabIcon"
+            tools:ignore="ImageContrastCheck" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:layout_width="match_parent"
@@ -133,8 +135,8 @@
                 android:background="@android:color/transparent"
                 android:paddingStart="8dp"
                 android:paddingEnd="96dp"
-                app:itemIconTint="@color/bottom_nav_text_color"
-                app:itemTextColor="@color/bottom_nav_text_color"
+                app:itemIconTint="?attr/colorBottomNavItem"
+                app:itemTextColor="?attr/colorBottomNavItem"
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/bottom_nav_menu" />
         </com.google.android.material.bottomappbar.BottomAppBar>

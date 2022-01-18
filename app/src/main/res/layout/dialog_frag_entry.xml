@@ -14,7 +14,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorSecondary">
+            android:background="?attr/colorDialog">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_entry_toolbar"
@@ -24,13 +24,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:title="Dash Entry"
-                app:titleTextColor="?attr/colorOnSecondary"
+                app:titleTextColor="?attr/colorDialogTitle"
                 app:titleMarginStart="24dp"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Tracker" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_entry_table_card"
-                style="@style/DialogContent"
+                style="@style/DialogContentCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
 
                 <GridLayout
                     android:id="@+id/frag_entry_table"
-                    style="@style/DialogGrid"
+                    style="@style/DialogContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:columnCount="3"
@@ -117,11 +117,11 @@
                         android:layout_row="3"
                         android:layout_column="2"
                         android:layout_columnWeight="1"
-                        android:buttonTint="?attr/colorOnPrimary"
+                        android:buttonTint="?attr/colorDialogItemOutline"
                         android:fontFamily="@font/archivo_black"
                         android:text="@string/lbl_ends_on_following_day"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="?attr/colorOnPrimary" />
+                        android:textColor="?attr/colorDialogText" />
 
                     <!--    Row 4   -->
                     <!--                    <com.wtb.dashTracker.views.TableRadioButton-->

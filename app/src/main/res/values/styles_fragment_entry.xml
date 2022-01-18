@@ -11,7 +11,7 @@
         <item name="android:singleLine">true</item>
         <item name="android:textAlignment">textEnd</item>
         <item name="android:paddingHorizontal">16dp</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColor">?attr/colorDialogText</item>
     </style>
 
     <style name="FragmentEntryImageButton">
