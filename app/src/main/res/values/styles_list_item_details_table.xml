@@ -6,6 +6,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_marginEnd">@dimen/margin_narrow</item>
+        <item name="android:textColor">?attr/colorRowHeaderText</item>
     </style>
 
     <style name="RowValue" parent="Widget.AppCompat.TextView">
@@ -14,6 +15,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:textAlignment">textEnd</item>
         <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textColor">?attr/colorRowValueText</item>
     </style>
 
     <style name="DetailsRow">
@@ -34,6 +36,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textColor">?attr/colorRowHeaderPayText</item>
     </style>
 
 
@@ -41,6 +44,7 @@
         <item name="android:textAlignment">center</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
+        <item name="android:textColor">?attr/colorRowValuePayText</item>
     </style>
 
     <style name="RowValue.Secondary">
@@ -49,5 +53,6 @@
         <item name="android:textAlignment">center</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
+        <item name="android:textColor">?attr/colorRowValueSecondaryText</item>
     </style>
 </resources>

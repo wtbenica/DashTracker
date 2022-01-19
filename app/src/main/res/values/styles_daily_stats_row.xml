@@ -6,7 +6,8 @@
         <item name="android:layout_columnWeight">1</item>
         <item name="android:paddingVertical">@dimen/margin_half</item>
         <item name="android:paddingHorizontal">@dimen/margin_default</item>
-        <!--        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>-->
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textColor">?attr/colorDailyStatsRowHeaderText</item>
     </style>
 
     <style name="DailyStatsRowValue" parent="Widget.MaterialComponents.TextView">
@@ -15,12 +16,21 @@
         <item name="android:paddingVertical">@dimen/margin_half</item>
         <item name="android:paddingHorizontal">@dimen/margin_half</item>
         <item name="android:textAlignment">textEnd</item>
-        <!--        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>-->
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textColor">?attr/colorDailyStatsRowValueText</item>
+    </style>
+
+    <style name="DailyStatsRowDay">
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:rotation">-90</item>
+        <item name="android:textColor">?attr/colorDailyStatsRowDayText</item>
+        <item name="android:layout_marginBottom">@dimen/margin_default</item>
     </style>
 
     <style name="DailyStatsRowHeader.AM">
         <item name="android:background">?attr/colorDayHeader</item>
-        <!--        <item name="android:layout_marginTop">@dimen/margin_half</item>-->
     </style>
 
     <style name="DailyStatsRowHeader.PM">
@@ -30,7 +40,6 @@
 
     <style name="DailyStatsRowValue.AM">
         <item name="android:background">?attr/colorDayValue</item>
-        <!--        <item name="android:layout_marginTop">@dimen/margin_half</item>-->
     </style>
 
     <style name="DailyStatsRowValue.PM">

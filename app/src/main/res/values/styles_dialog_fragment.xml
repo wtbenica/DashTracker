@@ -2,14 +2,16 @@
 <resources>
     <style name="ListItemHeaderTextView.FragEntry">
         <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textColor">?attr/colorDialogText</item>
     </style>
 
-    <style name="DialogContent" parent="CardView.Tracker">
+    <style name="DialogContentCard" parent="CardView.Tracker">
         <item name="android:layout_marginHorizontal">@dimen/margin_half</item>
         <item name="cardCornerRadius">@dimen/dialog_fragment_corner_radius</item>
     </style>
 
-    <style name="DialogGrid">
+    <style name="DialogContent">
         <item name="android:padding">@dimen/margin_default</item>
+        <item name="android:background">?attr/colorDialogContentBg</item>
     </style>
 </resources>

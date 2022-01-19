@@ -3,25 +3,64 @@
     <attr name="colorPrimaryFaded" format="reference" />
     <attr name="colorSecondaryFaded" format="reference" />
     <attr name="colorSecondaryDark" format="reference" />
+    <attr name="colorDisabledFaded" format="reference" />
+    <attr name="colorDisabled" format="reference" />
+    <attr name="colorBottomNavEnabled" format="reference|color" />
+    <attr name="colorBottomNavDisabled" format="reference|color" />
+    <attr name="colorUi" format="reference" />
+    <attr name="colorUIBackground" format="reference|color" />
+    <attr name="colorOnPrimaryVariant" format="reference|color" />
+
+    <!-- Text -->
+    <attr name="colorTextPrimary" format="reference" />
+    <attr name="colorTextPrimaryDisabled" format="reference" />
+    <attr name="colorTextSecondary" format="reference" />
+    <attr name="colorTextSecondaryDisabled" format="reference" />
+
+    <!--    activity_main   -->
+    <attr name="colorToolbar" format="reference" />
+    <attr name="colorActionBarText" format="reference" />
+    <attr name="colorSummaryBarItemText" format="reference" />
+    <attr name="colorBottomNavItem" format="reference|color" />
+    <attr name="colorFab" format="reference|color" />
+    <attr name="colorFabDisabled" format="reference|color" />
+    <attr name="colorFabIcon" format="reference|color" />
+    <attr name="colorOverflowMenu" format="reference" />
+    <attr name="colorOverflowMenuText" format="reference" />
+
+    <!-- list_item -->
+    <attr name="colorListItem" format="reference|color" />
+    <attr name="colorListItemAccent" format="reference" />
+    <attr name="colorListItemExpanded" format="reference" />
+    <attr name="colorListItemTitle" format="reference" />
+    <attr name="colorListItemSubtitle" format="reference" />
+
+    <!-- list_item_details -->
+    <attr name="colorListItemDetails" format="reference" />
+    <attr name="colorListItemDetailsToolbar" format="reference" />
+    <attr name="colorRowHeaderPayText" format="reference" />
+    <attr name="colorRowValuePayText" format="reference" />
+    <attr name="colorRowHeaderText" format="reference" />
+    <attr name="colorRowValueText" format="reference" />
+    <attr name="colorRowValueSecondaryText" format="reference" />
+
+    <!-- daily stats row -->
+    <attr name="colorDailyStatsRowHeaderText" format="reference" />
+    <attr name="colorDailyStatsRowValueText" format="reference" />
+    <attr name="colorDailyStatsRowDayText" format="reference" />
     <attr name="colorDayHeader" format="reference" />
     <attr name="colorDayValue" format="reference" />
     <attr name="colorNightHeader" format="reference" />
     <attr name="colorNightValue" format="reference" />
-    <attr name="colorDisabledFaded" format="reference" />
-    <attr name="colorDisabled" format="reference" />
-    <attr name="colorListItem" format="reference" />
-    <attr name="colorBottomNavEnabled" format="reference|color" />
-    <attr name="colorBottomNavDisabled" format="reference|color" />
-    <attr name="colorUi" format="reference" />
-    <attr name="colorToolbar" format="reference" />
-    <attr name="colorListItemAccent" format="reference" />
-    <attr name="colorListItemBg" format="reference" />
-    <attr name="colorFab" format="reference|color" />
-    <attr name="colorFabDisabled" format="reference|color" />
-    <attr name="colorFabIcon" format="reference|color" />
-    <attr name="colorListBackground" format="reference" />
-    <attr name="colorOnPrimaryVariant" format="reference|color" />
 
+    <!-- dialog -->
+    <attr name="colorDialog" format="reference" />
+    <attr name="colorDialogContentBg" format="reference" />
+    <attr name="colorDialogTitle" format="reference" />
+    <attr name="colorDialogText" format="reference" />
+    <attr name="colorDialogItemOutline" format="reference" />
+    <attr name="colorDialogItem" format="reference" />
+    <attr name="colorDialogItemDisabled" format="reference" />
     <declare-styleable name="TableRadioButton">
         <attr name="group" format="string" />
     </declare-styleable>

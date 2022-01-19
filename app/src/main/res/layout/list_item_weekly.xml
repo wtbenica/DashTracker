@@ -10,9 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:background="?attr/colorListItem"
+        android:background="@drawable/list_item_background"
         android:orientation="vertical"
-        tools:background="?attr/colorPrimary">
+        tools:background="?attr/colorListItemExpanded">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_header"

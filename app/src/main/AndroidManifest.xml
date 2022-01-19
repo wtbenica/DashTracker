@@ -9,7 +9,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/gobble"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DasherCompanion">
+        android:theme="@style/Theme.Base.DasherCompanion">
         <activity
             android:name="com.wtb.dashTracker.MainActivity"
             android:exported="true"

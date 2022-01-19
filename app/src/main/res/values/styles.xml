@@ -9,7 +9,7 @@
         <item name="android:textSize">@dimen/text_size_xxl</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/primary_textcolor</item>
+        <item name="android:textColor">?attr/colorActionBarText</item>
     </style>
 
     <style name="Abt" parent="Widget.AppCompat.Light.ActionBar">

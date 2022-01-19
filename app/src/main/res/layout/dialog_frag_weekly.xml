@@ -13,8 +13,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorSecondary">
+            android:layout_height="match_parent"
+            android:background="?attr/colorDialog">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_adjust_toolbar"
@@ -26,11 +26,11 @@
                 app:title="@string/dialog_weekly_title"
                 app:titleMarginStart="24dp"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Tracker"
-                app:titleTextColor="?attr/colorOnSecondary" />
+                app:titleTextColor="?attr/colorDialogTitle" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_adjust_table_card"
-                style="@style/DialogContent"
+                style="@style/DialogContentCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
 
                 <TableLayout
                     android:id="@+id/frag_adjust_table"
-                    style="@style/DialogGrid"
+                    style="@style/DialogContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"

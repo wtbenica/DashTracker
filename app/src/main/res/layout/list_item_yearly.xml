@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:background="?attr/colorListItem"
-        tools:background="?attr/colorPrimary"
+        tools:background="?attr/colorListItemExpanded"
         android:orientation="vertical">
 
         <LinearLayout
