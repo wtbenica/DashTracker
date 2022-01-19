@@ -5,5 +5,5 @@
         android:color="?attr/colorDialogItemOutline" />
     <corners android:radius="24dp" />
     <solid
-        android:color="?attr/colorDialogContentBg" />
+        android:color="?attr/colorDialogItem" />
 </shape>

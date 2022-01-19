@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="SummaryBar">
         <item name="android:background">?attr/colorToolbar</item>
         <item name="android:elevation">1dp</item>
@@ -12,6 +13,7 @@
     </style>
 
     <style name="SummaryBarItem.Header">
+
     </style>
 
     <style name="SummaryBarItem.Value">
@@ -24,5 +26,14 @@
 
     <style name="Widget.AppCompat.PopupMenu.Overflow.Tracker">
         <item name="android:popupBackground">@drawable/overflow_bg</item>
+        <item name="android:textAppearance">@style/TrackerOverflowMenuText</item>
+    </style>
+
+    <style name="TrackerOverflowMenuText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">?attr/colorOverflowMenuText</item>
+    </style>
+
+    <style name="TrackerWidgetTheme">
+        <item name="android:textColor">?attr/colorOverflowMenuText</item>
     </style>
 </resources>

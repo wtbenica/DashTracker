@@ -8,7 +8,7 @@
     <attr name="colorBottomNavEnabled" format="reference|color" />
     <attr name="colorBottomNavDisabled" format="reference|color" />
     <attr name="colorUi" format="reference" />
-    <attr name="colorUIBackground" format="reference" />
+    <attr name="colorUIBackground" format="reference|color" />
     <attr name="colorOnPrimaryVariant" format="reference|color" />
 
     <!-- Text -->
@@ -19,15 +19,17 @@
 
     <!--    activity_main   -->
     <attr name="colorToolbar" format="reference" />
+    <attr name="colorActionBarText" format="reference" />
     <attr name="colorSummaryBarItemText" format="reference" />
     <attr name="colorBottomNavItem" format="reference|color" />
     <attr name="colorFab" format="reference|color" />
     <attr name="colorFabDisabled" format="reference|color" />
     <attr name="colorFabIcon" format="reference|color" />
     <attr name="colorOverflowMenu" format="reference" />
+    <attr name="colorOverflowMenuText" format="reference" />
 
     <!-- list_item -->
-    <attr name="colorListItem" format="reference" />
+    <attr name="colorListItem" format="reference|color" />
     <attr name="colorListItemAccent" format="reference" />
     <attr name="colorListItemExpanded" format="reference" />
     <attr name="colorListItemTitle" format="reference" />
@@ -57,6 +59,7 @@
     <attr name="colorDialogTitle" format="reference" />
     <attr name="colorDialogText" format="reference" />
     <attr name="colorDialogItemOutline" format="reference" />
+    <attr name="colorDialogItem" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
     <declare-styleable name="TableRadioButton">
         <attr name="group" format="string" />

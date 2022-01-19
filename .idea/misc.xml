@@ -24,6 +24,7 @@
         <entry key="app/src/main/res/drawable/dialog_adjust_week_spinner_item_bg.xml" value="0.1828125" />
         <entry key="app/src/main/res/drawable/disable_textview.xml" value="0.15092592592592594" />
         <entry key="app/src/main/res/drawable/disabled_bg.xml" value="0.36666666666666664" />
+        <entry key="app/src/main/res/drawable/edit.xml" value="0.15677083333333333" />
         <entry key="app/src/main/res/drawable/enable_textview.xml" value="0.15092592592592594" />
         <entry key="app/src/main/res/drawable/fab_menu_item_lbl_bg.xml" value="0.22552083333333334" />
         <entry key="app/src/main/res/drawable/gobble_background.xml" value="0.17222222222222222" />
@@ -44,7 +45,7 @@
         <entry key="app/src/main/res/drawable/top_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/top_right_corner.xml" value="0.18645833333333334" />
         <entry key="app/src/main/res/font/coda.xml" value="0.225" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.75" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main_fab_menu.xml" value="0.5241057542768274" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.40929535232383807" />
         <entry key="app/src/main/res/layout/daily_stats_row.xml" value="0.5324367088607594" />
@@ -53,9 +54,9 @@
         <entry key="app/src/main/res/layout/dialog_adjust_week_spinner_item_single_line.xml" value="0.35104166666666664" />
         <entry key="app/src/main/res/layout/dialog_frag_adjust.xml" value="0.11646586345381527" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm.xml" value="0.3137598597721297" />
-        <entry key="app/src/main/res/layout/dialog_frag_confirm_2_button.xml" value="0.75" />
+        <entry key="app/src/main/res/layout/dialog_frag_confirm_2_button.xml" value="0.6461538461538462" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_3_button.xml" value="0.35104166666666664" />
-        <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.21864951768488747" />
+        <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.75" />
         <entry key="app/src/main/res/layout/dialog_frag_payout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_weekly.xml" value="0.4652014652014652" />
         <entry key="app/src/main/res/layout/dialog_weekly_spinner_item_single_line.xml" value="0.35052083333333334" />
@@ -70,8 +71,8 @@
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.5" />
-        <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/list_item_weekly.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/list_item_weekly.xml" value="0.4161849710982659" />
         <entry key="app/src/main/res/layout/list_item_weekly_details_table.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/list_item_yearly.xml" value="0.2937853107344633" />
         <entry key="app/src/main/res/layout/list_item_yearly_details_table.xml" value="0.35052083333333334" />

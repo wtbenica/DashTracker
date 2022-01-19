@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="brick_dark">#202024</color>
+    <color name="brick">#28282B</color>
+    <color name="brick_light">#303034</color>
+    <color name="brick_faded">#808084</color>
+
+    <color name="accent">#069</color>
+
+    <color name="dark">#304030</color>
+    <color name="regular">#405040</color>
+    <color name="light">#608060</color>
+    <color name="faded">#80A080</color>
+
+<!--    <color name="daytime_solid">#F8F890</color>-->
+<!--    <color name="daytime_light">#FFFFB8</color>-->
+<!--    <color name="nighttime_solid">#AADDDD</color>-->
+<!--    <color name="nighttime_light">#CCEEEE</color>-->
+    <color name="daytime_solid">#C8C860</color>
+    <color name="daytime_light">#CFCF88</color>
+    <color name="nighttime_solid">#7AADAD</color>
+    <color name="nighttime_light">#9CBEBE</color>
+
+    <color name="alert">#EE5522</color>
+
+</resources>

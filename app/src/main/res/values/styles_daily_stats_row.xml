@@ -26,6 +26,7 @@
         <item name="android:textSize">@dimen/text_size_large</item>
         <item name="android:rotation">-90</item>
         <item name="android:textColor">?attr/colorDailyStatsRowDayText</item>
+        <item name="android:layout_marginBottom">@dimen/margin_default</item>
     </style>
 
     <style name="DailyStatsRowHeader.AM">

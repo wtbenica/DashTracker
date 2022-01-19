@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
                         isAuthenticated = true
-                        this@MainActivity.binding.root.visibility = VISIBLE
+                        this@MainActivity.binding.container.visibility = VISIBLE
                         Log.d(TAG, "Authentication succeeded!")
                     }
                 })
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     override fun onPause() {
         super.onPause()
         isAuthenticated = false
-        binding.root.visibility = INVISIBLE
+        binding.container.visibility = INVISIBLE
     }
 
     private fun initBiometrics() {

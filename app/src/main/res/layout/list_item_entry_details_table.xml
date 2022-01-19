@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorListItemDetails"
+        android:background="@drawable/list_item_background"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView

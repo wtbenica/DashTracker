@@ -132,7 +132,7 @@ class EntryDialog(
             dismiss()
         }
 
-        disableEntryView(requireContext(), totalMileageEditText)
+//        disableEntryView(requireContext(), totalMileageEditText)
 
         updateUI()
 
