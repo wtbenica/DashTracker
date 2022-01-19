@@ -52,8 +52,6 @@ class EntryDialog(
     private lateinit var endTimeTextView: TextView
     private lateinit var endsNextDayCheckBox: CheckBox
 
-    //    private lateinit var startEndOdoTableRadioButton: TableRadioButton
-//    private lateinit var tripOdoTableRadioButton: TableRadioButton
     private lateinit var startMileageEditText: EditText
     private lateinit var endMileageEditText: EditText
     private lateinit var totalMileageEditText: EditText
@@ -129,8 +127,6 @@ class EntryDialog(
             dismiss()
         }
 
-//        disableEntryView(requireContext(), totalMileageEditText)
-
         updateUI()
 
         return view
@@ -159,7 +155,6 @@ class EntryDialog(
             Log.d(TAG, result.toString())
             if (result) {
                 updateUI()
-                //                clearFields()
             }
         }
 
@@ -284,5 +279,4 @@ class EntryDialog(
 
         private const val TAG = APP + "EntryDialog"
     }
-
 }

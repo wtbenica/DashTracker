@@ -54,7 +54,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="0"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_date"
                         android:text="@string/lbl_date" />
@@ -64,7 +64,7 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="0"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:textAlignment="textEnd"
                         tools:text="Mon Nov 23, 2021" />
@@ -75,7 +75,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="1"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_start_time"
                         android:text="@string/lbl_start_time" />
@@ -85,7 +85,7 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="1"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         tools:text="11:23a" />
 
@@ -95,7 +95,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="2"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_end_time"
                         android:text="@string/lbl_end_time" />
@@ -105,7 +105,7 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="2"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         tools:text="3:31p" />
 
@@ -115,7 +115,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_row="3"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:buttonTint="?attr/colorDialogItemOutline"
                         android:fontFamily="@font/archivo_black"
@@ -123,23 +123,13 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
                         android:textColor="?attr/colorDialogText" />
 
-                    <!--    Row 4   -->
-                    <!--                    <com.wtb.dashTracker.views.TableRadioButton-->
-                    <!--                        android:id="@+id/frag_entry_trb_start_end_odometer"-->
-                    <!--                        android:layout_row="4"-->
-                    <!--                        android:layout_rowSpan="2"-->
-                    <!--                        android:layout_column="0"-->
-                    <!--                        android:layout_gravity="center_vertical"-->
-                    <!--                        android:layout_marginEnd="8dp"-->
-                    <!--                        android:buttonTint="?attr/colorOnPrimary"-->
-                    <!--                        dashtracker:group="odometer_type" />-->
-
+                    <!-- Row 4 -->
                     <TextView
                         style="@style/ListItemHeaderTextView.FragEntry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="4"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_start_mileage"
                         android:text="@string/lbl_start_mileage" />
@@ -149,7 +139,7 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="4"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal" />
@@ -160,7 +150,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="5"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_end_mileage"
                         android:text="@string/lbl_end_mileage" />
@@ -170,27 +160,18 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="5"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal" />
 
                     <!--    Row 6   -->
-                    <!--                    <com.wtb.dashTracker.views.TableRadioButton-->
-                    <!--                        android:id="@+id/frag_entry_trb_trip_odometer"-->
-                    <!--                        android:layout_row="6"-->
-                    <!--                        android:layout_column="0"-->
-                    <!--                        android:layout_gravity="center_vertical"-->
-                    <!--                        android:layout_marginEnd="8dp"-->
-                    <!--                        android:buttonTint="?attr/colorOnPrimary"-->
-                    <!--                        dashtracker:group="odometer_type" />-->
-
                     <TextView
                         style="@style/ListItemHeaderTextView.FragEntry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="6"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_end_mileage"
                         android:text="@string/lbl_total_mileage" />
@@ -202,7 +183,7 @@
                         android:background="@drawable/disabled_bg"
                         android:layout_width="0dp"
                         android:layout_row="6"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal" />
@@ -213,7 +194,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="7"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_pay"
                         android:text="@string/lbl_pay" />
@@ -223,7 +204,7 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="7"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal" />
@@ -234,7 +215,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="8"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_pay"
                         android:text="@string/lbl_other_pay" />
@@ -244,7 +225,7 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="8"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal" />
@@ -255,7 +236,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="9"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_cash_tips"
                         android:text="@string/lbl_cash_tips" />
@@ -265,7 +246,7 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="9"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal" />
@@ -276,7 +257,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_row="10"
-                        android:layout_column="1"
+                        android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_num_deliveries"
                         android:text="@string/label_num_deliveries" />
@@ -286,7 +267,7 @@
                         style="@style/FragmentEntryTextView"
                         android:layout_width="0dp"
                         android:layout_row="10"
-                        android:layout_column="2"
+                        android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
                         android:inputType="number"
