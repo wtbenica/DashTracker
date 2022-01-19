@@ -57,6 +57,4 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
             upsert(it)
         }
     }
-
-    companion object
 }

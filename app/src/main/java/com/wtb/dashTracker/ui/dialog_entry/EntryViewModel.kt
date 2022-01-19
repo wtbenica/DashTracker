@@ -9,6 +9,4 @@ import kotlinx.coroutines.flow.Flow
 class EntryViewModel : BaseViewModel<DashEntry>() {
     override fun getItemFlowById(id: Int): Flow<DashEntry?> =
         repository.getEntryFlowById(id)
-
-    companion object
 }
