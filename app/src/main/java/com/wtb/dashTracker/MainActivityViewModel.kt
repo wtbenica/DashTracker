@@ -61,7 +61,6 @@ class MainActivityViewModel : ViewModel() {
     }
 
     companion object {
-        private const val TAG = APP + "MainActivityViewModel"
 
         fun getHourlyFromWeeklies(list: List<CompleteWeekly>): Float {
             return if (list.isNotEmpty()) {

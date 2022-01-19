@@ -23,12 +23,6 @@ data class Weekly(
     override val id: Int
         get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toInt()
 
-    val weekOfYear: Int
-        get() = date.get(WeekFields.ISO.weekOfWeekBasedYear())
-
-    val isRecent: Boolean
-        get() = LocalDate.now().endOfWeek.minusDays(7) <= date
-
     val isIncomplete: Boolean
         get() = basePayAdjustment == null
 

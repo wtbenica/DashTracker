@@ -30,7 +30,6 @@ import java.util.zip.ZipOutputStream
 @ExperimentalCoroutinesApi
 class CSVUtils {
     companion object {
-        private const val TAG = APP + "CSVUtils"
 
         private fun encrypt(context: Context, file: File): File {
             val masterKey = getMasterKey(context)
@@ -126,10 +125,6 @@ class CSVUtils {
             return outFile
         }
 
-        private fun unzipFiles() {
-
-        }
-
         fun importCsv(
             entriesPath: InputStream? = null,
             weekliesPath: InputStream? = null
@@ -195,7 +190,6 @@ class CSVUtils {
         }
 
         const val FILE_ZIP = "dash_tracker_"
-        const val FILE_BACKUP = "dash_tracker_"
         const val FILE_ENTRIES = "dash_tracker_entries_"
         const val FILE_WEEKLIES = "dash_tracker_weeklies_"
         private fun getEntriesFileName() =

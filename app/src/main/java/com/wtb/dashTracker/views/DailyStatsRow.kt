@@ -117,7 +117,6 @@ class DailyStatsRow @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TAG = APP + "DailyStatsRow"
 
         fun safeDiv(a: Float?, b: Float?): Float? =
             a?.let { _a ->

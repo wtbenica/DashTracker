@@ -147,7 +147,6 @@ open class ConfirmationDialog(
     }
 
     companion object {
-        private const val TAG = APP + "ConfirmDeleteDialog"
         const val ARG_CONFIRM = "confirm"
         const val ARG_EXTRA = "extra"
     }

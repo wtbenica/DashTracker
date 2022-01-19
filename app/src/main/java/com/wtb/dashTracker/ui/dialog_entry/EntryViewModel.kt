@@ -12,6 +12,5 @@ class EntryViewModel : BaseViewModel<DashEntry>() {
         repository.getEntryFlowById(id)
 
     companion object {
-        private const val TAG = APP + "EntryViewModel"
     }
 }

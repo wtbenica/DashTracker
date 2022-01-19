@@ -188,8 +188,6 @@ class YearlyListFragment : Fragment() {
     companion object {
         private const val TAG = APP + "MainFragment"
 
-        fun newInstance() = WeeklyListFragment()
-
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Yearly>() {
             override fun areItemsTheSame(oldItem: Yearly, newItem: Yearly): Boolean =
                 oldItem.year == newItem.year

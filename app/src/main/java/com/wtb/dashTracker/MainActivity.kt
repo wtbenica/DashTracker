@@ -253,9 +253,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val getContentZip: ActivityResultLauncher<String> =
         getContent(FILE_ZIP) { extractZip(it) }
 
-    private val getContentBackup: ActivityResultLauncher<String> =
-        getContent(FILE_ZIP) { extractZip(it, true) }
-
     private fun extractZip(uriIn: Uri, encrypted: Boolean = false) {
         var uri = uriIn
         if (encrypted) {
@@ -386,12 +383,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             @ColorInt val color = arr.getColor(0, 0)
             arr.recycle()
             return color
-        }
-
-        private fun getNextEndOfWeek(): LocalDate {
-            val todayIs: DayOfWeek = LocalDate.now().dayOfWeek
-            val daysLeft: Long = (weekEndsOn.value - todayIs.value + 7) % 7L
-            return LocalDate.now().plusDays(daysLeft)
         }
 
         fun getMasterKey(context: Context) =

@@ -204,9 +204,6 @@ class WeeklyListFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = APP + "MainFragment"
-
-        fun newInstance() = WeeklyListFragment()
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CompleteWeekly>() {
             override fun areItemsTheSame(

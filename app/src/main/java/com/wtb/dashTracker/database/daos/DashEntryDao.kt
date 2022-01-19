@@ -56,25 +56,6 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
         endDate: LocalDate = LocalDate.MAX
     ): PagingSource<Int, DashEntry>
 
-    fun getEntriesByWeek(weekEnd: LocalDate): Flow<List<DashEntry>> {
-        val query =
-            """SELECT *
-            FROM DashEntry 
-            WHERE date <= ?
-            AND date >= ?
-            """
-
-        return getEntriesByQuery(
-            SimpleSQLiteQuery(
-                query,
-                arrayOf(
-                    weekEnd.toString(),
-                    weekEnd.minusDays(6).toString()
-                )
-            )
-        )
-    }
-
     companion object {
         private const val SQL_GET_ALL =
             """SELECT * FROM DashEntry 

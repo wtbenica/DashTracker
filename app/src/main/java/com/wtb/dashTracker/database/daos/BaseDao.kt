@@ -60,15 +60,9 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
     }
 
     companion object {
-        private const val TAG = APP + "BaseDao"
-
-        internal fun <T : DataModel> modelsToSqlIdString(models: Collection<T>) =
-            idsToSqlIdString(models.map { it.id })
 
         private fun idsToSqlIdString(ids: Collection<Int>) =
             ids.toString().replace("[", "(").replace("]", ")")
 
-        internal fun textFilterToString(text: String) =
-            "%${text.replace(' ', '%').replace("'", "\'")}%"
     }
 }

@@ -148,7 +148,6 @@ class Repository private constructor(private val context: Context) {
     }
 
     companion object {
-        private const val TAG = APP + "Repository"
 
         @Suppress("StaticFieldLeak")
         private var INSTANCE: Repository? = null

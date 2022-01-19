@@ -288,15 +288,4 @@ class EntryDialog(
         private const val TAG = APP + "EntryDialog"
     }
 
-    private fun disableEntryView(context: Context, vararg view: TextView) {
-        view.forEach {
-            val td = ContextCompat.getDrawable(
-                context,
-                R.drawable.disable_textview
-            ) as TransitionDrawable
-            it.background = td
-            td.startTransition(500)
-            it.isEnabled = false
-        }
-    }
 }

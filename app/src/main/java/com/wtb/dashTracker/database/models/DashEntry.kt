@@ -139,9 +139,6 @@ data class DashEntry(
     private val weekOfYear: Int?
         get() = startDateTime?.get(WeekFields.ISO.weekOfWeekBasedYear())
 
-    fun isXWeeksAgo(x: Int): Boolean =
-        LocalDate.now().get(WeekFields.ISO.weekOfWeekBasedYear()) - x == weekOfYear
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

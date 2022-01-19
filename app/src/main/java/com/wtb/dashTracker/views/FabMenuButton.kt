@@ -45,7 +45,6 @@ class FabMenuButton @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TAG = APP + "FabMenuButton"
 
         fun newInstance(
             context: Context,
