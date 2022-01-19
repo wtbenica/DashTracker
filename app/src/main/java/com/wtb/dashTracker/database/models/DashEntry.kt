@@ -3,7 +3,6 @@ package com.wtb.dashTracker.database.models
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -11,7 +10,6 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.temporal.WeekFields
 
 const val AUTO_ID = 0
 
@@ -136,12 +134,6 @@ data class DashEntry(
     val mileage: Float?
         get() = totalMileage ?: startOdometer?.let { so -> endOdometer?.let { eo -> eo - so } }
 
-    private val weekOfYear: Int?
-        get() = startDateTime?.get(WeekFields.ISO.weekOfWeekBasedYear())
-
-    fun isXWeeksAgo(x: Int): Boolean =
-        LocalDate.now().get(WeekFields.ISO.weekOfWeekBasedYear()) - x == weekOfYear
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -179,7 +171,6 @@ data class DashEntry(
     override fun toString(): String = "$date: $startTime - $endTime $$totalEarned"
 
     companion object : CSVConvertible<DashEntry> {
-        private const val TAG = APP + "DashEntry"
         private val daySplitTime = LocalTime.of(17, 0)
         private val nightSplitTime = daySplitTime.minusHours(12)
 

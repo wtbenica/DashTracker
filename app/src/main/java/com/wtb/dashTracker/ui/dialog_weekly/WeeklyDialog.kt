@@ -38,7 +38,6 @@ class WeeklyDialog(
     private var weekly: CompleteWeekly? = null
     private lateinit var binding: DialogFragWeeklyBinding
     private val viewModel: WeeklyViewModel by viewModels()
-    private var totalEarned: Float = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -184,11 +183,6 @@ class WeeklyDialog(
         weekly?.let { viewModel.upsert(it.weekly) }
     }
 
-
-    private fun clearFields() {
-        binding.fragAdjustDate.setSelection(0)
-        binding.fragAdjustAmount.text.clear()
-    }
 
     inner class WeekSpinnerAdapter(
         context: Context,

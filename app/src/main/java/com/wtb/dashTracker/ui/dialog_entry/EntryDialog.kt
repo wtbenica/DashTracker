@@ -1,10 +1,8 @@
 package com.wtb.dashTracker.ui.dialog_entry
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,7 +12,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity
@@ -288,15 +285,4 @@ class EntryDialog(
         private const val TAG = APP + "EntryDialog"
     }
 
-    private fun disableEntryView(context: Context, vararg view: TextView) {
-        view.forEach {
-            val td = ContextCompat.getDrawable(
-                context,
-                R.drawable.disable_textview
-            ) as TransitionDrawable
-            it.background = td
-            td.startTransition(500)
-            it.isEnabled = false
-        }
-    }
 }

@@ -52,7 +52,6 @@ import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.*
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.zip.ZipEntry
@@ -253,9 +252,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val getContentZip: ActivityResultLauncher<String> =
         getContent(FILE_ZIP) { extractZip(it) }
 
-    private val getContentBackup: ActivityResultLauncher<String> =
-        getContent(FILE_ZIP) { extractZip(it, true) }
-
     private fun extractZip(uriIn: Uri, encrypted: Boolean = false) {
         var uri = uriIn
         if (encrypted) {
@@ -355,7 +351,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         private const val TAG = APP + "MainActivity"
         const val BACKUP_KEY = "backup_key"
         const val BACKUP_PREFS = "prefs_bak"
-        private val weekEndsOn = DayOfWeek.SUNDAY
         var isAuthenticated = false
 
         private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
@@ -386,12 +381,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             @ColorInt val color = arr.getColor(0, 0)
             arr.recycle()
             return color
-        }
-
-        private fun getNextEndOfWeek(): LocalDate {
-            val todayIs: DayOfWeek = LocalDate.now().dayOfWeek
-            val daysLeft: Long = (weekEndsOn.value - todayIs.value + 7) % 7L
-            return LocalDate.now().plusDays(daysLeft)
         }
 
         fun getMasterKey(context: Context) =

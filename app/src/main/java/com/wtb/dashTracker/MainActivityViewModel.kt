@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.Repository
@@ -61,7 +60,6 @@ class MainActivityViewModel : ViewModel() {
     }
 
     companion object {
-        private const val TAG = APP + "MainActivityViewModel"
 
         fun getHourlyFromWeeklies(list: List<CompleteWeekly>): Float {
             return if (list.isNotEmpty()) {

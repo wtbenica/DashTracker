@@ -23,7 +23,6 @@ import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getMileageString
-import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -187,8 +186,6 @@ class YearlyListFragment : Fragment() {
 
     companion object {
         private const val TAG = APP + "MainFragment"
-
-        fun newInstance() = WeeklyListFragment()
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Yearly>() {
             override fun areItemsTheSame(oldItem: Yearly, newItem: Yearly): Boolean =

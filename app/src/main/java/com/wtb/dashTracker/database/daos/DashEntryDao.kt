@@ -1,6 +1,5 @@
 package com.wtb.dashTracker.database.daos
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
@@ -8,8 +7,6 @@ import androidx.room.RawQuery
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.Weekly
-import com.wtb.dashTracker.extensions.endOfWeek
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -55,25 +52,6 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
         startDate: LocalDate = LocalDate.MIN,
         endDate: LocalDate = LocalDate.MAX
     ): PagingSource<Int, DashEntry>
-
-    fun getEntriesByWeek(weekEnd: LocalDate): Flow<List<DashEntry>> {
-        val query =
-            """SELECT *
-            FROM DashEntry 
-            WHERE date <= ?
-            AND date >= ?
-            """
-
-        return getEntriesByQuery(
-            SimpleSQLiteQuery(
-                query,
-                arrayOf(
-                    weekEnd.toString(),
-                    weekEnd.minusDays(6).toString()
-                )
-            )
-        )
-    }
 
     companion object {
         private const val SQL_GET_ALL =

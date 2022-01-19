@@ -10,7 +10,6 @@ import androidx.security.crypto.EncryptedFile
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.wtb.dashTracker.MainActivity
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.MainActivity.Companion.BACKUP_KEY
 import com.wtb.dashTracker.MainActivity.Companion.getMasterKey
 import com.wtb.dashTracker.R
@@ -30,7 +29,6 @@ import java.util.zip.ZipOutputStream
 @ExperimentalCoroutinesApi
 class CSVUtils {
     companion object {
-        private const val TAG = APP + "CSVUtils"
 
         private fun encrypt(context: Context, file: File): File {
             val masterKey = getMasterKey(context)
@@ -126,10 +124,6 @@ class CSVUtils {
             return outFile
         }
 
-        private fun unzipFiles() {
-
-        }
-
         fun importCsv(
             entriesPath: InputStream? = null,
             weekliesPath: InputStream? = null
@@ -143,8 +137,8 @@ class CSVUtils {
             path: InputStream?,
             function: (Map<String, String>) -> T
         ): List<T>? =
-            path?.let {
-                csvReader().readAllWithHeader(it).map { function(it) }
+            path?.let { inStream ->
+                csvReader().readAllWithHeader(inStream).map { function(it) }
             }
 
         private fun getSendFilesIntent(
@@ -195,7 +189,6 @@ class CSVUtils {
         }
 
         const val FILE_ZIP = "dash_tracker_"
-        const val FILE_BACKUP = "dash_tracker_"
         const val FILE_ENTRIES = "dash_tracker_entries_"
         const val FILE_WEEKLIES = "dash_tracker_weeklies_"
         private fun getEntriesFileName() =
