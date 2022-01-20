@@ -17,7 +17,7 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 7,
+    version = 8,
     entities = [DashEntry::class, Weekly::class],
     exportSchema = true,
 )
@@ -135,6 +135,15 @@ abstract class DashDatabase : RoomDatabase() {
                             )
                         }
                     },
+                    object : Migration(7, 8) {
+                        override fun migrate(database: SupportSQLiteDatabase) {
+                            database.execSQL(
+                                """CREATE INDEX index_DashEntry_date
+                                ON DashEntry('week')
+                                """
+                            )
+                        }
+                    }
                 )
                 .build().also {
                     INSTANCE = it
