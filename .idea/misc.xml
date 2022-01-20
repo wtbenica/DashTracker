@@ -59,6 +59,7 @@
         <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.5440582053354891" />
         <entry key="app/src/main/res/layout/dialog_frag_payout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_weekly.xml" value="0.4652014652014652" />
+        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/dialog_weekly_spinner_item_single_line.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fab_flyout_button.xml" value="0.67" />
         <entry key="app/src/main/res/layout/fragment_authenticate.xml" value="0.178125" />

@@ -7,13 +7,9 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
-import androidx.core.net.toUri
-import androidx.security.crypto.EncryptedFile
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.wtb.dashTracker.MainActivity
-import com.wtb.dashTracker.MainActivity.Companion.BACKUP_KEY
-import com.wtb.dashTracker.MainActivity.Companion.getMasterKey
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DashEntry.Companion.asList
@@ -25,7 +21,6 @@ import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.*
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
@@ -94,11 +89,6 @@ class CSVUtils(private val context: Context) {
             dailyFile.delete()
             weeklyFile.delete()
 
-            fun sendFilesIntent(encrypted: Boolean = false): Intent {
-                val encrypt = if (encrypted) encrypt(context, zipFile) else zipFile
-                return getSendFilesIntent(context, encrypt)
-            }
-
             (context as MainActivity).runOnUiThread {
                 ConfirmationDialog(
                     text = R.string.confirm_export,
@@ -108,7 +98,7 @@ class CSVUtils(private val context: Context) {
                     posAction = {
                         startActivity(
                             context,
-                            Intent.createChooser(sendFilesIntent(), null),
+                            Intent.createChooser(getSendFilesIntent(zipFile), null),
                             null
                         )
                     },
@@ -143,53 +133,7 @@ class CSVUtils(private val context: Context) {
         }
     }
 
-    fun extractZip(uriIn: Uri, encrypted: Boolean = false) {
-        var uri = uriIn
-        if (encrypted) {
-            val masterKey = getMasterKey(context)
-
-            val inFile =
-                File(context.filesDir, "dash_tracker_bak_${getDateForFileName()}")
-            if (inFile.exists()) {
-                inFile.delete()
-            }
-
-            context.contentResolver.openInputStream(uri)?.bufferedReader()
-                ?.use { reader ->
-                    inFile.outputStream().bufferedWriter().use { writer ->
-                        reader.copyTo(writer, 1024)
-                        writer.flush()
-                    }
-                }
-
-            val encryptedFile = EncryptedFile.Builder(
-                context,
-                inFile,
-                masterKey,
-                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-            )
-                .setKeysetPrefName(MainActivity.BACKUP_PREFS)
-                .setKeysetAlias(BACKUP_KEY)
-                .build()
-
-            val zipFile =
-                File(context.filesDir, "dash_tracker_backup_${getDateForFileName()}")
-            if (zipFile.exists()) {
-                zipFile.delete()
-            }
-            zipFile.createNewFile()
-
-            encryptedFile.openFileInput().bufferedReader().use { inFileReader ->
-                zipFile.outputStream().bufferedWriter().use { writer ->
-                    inFileReader.copyTo(writer, 1024)
-                    writer.flush()
-                }
-            }
-
-
-            uri = zipFile.toUri()
-        }
-
+    fun extractZip(uri: Uri) {
         ZipInputStream(context.contentResolver.openInputStream(uri)).use { zipIn ->
             var nextEntry: ZipEntry? = zipIn.nextEntry
             while (nextEntry != null) {
@@ -220,34 +164,6 @@ class CSVUtils(private val context: Context) {
         }
     }
 
-    private fun encrypt(context: Context, file: File): File {
-        val masterKey = getMasterKey(context)
-
-        val outFile = File(context.filesDir, getZipFileName().replace(".zip", ".bak"))
-        if (outFile.exists()) {
-            outFile.delete()
-        }
-
-        val encryptedFile = EncryptedFile.Builder(
-            context,
-            outFile,
-            masterKey,
-            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-        )
-            .setKeysetPrefName(MainActivity.BACKUP_PREFS)
-            .setKeysetAlias(BACKUP_KEY)
-            .build()
-
-        encryptedFile.openFileOutput().bufferedWriter().use { writer ->
-            file.bufferedReader().use { reader ->
-                writer.write(reader.read())
-                writer.flush()
-            }
-        }
-
-        return outFile
-    }
-
     private fun <T : DataModel> getModelsFromCsv(
         path: InputStream?,
         function: (Map<String, String>) -> T
@@ -256,10 +172,7 @@ class CSVUtils(private val context: Context) {
             csvReader().readAllWithHeader(inStream).map { function(it) }
         }
 
-    private fun getSendFilesIntent(
-        context: Context,
-        file: File
-    ): Intent {
+    private fun getSendFilesIntent(file: File): Intent {
         val intent = Intent(Intent.ACTION_SEND)
         val contentUri = FileProvider.getUriForFile(
             context, "${context.packageName}.fileprovider", file
@@ -271,9 +184,6 @@ class CSVUtils(private val context: Context) {
 
         return intent
     }
-
-    private fun getDateForFileName() =
-        LocalDate.now().format(DateTimeFormatter.ofPattern("_yyyy_MM_dd"))
 
 
     companion object {

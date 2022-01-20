@@ -2,6 +2,7 @@ package com.wtb.dashTracker.database.models
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVConvertible
@@ -22,6 +23,9 @@ const val AUTO_ID = 0
             childColumns = ["week"],
             onDelete = ForeignKey.SET_NULL
         )
+    ],
+    indices = [
+        Index(value = ["date"])
     ]
 )
 data class DashEntry(
