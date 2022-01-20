@@ -35,7 +35,6 @@ class FabMenu @JvmOverloads constructor(
     private var parentLayout: ViewGroup? = null
 
     init {
-//        setBackgroundColor(MainActivity.getColorFab(context))
         backgroundTintList = ColorStateList.valueOf(MainActivity.getColorFab(context))
         setOnClickListener {
             if (fabMenuIsVisible)

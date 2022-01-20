@@ -18,7 +18,7 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     abstract fun getAll(): Flow<List<DashEntry>>
 
     @Query(SQL_GET_ALL)
-    abstract suspend fun getAllLiveData(): List<DashEntry>
+    abstract suspend fun getAllSuspend(): List<DashEntry>
 
     @Query("DELETE FROM DashEntry")
     abstract override fun clear()

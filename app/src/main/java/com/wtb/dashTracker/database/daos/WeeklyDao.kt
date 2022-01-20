@@ -21,7 +21,7 @@ abstract class WeeklyDao : BaseDao<Weekly>("weekly", "date") {
     abstract fun getAllPagingSource(): PagingSource<Int, CompleteWeekly>
 
     @Query(SQL_GET_ALL)
-    abstract suspend fun getAllLiveData(): List<Weekly>
+    abstract suspend fun getAllSuspend(): List<Weekly>
 
     @Query("DELETE FROM Weekly")
     abstract override fun clear()

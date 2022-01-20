@@ -16,7 +16,6 @@ import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import java.io.InputStream
 import java.time.LocalDate
 import java.util.concurrent.Executors
 
@@ -24,7 +23,9 @@ import java.util.concurrent.Executors
 class Repository private constructor(private val context: Context) {
     private val executor = Executors.newSingleThreadExecutor()
     private val db = DashDatabase.getInstance(context)
-
+    private val csvUtil: CSVUtils
+        get() = CSVUtils(context)
+    
     private val entryDao: DashEntryDao
         get() = db.entryDao()
 
@@ -36,8 +37,7 @@ class Repository private constructor(private val context: Context) {
      */
     val allEntries: Flow<List<DashEntry>> = entryDao.getAll()
 
-    private suspend fun allEntriesLiveData(): List<DashEntry> = entryDao.getAllLiveData()
-    private suspend fun allWeekliesLiveData(): List<Weekly> = weeklyDao.getAllLiveData()
+    private suspend fun allEntries(): List<DashEntry> = entryDao.getAllSuspend()
 
     private var entryPagingSource: PagingSource<Int, DashEntry>? = null
 
@@ -60,10 +60,6 @@ class Repository private constructor(private val context: Context) {
             }.let {
                 entryPagingSource?.invalidate()
             }
-//            executor.execute {
-//                entryDao.deleteById(id)
-//                entryPagingSource?.invalidate()
-//            }
         }
     }
 
@@ -75,6 +71,8 @@ class Repository private constructor(private val context: Context) {
      * Weekly
      */
     val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAll()
+
+    private suspend fun allWeeklies(): List<Weekly> = weeklyDao.getAllSuspend()
 
     val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = Pager(
         config = PagingConfig(
@@ -125,21 +123,23 @@ class Repository private constructor(private val context: Context) {
 
     fun export() {
         CoroutineScope(Dispatchers.Default).launch {
-            CSVUtils.exportDb(context, allEntriesLiveData(), allWeekliesLiveData())
+            csvUtil.export(allEntries(), allWeeklies())
         }
     }
 
-    fun import(
-        entriesPath: InputStream? = null,
-        weekliesPath: InputStream? = null
+    fun import() = csvUtil.import()
+
+
+    fun importStream(
+        entries: List<DashEntry>? = null,
+        weeklies: List<Weekly>? = null
     ) {
         CoroutineScope(Dispatchers.Default).launch {
-            val res = CSVUtils.importCsv(entriesPath = entriesPath, weekliesPath = weekliesPath)
-            res.first?.let {
+            entries?.let {
                 entryDao.clear()
                 entryDao.upsertAll(it)
             }
-            res.second?.let {
+            weeklies?.let {
                 weeklyDao.clear()
                 weeklyDao.upsertAll(it)
             }
@@ -147,7 +147,6 @@ class Repository private constructor(private val context: Context) {
     }
 
     companion object {
-
         @Suppress("StaticFieldLeak")
         private var INSTANCE: Repository? = null
 

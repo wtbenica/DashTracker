@@ -10,7 +10,6 @@ import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.io.InputStream
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
@@ -52,12 +51,7 @@ class MainActivityViewModel : ViewModel() {
 
     fun export() = repository.export()
 
-    fun import(
-        entriesPath: InputStream? = null,
-        weekliesPath: InputStream? = null
-    ) {
-        repository.import(entriesPath = entriesPath, weekliesPath = weekliesPath)
-    }
+    fun import() = repository.import()
 
     companion object {
 
