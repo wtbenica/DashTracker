@@ -25,7 +25,7 @@ const val AUTO_ID = 0
         )
     ],
     indices = [
-        Index(value = ["date"])
+        Index(value = ["week"])
     ]
 )
 data class DashEntry(

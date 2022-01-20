@@ -32,6 +32,7 @@ abstract class WeeklyDao : BaseDao<Weekly>("weekly", "date") {
     @RawQuery(observedEntities = [Weekly::class])
     abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<Weekly?>
 
+    @Transaction
     @Query("SELECT * FROM Weekly WHERE date = :date LIMIT 1")
     abstract fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?>
 

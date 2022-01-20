@@ -1,0 +1,178 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 8,
+    "identityHash": "4850851d61b16d9b51ff7483e14922ec",
+    "entities": [
+      {
+        "tableName": "DashEntry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `endDate` TEXT NOT NULL, `startTime` TEXT, `endTime` TEXT, `startOdometer` REAL, `endOdometer` REAL, `totalMileage` REAL, `pay` REAL, `otherPay` REAL, `cashTips` REAL, `numDeliveries` INTEGER, `week` TEXT, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`week`) REFERENCES `Weekly`(`date`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "entryId",
+            "columnName": "entryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endDate",
+            "columnName": "endDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTime",
+            "columnName": "startTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "endTime",
+            "columnName": "endTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "startOdometer",
+            "columnName": "startOdometer",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "endOdometer",
+            "columnName": "endOdometer",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "totalMileage",
+            "columnName": "totalMileage",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pay",
+            "columnName": "pay",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "otherPay",
+            "columnName": "otherPay",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cashTips",
+            "columnName": "cashTips",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "numDeliveries",
+            "columnName": "numDeliveries",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "week",
+            "columnName": "week",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "entryId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_DashEntry_week",
+            "unique": false,
+            "columnNames": [
+              "week"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_DashEntry_week` ON `${TABLE_NAME}` (`week`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Weekly",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "week"
+            ],
+            "referencedColumns": [
+              "date"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Weekly",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `basePayAdjustment` REAL, `weekNumber` INTEGER NOT NULL, `isNew` INTEGER NOT NULL, `lastUpdated` TEXT NOT NULL, PRIMARY KEY(`date`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "basePayAdjustment",
+            "columnName": "basePayAdjustment",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weekNumber",
+            "columnName": "weekNumber",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isNew",
+            "columnName": "isNew",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "date"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4850851d61b16d9b51ff7483e14922ec')"
+    ]
+  }
+}
