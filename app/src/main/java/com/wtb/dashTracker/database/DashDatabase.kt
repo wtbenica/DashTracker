@@ -31,123 +31,133 @@ abstract class DashDatabase : RoomDatabase() {
         private var INSTANCE: DashDatabase? = null
         private const val DATABASE_NAME = "dash-database"
 
+        fun getInstance(context: Context): DashDatabase {
+            return INSTANCE ?: synchronized(this) {
+                Executors.newSingleThreadExecutor()
 
-        fun getInstance(context: Context): DashDatabase = INSTANCE ?: synchronized(this) {
-            Executors.newSingleThreadExecutor()
-            return Room.databaseBuilder(
-                context.applicationContext,
-                DashDatabase::class.java,
-                DATABASE_NAME
-            )
-                .createFromAsset(DATABASE_NAME)
-                .addMigrations(
-                    object : Migration(1, 2) {
-                        override fun migrate(database: SupportSQLiteDatabase) {
-                            database.execSQL(
-                                """ALTER TABLE DashEntry
-                                    ADD COLUMN otherPay REAL
-                                """
-                            )
-                        }
-                    },
-                    object : Migration(2, 3) {
-                        override fun migrate(database: SupportSQLiteDatabase) {
-                            database.execSQL(
-                                """CREATE TABLE BasePayAdjustment(
-                                        adjustmentId INTEGER PRIMARY KEY NOT NULL,
-                                        date TEXT NOT NULL,
-                                        amount REAL NOT NULL,
-                                        lastUpdated TEXT NOT NULL
-                                    )"""
-                            )
-                        }
-                    },
-                    object : Migration(3, 4) {
-                        override fun migrate(database: SupportSQLiteDatabase) {
-                            database.execSQL(
-                                """DROP TABLE BasePayAdjustment
-                                """
-                            )
-                            database.execSQL(
-                                """CREATE TABLE Weekly(
-                                        weeklyId INTEGER PRIMARY KEY NOT NULL,
-                                        date TEXT NOT NULL,
-                                        basePayAdjustment REAL,
-                                        weekNumber INTEGER NOT NULL,
-                                        lastUpdated TEXT NOT NULL
-                                    )"""
-                            )
-                        }
-                    },
-                    object : Migration(4, 5) {
-                        override fun migrate(database: SupportSQLiteDatabase) {
-                            database.execSQL("""DROP TABLE WEEKLY""")
-                            database.execSQL(
-                                """CREATE TABLE Weekly(
-                                        date TEXT PRIMARY KEY NOT NULL,
-                                        basePayAdjustment REAL,
-                                        weekNumber INTEGER NOT NULL,
-                                        lastUpdated TEXT NOT NULL
-                                    )"""
-                            )
-                        }
-                    },
-                    object : Migration(5, 6) {
-                        override fun migrate(database: SupportSQLiteDatabase) {
-                            database.execSQL(
-                                """CREATE TABLE DashEntry2(
-                                    entryId INTEGER PRIMARY KEY NOT NULL,
-                                    date TEXT NOT NULL,
-                                    endDate TEXT NOT NULL,
-                                    startTime TEXT,
-                                    endTime TEXT,
-                                    startOdometer REAL,
-                                    endOdometer REAL,
-                                    totalMileage REAL,
-                                    pay REAL,
-                                    otherPay REAL,
-                                    cashTips REAL,
-                                    numDeliveries INTEGER,
-                                    lastUpdated TEXT NOT NULL,
-                                    week TEXT REFERENCES Weekly(date) ON DELETE SET NULL
-                                    )"""
-                            )
-                            database.execSQL(
-                                """INSERT INTO DashEntry2(entryId, date, endDate, startTime, endTime, startOdometer, endOdometer, totalMileage, pay, otherPay, cashTips, numDeliveries, lastUpdated)
-                                SELECT de.entryId, de.date, de.endDate, de.startTime, de.endTime, de.startOdometer, de.endOdometer, de.totalMileage, de.pay, de.otherPay, de.cashTips, de.numDeliveries, de.lastUpdated
-                                FROM DashEntry de
-                                """
-                            )
-                            database.execSQL(
-                                """DROP TABLE DashEntry"""
-                            )
-                            database.execSQL(
-                                """ALTER TABLE DashEntry2 RENAME TO DashEntry"""
-                            )
-                        }
-                    },
-                    object : Migration(6, 7) {
-                        override fun migrate(database: SupportSQLiteDatabase) {
-                            database.execSQL(
-                                """ALTER TABLE Weekly
-                                ADD COLUMN isNew INTEGER NOT NULL DEFAULT 0
-                                """
-                            )
-                        }
-                    },
-                    object : Migration(7, 8) {
-                        override fun migrate(database: SupportSQLiteDatabase) {
-                            database.execSQL(
-                                """CREATE INDEX index_DashEntry_date
-                                ON DashEntry('week')
-                                """
-                            )
-                        }
-                    }
+                return Room.databaseBuilder(
+                    context.applicationContext,
+                    DashDatabase::class.java,
+                    DATABASE_NAME
                 )
-                .build().also {
-                    INSTANCE = it
-                }
+                    .createFromAsset(DATABASE_NAME)
+                    .addMigrations(
+                        migration_1_2,
+                        migration_2_3,
+                        migration_3_4,
+                        migration_4_5,
+                        migration_5_6,
+                        migration_6_7,
+                        migration_7_8
+                    )
+                    .build().also {
+                        INSTANCE = it
+                    }
+            }
+        }
+
+        val migration_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """ALTER TABLE DashEntry
+                        ADD COLUMN otherPay REAL
+                        """
+                )
+            }
+        }
+        val migration_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """CREATE TABLE BasePayAdjustment(
+                                                adjustmentId INTEGER PRIMARY KEY NOT NULL,
+                                                date TEXT NOT NULL,
+                                                amount REAL NOT NULL,
+                                                lastUpdated TEXT NOT NULL
+                                            )"""
+                )
+            }
+        }
+        val migration_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """DROP TABLE BasePayAdjustment
+                                        """
+                )
+                database.execSQL(
+                    """CREATE TABLE Weekly(
+                                                weeklyId INTEGER PRIMARY KEY NOT NULL,
+                                                date TEXT NOT NULL,
+                                                basePayAdjustment REAL,
+                                                weekNumber INTEGER NOT NULL,
+                                                lastUpdated TEXT NOT NULL
+                                            )"""
+                )
+            }
+        }
+        val migration_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""DROP TABLE WEEKLY""")
+                database.execSQL(
+                    """CREATE TABLE Weekly(
+                                                date TEXT PRIMARY KEY NOT NULL,
+                                                basePayAdjustment REAL,
+                                                weekNumber INTEGER NOT NULL,
+                                                lastUpdated TEXT NOT NULL
+                                            )"""
+                )
+            }
+        }
+        val migration_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """CREATE TABLE DashEntry2(
+                                            entryId INTEGER PRIMARY KEY NOT NULL,
+                                            date TEXT NOT NULL,
+                                            endDate TEXT NOT NULL,
+                                            startTime TEXT,
+                                            endTime TEXT,
+                                            startOdometer REAL,
+                                            endOdometer REAL,
+                                            totalMileage REAL,
+                                            pay REAL,
+                                            otherPay REAL,
+                                            cashTips REAL,
+                                            numDeliveries INTEGER,
+                                            lastUpdated TEXT NOT NULL,
+                                            week TEXT REFERENCES Weekly(date) ON DELETE SET NULL
+                                            )"""
+                )
+                database.execSQL(
+                    """INSERT INTO DashEntry2(entryId, date, endDate, startTime, endTime, startOdometer, endOdometer, totalMileage, pay, otherPay, cashTips, numDeliveries, lastUpdated)
+                                        SELECT de.entryId, de.date, de.endDate, de.startTime, de.endTime, de.startOdometer, de.endOdometer, de.totalMileage, de.pay, de.otherPay, de.cashTips, de.numDeliveries, de.lastUpdated
+                                        FROM DashEntry de
+                                        """
+                )
+                database.execSQL(
+                    """DROP TABLE DashEntry"""
+                )
+                database.execSQL(
+                    """ALTER TABLE DashEntry2 RENAME TO DashEntry"""
+                )
+            }
+        }
+        val migration_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """ALTER TABLE Weekly
+                                        ADD COLUMN isNew INTEGER NOT NULL DEFAULT 0
+                                        """
+                )
+            }
+        }
+        val migration_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """CREATE INDEX index_DashEntry_date
+                                        ON DashEntry('week')
+                                        """
+                )
+            }
         }
     }
 }
