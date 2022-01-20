@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">DashTracker</string>
 
-    <string name="title_app"><b>DashTracker ></b> </string>
     <string name="title_daily">Daily</string>
     <string name="title_weekly_list">Weekly</string>
     <string name="title_insights">Insights</string>
@@ -55,7 +54,6 @@
     <string name="content_desc_edit_button">Edit this entry</string>
     <string name="content_desc_remove">Remove this entry</string>
 
-    <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
@@ -67,9 +65,7 @@
     <string name="label_action_export">Export…</string>
     <string name="label_action_import">Import…</string>
 
-    <string name="label_action_backup">Export encrypted backup</string>
     <string name="label_action_export_csv">Export</string>
-    <string name="label_action_restore">Restore backup</string>
     <string name="label_action_import_csv">Import</string>
 
     <string name="confirm_delete">The information will not be recoverable</string>
@@ -82,15 +78,6 @@
     <string name="confirm_save_entry_incomplete">
         This entry is incomplete. Do you want to save it anyways?
     </string>
-    <string name="action_import_weeklies_from_csv">Import Weeklies from CSV</string>
-    <string name="confirm_export_with_encrypted">Your data is already backed up automatically, so a manual backup
-        is not necessary under most circumstances.\n\n<b>Export encrypted backup:</b> Create an
-        encrypted backup of your data. The file can only be opened by the DashTracker app.
-        \n\n<b>Export to CSV:</b> Create a zip file containing your data in CSV format. You can open
-         the CSV files in any spreadsheet app. These files are not encrypted and are not
-        password-protected, so anyone with access to the ZIP file or CSV files will be able to view
-        their contents.
-    </string>
     <string name="confirm_export"><b>This will create a ZIP file containing two CSV files: one
         for individual dashes, and another that tracks weekly base pay adjustments.</b>
         \nYou can use this to back up your data, or to view your data in a spreadsheet app.
@@ -101,7 +88,6 @@
         your app data, if you have it enabled in <b>Settings > System > Backup</b>. Any time you
         reinstall the app, your data will be automatically restored to its previous state.\n\n
     </string>
-    <string name="export">Export</string>
     <string name="confirm_import">
         Please locate the ZIP file you would like to import. The imported data will overwrite any
         existing data.

@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import com.wtb.dashTracker.MainActivity
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.databinding.FabFlyoutButtonBinding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -45,7 +44,6 @@ class FabMenuButton @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TAG = APP + "FabMenuButton"
 
         fun newInstance(
             context: Context,

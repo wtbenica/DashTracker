@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.GridLayout
 import androidx.annotation.StringRes
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DailyStatsRowBinding
 import java.time.DayOfWeek
@@ -117,7 +116,6 @@ class DailyStatsRow @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TAG = APP + "DailyStatsRow"
 
         fun safeDiv(a: Float?, b: Float?): Float? =
             a?.let { _a ->

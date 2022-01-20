@@ -10,7 +10,6 @@ import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.viewbinding.ViewBinding
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirm2ButtonBinding
 import com.wtb.dashTracker.databinding.DialogFragConfirm3ButtonBinding
@@ -147,7 +146,6 @@ open class ConfirmationDialog(
     }
 
     companion object {
-        private const val TAG = APP + "ConfirmDeleteDialog"
         const val ARG_CONFIRM = "confirm"
         const val ARG_EXTRA = "extra"
     }

@@ -17,7 +17,6 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
@@ -204,9 +203,6 @@ class WeeklyListFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = APP + "MainFragment"
-
-        fun newInstance() = WeeklyListFragment()
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CompleteWeekly>() {
             override fun areItemsTheSame(
