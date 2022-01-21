@@ -1,29 +1,50 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Splash screen theme -->
+    <style name="SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/icon</item>
+        <item name="windowSplashScreenBackground">@color/faded</item>
+        <item name="postSplashScreenTheme">@style/Base.DasherCompanion</item>
+        <item name="colorPrimary">@color/regular</item>
+        <item name="colorSecondaryFaded">@color/brick_faded</item>
+    </style>
+
     <!-- Base application theme. -->
-    <style name="Theme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Base" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimaryDark">@color/dark</item>
         <item name="colorPrimary">@color/regular</item>
         <item name="colorPrimaryVariant">@color/light</item>
         <item name="colorPrimaryFaded">@color/faded</item>
-        <item name="colorOnPrimary">#343438</item>
-        <item name="colorOnPrimaryVariant">#454545</item>
+        <item name="colorOnPrimary">@color/on_regular</item>
+        <item name="colorOnPrimaryVariant">@color/on_regular_light</item>
 
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/brick</item>
         <item name="colorSecondaryVariant">@color/brick_light</item>
         <item name="colorSecondaryDark">@color/brick_dark</item>
         <item name="colorSecondaryFaded">@color/brick_faded</item>
-        <item name="colorOnSecondary">#FEFEFE</item>
+        <item name="colorOnSecondary">@color/on_brick</item>
+        <item name="colorOnSecondaryVariant">@color/on_brick_light</item>
 
         <item name="colorAccent">@color/accent</item>
 
         <item name="android:actionBarWidgetTheme">@style/TrackerWidgetTheme</item>
+        <item name="cardViewStyle">@style/CardView.Tracker</item>
+        <item name="actionBarStyle">@style/Abt</item>
+        <item name="actionOverflowButtonStyle">
+            @style/Base.Widget.AppCompat.ActionButton.Overflow.Tracker
+        </item>
+        <item name="actionOverflowMenuStyle">
+            @style/Widget.AppCompat.PopupMenu.Overflow.Tracker
+        </item>
+
+        <item name="android:datePickerDialogTheme">@style/MyDatePickerStyle</item>
+        <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
     </style>
 
-    <style name="Theme.Base.DasherCompanion">
+    <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorUIBackground">?attr/colorSurface</item>
+        <item name="colorUIBackground">?attr/colorOnSecondaryVariant</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
@@ -45,15 +66,6 @@
         <item name="colorSurface">@color/secondary_text_color</item>
         <item name="colorOnSurface">@color/primary_text_color</item>
 
-        <item name="cardViewStyle">@style/CardView.Tracker</item>
-        <item name="actionBarStyle">@style/Abt</item>
-        <item name="actionOverflowButtonStyle">
-            @style/Base.Widget.AppCompat.ActionButton.Overflow.Tracker
-        </item>
-        <item name="actionOverflowMenuStyle">
-            @style/Widget.AppCompat.PopupMenu.Overflow.Tracker
-        </item>
-
         <!-- activity_main.xml -->
         <item name="colorActionBarText">@color/primary_text_color</item>
         <item name="colorToolbar">?attr/colorPrimaryVariant</item>
@@ -63,13 +75,12 @@
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
         <item name="colorBottomNavItem">@color/bottom_nav_text_color</item>
         <item name="colorBottomNavEnabled">?attr/colorOnPrimary</item>
-        <item name="colorBottomNavDisabled">?attr/colorSecondaryFaded</item>
-
+        <item name="colorBottomNavDisabled">?attr/colorPrimary</item>
         <item name="colorOverflowMenu">?attr/colorSecondaryFaded</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
 
         <!-- list_item -->
-        <item name="colorListItem">@android:color/white</item>
+        <item name="colorListItem">?attr/colorOnSecondary</item>
         <item name="colorListItemExpanded">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
@@ -101,5 +112,12 @@
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorDialogContentBg</item>
         <item name="colorDialogItemDisabled">?attr/colorSecondaryFaded</item>
+
+        <!-- datetime picker -->
+        <item name="colorDatePickerSelected">@color/regular</item>
+        <item name="colorDatePickerNavButton">@color/dark</item>
+        <item name="colorDatePickerBackground">?attr/colorSurface</item>
+        <item name="colorDatePickerText">?attr/colorOnSurface</item>
+
     </style>
 </resources>

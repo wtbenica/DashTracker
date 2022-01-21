@@ -25,6 +25,7 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -140,6 +141,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             }
         }
 
+        installSplashScreen()
         Repository.initialize(this)
         supportActionBar?.title = "DashTracker"
 

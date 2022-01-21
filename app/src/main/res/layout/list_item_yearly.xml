@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:background="?attr/colorListItem"
-        tools:background="?attr/colorListItemExpanded"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:background="?attr/colorListItemExpanded">
 
         <LinearLayout
             android:id="@+id/list_item_header"
@@ -41,12 +41,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_details"
+            style="@style/listItemDetailsPane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="4dp"
-            android:paddingEnd="0dp"
-            android:paddingBottom="4dp"
-            android:visibility="gone"
             tools:visibility="visible">
 
             <include
