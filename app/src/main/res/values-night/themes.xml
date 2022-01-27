@@ -35,11 +35,12 @@
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorOverflowMenu">?attr/colorSecondaryDark</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
+        <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorSecondary</item>
-        <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
-        <item name="colorListItemAccent">?attr/colorPrimary</item>
+        <item name="colorListItemExpanded">?attr/colorPrimary</item>
+        <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
         <item name="colorListItemTitle">?attr/colorTextSecondary</item>
         <item name="colorListItemSubtitle">?attr/colorTextSecondary</item>
 
@@ -62,12 +63,18 @@
         <item name="colorNightValue">@color/nighttime_light</item>
 
         <!-- dialog fragment -->
-        <item name="colorDialog">?attr/colorPrimary</item>
+        <item name="colorDialog">?attr/colorPrimaryDark</item>
         <item name="colorDialogTitle">?attr/colorOnSecondary</item>
         <item name="colorDialogText">?attr/colorOnSurface</item>
-        <item name="colorDialogItemOutline">?attr/colorSecondaryFaded</item>
-        <item name="colorDialogContentBg">?attr/colorSecondary</item>
+        <item name="colorDialogItemOutline">?attr/colorPrimaryFaded</item>
+        <item name="colorDialogContentBg">?attr/colorSecondaryDark</item>
         <item name="colorDialogItem">?attr/colorSecondaryVariant</item>
-        <item name="colorDialogItemDisabled">?attr/colorSecondaryDark</item>
+        <item name="colorDialogItemDisabled">?attr/colorPrimary</item>
+
+        <!-- datetime picker -->
+        <item name="colorDatePickerSelected">@color/regular</item>
+        <item name="colorDatePickerNavButton">@color/dark</item>
+        <item name="colorDatePickerBackground">?attr/colorSurface</item>
+        <item name="colorDatePickerText">?attr/colorOnSurface</item>
     </style>
 </resources>

@@ -175,6 +175,11 @@ class EntryDialog(
     private fun saveValues() {
 
         val currDate = dateTextView.text.toDateOrNull()
+        val totalMileage = if (startMileageEditText.text.isEmpty() && endMileageEditText.text.isEmpty()) {
+            totalMileageEditText.text.toFloatOrNull()
+        } else {
+            null
+        }
         val e = DashEntry(
             entryId = entry?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
@@ -184,7 +189,7 @@ class EntryDialog(
             endTime = endTimeTextView.text.toTimeOrNull(),
             startOdometer = startMileageEditText.text.toFloatOrNull(),
             endOdometer = endMileageEditText.text.toFloatOrNull(),
-            totalMileage = totalMileageEditText.text.toFloatOrNull(),
+            totalMileage = totalMileage,
             pay = payEditText.text.toFloatOrNull(),
             otherPay = otherPayEditText.text.toFloatOrNull(),
             cashTips = cashTipsEditText.text.toFloatOrNull(),

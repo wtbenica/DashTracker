@@ -36,7 +36,7 @@ data class DashEntry(
     val endTime: LocalTime?,
     val startOdometer: Float?,
     val endOdometer: Float?,
-    var totalMileage: Float?,
+    var totalMileage: Float? = null,
     val pay: Float?,
     val otherPay: Float?,
     val cashTips: Float?,

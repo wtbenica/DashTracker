@@ -8,7 +8,9 @@
     <color name="on_brick">#FEFEFE</color>
     <color name="on_brick_light">#F0F0F0</color>
 
-    <color name="accent">#0AD</color>
+
+
+    <color name="accent">#069</color>
 
     <color name="dark">#70B850</color>
     <color name="regular">#B0F0A0</color>

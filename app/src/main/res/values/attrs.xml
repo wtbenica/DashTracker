@@ -28,6 +28,7 @@
     <attr name="colorFabIcon" format="reference|color" />
     <attr name="colorOverflowMenu" format="reference" />
     <attr name="colorOverflowMenuText" format="reference" />
+    <attr name="colorOverflowMenuButton" format="reference" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />

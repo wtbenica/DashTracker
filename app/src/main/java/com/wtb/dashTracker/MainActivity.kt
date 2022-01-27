@@ -267,11 +267,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
             FabMenuButtonInfo(
                 "Add Entry",
-                R.drawable.calendar
+                R.drawable.new_entry_
             ) { EntryDialog().show(fm, "new_entry_dialog") },
             FabMenuButtonInfo(
                 "Add Adjustment",
-                R.drawable.alert
+                R.drawable.new_adjust
             ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
 //            FabMenuButtonInfo(
 //                "Add Payout",
