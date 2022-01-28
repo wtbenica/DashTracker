@@ -9,6 +9,7 @@
         <entry key="app/src/main/res/drawable/add.xml" value="0.14166666666666666" />
         <entry key="app/src/main/res/drawable/anim_fab_collapse.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/anim_fab_expand.xml" value="0.36666666666666664" />
+        <entry key="app/src/main/res/drawable/ante_meridiem.xml" value="0.2415" />
         <entry key="app/src/main/res/drawable/background_edit_text.xml" value="0.175" />
         <entry key="app/src/main/res/drawable/background_image_button.xml" value="0.15625" />
         <entry key="app/src/main/res/drawable/bottom_border_bg.xml" value="0.9" />
@@ -23,6 +24,7 @@
         <entry key="app/src/main/res/drawable/delete.xml" value="0.15833333333333333" />
         <entry key="app/src/main/res/drawable/diabled_bg.xml" value="0.5" />
         <entry key="app/src/main/res/drawable/dialog_adjust_week_spinner_item_bg.xml" value="0.1828125" />
+        <entry key="app/src/main/res/drawable/dialog_frag_weekly_date_dropdown_background.xml" value="0.243" />
         <entry key="app/src/main/res/drawable/disable_textview.xml" value="0.15092592592592594" />
         <entry key="app/src/main/res/drawable/disabled_bg.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/edit.xml" value="0.15677083333333333" />
@@ -66,8 +68,8 @@
         <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.5440582053354891" />
         <entry key="app/src/main/res/layout/dialog_frag_payout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_weekly.xml" value="0.4652014652014652" />
-        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item.xml" value="0.35052083333333334" />
-        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item_single_line.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item.xml" value="0.9" />
+        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item_single_line.xml" value="0.67" />
         <entry key="app/src/main/res/layout/fab_flyout_button.xml" value="0.67" />
         <entry key="app/src/main/res/layout/fragment_authenticate.xml" value="0.178125" />
         <entry key="app/src/main/res/layout/fragment_daily_stats.xml" value="0.35" />
@@ -92,7 +94,8 @@
         <entry key="app/src/main/res/mipmap-anydpi-v26/gobble.xml" value="0.1" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.17592592592592593" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2140625" />
-        <entry key="app/src/main/res/mipmap-anydpi-v26/icon.xml" value="0.33" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/icon.xml" value="0.16" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/icon_b.xml" value="0.183" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/icon_round.xml" value="0.1953125" />
         <entry key="app/src/main/res/mipmap-hdpi/gobble.xml" value="0.1" />
       </map>

@@ -27,11 +27,10 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentManager
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.security.crypto.MasterKey
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -48,7 +47,7 @@ import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.io.*
+import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -111,7 +110,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             val navView: BottomNavigationView = binding.navView
             navView.background = null
 
-            val navController = findNavController(R.id.nav_host_fragment_activity_main)
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+            val navController = navHostFragment?.findNavController()
+
             val appBarConfiguration = AppBarConfiguration(
                 setOf(
                     R.id.navigation_home,
@@ -120,8 +121,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                     R.id.navigation_insights,
                 )
             )
-            setupActionBarWithNavController(navController, appBarConfiguration)
-            navView.setupWithNavController(navController)
+
+            navController?.let {
+                setupActionBarWithNavController(navController, appBarConfiguration)
+                navView.setupWithNavController(navController)
+            }
         }
 
         fun initObservers() {
@@ -260,8 +264,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     companion object {
         const val APP = "GT_"
         private const val TAG = APP + "MainActivity"
-        const val BACKUP_KEY = "backup_key"
-        const val BACKUP_PREFS = "prefs_bak"
         var isAuthenticated = false
 
         private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
@@ -294,10 +296,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             return color
         }
 
-        fun getMasterKey(context: Context) =
-            MasterKey.Builder(context).apply {
-                setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            }.build()
     }
 }
 

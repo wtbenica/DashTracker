@@ -7,7 +7,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -21,7 +21,10 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
-import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.extensions.shortFormat
+import com.wtb.dashTracker.extensions.weekOfYear
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.toVisibleIfTrueElseGone
@@ -67,7 +70,7 @@ class WeeklyListFragment : Fragment() {
         recyclerView.adapter = entryAdapter
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allWeekliesPaged.collectLatest {
                     entryAdapter.submitData(it)
                 }

@@ -7,18 +7,18 @@
 
     <TextView
         android:id="@+id/dialog_adjust_week_spinner_item_week"
+        style="@style/ListItemHeaderTextView.Subtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:textAlignment="textEnd"
-        android:textSize="12sp"
         tools:text="Week 50" />
 
     <TextView
         android:id="@+id/dialog_adjust_week_spinner_item_dates"
+        style="@style/ListItemHeaderTextView.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="textEnd"
         tools:text="Mon Nov 29 - Sun Dec 05" />
 </LinearLayout>

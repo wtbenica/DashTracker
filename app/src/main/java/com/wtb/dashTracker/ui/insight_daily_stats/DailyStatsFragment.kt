@@ -48,7 +48,7 @@ class DailyStatsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.entryList.collectLatest {
                     _entries = it
                     updateUI()
@@ -82,7 +82,7 @@ class DailyStatsFragment : Fragment() {
                     )
                 }
 
-                DailyStatsRow(context!!, null, d).addToGridLayout(
+                DailyStatsRow(requireContext(), null, d).addToGridLayout(
                     binding.dailyStatsFragmentTable,
                     SKIP_ROWS
                 )

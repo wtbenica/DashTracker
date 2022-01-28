@@ -60,7 +60,7 @@
 
                         <Spinner
                             android:id="@+id/frag_adjust_date"
-                            style="@style/FragmentEntryTextView"
+                            style="@style/DialogFragWeeklyDateSpinnerStyle"
                             android:layout_width="0dp"
                             tools:text="Mon Nov 23, 2021" />
                     </TableRow>

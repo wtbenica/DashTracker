@@ -56,7 +56,7 @@ abstract class DashDatabase : RoomDatabase() {
             }
         }
 
-        val migration_1_2 = object : Migration(1, 2) {
+        private val migration_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     """ALTER TABLE DashEntry
@@ -65,7 +65,7 @@ abstract class DashDatabase : RoomDatabase() {
                 )
             }
         }
-        val migration_2_3 = object : Migration(2, 3) {
+        private val migration_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     """CREATE TABLE BasePayAdjustment(
@@ -77,7 +77,7 @@ abstract class DashDatabase : RoomDatabase() {
                 )
             }
         }
-        val migration_3_4 = object : Migration(3, 4) {
+        private val migration_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     """DROP TABLE BasePayAdjustment
@@ -94,7 +94,7 @@ abstract class DashDatabase : RoomDatabase() {
                 )
             }
         }
-        val migration_4_5 = object : Migration(4, 5) {
+        private val migration_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("""DROP TABLE WEEKLY""")
                 database.execSQL(
@@ -107,7 +107,7 @@ abstract class DashDatabase : RoomDatabase() {
                 )
             }
         }
-        val migration_5_6 = object : Migration(5, 6) {
+        private val migration_5_6 = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     """CREATE TABLE DashEntry2(
@@ -141,7 +141,7 @@ abstract class DashDatabase : RoomDatabase() {
                 )
             }
         }
-        val migration_6_7 = object : Migration(6, 7) {
+        private val migration_6_7 = object : Migration(6, 7) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     """ALTER TABLE Weekly
@@ -150,7 +150,7 @@ abstract class DashDatabase : RoomDatabase() {
                 )
             }
         }
-        val migration_7_8 = object : Migration(7, 8) {
+        private val migration_7_8 = object : Migration(7, 8) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     """CREATE INDEX index_DashEntry_date

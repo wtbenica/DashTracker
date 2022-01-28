@@ -9,14 +9,15 @@
 
     <TextView
         android:id="@+id/dialog_adjust_week_spinner_item_week"
+        style="@style/ListItemHeaderTextView.Subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="textEnd"
-        android:textSize="11sp"
         tools:text="Week 50" />
 
     <TextView
         android:id="@+id/dialog_adjust_week_spinner_item_dates"
+        style="@style/ListItemHeaderTextView.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="textEnd"

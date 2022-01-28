@@ -72,7 +72,7 @@ class YearlyListFragment : Fragment() {
         recyclerView.adapter = entryAdapter
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allWeeklies.collectLatest { cwList: List<CompleteWeekly> ->
                     yearlies.clear()
                     var numChecked = 0
