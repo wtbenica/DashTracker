@@ -51,6 +51,7 @@
         <entry key="app/src/main/res/drawable/mode.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/mode2.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/overflow_bg.xml" value="0.23981481481481481" />
+        <entry key="app/src/main/res/drawable/popup_background.xml" value="0.75" />
         <entry key="app/src/main/res/drawable/reset.xml" value="0.3525" />
         <entry key="app/src/main/res/drawable/rounded_corner_bg.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/drawable/save.xml" value="0.3525" />

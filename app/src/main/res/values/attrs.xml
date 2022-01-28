@@ -26,7 +26,7 @@
     <attr name="colorFab" format="reference|color" />
     <attr name="colorFabDisabled" format="reference|color" />
     <attr name="colorFabIcon" format="reference|color" />
-    <attr name="colorOverflowMenu" format="reference" />
+    <attr name="colorPopupBackground" format="reference" />
     <attr name="colorOverflowMenuText" format="reference" />
     <attr name="colorOverflowMenuButton" format="reference" />
 

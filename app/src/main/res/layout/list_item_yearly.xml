@@ -59,6 +59,7 @@
                 style="@style/ListItemButton"
                 android:contentDescription="@string/content_desc_edit_button"
                 android:src="@drawable/edit"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

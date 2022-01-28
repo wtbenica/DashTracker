@@ -24,7 +24,7 @@
     </style>
 
     <style name="OverflowMenuStyle" parent="Widget.AppCompat.PopupMenu.Overflow">
-        <item name="android:popupBackground">@drawable/overflow_bg</item>
+        <item name="android:popupBackground">@drawable/popup_background</item>
         <item name="android:textAppearance">@style/TrackerOverflowMenuText</item>
     </style>
 

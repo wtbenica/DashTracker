@@ -33,7 +33,7 @@
         <item name="colorBottomNavItem">@color/bottom_nav_text_color</item>
         <item name="colorBottomNavEnabled">?attr/colorOnSecondary</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorOverflowMenu">?attr/colorSecondaryDark</item>
+        <item name="colorPopupBackground">?attr/colorSecondaryDark</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 

@@ -3,5 +3,5 @@
     <corners
         android:radius="@dimen/margin_default"/>
     <solid
-        android:color="?attr/colorOverflowMenu" />
+        android:color="?attr/colorPopupBackground" />
 </shape>
