@@ -10,6 +10,7 @@
     <attr name="colorUi" format="reference" />
     <attr name="colorUIBackground" format="reference|color" />
     <attr name="colorOnPrimaryVariant" format="reference|color" />
+    <attr name="colorOnSecondaryVariant" format="reference|color" />
 
     <!-- Text -->
     <attr name="colorTextPrimary" format="reference" />
@@ -27,6 +28,7 @@
     <attr name="colorFabIcon" format="reference|color" />
     <attr name="colorOverflowMenu" format="reference" />
     <attr name="colorOverflowMenuText" format="reference" />
+    <attr name="colorOverflowMenuButton" format="reference" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
@@ -61,6 +63,13 @@
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
+
+    <!-- datetime picker -->
+    <attr name="colorDatePickerSelected" format="reference" />
+    <attr name="colorDatePickerNavButton" format="reference" />
+    <attr name="colorDatePickerBackground" format="reference" />
+    <attr name="colorDatePickerText" format="reference" />
+
     <declare-styleable name="TableRadioButton">
         <attr name="group" format="string" />
     </declare-styleable>

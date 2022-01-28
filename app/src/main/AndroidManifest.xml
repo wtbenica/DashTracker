@@ -5,15 +5,14 @@
     <application
         android:allowBackup="true"
         android:fullBackupOnly="true"
-        android:icon="@mipmap/gobble"
+        android:icon="@mipmap/icon_b"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/gobble"
+        android:roundIcon="@mipmap/icon_b"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Base.DasherCompanion">
+        android:theme="@style/SplashScreen">
         <activity
             android:name="com.wtb.dashTracker.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

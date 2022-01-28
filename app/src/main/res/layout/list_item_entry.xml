@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_card"
-    style="@style/CardView.Tracker.ListItem">
+    style="@style/CardViewStyle.ListItem">
 
     <LinearLayout
         android:id="@+id/list_item_wrapper"
@@ -37,8 +37,8 @@
             <ImageView
                 android:id="@+id/list_item_alert"
                 style="@style/ListItemHeaderIncompleteIndicator"
-                android:contentDescription="@string/content_desc_incomplete_entry"
                 android:layout_marginStart="@dimen/margin_half"
+                android:contentDescription="@string/content_desc_incomplete_entry"
                 app:layout_constraintBottom_toBottomOf="@id/list_item_title"
                 app:layout_constraintStart_toEndOf="@id/list_item_title"
                 app:layout_constraintTop_toTopOf="@id/list_item_title" />
@@ -57,12 +57,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_details"
+            style="@style/listItemDetailsPane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="4dp"
-            android:paddingStart="4dp"
-            android:paddingEnd="0dp"
-            android:visibility="gone"
             tools:visibility="visible">
 
             <include

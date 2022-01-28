@@ -14,11 +14,31 @@
         <item name="android:textColor">?attr/colorDialogText</item>
     </style>
 
+    <style name="DialogFragWeeklyDateSpinnerStyle">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">@drawable/background_edit_text</item>
+        <item name="android:layout_marginTop">@dimen/margin_narrow</item>
+        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:textColor">?attr/colorDialogText</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:popupBackground">@drawable/overflow_bg</item>
+        <item name="android:dropDownSelector">?attr/colorOnPrimary</item>
+    </style>
+
     <style name="FragmentEntryImageButton">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>
         <item name="android:tint">?attr/colorOnSecondary</item>
     </style>
+
+    // Weekly
+
 
 </resources>

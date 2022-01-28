@@ -57,7 +57,7 @@ class WeeklyDialog(
         binding = DialogFragWeeklyBinding.inflate(layoutInflater)
 
         val adapter = WeekSpinnerAdapter(
-            context!!,
+            requireContext(),
             R.layout.dialog_weekly_spinner_item_single_line,
             getListOfWeeks()
         ).apply {
@@ -132,14 +132,11 @@ class WeeklyDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.weekly.observe(
-            viewLifecycleOwner,
-            { w ->
-                Log.d(TAG, "INCOMING WEEK: $w")
-                weekly = w
-                updateUI()
-            }
-        )
+        viewModel.weekly.observe(viewLifecycleOwner) { w ->
+            Log.d(TAG, "INCOMING WEEK: $w")
+            weekly = w
+            updateUI()
+        }
     }
 
     override fun onDestroy() {

@@ -1,10 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Base.DasherCompanion">
-        <item name="colorOnSecondary">#E8E8E8</item>
-
+    <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorUIBackground">?attr/colorSecondary</item>
+        <item name="colorUIBackground">?attr/colorOnPrimary</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
@@ -15,8 +12,8 @@
         <!-- Text -->
         <item name="android:fontFamily">@font/andika</item>
         <item name="android:textColor">?attr/colorTextSecondary</item>
-<!--        <item name="android:textColorPrimary">@color/primary_text_color</item>-->
-<!--        <item name="android:textColorSecondary">@color/secondary_text_color</item>-->
+        <item name="android:textColorPrimary">@color/primary_text_color</item>
+        <item name="android:textColorSecondary">@color/secondary_text_color</item>
 
         <item name="colorTextPrimary">?attr/colorOnPrimary</item>
         <item name="colorTextPrimaryDisabled">?attr/colorSecondary</item>
@@ -26,17 +23,9 @@
         <item name="colorSurface">?attr/colorSecondary</item>
         <item name="colorOnSurface">?attr/colorOnSecondary</item>
 
-        <item name="cardViewStyle">@style/CardView.Tracker</item>
-        <item name="actionBarStyle">@style/Abt</item>
-        <item name="actionOverflowButtonStyle">
-            @style/Base.Widget.AppCompat.ActionButton.Overflow.Tracker
-        </item>
-        <item name="actionOverflowMenuStyle">@style/Widget.AppCompat.PopupMenu.Overflow.Tracker
-        </item>
-
         <!-- activity_main.xml -->
         <item name="colorActionBarText">@color/secondary_text_color</item>
-        <item name="colorToolbar">?attr/colorPrimaryVariant</item>
+        <item name="colorToolbar">?attr/colorPrimary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextSecondary</item>
         <item name="colorFab">?attr/colorAccent</item>
         <item name="colorFabDisabled">?attr/colorSecondaryDark</item>
@@ -46,11 +35,12 @@
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorOverflowMenu">?attr/colorSecondaryDark</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
+        <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- list_item -->
-        <item name="colorListItem">?attr/colorSecondaryVariant</item>
+        <item name="colorListItem">?attr/colorSecondary</item>
         <item name="colorListItemExpanded">?attr/colorPrimary</item>
-        <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
         <item name="colorListItemTitle">?attr/colorTextSecondary</item>
         <item name="colorListItemSubtitle">?attr/colorTextSecondary</item>
 
@@ -73,12 +63,18 @@
         <item name="colorNightValue">@color/nighttime_light</item>
 
         <!-- dialog fragment -->
-        <item name="colorDialog">?attr/colorPrimary</item>
+        <item name="colorDialog">?attr/colorPrimaryDark</item>
         <item name="colorDialogTitle">?attr/colorOnSecondary</item>
         <item name="colorDialogText">?attr/colorOnSurface</item>
-        <item name="colorDialogItemOutline">?attr/colorSecondaryFaded</item>
-        <item name="colorDialogContentBg">?attr/colorSecondary</item>
+        <item name="colorDialogItemOutline">?attr/colorPrimaryFaded</item>
+        <item name="colorDialogContentBg">?attr/colorSecondaryDark</item>
         <item name="colorDialogItem">?attr/colorSecondaryVariant</item>
-        <item name="colorDialogItemDisabled">?attr/colorSecondaryDark</item>
+        <item name="colorDialogItemDisabled">?attr/colorPrimary</item>
+
+        <!-- datetime picker -->
+        <item name="colorDatePickerSelected">@color/regular</item>
+        <item name="colorDatePickerNavButton">@color/dark</item>
+        <item name="colorDatePickerBackground">?attr/colorSurface</item>
+        <item name="colorDatePickerText">?attr/colorOnSurface</item>
     </style>
 </resources>
