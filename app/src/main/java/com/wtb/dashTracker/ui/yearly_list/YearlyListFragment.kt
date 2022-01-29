@@ -1,7 +1,6 @@
 package com.wtb.dashTracker.ui.yearly_list
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -87,12 +86,10 @@ class YearlyListFragment : Fragment() {
                         thisYears.forEach { cw: CompleteWeekly ->
                             res.adjust += cw.weekly.basePayAdjustment ?: 0f
                             res.pay += cw.entries.mapNotNull { entry ->
-                                Log.d(TAG, "Pay: ${entry.pay}")
                                 entry.pay
                             }
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
                             res.otherPay += cw.entries.mapNotNull { entry ->
-                                Log.d(TAG, "Other: ${entry.otherPay}")
                                 entry.otherPay
                             }
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f

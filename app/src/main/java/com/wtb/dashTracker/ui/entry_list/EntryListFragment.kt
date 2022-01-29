@@ -2,7 +2,6 @@ package com.wtb.dashTracker.ui.entry_list
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -68,7 +67,6 @@ class EntryListFragment : Fragment() {
         setFragmentResultListener(
             ConfirmType.DELETE.key
         ) { _, bundle ->
-            Log.d(TAG, "Receiving Delete")
             val result = bundle.getBoolean(ARG_CONFIRM)
             val id = bundle.getInt(ARG_EXTRA)
             if (result) {
@@ -91,7 +89,6 @@ class EntryListFragment : Fragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                Log.d(TAG, "entry list updated")
                 viewModel.entryList.collectLatest {
                     entryAdapter.submitData(it)
                 }

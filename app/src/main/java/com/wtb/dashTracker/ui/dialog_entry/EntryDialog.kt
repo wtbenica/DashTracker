@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -136,9 +135,7 @@ class EntryDialog(
         setFragmentResultListener(
             ConfirmType.DELETE.key,
         ) { _, bundle ->
-            Log.d(TAG, "Receiving Delete")
             val result = bundle.getBoolean(ARG_CONFIRM)
-            Log.d(TAG, "Result: $result")
             if (result) {
                 saveOnExit = false
                 dismiss()
@@ -149,10 +146,7 @@ class EntryDialog(
         setFragmentResultListener(
             ConfirmType.RESET.key,
         ) { _, bundle ->
-            Log.d(TAG, "Receiving Reset")
             val result = bundle.getBoolean(ARG_CONFIRM)
-            Log.d(TAG, "Result: $result")
-            Log.d(TAG, result.toString())
             if (result) {
                 updateUI()
             }
@@ -161,10 +155,7 @@ class EntryDialog(
         setFragmentResultListener(
             ConfirmType.SAVE.key,
         ) { _, bundle ->
-            Log.d(TAG, "Receiving Save")
             val result = bundle.getBoolean(ARG_CONFIRM)
-            Log.d(TAG, "Result: $result")
-            Log.d(TAG, result.toString())
             if (result) {
                 saveConfirmed = true
             }
@@ -204,7 +195,6 @@ class EntryDialog(
 
         CoroutineScope(Dispatchers.Default).launch {
             viewModel.item.collectLatest {
-                Log.d(TAG, "Changing entry: $it")
                 entry = it
                 updateUI()
             }

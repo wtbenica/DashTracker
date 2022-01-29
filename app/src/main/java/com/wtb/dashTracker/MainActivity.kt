@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.provider.Settings
-import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -67,12 +66,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         fun initBiometrics() {
             val biometricManager = BiometricManager.from(this)
             when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
-                BiometricManager.BIOMETRIC_SUCCESS ->
-                    Log.d(TAG, "App can authenticate using biometrics.")
-                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
-                    Log.e(TAG, "No biometric features available on this device.")
-                BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
-                    Log.e(TAG, "Biometric features are currently unavailable.")
                 BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
@@ -81,19 +74,28 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                                 BIOMETRIC_STRONG or DEVICE_CREDENTIAL
                             )
                         }
-                        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }.launch(
-                            enrollIntent
-                        )
+                        registerForActivityResult(
+                            ActivityResultContracts.StartActivityForResult()
+                        ) {}.launch(enrollIntent)
                     }
                 }
+                BiometricManager.BIOMETRIC_SUCCESS -> {
+                    // "App can authenticate using biometrics.")
+                }
+                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                    // "No biometric features available on this device.")
+                }
+                BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                    // "Biometric features are currently unavailable.")
+                }
                 BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
-                    Log.e(TAG, "Biometric features are currently unavailable. (update required)")
+                    // "Biometric features are currently unavailable. (update required)")
                 }
                 BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
-                    Log.e(TAG, "Biometric features are currently unavailable. (unsupported)")
+                    // "Biometric features are currently unavailable. (unsupported)")
                 }
                 BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
-                    Log.e(TAG, "Biometric features are currently unavailable. (unknown)")
+                    // "Biometric features are currently unavailable. (unknown)")
                 }
             }
         }
@@ -185,7 +187,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                         super.onAuthenticationSucceeded(result)
                         isAuthenticated = true
                         this@MainActivity.binding.container.visibility = VISIBLE
-                        Log.d(TAG, "Authentication succeeded!")
                     }
                 })
 
