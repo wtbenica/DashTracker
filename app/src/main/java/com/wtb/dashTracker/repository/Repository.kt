@@ -135,13 +135,13 @@ class Repository private constructor(private val context: Context) {
         weeklies: List<Weekly>? = null
     ) {
         CoroutineScope(Dispatchers.Default).launch {
-            entries?.let {
-                entryDao.clear()
-                entryDao.upsertAll(it)
-            }
             weeklies?.let {
                 weeklyDao.clear()
                 weeklyDao.upsertAll(it)
+            }
+            entries?.let {
+                entryDao.clear()
+                entryDao.upsertAll(it)
             }
         }
     }

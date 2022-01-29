@@ -135,6 +135,8 @@ class CSVUtils(private val context: Context) {
 
     fun extractZip(uri: Uri) {
         ZipInputStream(context.contentResolver.openInputStream(uri)).use { zipIn ->
+            var entryModels: List<DashEntry> = emptyList()
+            var weeklyModels: List<Weekly> = emptyList()
             var nextEntry: ZipEntry? = zipIn.nextEntry
             while (nextEntry != null) {
                 val destFile = File(context.filesDir, nextEntry.name)
@@ -146,21 +148,27 @@ class CSVUtils(private val context: Context) {
                 nextEntry.name?.also { entryName ->
                     when {
                         entryName.startsWith(FILE_ENTRIES, false) -> {
-                            repository.importStream(entries = getModelsFromCsv(inputStream) {
+                            getModelsFromCsv(inputStream) {
                                 DashEntry.fromCSV(it)
-                            })
+                            }?.let { entryModels = it }
                         }
                         entryName.startsWith(FILE_WEEKLIES, false) -> {
-                            repository.importStream(weeklies = getModelsFromCsv(inputStream) {
+                            getModelsFromCsv(inputStream) {
                                 Weekly.fromCSV(it)
-                            })
+                            }?.let { weeklyModels = it }
                         }
                     }
                 }
 
                 nextEntry = zipIn.nextEntry
             }
+
             zipIn.closeEntry()
+
+            repository.importStream(
+                entries = entryModels,
+                weeklies = weeklyModels
+            )
         }
     }
 

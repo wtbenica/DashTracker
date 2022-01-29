@@ -110,7 +110,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             val navView: BottomNavigationView = binding.navView
             navView.background = null
 
-            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
             val navController = navHostFragment?.findNavController()
 
             val appBarConfiguration = AppBarConfiguration(
@@ -246,7 +247,10 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         getContentLauncher(FILE_ZIP) { csvUtil.extractZip(it) }
 
     @Suppress("SameParameterValue")
-    private fun getContentLauncher(prefix: String, action: (Uri) -> Unit): ActivityResultLauncher<String> =
+    private fun getContentLauncher(
+        prefix: String,
+        action: (Uri) -> Unit
+    ): ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
                 contentResolver.query(it, null, null, null, null)
