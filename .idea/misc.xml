@@ -73,8 +73,8 @@
         <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/dialog_frag_payout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_weekly.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item.xml" value="0.9" />
-        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item_single_line.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item.xml" value="0.48459958932238195" />
+        <entry key="app/src/main/res/layout/dialog_weekly_spinner_item_single_line.xml" value="0.5584725536992841" />
         <entry key="app/src/main/res/layout/fab_flyout_button.xml" value="0.67" />
         <entry key="app/src/main/res/layout/fragment_authenticate.xml" value="0.178125" />
         <entry key="app/src/main/res/layout/fragment_daily_stats.xml" value="0.35" />
