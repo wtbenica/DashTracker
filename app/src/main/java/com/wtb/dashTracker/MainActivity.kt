@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.provider.Settings
-import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -146,7 +145,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             }
         }
 
-        Log.d(TAG, "OnCreating")
         installSplashScreen()
         Repository.initialize(this)
         supportActionBar?.title = "DashTracker"
