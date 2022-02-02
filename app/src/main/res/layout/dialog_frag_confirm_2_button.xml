@@ -45,6 +45,7 @@
                         android:id="@+id/the_question"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:textSize="@dimen/text_size_med"
                         android:padding="@dimen/margin_default"
                         android:textColor="?attr/colorDialogText"
                         app:layout_constraintEnd_toEndOf="parent"

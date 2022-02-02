@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorUIBackground">?attr/colorOnPrimary</item>
+        <item name="colorUIBackground">?attr/colorSecondaryVariant</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
@@ -37,7 +37,7 @@
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- list_item -->
-        <item name="colorListItem">?attr/colorSecondary</item>
+        <item name="colorListItem">?attr/colorSecondaryDark</item>
         <item name="colorListItemExpanded">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
         <item name="colorListItemTitle">?attr/colorTextSecondary</item>
