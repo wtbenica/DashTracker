@@ -1,4 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Licenses Activities Theme -->
+    <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorActionBarText">@color/on_brick</item>
+    </style>
+
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
         <item name="colorUIBackground">?attr/colorSecondaryVariant</item>
@@ -27,12 +33,12 @@
         <item name="colorToolbar">?attr/colorPrimary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextSecondary</item>
         <item name="colorFab">?attr/colorAccent</item>
-        <item name="colorFabDisabled">?attr/colorSecondaryDark</item>
+        <item name="colorFabDisabled">?attr/colorPrimary</item>
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
         <item name="colorBottomNavItem">@color/bottom_nav_text_color</item>
         <item name="colorBottomNavEnabled">?attr/colorOnSecondary</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorPopupBackground">?attr/colorSecondaryDark</item>
+        <item name="colorPopupBackground">?attr/colorSecondaryVariant</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 

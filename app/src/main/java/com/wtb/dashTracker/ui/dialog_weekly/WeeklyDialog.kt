@@ -197,7 +197,7 @@ class WeeklyDialog(
             } else {
                 viewHolder = cv.tag as WeekSpinnerViewHolder
             }
-            val endWeek = itemList[position]
+            val endWeek: LocalDate = itemList[position]
             val startWeek = endWeek.minusDays(6)
             val weekOfYear = endWeek.weekOfYear
             viewHolder?.weekNumber?.text = getString(R.string.week_number, weekOfYear)

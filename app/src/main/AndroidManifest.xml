@@ -20,9 +20,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/LicensesActivitiesTheme" />
+
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/LicensesActivitiesTheme" />
+
         <provider
-            android:authorities="com.wtb.dashTracker.fileprovider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.wtb.dashTracker.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

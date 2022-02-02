@@ -8,8 +8,23 @@
         <item name="colorSecondaryFaded">@color/brick_faded</item>
     </style>
 
+    <!-- Licenses Activities Theme -->
+    <style name="LicensesActivitiesBase" parent="Theme.AppCompat.DayNight">
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
+        <item name="colorUi">@color/dark</item>
+        <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
+        <item name="android:fontFamily">@font/lalezar</item>
+        <item name="titleFontFamily">@font/lalezar</item>
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorUi</item>
+    </style>
+
+    <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorActionBarText">@color/on_regular</item>
+    </style>
+
     <!-- Base application theme. -->
-    <style name="Base" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Base" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimaryDark">@color/dark</item>
         <item name="colorPrimary">@color/regular</item>
