@@ -20,12 +20,12 @@ import java.time.LocalDate
 import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
-class Repository private constructor(private val context: Context) {
+class Repository private constructor(context: Context) {
     private val executor = Executors.newSingleThreadExecutor()
     private val db = DashDatabase.getInstance(context)
     private val csvUtil: CSVUtils
-        get() = CSVUtils(context)
-    
+        get() = CSVUtils()
+
     private val entryDao: DashEntryDao
         get() = db.entryDao()
 
@@ -121,13 +121,13 @@ class Repository private constructor(private val context: Context) {
         }
     }
 
-    fun export() {
+    fun export(ctx: Context) {
         CoroutineScope(Dispatchers.Default).launch {
-            csvUtil.export(allEntries(), allWeeklies())
+            csvUtil.export(allEntries(), allWeeklies(), ctx)
         }
     }
 
-    fun import() = csvUtil.import()
+    fun import(ctx: Context) = csvUtil.import(ctx)
 
 
     fun importStream(
@@ -135,25 +135,22 @@ class Repository private constructor(private val context: Context) {
         weeklies: List<Weekly>? = null
     ) {
         CoroutineScope(Dispatchers.Default).launch {
-            entries?.let {
-                entryDao.clear()
-                entryDao.upsertAll(it)
-            }
             weeklies?.let {
                 weeklyDao.clear()
                 weeklyDao.upsertAll(it)
+            }
+            entries?.let {
+                entryDao.clear()
+                entryDao.upsertAll(it)
             }
         }
     }
 
     companion object {
-        @Suppress("StaticFieldLeak")
         private var INSTANCE: Repository? = null
 
         fun initialize(context: Context) {
-            if (INSTANCE == null) {
-                INSTANCE = Repository(context)
-            }
+            INSTANCE = Repository(context)
         }
 
         fun get(): Repository {

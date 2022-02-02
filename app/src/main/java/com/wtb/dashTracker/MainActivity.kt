@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.provider.Settings
-import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -42,7 +41,6 @@ import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
-import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
@@ -58,8 +56,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
-    private val csvUtil: CSVUtils
-        get() = CSVUtils(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,12 +63,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         fun initBiometrics() {
             val biometricManager = BiometricManager.from(this)
             when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
-                BiometricManager.BIOMETRIC_SUCCESS ->
-                    Log.d(TAG, "App can authenticate using biometrics.")
-                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
-                    Log.e(TAG, "No biometric features available on this device.")
-                BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
-                    Log.e(TAG, "Biometric features are currently unavailable.")
                 BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
@@ -81,19 +71,28 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                                 BIOMETRIC_STRONG or DEVICE_CREDENTIAL
                             )
                         }
-                        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }.launch(
-                            enrollIntent
-                        )
+                        registerForActivityResult(
+                            ActivityResultContracts.StartActivityForResult()
+                        ) {}.launch(enrollIntent)
                     }
                 }
+                BiometricManager.BIOMETRIC_SUCCESS -> {
+                    // "App can authenticate using biometrics.")
+                }
+                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                    // "No biometric features available on this device.")
+                }
+                BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                    // "Biometric features are currently unavailable.")
+                }
                 BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
-                    Log.e(TAG, "Biometric features are currently unavailable. (update required)")
+                    // "Biometric features are currently unavailable. (update required)")
                 }
                 BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
-                    Log.e(TAG, "Biometric features are currently unavailable. (unsupported)")
+                    // "Biometric features are currently unavailable. (unsupported)")
                 }
                 BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
-                    Log.e(TAG, "Biometric features are currently unavailable. (unknown)")
+                    // "Biometric features are currently unavailable. (unknown)")
                 }
             }
         }
@@ -110,7 +109,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             val navView: BottomNavigationView = binding.navView
             navView.background = null
 
-            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
             val navController = navHostFragment?.findNavController()
 
             val appBarConfiguration = AppBarConfiguration(
@@ -184,7 +184,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                         super.onAuthenticationSucceeded(result)
                         isAuthenticated = true
                         this@MainActivity.binding.container.visibility = VISIBLE
-                        Log.d(TAG, "Authentication succeeded!")
                     }
                 })
 
@@ -216,9 +215,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        fun exportDatabaseToCSV() = viewModel.export()
+        fun exportDatabaseToCSV() = viewModel.export(this)
 
-        fun importCSVtoDatabase() = viewModel.import()
+        fun importCSVtoDatabase() = viewModel.import(this)
 
         return when (item.itemId) {
             R.id.action_licenses -> {
@@ -242,11 +241,14 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         return super.dispatchTouchEvent(ev)
     }
 
-    internal val getContentZipLauncher: ActivityResultLauncher<String> =
-        getContentLauncher(FILE_ZIP) { csvUtil.extractZip(it) }
+    internal fun getContentZipLauncher(handleContent: (Uri) -> Unit): ActivityResultLauncher<String> =
+        getContentLauncher(FILE_ZIP, handleContent)
 
     @Suppress("SameParameterValue")
-    private fun getContentLauncher(prefix: String, action: (Uri) -> Unit): ActivityResultLauncher<String> =
+    private fun getContentLauncher(
+        prefix: String,
+        action: (Uri) -> Unit
+    ): ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
                 contentResolver.query(it, null, null, null, null)

@@ -28,11 +28,11 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_reported_income" />
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_cash_tips" />
 
                 </TableRow>
@@ -43,12 +43,12 @@
 
                     <TextView
                         android:id="@+id/list_item_reported_income"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="$2073.25" />
 
                     <TextView
                         android:id="@+id/list_item_cash_tips"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="$8.00" />
                 </TableRow>
             </TableLayout>
@@ -62,35 +62,35 @@
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/header_mileage" />
 
                 <TextView
                     android:id="@+id/list_item_yearly_mileage"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="3,201" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/header_hours" />
 
                 <TextView
                     android:id="@+id/list_item_yearly_hours"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="2.93h" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_column="0"
                     android:layout_span="2"
                     android:layout_weight="1"
@@ -98,7 +98,7 @@
 
                 <TextView
                     android:id="@+id/list_item_yearly_hourly"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="$22.41" />
             </TableRow>
         </TableLayout>

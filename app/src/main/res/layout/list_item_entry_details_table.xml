@@ -27,15 +27,15 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_pay" />
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_cash_tips" />
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_other_pay" />
                 </TableRow>
 
@@ -45,31 +45,31 @@
 
                     <TextView
                         android:id="@+id/list_item_regular_pay"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="$73.25" />
 
                     <TextView
                         android:id="@+id/list_item_cash_tips"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="$8.00" />
 
                     <TextView
                         android:id="@+id/list_item_other_pay"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="-" />
                 </TableRow>
             </TableLayout>
         </androidx.cardview.widget.CardView>
 
         <TableLayout
+            style="@style/DetailsTable"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp">
+            android:layout_height="wrap_content">
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:text="@string/header_hours" />
 
                 <ImageView
@@ -80,7 +80,7 @@
 
                 <TextView
                     android:id="@+id/list_item_entry_hours"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     android:layout_weight="1"
                     tools:text="2.93h" />
             </TableRow>
@@ -88,7 +88,7 @@
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:text="@string/header_mileage" />
 
                 <ImageView
@@ -99,19 +99,19 @@
 
                 <TextView
                     android:id="@+id/list_item_entry_mileage_range"
-                    style="@style/RowValue.Secondary"
+                    style="@style/SecondaryValueStyle"
                     tools:text="203863 - 203904" />
 
                 <TextView
                     android:id="@+id/list_item_entry_mileage"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="41mi" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:text="@string/header_num_deliveries" />
 
                 <ImageView
@@ -122,7 +122,7 @@
 
                 <TextView
                     android:id="@+id/list_item_entry_num_deliveries"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     android:layout_weight="1"
                     tools:text="8" />
             </TableRow>
@@ -130,42 +130,42 @@
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/units_pay_rate" />
 
                 <TextView
                     android:id="@+id/list_item_entry_hourly"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="$22.41" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/units_avg_delivery" />
 
                 <TextView
                     android:id="@+id/list_item_entry_avd_del"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="$9.25" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/units_del_per_hr" />
 
                 <TextView
                     android:id="@+id/list_item_entry_hourly_dels"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="2.38" />
             </TableRow>
         </TableLayout>

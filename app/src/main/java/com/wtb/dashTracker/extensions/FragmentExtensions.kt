@@ -10,6 +10,10 @@ fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args:
         *args
     ) else ifNull
 
-fun Fragment.getCurrencyString(value: Float?): String = getStringOrElse(R.string.currency_unit, "-", value)
+fun Fragment.getCurrencyString(value: Float?): String {
+    val newValue = if (value != null && value <= 0f) null else value
+    return getStringOrElse(R.string.currency_unit, "-", newValue)
+}
+
 fun Fragment.getMileageString(value: Float): String = getString(R.string.mileage_fmt, value)
 

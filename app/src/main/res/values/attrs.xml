@@ -12,7 +12,10 @@
     <attr name="colorOnPrimaryVariant" format="reference|color" />
     <attr name="colorOnSecondaryVariant" format="reference|color" />
 
+    <attr name="defaultCornerRadius" format="reference" />
+
     <!-- Text -->
+    <attr name="titleFontFamily" format="reference" />
     <attr name="colorTextPrimary" format="reference" />
     <attr name="colorTextPrimaryDisabled" format="reference" />
     <attr name="colorTextSecondary" format="reference" />
@@ -29,6 +32,11 @@
     <attr name="colorPopupBackground" format="reference" />
     <attr name="colorOverflowMenuText" format="reference" />
     <attr name="colorOverflowMenuButton" format="reference" />
+    <attr name="textSizeActionBarTitle" format="reference" />
+    <attr name="textSizeSummaryBarHeader" format="reference" />
+    <attr name="textSizeSummaryBarValue" format="reference" />
+    <attr name="textSizeBottomNavActive" format="reference" />
+    <attr name="textSizeBottomNavInactive" format="reference" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
@@ -36,6 +44,10 @@
     <attr name="colorListItemExpanded" format="reference" />
     <attr name="colorListItemTitle" format="reference" />
     <attr name="colorListItemSubtitle" format="reference" />
+    <attr name="textSizeListItemTitle" format="reference" />
+    <attr name="textSizeListItemSubtitle" format="reference" />
+    <attr name="listItemCornerRadius" format="reference" />
+    <attr name="listItemThinBorder" format="reference" />
 
     <!-- list_item_details -->
     <attr name="colorListItemDetails" format="reference" />
@@ -45,6 +57,9 @@
     <attr name="colorRowHeaderText" format="reference" />
     <attr name="colorRowValueText" format="reference" />
     <attr name="colorRowValueSecondaryText" format="reference" />
+    <attr name="textSizeItemHeader" format="reference" />
+    <attr name="textSizeItemValue" format="reference" />
+    <attr name="textSizeItemSecondaryValue" format="reference" />
 
     <!-- daily stats row -->
     <attr name="colorDailyStatsRowHeaderText" format="reference" />
@@ -54,6 +69,8 @@
     <attr name="colorDayValue" format="reference" />
     <attr name="colorNightHeader" format="reference" />
     <attr name="colorNightValue" format="reference" />
+    <attr name="insightsRowBottomMargin" format="reference" />
+    <attr name="insightsRowCornerRadius" format="reference" />
 
     <!-- dialog -->
     <attr name="colorDialog" format="reference" />
@@ -63,6 +80,7 @@
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
+    <attr name="dialogFragCornerRadius" format="reference" />
 
     <!-- datetime picker -->
     <attr name="colorDatePickerSelected" format="reference" />

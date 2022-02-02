@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -88,7 +87,6 @@ class FabMenu @JvmOverloads constructor(
         @ColorInt val fromColor = MainActivity.getColorFabDisabled(context)
 
         animateFabColor(fromColor, toColor)
-        Log.d(TAG, "Animating from $fromColor to $toColor")
     }
 
     private fun desaturateFab() {
@@ -96,7 +94,6 @@ class FabMenu @JvmOverloads constructor(
         @ColorInt val toColor = MainActivity.getColorFabDisabled(context)
 
         animateFabColor(fromColor, toColor)
-        Log.d(TAG, "Animating from $fromColor to $toColor")
     }
 
     private fun runFabIconCollapseAnimation() {

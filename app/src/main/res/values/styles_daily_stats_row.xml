@@ -26,7 +26,7 @@
         <item name="android:textSize">@dimen/text_size_large</item>
         <item name="android:rotation">-90</item>
         <item name="android:textColor">?attr/colorDailyStatsRowDayText</item>
-        <item name="android:layout_marginBottom">@dimen/margin_default</item>
+        <item name="android:layout_marginBottom">?attr/insightsRowBottomMargin</item>
     </style>
 
     <style name="DailyStatsRowHeader.AM">
@@ -35,7 +35,7 @@
 
     <style name="DailyStatsRowHeader.PM">
         <item name="android:background">?attr/colorNightHeader</item>
-        <item name="android:layout_marginBottom">@dimen/margin_default</item>
+        <item name="android:layout_marginBottom">?attr/insightsRowBottomMargin</item>
     </style>
 
     <style name="DailyStatsRowValue.AM">
@@ -44,6 +44,6 @@
 
     <style name="DailyStatsRowValue.PM">
         <item name="android:background">?attr/colorNightValue</item>
-        <item name="android:layout_marginBottom">@dimen/margin_default</item>
+        <item name="android:layout_marginBottom">?attr/insightsRowBottomMargin</item>
     </style>
 </resources>

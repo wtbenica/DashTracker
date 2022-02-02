@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="@dimen/dialog_fragment_corner_radius">
+        app:cardCornerRadius="?attr/dialogFragCornerRadius">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -19,15 +19,13 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_entry_toolbar"
+                style="@style/DialogToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:title="Confirm"
-                app:titleMarginStart="24dp"
-                app:titleTextAppearance="@style/TextAppearance.AppCompat.Title.Tracker"
-                app:titleTextColor="?attr/colorDialogTitle" />
+                app:title="Confirm" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_confirm_card"
@@ -47,6 +45,7 @@
                         android:id="@+id/the_question"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:textSize="@dimen/text_size_med"
                         android:padding="@dimen/margin_default"
                         android:textColor="?attr/colorDialogText"
                         app:layout_constraintEnd_toEndOf="parent"

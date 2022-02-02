@@ -1,6 +1,5 @@
 package com.wtb.dashTracker.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.MainActivity.Companion.APP
@@ -22,7 +21,6 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
         get() = _id
 
     internal val item: StateFlow<T?> = id.flatMapLatest { id ->
-        Log.d(TAG, "This is id: $id")
         val itemFlow = getItemFlowById(id)
         itemFlow
     }.stateIn(

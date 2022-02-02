@@ -10,12 +10,6 @@ val dtfShortDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
 val dtfShortDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
 val dtfTime: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
-//val LocalDate.weekOfYear: Int
-//    get() {
-//        val weekFields: TemporalField = WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()
-//        return get(weekFields)
-//    }
-
 val LocalDate.formatted: String
     get() = if (year == LocalDate.now().year) {
         format(dtfDateThisYear)

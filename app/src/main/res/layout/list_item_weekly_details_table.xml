@@ -27,19 +27,19 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_pay" />
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_adjust" />
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_cash_tips" />
 
                     <TextView
-                        style="@style/RowHeader.PayTable"
+                        style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_other_pay" />
                 </TableRow>
 
@@ -49,22 +49,22 @@
 
                     <TextView
                         android:id="@+id/list_item_regular_pay"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="$73.25" />
 
                     <TextView
                         android:id="@+id/list_item_weekly_adjust"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="$13.58" />
 
                     <TextView
                         android:id="@+id/list_item_cash_tips"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="$8.00" />
 
                     <TextView
                         android:id="@+id/list_item_other_pay"
-                        style="@style/RowValue.PayTable"
+                        style="@style/PayTableValueStyle"
                         tools:text="-" />
                 </TableRow>
             </TableLayout>
@@ -78,21 +78,21 @@
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/header_hours" />
 
                 <TextView
                     android:id="@+id/list_item_weekly_hours"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="2.93h" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_column="0"
                     android:layout_span="2"
                     android:layout_weight="1"
@@ -100,35 +100,35 @@
 
                 <TextView
                     android:id="@+id/list_item_weekly_hourly"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="$22.41/hr" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/units_avg_delivery" />
 
                 <TextView
                     android:id="@+id/list_item_weekly_avg_del"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="$9.25/del" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
 
                 <TextView
-                    style="@style/RowHeader"
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/units_del_per_hr" />
 
                 <TextView
                     android:id="@+id/list_item_weekly_hourly_dels"
-                    style="@style/RowValue"
+                    style="@style/ValueStyle"
                     tools:text="2.38" />
             </TableRow>
         </TableLayout>

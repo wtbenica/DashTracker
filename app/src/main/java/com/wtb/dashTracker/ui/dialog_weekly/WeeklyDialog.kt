@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -108,10 +107,7 @@ class WeeklyDialog(
         setFragmentResultListener(
             ConfirmType.RESET.key,
         ) { _, bundle ->
-            Log.d(TAG, "Receiving Reset")
             val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
-            Log.d(TAG, "Result: $result")
-            Log.d(TAG, result.toString())
             if (result) {
                 updateUI()
             }
@@ -133,7 +129,6 @@ class WeeklyDialog(
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.weekly.observe(viewLifecycleOwner) { w ->
-            Log.d(TAG, "INCOMING WEEK: $w")
             weekly = w
             updateUI()
         }
