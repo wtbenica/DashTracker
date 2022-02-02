@@ -217,9 +217,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        fun exportDatabaseToCSV() = viewModel.export()
+        fun exportDatabaseToCSV() = viewModel.export(this)
 
-        fun importCSVtoDatabase() = viewModel.import()
+        fun importCSVtoDatabase() = viewModel.import(this)
 
         return when (item.itemId) {
             R.id.action_licenses -> {

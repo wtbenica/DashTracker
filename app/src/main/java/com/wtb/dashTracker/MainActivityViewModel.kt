@@ -1,5 +1,6 @@
 package com.wtb.dashTracker
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -49,9 +50,9 @@ class MainActivityViewModel : ViewModel() {
     }
 
 
-    fun export() = repository.export()
+    fun export(ctx: Context) = repository.export(ctx)
 
-    fun import() = repository.import()
+    fun import(ctx: Context) = repository.import(ctx)
 
     companion object {
 
