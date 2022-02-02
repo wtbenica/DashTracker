@@ -27,11 +27,11 @@ import java.util.zip.ZipOutputStream
 
 
 @ExperimentalCoroutinesApi
-class CSVUtils(private val context: Context) {
+class CSVUtils {
     private val repository: Repository
         get() = Repository.get()
 
-    fun export(entries: List<DashEntry>?, weeklies: List<Weekly>?) {
+    fun export(entries: List<DashEntry>?, weeklies: List<Weekly>?, ctx: Context) {
         fun generateFile(context: Context, fileName: String): File? {
             val csvFile = File(context.filesDir, fileName)
             csvFile.createNewFile()
@@ -78,18 +78,31 @@ class CSVUtils(private val context: Context) {
             return outFile
         }
 
-        val dailyFile: File? = generateFile(context, getEntriesFileName())
-        val weeklyFile: File? = generateFile(context, getWeekliesFileName())
+        fun getSendFilesIntent(file: File): Intent {
+            val intent = Intent(Intent.ACTION_SEND)
+            val contentUri = FileProvider.getUriForFile(
+                ctx, "${ctx.packageName}.fileprovider", file
+            )
+            intent.data = contentUri
+            intent.putExtra(EXTRA_STREAM, contentUri)
+            intent.flags =
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+
+            return intent
+        }
+
+        val dailyFile: File? = generateFile(ctx, getEntriesFileName())
+        val weeklyFile: File? = generateFile(ctx, getWeekliesFileName())
 
         if (dailyFile != null && weeklyFile != null) {
             exportEntries(dailyFile, entries)
             exportWeeklies(weeklyFile, weeklies)
 
-            val zipFile: File = zipFiles(context, dailyFile, weeklyFile)
+            val zipFile: File = zipFiles(ctx, dailyFile, weeklyFile)
             dailyFile.delete()
             weeklyFile.delete()
 
-            (context as MainActivity).runOnUiThread {
+            (ctx as MainActivity).runOnUiThread {
                 ConfirmationDialog(
                     text = R.string.confirm_export,
                     requestKey = "confirmExport",
@@ -97,78 +110,78 @@ class CSVUtils(private val context: Context) {
                     posButton = R.string.label_action_export_csv,
                     posAction = {
                         startActivity(
-                            context,
+                            ctx,
                             Intent.createChooser(getSendFilesIntent(zipFile), null),
                             null
                         )
                     },
                     negButton = R.string.cancel,
                     negAction = { },
-                ).show(context.supportFragmentManager, null)
+                ).show(ctx.supportFragmentManager, null)
             }
         } else {
-            (context as MainActivity).runOnUiThread {
+            (ctx as MainActivity).runOnUiThread {
                 Toast.makeText(
-                    context,
-                    context.getString(R.string.csv_generation_failed),
+                    ctx,
+                    ctx.getString(R.string.csv_generation_failed),
                     Toast.LENGTH_LONG
                 ).show()
             }
         }
     }
 
-    fun import() {
-        (context as MainActivity).runOnUiThread {
+    fun import(ctx: Context) {
+        fun extractZip(uri: Uri) {
+            ZipInputStream(ctx.contentResolver.openInputStream(uri)).use { zipIn ->
+                var entryModels: List<DashEntry> = emptyList()
+                var weeklyModels: List<Weekly> = emptyList()
+                var nextEntry: ZipEntry? = zipIn.nextEntry
+                while (nextEntry != null) {
+                    val destFile = File(ctx.filesDir, nextEntry.name)
+                    FileOutputStream(destFile).use { t ->
+                        zipIn.copyTo(t, 1024)
+                    }
+                    val inputStream = FileInputStream(destFile)
+
+                    nextEntry.name?.also { entryName ->
+                        when {
+                            entryName.startsWith(FILE_ENTRIES, false) -> {
+                                getModelsFromCsv(inputStream) {
+                                    DashEntry.fromCSV(it)
+                                }?.let { entryModels = it }
+                            }
+                            entryName.startsWith(FILE_WEEKLIES, false) -> {
+                                getModelsFromCsv(inputStream) {
+                                    Weekly.fromCSV(it)
+                                }?.let { weeklyModels = it }
+                            }
+                        }
+                    }
+
+                    nextEntry = zipIn.nextEntry
+                }
+
+                zipIn.closeEntry()
+
+                repository.importStream(
+                    entries = entryModels,
+                    weeklies = weeklyModels
+                )
+            }
+        }
+
+        (ctx as MainActivity).runOnUiThread {
             ConfirmationDialog(
                 text = R.string.confirm_import,
                 requestKey = "confirmImportEntry",
                 message = "Confirm Import",
                 posButton = R.string.label_action_import_csv,
                 posAction = {
-                    context.getContentZipLauncher(::extractZip).launch("application/zip")
+                    ctx.getContentZipLauncher(::extractZip).launch("application/zip")
                 },
                 negButton = R.string.cancel,
                 negAction = { },
-            ).show(context.supportFragmentManager, null)
-        }
-    }
-
-    fun extractZip(uri: Uri) {
-        ZipInputStream(context.contentResolver.openInputStream(uri)).use { zipIn ->
-            var entryModels: List<DashEntry> = emptyList()
-            var weeklyModels: List<Weekly> = emptyList()
-            var nextEntry: ZipEntry? = zipIn.nextEntry
-            while (nextEntry != null) {
-                val destFile = File(context.filesDir, nextEntry.name)
-                FileOutputStream(destFile).use { t ->
-                    zipIn.copyTo(t, 1024)
-                }
-                val inputStream = FileInputStream(destFile)
-
-                nextEntry.name?.also { entryName ->
-                    when {
-                        entryName.startsWith(FILE_ENTRIES, false) -> {
-                            getModelsFromCsv(inputStream) {
-                                DashEntry.fromCSV(it)
-                            }?.let { entryModels = it }
-                        }
-                        entryName.startsWith(FILE_WEEKLIES, false) -> {
-                            getModelsFromCsv(inputStream) {
-                                Weekly.fromCSV(it)
-                            }?.let { weeklyModels = it }
-                        }
-                    }
-                }
-
-                nextEntry = zipIn.nextEntry
-            }
-
-            zipIn.closeEntry()
-
-            repository.importStream(
-                entries = entryModels,
-                weeklies = weeklyModels
-            )
+            ).show(ctx.supportFragmentManager, null)
         }
     }
 
@@ -179,20 +192,6 @@ class CSVUtils(private val context: Context) {
         path?.let { inStream ->
             csvReader().readAllWithHeader(inStream).map { function(it) }
         }
-
-    private fun getSendFilesIntent(file: File): Intent {
-        val intent = Intent(Intent.ACTION_SEND)
-        val contentUri = FileProvider.getUriForFile(
-            context, "${context.packageName}.fileprovider", file
-        )
-        intent.data = contentUri
-        intent.putExtra(EXTRA_STREAM, contentUri)
-        intent.flags =
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-
-        return intent
-    }
-
 
     companion object {
         const val FILE_ZIP = "dash_tracker_"
