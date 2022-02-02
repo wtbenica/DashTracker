@@ -62,8 +62,8 @@
     <string name="save">Save</string>
 
     <string name="action_licenses">Licenses</string>
-    <string name="label_action_export">Export…</string>
-    <string name="label_action_import">Import…</string>
+    <string name="label_action_export">Export</string>
+    <string name="label_action_import">Import</string>
 
     <string name="label_action_export_csv">Export</string>
     <string name="label_action_import_csv">Import</string>

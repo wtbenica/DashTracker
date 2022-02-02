@@ -125,7 +125,7 @@ class CSVUtils(private val context: Context) {
                 message = "Confirm Import",
                 posButton = R.string.label_action_import_csv,
                 posAction = {
-                    context.getContentZipLauncher.launch("application/zip")
+                    context.getContentZipLauncher(::extractZip).launch("application/zip")
                 },
                 negButton = R.string.cancel,
                 negAction = { },

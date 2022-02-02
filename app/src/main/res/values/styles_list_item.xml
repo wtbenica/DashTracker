@@ -5,8 +5,8 @@
         <item name="android:background">?attr/colorListItem</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginHorizontal">@dimen/margin_half</item>
-        <item name="android:layout_marginVertical">@dimen/margin_narrow</item>
+        <item name="android:layout_marginHorizontal">0dp</item>
+        <item name="android:layout_marginVertical">1dp</item>
         <item name="android:minHeight">@dimen/min_touch_target</item>
     </style>
 
@@ -24,17 +24,15 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">textStart</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="ListItemHeaderTextView.Title">
-        <item name="android:textSize">@dimen/text_size_xlarge</item>
+        <item name="android:textSize">?attr/textSizeListItemTitle</item>
         <item name="android:textColor">?attr/colorListItemTitle</item>
     </style>
 
     <style name="ListItemHeaderTextView.Subtitle">
-        <item name="android:textSize">@dimen/text_size_med</item>
-        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">?attr/textSizeListItemSubtitle</item>
         <item name="android:textColor">?attr/colorListItemSubtitle</item>
     </style>
 
@@ -57,7 +55,7 @@
     <style name="listItemDetailsPane">
         <item name="android:visibility">gone</item>
         <item name="android:paddingEnd">0dp</item>
-        <item name="android:paddingBottom">@dimen/list_item_padding_start</item>
-        <item name="android:paddingStart">@dimen/list_item_padding_start</item>
+        <item name="android:paddingBottom">?attr/listItemThinBorder</item>
+        <item name="android:paddingStart">?attr/listItemThinBorder</item>
     </style>
 </resources>

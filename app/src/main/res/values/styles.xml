@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="CardViewStyle" parent="CardView">
-        <item name="cardCornerRadius">@dimen/dialog_fragment_corner_radius</item>
-        <item name="cardElevation">1dp</item>
+        <item name="cardCornerRadius">?attr/defaultCornerRadius</item>
+        <item name="cardElevation">0dp</item>
     </style>
 
-    <style name="TextAppearance.AppCompat.Title.Tracker">
-        <item name="android:textSize">@dimen/text_size_xxl</item>
+    <style name="TitleTextAppearance" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">?attr/textSizeActionBarTitle</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">?attr/titleFontFamily</item>
         <item name="android:textColor">?attr/colorActionBarText</item>
     </style>
 
     <style name="ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">
-        <item name="titleTextStyle">@style/TextAppearance.AppCompat.Title.Tracker</item>
+        <item name="titleTextStyle">@style/TitleTextAppearance</item>
         <item name="background">?attr/colorUi</item>
     </style>
 </resources>

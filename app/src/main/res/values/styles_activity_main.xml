@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+    <style name="ActionBarOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="tint">?attr/colorOverflowMenuButton</item>
+    </style>
+
+    <style name="ActionBarOverflowMenuStyle" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/popup_background</item>
+        <item name="android:textAppearance">@style/ActionBarOverflowMenuTextAppearance</item>
+    </style>
+
+    <style name="ActionBarOverflowMenuTextAppearance" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">?attr/colorOverflowMenuText</item>
     </style>
 
     <style name="SummaryBar">
         <item name="android:background">?attr/colorToolbar</item>
         <item name="android:elevation">1dp</item>
-        <item name="android:padding">@dimen/margin_narrow</item>
+        <item name="android:paddingVertical">@dimen/margin_half</item>
+        <item name="android:paddingHorizontal">@dimen/margin_narrow</item>
     </style>
 
     <style name="SummaryBarItem" parent="Widget.AppCompat.TextView">
@@ -16,23 +26,26 @@
     </style>
 
     <style name="SummaryBarItem.Header">
-
+        <item name="android:textSize">?attr/textSizeSummaryBarHeader</item>
     </style>
 
     <style name="SummaryBarItem.Value">
-        <item name="android:textSize">@dimen/text_size_xlarge</item>
+        <item name="android:textSize">?attr/textSizeSummaryBarValue</item>
     </style>
 
-    <style name="OverflowMenuStyle" parent="Widget.AppCompat.PopupMenu.Overflow">
-        <item name="android:popupBackground">@drawable/popup_background</item>
-        <item name="android:textAppearance">@style/TrackerOverflowMenuText</item>
-    </style>
-
-    <style name="TrackerOverflowMenuText" parent="TextAppearance.AppCompat.Small">
+    <style name="WidgetTheme">
         <item name="android:textColor">?attr/colorOverflowMenuText</item>
     </style>
 
-    <style name="TrackerWidgetTheme">
-        <item name="android:textColor">?attr/colorOverflowMenuText</item>
+    <style name="BottomNavItemTextAppearance">
+
+    </style>
+
+    <style name="BottomNavItemTextAppearance.Active">
+        <item name="android:textSize">?attr/textSizeBottomNavActive</item>
+    </style>
+
+    <style name="BottomNavItemTextAppearance.Inactive">
+        <item name="android:textSize">?attr/textSizeBottomNavInactive</item>
     </style>
 </resources>

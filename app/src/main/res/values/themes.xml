@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Splash screen theme -->
     <style name="SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/icon_b_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/icon_foreground</item>
         <item name="windowSplashScreenBackground">@color/dark</item>
         <item name="postSplashScreenTheme">@style/Base.DasherCompanion</item>
         <item name="colorPrimary">@color/regular</item>
@@ -28,14 +28,43 @@
 
         <item name="colorAccent">@color/accent</item>
 
-        <item name="android:actionBarWidgetTheme">@style/TrackerWidgetTheme</item>
+        <item name="defaultCornerRadius">@dimen/margin_half</item>
+
+        <!-- Text -->
+        <item name="android:fontFamily">@font/lalezar</item>
+        <item name="titleFontFamily">@font/lalezar</item>
+
+        <item name="android:actionBarWidgetTheme">@style/WidgetTheme</item>
         <item name="actionBarStyle">@style/ActionBarStyle</item>
-        <item name="actionOverflowButtonStyle">@style/OverflowButtonStyle</item>
+        <item name="actionOverflowButtonStyle">@style/ActionBarOverflowButtonStyle</item>
         <item name="cardViewStyle">@style/CardViewStyle</item>
-        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
+        <item name="actionOverflowMenuStyle">@style/ActionBarOverflowMenuStyle</item>
 
         <item name="android:datePickerDialogTheme">@style/MyDatePickerStyle</item>
         <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
+
+        <!-- activity_main -->
+        <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
+        <item name="textSizeSummaryBarHeader">@dimen/text_size_med</item>
+        <item name="textSizeSummaryBarValue">@dimen/text_size_xlarge</item>
+        <item name="textSizeBottomNavActive">@dimen/text_size_large</item>
+        <item name="textSizeBottomNavInactive">@dimen/text_size_med</item>
+
+        <!-- list_item -->
+        <item name="textSizeListItemTitle">@dimen/text_size_xlarge</item>
+        <item name="textSizeListItemSubtitle">@dimen/text_size_med</item>
+        <item name="textSizeItemHeader">@dimen/text_size_sm</item>
+        <item name="textSizeItemValue">@dimen/text_size_large</item>
+        <item name="textSizeItemSecondaryValue">@dimen/text_size_med</item>
+        <item name="listItemCornerRadius">?attr/defaultCornerRadius</item>
+        <item name="listItemThinBorder">@dimen/margin_half</item>
+
+        <!-- insights row -->
+        <item name="insightsRowCornerRadius">?attr/defaultCornerRadius</item>
+        <item name="insightsRowBottomMargin">@dimen/margin_default</item>
+
+        <!-- dialog fragment -->
+        <item name="dialogFragCornerRadius">?attr/defaultCornerRadius</item>
     </style>
 
     <style name="Base.DasherCompanion">
@@ -49,7 +78,6 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorUi</item>
 
         <!-- Text -->
-        <item name="android:fontFamily">@font/andika</item>
         <item name="android:textColor">?attr/colorTextPrimary</item>
         <item name="android:textColorPrimary">@color/primary_text_color</item>
         <item name="android:textColorSecondary">@color/secondary_text_color</item>
@@ -86,11 +114,11 @@
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
         <item name="colorListItemDetailsToolbar">?attr/colorListItemAccent</item>
-        <item name="colorRowHeaderPayText">?attr/colorTextPrimary</item>
+        <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
-        <item name="colorRowHeaderText">?attr/colorOnSurface</item>
+        <item name="colorRowHeaderText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValueText">?attr/colorOnSurface</item>
-        <item name="colorRowValueSecondaryText">?attr/colorTextPrimary</item>
+        <item name="colorRowValueSecondaryText">?attr/colorOnPrimaryVariant</item>
 
         <!-- daily stats row -->
         <item name="colorDailyStatsRowHeaderText">?attr/colorTextPrimary</item>
@@ -103,8 +131,8 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryDark</item>
-        <item name="colorDialogTitle">?attr/colorOnSecondary</item>
-        <item name="colorDialogText">?attr/colorOnSurface</item>
+        <item name="colorDialogTitle">?attr/colorActionBarText</item>
+        <item name="colorDialogText">?attr/colorTextPrimary</item>
         <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorDialogContentBg</item>

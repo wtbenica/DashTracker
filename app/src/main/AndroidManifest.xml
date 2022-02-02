@@ -5,9 +5,9 @@
     <application
         android:allowBackup="true"
         android:fullBackupOnly="true"
-        android:icon="@mipmap/icon_b"
+        android:icon="@mipmap/icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/icon_b"
+        android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
         android:theme="@style/SplashScreen">
         <activity

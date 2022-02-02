@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.provider.Settings
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -41,7 +42,6 @@ import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
-import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
@@ -57,8 +57,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
-    private val csvUtil: CSVUtils
-        get() = CSVUtils(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,6 +146,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             }
         }
 
+        Log.d(TAG, "OnCreating")
         installSplashScreen()
         Repository.initialize(this)
         supportActionBar?.title = "DashTracker"
@@ -244,8 +243,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         return super.dispatchTouchEvent(ev)
     }
 
-    internal val getContentZipLauncher: ActivityResultLauncher<String> =
-        getContentLauncher(FILE_ZIP) { csvUtil.extractZip(it) }
+    internal fun getContentZipLauncher(handleContent: (Uri) -> Unit): ActivityResultLauncher<String> =
+        getContentLauncher(FILE_ZIP, handleContent)
 
     @Suppress("SameParameterValue")
     private fun getContentLauncher(

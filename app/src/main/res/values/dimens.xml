@@ -1,21 +1,18 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
+<dimen name="margin_wide">24dp</dimen>
     <dimen name="margin_default">16dp</dimen>
     <dimen name="margin_half">8dp</dimen>
     <dimen name="margin_narrow">4dp</dimen>
 
     <dimen name="fab_menu_offset">32dp</dimen>
-    <dimen name="dialog_fragment_corner_radius">32dp</dimen>
     <dimen name="min_touch_target">48dp</dimen>
 
-    <dimen name="radius_insights">16dp</dimen>
-    <dimen name="radius_list_item">16dp</dimen>
-
-    <dimen name="text_size_xxl">19sp</dimen>
-    <dimen name="text_size_xlarge">17sp</dimen>
-    <dimen name="text_size_large">15sp</dimen>
-    <dimen name="text_size_med">13sp</dimen>
-    <dimen name="text_size_sm">11sp</dimen>
+    <dimen name="text_size_xxl">24sp</dimen>
+    <dimen name="text_size_xlarge">20sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_med">16sp</dimen>
+    <dimen name="text_size_sm">14sp</dimen>
 
     <dimen name="fragmentPaddingForBottomNav">72dp</dimen>
 

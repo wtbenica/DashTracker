@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="ListItemHeaderTextView.FragEntry">
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:textColor">?attr/colorDialogText</item>
+    <style name="DialogToolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="titleMarginStart">24dp</item>
+        <item name="titleTextAppearance">@style/TitleTextAppearance</item>
     </style>
 
     <style name="DialogContentCard" parent="CardViewStyle">
         <item name="android:layout_marginHorizontal">@dimen/margin_half</item>
-        <item name="cardCornerRadius">@dimen/dialog_fragment_corner_radius</item>
+        <item name="cardCornerRadius">?attr/dialogFragCornerRadius</item>
     </style>
 
     <style name="DialogContent">
-        <item name="android:padding">@dimen/margin_default</item>
+        <item name="android:paddingVertical">@dimen/margin_default</item>
+        <item name="android:paddingHorizontal">@dimen/margin_wide</item>
         <item name="android:background">?attr/colorDialogContentBg</item>
     </style>
 </resources>

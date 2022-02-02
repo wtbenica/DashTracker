@@ -25,7 +25,7 @@ class Repository private constructor(private val context: Context) {
     private val db = DashDatabase.getInstance(context)
     private val csvUtil: CSVUtils
         get() = CSVUtils(context)
-    
+
     private val entryDao: DashEntryDao
         get() = db.entryDao()
 
@@ -151,9 +151,7 @@ class Repository private constructor(private val context: Context) {
         private var INSTANCE: Repository? = null
 
         fun initialize(context: Context) {
-            if (INSTANCE == null) {
-                INSTANCE = Repository(context)
-            }
+            INSTANCE = Repository(context)
         }
 
         fun get(): Repository {

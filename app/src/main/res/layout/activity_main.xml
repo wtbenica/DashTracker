@@ -114,11 +114,12 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:animateLayoutChanges="true"
             android:backgroundTint="?attr/colorUi"
             android:minHeight="?android:attr/actionBarSize"
+            android:paddingVertical="@dimen/margin_narrow"
             app:elevation="1dp"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="scale"
@@ -138,6 +139,8 @@
                 app:itemIconTint="?attr/colorBottomNavItem"
                 app:itemTextColor="?attr/colorBottomNavItem"
                 app:labelVisibilityMode="labeled"
+                app:itemTextAppearanceActive="@style/BottomNavItemTextAppearance.Active"
+                app:itemTextAppearanceInactive="@style/BottomNavItemTextAppearance.Inactive"
                 app:menu="@menu/bottom_nav_menu" />
         </com.google.android.material.bottomappbar.BottomAppBar>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
