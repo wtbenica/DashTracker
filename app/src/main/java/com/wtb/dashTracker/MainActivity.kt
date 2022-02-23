@@ -46,24 +46,34 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.DataModel
+import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
+import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 
 @ExperimentalCoroutinesApi
@@ -257,8 +267,55 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         return super.dispatchTouchEvent(ev)
     }
 
-    internal fun getContentZipLauncher(handleContent: (Uri) -> Unit): ActivityResultLauncher<String> =
-        getContentLauncher(FILE_ZIP, handleContent)
+    internal val contentZipLauncher: ActivityResultLauncher<String> =
+        getContentLauncher(FILE_ZIP, ::extractZip)
+
+    fun extractZip(uri: Uri) {
+        ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
+            var entryModels: List<DashEntry> = emptyList()
+            var weeklyModels: List<Weekly> = emptyList()
+            var nextEntry: ZipEntry? = zipIn.nextEntry
+            while (nextEntry != null) {
+                val destFile = File(filesDir, nextEntry.name)
+                FileOutputStream(destFile).use { t ->
+                    zipIn.copyTo(t, 1024)
+                }
+                val inputStream = FileInputStream(destFile)
+
+                nextEntry.name?.also { entryName ->
+                    when {
+                        entryName.startsWith(CSVUtils.FILE_ENTRIES, false) -> {
+                            getModelsFromCsv(inputStream) {
+                                DashEntry.fromCSV(it)
+                            }?.let { entryModels = it }
+                        }
+                        entryName.startsWith(CSVUtils.FILE_WEEKLIES, false) -> {
+                            getModelsFromCsv(inputStream) {
+                                Weekly.fromCSV(it)
+                            }?.let { weeklyModels = it }
+                        }
+                    }
+                }
+
+                nextEntry = zipIn.nextEntry
+            }
+
+            zipIn.closeEntry()
+
+            viewModel.importStream(
+                entries = if (entryModels.isEmpty()) null else entryModels,
+                weeklies = if (weeklyModels.isEmpty()) null else weeklyModels
+            )
+        }
+    }
+
+    private fun <T : DataModel> getModelsFromCsv(
+        path: InputStream?,
+        function: (Map<String, String>) -> T
+    ): List<T>? =
+        path?.let { inStream ->
+            csvReader().readAllWithHeader(inStream).map { function(it) }
+        }
 
     @Suppress("SameParameterValue")
     private fun getContentLauncher(
@@ -278,6 +335,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                     }
             }
         }
+
 
     companion object {
         const val APP = "GT_"

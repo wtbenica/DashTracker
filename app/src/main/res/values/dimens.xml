@@ -32,5 +32,4 @@
 
     <dimen name="fragmentPaddingForBottomNav">72dp</dimen>
 
-    <dimen name="list_item_padding_start">8dp</dimen>
 </resources>

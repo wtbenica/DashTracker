@@ -207,7 +207,8 @@ data class DashEntry(
             pay = row["Base Pay"]?.toFloatOrNull(),
             cashTips = row["Cash Tips"]?.toFloatOrNull(),
             otherPay = row["Other Pay"]?.toFloatOrNull(),
-            numDeliveries = row["Num Deliveries"]?.toIntOrNull()
+            numDeliveries = row["Num Deliveries"]?.toIntOrNull(),
+            week = LocalDate.parse(row["Start Date"]).endOfWeek
         )
 
         override val headerList: List<String>

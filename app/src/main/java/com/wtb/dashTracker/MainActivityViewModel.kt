@@ -22,6 +22,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.CompleteWeekly
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,6 +71,9 @@ class MainActivityViewModel : ViewModel() {
     fun export(ctx: Context) = repository.export(ctx)
 
     fun import(ctx: Context) = repository.import(ctx)
+    fun importStream(entries: List<DashEntry>? = null, weeklies: List<Weekly>? = null) {
+        repository.importStream(entries, weeklies)
+    }
 
     companion object {
 
