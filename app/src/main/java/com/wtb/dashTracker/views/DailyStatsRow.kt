@@ -22,7 +22,7 @@ import android.view.View
 import android.widget.GridLayout
 import androidx.annotation.StringRes
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.databinding.DailyStatsRowBinding
+import com.wtb.dashTracker.databinding.FragInsightsRowBinding
 import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.*
@@ -38,14 +38,14 @@ class DailyStatsRow @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     stats: DailyStats? = null
 ) : GridLayout(context, attrs) {
-    private var binding: DailyStatsRowBinding
+    private var binding: FragInsightsRowBinding
 
     private val day: DayOfWeek
 
     init {
-        val v: View = inflate(context, R.layout.daily_stats_row, this)
+        val v: View = inflate(context, R.layout.frag_insights_row, this)
 
-        binding = DailyStatsRowBinding.bind(v)
+        binding = FragInsightsRowBinding.bind(v)
         day = stats!!.day!!
 
         binding.dailyStatsRowDayOfWeek.text =

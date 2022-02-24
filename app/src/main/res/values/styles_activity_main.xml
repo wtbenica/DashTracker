@@ -21,7 +21,7 @@
     </style>
 
     <style name="ActionBarOverflowMenuStyle" parent="Widget.AppCompat.PopupMenu.Overflow">
-        <item name="android:popupBackground">@drawable/popup_background</item>
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
         <item name="android:textAppearance">@style/ActionBarOverflowMenuTextAppearance</item>
     </style>
 

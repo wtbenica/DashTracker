@@ -18,6 +18,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:gravity="end"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
@@ -30,7 +31,8 @@
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:textAlignment="textEnd"
-        tools:text="Week 50" />
+        tools:text="Week 50"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/dialog_adjust_week_spinner_item_dates"

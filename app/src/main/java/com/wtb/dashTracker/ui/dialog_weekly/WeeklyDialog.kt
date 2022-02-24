@@ -35,8 +35,8 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
-import com.wtb.dashTracker.databinding.DialogWeeklySpinnerItemBinding
-import com.wtb.dashTracker.databinding.DialogWeeklySpinnerItemSingleLineBinding
+import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemBinding
+import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemSingleLineBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmResetDialog
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
@@ -73,10 +73,10 @@ class WeeklyDialog(
 
         val adapter = WeekSpinnerAdapter(
             requireContext(),
-            R.layout.dialog_weekly_spinner_item_single_line,
+            R.layout.dialog_frag_weekly_spinner_item_single_line,
             getListOfWeeks()
         ).apply {
-            setDropDownViewResource(R.layout.dialog_weekly_spinner_item)
+            setDropDownViewResource(R.layout.dialog_frag_weekly_spinner_item)
         }
 
         binding.fragAdjustDate.adapter = adapter
@@ -203,7 +203,7 @@ class WeeklyDialog(
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             var cv = convertView
             if (cv == null) {
-                val binding = DialogWeeklySpinnerItemSingleLineBinding.inflate(layoutInflater)
+                val binding = DialogFragWeeklySpinnerItemSingleLineBinding.inflate(layoutInflater)
                 cv = binding.root
                 viewHolder = WeekSpinnerViewHolder(
                     binding.dialogAdjustWeekSpinnerItemWeek,
@@ -223,14 +223,11 @@ class WeeklyDialog(
             return cv
         }
 
-        override fun getDropDownView(
-            position: Int,
-            convertView: View?,
-            parent: ViewGroup
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup
         ): View {
             var cv = convertView
             if (cv == null) {
-                val binding = DialogWeeklySpinnerItemBinding.inflate(layoutInflater)
+                val binding = DialogFragWeeklySpinnerItemBinding.inflate(layoutInflater)
                 cv = binding.root
                 viewHolder = WeekSpinnerViewHolder(
                     binding.dialogAdjustWeekSpinnerItemWeek,

@@ -24,7 +24,7 @@
         android:id="@+id/navigation_home"
         android:name="com.wtb.dashTracker.ui.entry_list.EntryListFragment"
         android:label="@string/title_daily"
-        tools:layout="@layout/fragment_entry_list">
+        tools:layout="@layout/frag_item_list">
 
         <action
             android:id="@+id/action_home_to_weekly"
@@ -55,7 +55,7 @@
         android:id="@+id/navigation_weekly"
         android:name="com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment"
         android:label="@string/title_weekly_list"
-        tools:layout="@layout/fragment_entry_list">
+        tools:layout="@layout/frag_item_list">
 
         <action
             android:id="@+id/action_weekly_to_home"
@@ -86,7 +86,7 @@
         android:id="@+id/navigation_yearly"
         android:name="com.wtb.dashTracker.ui.yearly_list.YearlyListFragment"
         android:label="@string/title_yearly_list"
-        tools:layout="@layout/fragment_entry_list">
+        tools:layout="@layout/frag_item_list">
 
         <action
             android:id="@+id/action_yearly_to_weekly"
@@ -117,7 +117,7 @@
         android:id="@+id/navigation_insights"
         android:name="com.wtb.dashTracker.ui.insight_daily_stats.DailyStatsFragment"
         android:label="@string/title_insights"
-        tools:layout="@layout/daily_stats_fragment">
+        tools:layout="@layout/frag_insights">
 
         <action
             android:id="@+id/action_insights_to_weekly"

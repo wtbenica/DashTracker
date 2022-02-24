@@ -117,7 +117,7 @@
                             style="@style/FragEntryValueTextView"
                             android:layout_width="0dp"
                             android:autofillHints="false"
-                            android:background="@drawable/disabled_bg"
+                            android:background="@drawable/bg_edit_text_disabled"
                             android:enabled="false"
                             tools:text="$11.23" />
                     </TableRow>
@@ -138,13 +138,13 @@
                     android:id="@+id/frag_adjust_btn_cancel"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/desc_new_entry"
-                    android:src="@drawable/reset" />
+                    android:src="@drawable/ic_action_reset" />
 
                 <ImageButton
                     android:id="@+id/frag_adjust_btn_save"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/desc_new_entry"
-                    android:src="@drawable/save" />
+                    android:src="@drawable/ic_action_save" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

@@ -43,7 +43,7 @@
     </style>
 
     <style name="PayTable">
-        <item name="android:background">@drawable/list_item_pay_table_background</item>
+        <item name="android:background">@drawable/bg_list_item_subtable</item>
         <item name="android:paddingHorizontal">@dimen/margin_narrow</item>
         <item name="android:paddingVertical">@dimen/margin_half</item>
     </style>

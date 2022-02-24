@@ -28,7 +28,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.databinding.DailyStatsFragmentBinding
+import com.wtb.dashTracker.databinding.FragInsightsBinding
 import com.wtb.dashTracker.views.DailyStats
 import com.wtb.dashTracker.views.DailyStatsRow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,7 +39,7 @@ import java.time.DayOfWeek
 @ExperimentalCoroutinesApi
 class DailyStatsFragment : Fragment() {
 
-    private var _binding: DailyStatsFragmentBinding? = null
+    private var _binding: FragInsightsBinding? = null
     private val binding
         get() = _binding!!
     private var _entries: List<DashEntry>? = null
@@ -56,7 +56,7 @@ class DailyStatsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DailyStatsFragmentBinding.inflate(inflater)
+        _binding = FragInsightsBinding.inflate(inflater)
         return binding.root
     }
 

@@ -56,7 +56,7 @@ class YearlyListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_entry_list, container, false)
+        val view = inflater.inflate(R.layout.frag_item_list, container, false)
 
         recyclerView = view.findViewById(R.id.entry_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -159,7 +159,7 @@ class YearlyListFragment : Fragment() {
         override fun onClick(v: View?) {
             val currentVisibility = binding.listItemDetails.visibility
             binding.listItemDetails.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-            binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.list_item_background else R.drawable.list_item_expanded_background)
+            binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
             bindingAdapter?.notifyItemChanged(
                 bindingAdapterPosition,
                 binding.listItemDetails.visibility
@@ -179,9 +179,9 @@ class YearlyListFragment : Fragment() {
 
             binding.listItemWrapper.setBackgroundResource(
                 if (listItemDetailsVisibility == VISIBLE)
-                    R.drawable.list_item_expanded_background
+                    R.drawable.bg_list_item_expanded
                 else
-                    R.drawable.list_item_background
+                    R.drawable.bg_list_item
             )
 
             binding.listItemTitle.text = this.yearly.year.toString()

@@ -33,7 +33,7 @@
         style="@style/DailyStatsRowHeader.AM"
         android:layout_row="0"
         android:layout_column="1"
-        android:background="@drawable/top_left_corner"
+        android:background="@drawable/bg_insight_am_left_corner"
         android:text="@string/ante_meridiem"
         android:textAlignment="center" />
 
@@ -63,7 +63,7 @@
         style="@style/DailyStatsRowValue.AM"
         android:layout_row="0"
         android:layout_column="5"
-        android:background="@drawable/top_right_corner"
+        android:background="@drawable/bg_insight_am_right_corner"
         tools:text="4" />
 
     <TextView
@@ -71,7 +71,7 @@
         style="@style/DailyStatsRowHeader.PM"
         android:layout_row="1"
         android:layout_column="1"
-        android:background="@drawable/bottom_left_corner"
+        android:background="@drawable/bg_insight_pm_left_corner"
         android:text="@string/post_meridiem"
         android:textAlignment="center" />
 
@@ -101,6 +101,6 @@
         style="@style/DailyStatsRowValue.PM"
         android:layout_row="1"
         android:layout_column="5"
-        android:background="@drawable/bottom_right_corner"
+        android:background="@drawable/bg_insight_pm_right_corner"
         tools:text="2" />
 </merge>
