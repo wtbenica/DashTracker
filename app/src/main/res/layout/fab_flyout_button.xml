@@ -45,6 +45,6 @@
         app:elevation="2dp"
         app:fabSize="normal"
         android:contentDescription="@string/content_desc_fab_menu_closed"
-        app:srcCompat="@drawable/new_adjust"
+        app:srcCompat="@drawable/ic_new_adjust"
         app:tint="?attr/colorFabIcon"/>
 </LinearLayout>

@@ -18,21 +18,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/daily"
+        android:icon="@drawable/ic_daily"
         android:title="@string/title_daily" />
 
     <item
         android:id="@+id/navigation_weekly"
-        android:icon="@drawable/weekly"
+        android:icon="@drawable/ic_weekly"
         android:title="@string/title_weekly_list" />
 
     <item
         android:id="@+id/navigation_yearly"
-        android:icon="@drawable/yearly"
+        android:icon="@drawable/ic_yearly"
         android:title="@string/title_yearly_list" />
 
     <item
         android:id="@+id/navigation_insights"
-        android:icon="@drawable/insight_"
+        android:icon="@drawable/ic_insights"
         android:title="@string/title_insights" />
 </menu>

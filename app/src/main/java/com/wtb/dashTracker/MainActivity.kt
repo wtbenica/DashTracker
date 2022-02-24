@@ -50,6 +50,7 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.database.models.DashEntry
@@ -125,6 +126,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
         fun initMobileAds() {
             MobileAds.initialize(this@MainActivity)
+
+            // TODO: Remove this for release.
+            val config = RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf("04CE17DF0350024007F75AE926597C03")).build()
+            MobileAds.setRequestConfiguration(config)
 
             mAdView = binding.adView
             val adRequest = AdRequest.Builder().build()
@@ -270,7 +276,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     internal val contentZipLauncher: ActivityResultLauncher<String> =
         getContentLauncher(FILE_ZIP, ::extractZip)
 
-    fun extractZip(uri: Uri) {
+    private fun extractZip(uri: Uri) {
         ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
             var entryModels: List<DashEntry> = emptyList()
             var weeklyModels: List<Weekly> = emptyList()
@@ -303,8 +309,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             zipIn.closeEntry()
 
             viewModel.importStream(
-                entries = if (entryModels.isEmpty()) null else entryModels,
-                weeklies = if (weeklyModels.isEmpty()) null else weeklyModels
+                entries = entryModels.ifEmpty { null },
+                weeklies = weeklyModels.ifEmpty { null }
             )
         }
     }
@@ -345,11 +351,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
             FabMenuButtonInfo(
                 "Add Entry",
-                R.drawable.new_entry_
+                R.drawable.ic_new_entry
             ) { EntryDialog().show(fm, "new_entry_dialog") },
             FabMenuButtonInfo(
                 "Add Adjustment",
-                R.drawable.new_adjust
+                R.drawable.ic_new_adjust
             ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
 //            FabMenuButtonInfo(
 //                "Add Payout",
