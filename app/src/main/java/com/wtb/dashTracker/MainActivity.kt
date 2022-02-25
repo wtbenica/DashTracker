@@ -50,7 +50,6 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.database.models.DashEntry
@@ -126,11 +125,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
         fun initMobileAds() {
             MobileAds.initialize(this@MainActivity)
-
-            // TODO: Remove this for release.
-            val config = RequestConfiguration.Builder()
-                .setTestDeviceIds(listOf("04CE17DF0350024007F75AE926597C03")).build()
-            MobileAds.setRequestConfiguration(config)
 
             mAdView = binding.adView
             val adRequest = AdRequest.Builder().build()
