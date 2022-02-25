@@ -70,7 +70,11 @@
         <entry key="app/src/main/res/drawable/save.xml" value="0.3525" />
         <entry key="app/src/main/res/drawable/top_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/top_right_corner.xml" value="0.18645833333333334" />
+        <entry key="app/src/main/res/font/anton.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/font/coda.xml" value="0.225" />
+        <entry key="app/src/main/res/font/neucha.xml" value="0.1368106028217187" />
+        <entry key="app/src/main/res/font/nunito_extralight.xml" value="0.1368106028217187" />
+        <entry key="app/src/main/res/font/tauri.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.27695473251028807" />
         <entry key="app/src/main/res/layout/activity_main_fab_menu.xml" value="0.5241057542768274" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.40929535232383807" />
