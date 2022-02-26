@@ -19,7 +19,6 @@ package com.wtb.dashTracker
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.provider.Settings
@@ -50,6 +49,7 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.database.models.DashEntry
@@ -90,17 +90,15 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             val biometricManager = BiometricManager.from(this)
             when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
                 BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
-                            putExtra(
-                                Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                                BIOMETRIC_STRONG or DEVICE_CREDENTIAL
-                            )
-                        }
-                        registerForActivityResult(
-                            ActivityResultContracts.StartActivityForResult()
-                        ) {}.launch(enrollIntent)
+                    val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                        putExtra(
+                            Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                            BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+                        )
                     }
+                    registerForActivityResult(
+                        ActivityResultContracts.StartActivityForResult()
+                    ) {}.launch(enrollIntent)
                 }
                 BiometricManager.BIOMETRIC_SUCCESS -> {
                     // "App can authenticate using biometrics.")
@@ -125,6 +123,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
         fun initMobileAds() {
             MobileAds.initialize(this@MainActivity)
+
+            // TODO: Remove this for release.
+            val config = RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf("04CE17DF0350024007F75AE926597C03")).build()
+            MobileAds.setRequestConfiguration(config)
 
             mAdView = binding.adView
             val adRequest = AdRequest.Builder().build()
@@ -215,7 +218,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Unlock to access DashTracker")
-                .setSubtitle("Use device login")
                 .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
                 .build()
 
