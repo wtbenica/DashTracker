@@ -72,6 +72,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -193,12 +194,16 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             if (fileList().isNotEmpty()) {
                 fileList().forEach { name ->
                     val date = Regex("^[A-Za-z_]*_").replace(name.split(".")[0], "")
-                    val parsedDate = LocalDate.parse(
-                        date, DateTimeFormatter.ofPattern("yyyy_MM_dd")
-                    )
-                    if (parsedDate <= LocalDate.now().minusDays(2)) {
-                        val file = File(filesDir, name)
-                        file.delete()
+                    try {
+                        val parsedDate = LocalDate.parse(
+                            date, DateTimeFormatter.ofPattern("yyyy_MM_dd")
+                        )
+                        if (parsedDate <= LocalDate.now().minusDays(2)) {
+                            val file = File(filesDir, name)
+                            file.delete()
+                        }
+                    } catch (e: DateTimeParseException) {
+                        // continue
                     }
                 }
             }
