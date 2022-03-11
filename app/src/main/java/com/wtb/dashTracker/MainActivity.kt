@@ -19,7 +19,6 @@ package com.wtb.dashTracker
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.provider.Settings
@@ -50,7 +49,6 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.database.models.DashEntry
@@ -58,6 +56,7 @@ import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
@@ -73,6 +72,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -91,17 +91,15 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             val biometricManager = BiometricManager.from(this)
             when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
                 BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
-                            putExtra(
-                                Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                                BIOMETRIC_STRONG or DEVICE_CREDENTIAL
-                            )
-                        }
-                        registerForActivityResult(
-                            ActivityResultContracts.StartActivityForResult()
-                        ) {}.launch(enrollIntent)
+                    val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                        putExtra(
+                            Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                            BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+                        )
                     }
+                    registerForActivityResult(
+                        ActivityResultContracts.StartActivityForResult()
+                    ) {}.launch(enrollIntent)
                 }
                 BiometricManager.BIOMETRIC_SUCCESS -> {
                     // "App can authenticate using biometrics.")
@@ -126,11 +124,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
         fun initMobileAds() {
             MobileAds.initialize(this@MainActivity)
-
-            // TODO: Remove this for release.
-            val config = RequestConfiguration.Builder()
-                .setTestDeviceIds(listOf("04CE17DF0350024007F75AE926597C03")).build()
-            MobileAds.setRequestConfiguration(config)
 
             mAdView = binding.adView
             val adRequest = AdRequest.Builder().build()
@@ -196,12 +189,16 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             if (fileList().isNotEmpty()) {
                 fileList().forEach { name ->
                     val date = Regex("^[A-Za-z_]*_").replace(name.split(".")[0], "")
-                    val parsedDate = LocalDate.parse(
-                        date, DateTimeFormatter.ofPattern("yyyy_MM_dd")
-                    )
-                    if (parsedDate <= LocalDate.now().minusDays(2)) {
-                        val file = File(filesDir, name)
-                        file.delete()
+                    try {
+                        val parsedDate = LocalDate.parse(
+                            date, DateTimeFormatter.ofPattern("yyyy_MM_dd")
+                        )
+                        if (parsedDate <= LocalDate.now().minusDays(2)) {
+                            val file = File(filesDir, name)
+                            file.delete()
+                        }
+                    } catch (e: DateTimeParseException) {
+                        // continue
                     }
                 }
             }
@@ -221,7 +218,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Unlock to access DashTracker")
-                .setSubtitle("Use device login")
                 .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
                 .build()
 
@@ -274,7 +270,17 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     }
 
     internal val contentZipLauncher: ActivityResultLauncher<String> =
-        getContentLauncher(FILE_ZIP, ::extractZip)
+        getContentLauncher(
+            FILE_ZIP,
+            ::extractZip,
+            ConfirmationDialog(
+                text = R.string.unzip_error,
+                requestKey ="confirmUnzipError",
+                message = "Error",
+                posButton = R.string.ok,
+                posAction = {},
+                negButton = null
+            ))
 
     private fun extractZip(uri: Uri) {
         ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
@@ -283,6 +289,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             var nextEntry: ZipEntry? = zipIn.nextEntry
             while (nextEntry != null) {
                 val destFile = File(filesDir, nextEntry.name)
+                if (!destFile.canonicalPath.startsWith(filesDir.canonicalPath)) {
+                    throw SecurityException()
+                }
                 FileOutputStream(destFile).use { t ->
                     zipIn.copyTo(t, 1024)
                 }
@@ -326,7 +335,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     @Suppress("SameParameterValue")
     private fun getContentLauncher(
         prefix: String,
-        action: (Uri) -> Unit
+        action: (Uri) -> Unit,
+        errorDialog: ConfirmationDialog
     ): ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
@@ -336,7 +346,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                         cursor.moveToFirst()
                         val fileName = cursor.getString(nameIndex)
                         if (fileName.startsWith(prefix)) {
-                            action(it)
+                            try {
+                                action(it)
+                            } catch (e: SecurityException) {
+                                errorDialog.show(supportFragmentManager, null)
+                            }
                         }
                     }
             }

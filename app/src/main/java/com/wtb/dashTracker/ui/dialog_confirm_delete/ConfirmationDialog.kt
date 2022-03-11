@@ -32,6 +32,7 @@ import com.wtb.dashTracker.databinding.DialogFragConfirm3ButtonBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 
+
 open class ConfirmationDialog(
     @StringRes val text: Int?,
     val requestKey: String,
@@ -39,7 +40,7 @@ open class ConfirmationDialog(
     private val message: String? = null,
     @StringRes val posButton: Int = R.string.yes,
     var posAction: (() -> Unit)? = null,
-    @StringRes val negButton: Int = R.string.cancel,
+    @StringRes val negButton: Int? = R.string.cancel,
     var negAction: (() -> Unit)? = null,
     @StringRes val posButton2: Int? = null,
     private val posAction2: (() -> Unit)? = null,
@@ -64,16 +65,21 @@ open class ConfirmationDialog(
 
             text?.let { binding.theQuestion.setText(it) }
 
-            val mNegAction = negAction ?: {
-                setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
-            }
-
-            binding.noButton.apply {
-                setText(negButton)
-                setOnClickListener {
-                    dismiss()
-                    mNegAction()
+            if (negButton != null) {
+                val mNegAction = negAction ?: {
+                    setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
                 }
+
+                binding.noButton.apply {
+                    setText(negButton)
+                    setOnClickListener {
+                        dismiss()
+                        mNegAction()
+                    }
+                }
+            } else {
+                binding.noButton.visibility = View.GONE
+                binding.dividerVert.visibility = View.GONE
             }
 
             val mPosAction = posAction ?: {
@@ -107,16 +113,21 @@ open class ConfirmationDialog(
 
             text?.let { binding.theQuestion.setText(it) }
 
-            val mNegAction = negAction ?: {
-                setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
-            }
-
-            binding.noButton.apply {
-                setText(negButton)
-                setOnClickListener {
-                    dismiss()
-                    mNegAction()
+            if (negButton != null) {
+                val mNegAction = negAction ?: {
+                    setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
                 }
+
+                binding.noButton.apply {
+                    setText(negButton)
+                    setOnClickListener {
+                        dismiss()
+                        mNegAction()
+                    }
+                }
+            } else {
+                binding.noButton.visibility = View.GONE
+                binding.dividerVert.visibility = View.GONE
             }
 
             val mPosAction = posAction ?: {

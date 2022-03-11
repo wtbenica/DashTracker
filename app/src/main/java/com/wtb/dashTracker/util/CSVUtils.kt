@@ -19,7 +19,6 @@ package com.wtb.dashTracker.util
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.EXTRA_STREAM
-import android.net.Uri
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
@@ -38,7 +37,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.*
 import java.time.LocalDate
 import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
 
@@ -147,45 +145,6 @@ class CSVUtils {
     }
 
     fun import(ctx: Context) {
-        fun extractZip(uri: Uri) {
-            ZipInputStream(ctx.contentResolver.openInputStream(uri)).use { zipIn ->
-                var entryModels: List<DashEntry> = emptyList()
-                var weeklyModels: List<Weekly> = emptyList()
-                var nextEntry: ZipEntry? = zipIn.nextEntry
-                while (nextEntry != null) {
-                    val destFile = File(ctx.filesDir, nextEntry.name)
-                    FileOutputStream(destFile).use { t ->
-                        zipIn.copyTo(t, 1024)
-                    }
-                    val inputStream = FileInputStream(destFile)
-
-                    nextEntry.name?.also { entryName ->
-                        when {
-                            entryName.startsWith(FILE_ENTRIES, false) -> {
-                                getModelsFromCsv(inputStream) {
-                                    DashEntry.fromCSV(it)
-                                }?.let { entryModels = it }
-                            }
-                            entryName.startsWith(FILE_WEEKLIES, false) -> {
-                                getModelsFromCsv(inputStream) {
-                                    Weekly.fromCSV(it)
-                                }?.let { weeklyModels = it }
-                            }
-                        }
-                    }
-
-                    nextEntry = zipIn.nextEntry
-                }
-
-                zipIn.closeEntry()
-
-                repository.importStream(
-                    entries = entryModels,
-                    weeklies = weeklyModels
-                )
-            }
-        }
-
         (ctx as MainActivity).runOnUiThread {
             ConfirmationDialog(
                 text = R.string.confirm_import,
