@@ -29,8 +29,8 @@ android {
         applicationId "com.wtb.dashTracker"
         minSdk 30
         targetSdk 31
-        versionCode 3
-        versionName "1.06"
+        versionCode 4
+        versionName "1.10"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -73,8 +73,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
 
-    implementation 'androidx.paging:paging-common-ktx:3.1.0'
-    implementation 'androidx.paging:paging-runtime-ktx:3.1.0'
+    implementation 'androidx.paging:paging-common-ktx:3.1.1'
+    implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
 
     implementation 'androidx.room:room-ktx:2.4.2'
     implementation 'androidx.room:room-paging:2.4.2'
