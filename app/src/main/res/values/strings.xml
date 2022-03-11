@@ -72,6 +72,7 @@
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="reset">Reset</string>
@@ -115,4 +116,5 @@
         \n\n* If you have removed the header row of either of the CSV files, they must be put back. To
         see what the correct headers should be, create a new export to use for reference.
     </string>
+    <string name="unzip_error">Unable to unzip file</string>
 </resources>

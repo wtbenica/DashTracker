@@ -56,6 +56,7 @@ import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
@@ -269,7 +270,17 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     }
 
     internal val contentZipLauncher: ActivityResultLauncher<String> =
-        getContentLauncher(FILE_ZIP, ::extractZip)
+        getContentLauncher(
+            FILE_ZIP,
+            ::extractZip,
+            ConfirmationDialog(
+                text = R.string.unzip_error,
+                requestKey ="confirmUnzipError",
+                message = "Error",
+                posButton = R.string.ok,
+                posAction = {},
+                negButton = null
+            ))
 
     private fun extractZip(uri: Uri) {
         ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
@@ -278,6 +289,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             var nextEntry: ZipEntry? = zipIn.nextEntry
             while (nextEntry != null) {
                 val destFile = File(filesDir, nextEntry.name)
+                if (!destFile.canonicalPath.startsWith(filesDir.canonicalPath)) {
+                    throw SecurityException()
+                }
                 FileOutputStream(destFile).use { t ->
                     zipIn.copyTo(t, 1024)
                 }
@@ -321,7 +335,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     @Suppress("SameParameterValue")
     private fun getContentLauncher(
         prefix: String,
-        action: (Uri) -> Unit
+        action: (Uri) -> Unit,
+        errorDialog: ConfirmationDialog
     ): ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
@@ -331,7 +346,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                         cursor.moveToFirst()
                         val fileName = cursor.getString(nameIndex)
                         if (fileName.startsWith(prefix)) {
-                            action(it)
+                            try {
+                                action(it)
+                            } catch (e: SecurityException) {
+                                errorDialog.show(supportFragmentManager, null)
+                            }
                         }
                     }
             }
