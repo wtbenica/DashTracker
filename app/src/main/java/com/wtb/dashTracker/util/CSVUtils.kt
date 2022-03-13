@@ -20,7 +20,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.EXTRA_STREAM
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
@@ -32,7 +31,8 @@ import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.database.models.Weekly.Companion.asList
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialogExport
+import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialogImport
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.*
 import java.time.LocalDate
@@ -117,20 +117,9 @@ class CSVUtils {
             weeklyFile.delete()
 
             (ctx as MainActivity).runOnUiThread {
-                ConfirmationDialog(
-                    text = R.string.confirm_export,
-                    requestKey = "confirmExport",
-                    message = "Confirm Export",
-                    posButton = R.string.label_action_export_csv,
-                    posAction = {
-                        startActivity(
-                            ctx,
-                            Intent.createChooser(getSendFilesIntent(zipFile), null),
-                            null
-                        )
-                    },
-                    negButton = R.string.cancel,
-                    negAction = { },
+                ConfirmationDialogExport(
+                    ctx,
+                    getSendFilesIntent(zipFile)
                 ).show(ctx.supportFragmentManager, null)
             }
         } else {
@@ -146,17 +135,7 @@ class CSVUtils {
 
     fun import(ctx: Context) {
         (ctx as MainActivity).runOnUiThread {
-            ConfirmationDialog(
-                text = R.string.confirm_import,
-                requestKey = "confirmImportEntry",
-                message = "Confirm Import",
-                posButton = R.string.label_action_import_csv,
-                posAction = {
-                    ctx.contentZipLauncher.launch("application/zip")
-                },
-                negButton = R.string.cancel,
-                negAction = { },
-            ).show(ctx.supportFragmentManager, null)
+            ConfirmationDialogImport(ctx).show(ctx.supportFragmentManager, null)
         }
     }
 

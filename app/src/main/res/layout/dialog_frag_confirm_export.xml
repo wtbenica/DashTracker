@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2022 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/margin_default">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorDialog"
+            android:paddingBottom="@dimen/margin_half">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/frag_entry_toolbar"
+                style="@style/DialogToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:title="Confirm Export" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/frag_confirm_card"
+                style="@style/DialogContentCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorDialogContentBg">
+
+                    <TextView
+                        android:id="@+id/the_question"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:padding="@dimen/margin_default"
+                        android:text="@string/confirm_export"
+                        android:textColor="?attr/colorDialogText"
+                        android:textSize="@dimen/text_size_med"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/export_notes_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/margin_default"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/the_question">
+
+                        <ImageView
+                            android:id="@+id/expand_array"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_expand_down"
+                            app:tint="?attr/colorTextPrimary" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif"
+                            android:paddingHorizontal="@dimen/margin_narrow"
+                            android:text="@string/confirm_export_notes_lbl"
+                            android:textAlignment="textStart"
+                            android:textAllCaps="false"
+                            android:textColor="?attr/colorDialogText"
+                            android:textSize="@dimen/text_size_sm"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/export_notes_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:paddingHorizontal="@dimen/margin_default"
+                        android:paddingBottom="@dimen/margin_default"
+                        android:text="@string/confirm_export_notes_text"
+                        android:textColor="?attr/colorDialogText"
+                        android:textSize="@dimen/text_size_med"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/export_notes_btn"
+                        tools:visibility="visible" />
+
+                    <View
+                        android:id="@+id/divider_hor"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:background="?attr/colorDialogItemOutline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/export_notes_text" />
+
+                    <Button
+                        android:id="@+id/no_button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:text="@string/cancel"
+                        android:textColor="?attr/colorDialogText"
+                        app:layout_constraintEnd_toStartOf="@id/divider_vert"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+
+                    <View
+                        android:id="@+id/divider_vert"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="?attr/colorDialogItemOutline"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/yes_button_1"
+                        app:layout_constraintStart_toEndOf="@id/no_button"
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+
+                    <Button
+                        android:id="@+id/yes_button_1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:padding="0dp"
+                        android:text="@string/label_action_export_csv"
+                        android:textColor="?attr/colorDialogText"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/divider_vert"
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

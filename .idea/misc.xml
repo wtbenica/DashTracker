@@ -32,6 +32,7 @@
         <entry key="app/src/main/res/drawable/disabled_bg.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/edit.xml" value="0.15677083333333333" />
         <entry key="app/src/main/res/drawable/enable_textview.xml" value="0.15092592592592594" />
+        <entry key="app/src/main/res/drawable/expand_arrow.xml" value="0.107" />
         <entry key="app/src/main/res/drawable/fab_menu_item_lbl_bg.xml" value="0.22552083333333334" />
         <entry key="app/src/main/res/drawable/gobble_background.xml" value="0.17222222222222222" />
         <entry key="app/src/main/res/drawable/gobble_foreground.xml" value="0.22" />
@@ -42,6 +43,9 @@
         <entry key="app/src/main/res/drawable/ic_bg.xml" value="0.15833333333333333" />
         <entry key="app/src/main/res/drawable/ic_circle.xml" value="0.1465" />
         <entry key="app/src/main/res/drawable/ic_daily.xml" value="0.147" />
+        <entry key="app/src/main/res/drawable/ic_expand_down.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_expand_more.xml" value="0.107" />
+        <entry key="app/src/main/res/drawable/ic_expand_up.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_insights__.xml" value="0.3365" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.17592592592592593" />
         <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.17592592592592593" />
@@ -87,6 +91,8 @@
         <entry key="app/src/main/res/layout/dialog_frag_confirm.xml" value="0.3137598597721297" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_2_button.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_3_button.xml" value="0.35104166666666664" />
+        <entry key="app/src/main/res/layout/dialog_frag_confirm_export.xml" value="0.66993006993007" />
+        <entry key="app/src/main/res/layout/dialog_frag_confirm_import.xml" value="0.49189985272459497" />
         <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/dialog_frag_payout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_weekly.xml" value="0.33" />
