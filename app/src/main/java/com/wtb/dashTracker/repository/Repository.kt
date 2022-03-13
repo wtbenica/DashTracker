@@ -23,11 +23,10 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.DashEntryDao
+import com.wtb.dashTracker.database.daos.GasExpenseDao
+import com.wtb.dashTracker.database.daos.MaintenanceExpenseDao
 import com.wtb.dashTracker.database.daos.WeeklyDao
-import com.wtb.dashTracker.database.models.CompleteWeekly
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVUtils
 import kotlinx.coroutines.*
@@ -47,6 +46,12 @@ class Repository private constructor(context: Context) {
 
     private val weeklyDao: WeeklyDao
         get() = db.weeklyDao()
+
+    private val gasExpenseDao: GasExpenseDao
+        get() = db.gasExpenseDao()
+
+    private val maintenanceExpenseDao: MaintenanceExpenseDao
+        get() = db.maintenanceExpenseDao()
 
     /**
      * Dash Entry
@@ -111,6 +116,8 @@ class Repository private constructor(context: Context) {
                 return res
             }
             is Weekly -> weeklyDao.upsert(model)
+            is GasExpense -> gasExpenseDao.upsert(model)
+            is MaintenanceExpense -> maintenanceExpenseDao.upsert(model)
         }
     }
 
