@@ -17,13 +17,14 @@
 package com.wtb.dashTracker.database
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.*
 import com.wtb.dashTracker.database.daos.DashEntryDao
+import com.wtb.dashTracker.database.daos.GasExpenseDao
+import com.wtb.dashTracker.database.daos.MaintenanceExpenseDao
 import com.wtb.dashTracker.database.daos.WeeklyDao
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.GasExpense
+import com.wtb.dashTracker.database.models.MaintenanceExpense
 import com.wtb.dashTracker.database.models.Weekly
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.Executors
@@ -31,14 +32,19 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 1,
-    entities = [DashEntry::class, Weekly::class],
+    version = 2,
+    entities = [DashEntry::class, Weekly::class, GasExpense::class, MaintenanceExpense::class],
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+    ],
     exportSchema = true,
 )
 @TypeConverters(DbTypeConverters::class)
 abstract class DashDatabase : RoomDatabase() {
     abstract fun entryDao(): DashEntryDao
     abstract fun weeklyDao(): WeeklyDao
+    abstract fun gasExpenseDao(): GasExpenseDao
+    abstract fun maintenanceExpenseDao(): MaintenanceExpenseDao
 
     companion object {
         @Volatile
@@ -54,6 +60,7 @@ abstract class DashDatabase : RoomDatabase() {
                     DashDatabase::class.java,
                     DATABASE_NAME
                 )
+                    .addMigrations()
                     .build().also {
                         INSTANCE = it
                     }
