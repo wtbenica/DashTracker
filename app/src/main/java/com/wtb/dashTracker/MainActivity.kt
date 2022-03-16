@@ -58,6 +58,7 @@ import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
@@ -371,6 +372,10 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                 "Add Adjustment",
                 R.drawable.ic_new_adjust
             ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
+            FabMenuButtonInfo(
+                "Add Expense",
+                R.drawable.ic_nav_daily
+            ) { ExpenseDialog().show(fm, "new_expense_dialog")}
 //            FabMenuButtonInfo(
 //                "Add Payout",
 //                R.drawable.chart

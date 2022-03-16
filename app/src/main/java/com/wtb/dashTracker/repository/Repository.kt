@@ -105,6 +105,19 @@ class Repository private constructor(context: Context) {
         }
     ).flow
 
+    fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?> = weeklyDao.getWeeklyByDate(date)
+
+    /**
+     * Expense
+     */
+
+    fun getGasExpenseFlowById(id: Int): Flow<GasExpense?> = gasExpenseDao.getFlow(id)
+    fun getMaintenanceExpenseFlowById(id: Int): Flow<MaintenanceExpense?> =
+        maintenanceExpenseDao.getFlow(id)
+
+    /**
+     * Generic<DataModel> functions
+     */
     fun upsertModel(model: DataModel): Long {
         return when (model) {
             is DashEntry -> {
@@ -121,16 +134,13 @@ class Repository private constructor(context: Context) {
         }
     }
 
-    /**
-     * Weekly
-     */
-    fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?> = weeklyDao.getWeeklyByDate(date)
-
     fun saveModel(model: DataModel) {
         executor.execute {
             when (model) {
                 is DashEntry -> entryDao.insert(model)
                 is Weekly -> weeklyDao.insert(model)
+                is GasExpense -> TODO()
+                is MaintenanceExpense -> TODO()
             }
         }
     }
@@ -140,6 +150,8 @@ class Repository private constructor(context: Context) {
             when (model) {
                 is DashEntry -> entryDao.delete(model)
                 is Weekly -> weeklyDao.delete(model)
+                is GasExpense -> TODO()
+                is MaintenanceExpense -> TODO()
             }
         }
     }

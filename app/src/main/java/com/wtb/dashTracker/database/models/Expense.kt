@@ -31,7 +31,6 @@ data class GasExpense(
     override val date: LocalDate,
     override val amount: Float,
     val pricePerGal: Float,
-    val numGallons: Float
 ) : Expense() {
     override val id: Int
         get() = gasId

@@ -14,6 +14,7 @@
         <entry key="app/src/main/res/drawable/background_edit_text.xml" value="0.175" />
         <entry key="app/src/main/res/drawable/background_image_button.xml" value="0.15625" />
         <entry key="app/src/main/res/drawable/bg_list_item_expanded.xml" value="0.336" />
+        <entry key="app/src/main/res/drawable/bg_list_item_subtable.xml" value="0.3265" />
         <entry key="app/src/main/res/drawable/bottom_border_bg.xml" value="0.9" />
         <entry key="app/src/main/res/drawable/bottom_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/bottom_nav_item.xml" value="0.2898148148148148" />
@@ -94,6 +95,7 @@
         <entry key="app/src/main/res/layout/dialog_frag_confirm_export.xml" value="0.66993006993007" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_import.xml" value="0.49189985272459497" />
         <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/dialog_frag_expense.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_payout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_weekly.xml" value="0.33" />
         <entry key="app/src/main/res/layout/dialog_weekly_spinner_item.xml" value="0.48459958932238195" />
@@ -108,6 +110,8 @@
         <entry key="app/src/main/res/layout/fragment_insights.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/grid_gas_expense.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/grid_other_expense.xml" value="0.9" />
         <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.3652312599681021" />
         <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.456" />
         <entry key="app/src/main/res/layout/list_item_weekly.xml" value="0.5" />
