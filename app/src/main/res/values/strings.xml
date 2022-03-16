@@ -110,4 +110,9 @@
         <li>Choose a secure location to save the ZIP file and any extracted files, as anyone with access to them will be able to open them.\n\n</li>
         <li>Creating a manual backup is purely optional, because Android already periodically backs up your app data, if you have it enabled in <b>Settings > System > Backup</b>. Any time you reinstall the app, your data will be automatically restored from the last available backup.</li></ul>
     </string>
+    <string name="lbl_purpose">Purpose</string>
+    <string name="lbl_gallons">Gallons</string>
+    <string name="lbl_price">Price</string>
+    <string name="lbl_gas">Gas</string>
+    <string name="lbl_other">Other</string>
 </resources>

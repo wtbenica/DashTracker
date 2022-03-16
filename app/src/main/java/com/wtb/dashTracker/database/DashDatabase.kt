@@ -18,6 +18,7 @@ package com.wtb.dashTracker.database
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.AutoMigrationSpec
 import com.wtb.dashTracker.database.daos.DashEntryDao
 import com.wtb.dashTracker.database.daos.GasExpenseDao
 import com.wtb.dashTracker.database.daos.MaintenanceExpenseDao
@@ -32,10 +33,11 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 2,
+    version = 3,
     entities = [DashEntry::class, Weekly::class, GasExpense::class, MaintenanceExpense::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3, spec = DashDatabase.Companion.AutoMigration_2_3::class),
     ],
     exportSchema = true,
 )
@@ -66,5 +68,13 @@ abstract class DashDatabase : RoomDatabase() {
                     }
             }
         }
+
+        @DeleteColumn(
+            tableName = "GasExpense",
+            columnName = "numGallons"
+        )
+        class AutoMigration_2_3 : AutoMigrationSpec
+
     }
 }
+
