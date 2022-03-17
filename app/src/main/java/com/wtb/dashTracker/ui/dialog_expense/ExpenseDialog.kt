@@ -65,7 +65,7 @@ class ExpenseDialog(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val expenseId = expense?.expenseId
+        val expenseId = expense?.expenseId ?: 1
         viewModel.loadDataModel(expenseId)
     }
 
@@ -162,20 +162,18 @@ class ExpenseDialog(
         val date: LocalDate?
         val name: String
         val amount: Float?
+        val pricePerGal: Float?
 
         if (binding.expenseViewFlipper.displayedChild == 0) {
-            val gasBinding = GridGasExpenseBinding.bind(binding.expenseViewFlipper.currentView)
-
-            date = gasBinding.fragExpenseGasDate.text.toDateOrNull()
+            date = gasGridBinding.fragExpenseGasDate.text.toDateOrNull()
             name = "Gas"
-            amount = gasBinding.fragExpenseGasAmount.text.toFloatOrNull()
+            amount = gasGridBinding.fragExpenseGasAmount.text.toFloatOrNull()
+            pricePerGal = gasGridBinding.fragExpenseGasPrice.text.toString().toFloat()
         } else {
-            val otherExpenseBinding =
-                GridOtherExpenseBinding.bind(binding.expenseViewFlipper.currentView)
-
             date = otherExpenseBinding.fragExpenseOtherDate.text.toDateOrNull()
             name = otherExpenseBinding.fragExpenseOtherPurpose.text.toString()
             amount = otherExpenseBinding.fragExpenseOtherAmount.text.toFloatOrNull()
+            pricePerGal = null
         }
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -189,19 +187,15 @@ class ExpenseDialog(
                 }
             }
 
-            val m = Expense(
-                expenseId = expense?.id ?: AUTO_ID,
+            val newExpense = Expense(
+                expenseId = expense?.expenseId ?: AUTO_ID,
                 date = date ?: LocalDate.now(),
                 amount = amount ?: 0F,
                 purpose = purposeId,
-                pricePerGal = if (binding.expenseViewFlipper.displayedChild == 0) {
-                    gasGridBinding.fragExpenseGasPrice.text.toString().toFloat()
-                } else {
-                    null
-                }
+                pricePerGal = pricePerGal
             )
 
-            viewModel.upsert(m)
+            viewModel.upsert(newExpense)
         }
     }
 
@@ -239,26 +233,28 @@ class ExpenseDialog(
 
     private fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
-
-//            val tempEntry = expense
-//            if (tempEntry != null) {
-//                dateTextView.text = tempEntry.date.format(dtfDate)
-//                tempEntry.startTime?.let { st ->
-//                    startTimeTextView.text = st.format(dtfTime)
-//                }
-//                tempEntry.endTime?.let { et -> endTimeTextView.text = et.format(dtfTime) }
-//                endsNextDayCheckBox.isChecked =
-//                    tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
-//                tempEntry.startOdometer?.let { so -> startMileageEditText.setText(so.toString()) }
-//                tempEntry.endOdometer?.let { eo -> endMileageEditText.setText(eo.toString()) }
-//                tempEntry.mileage?.let { m -> totalMileageEditText.setText(m.toString()) }
-//                tempEntry.pay?.let { p -> payEditText.setText(p.toString()) }
-//                tempEntry.otherPay?.let { op -> otherPayEditText.setText(op.toString()) }
-//                tempEntry.cashTips?.let { ct -> cashTipsEditText.setText(ct.toString()) }
-//                tempEntry.numDeliveries?.let { nd -> numDeliveriesEditText.setText(nd.toString()) }
-//            } else {
-            clearFields()
-//            }
+            val tempExpense = expense
+            if (tempExpense != null) {
+                if (tempExpense.purpose == 1) {
+                    binding.expenseViewFlipper.displayedChild = 0
+                    gasGridBinding.fragExpenseGasDate.text = tempExpense.date.format(dtfDate)
+                    gasGridBinding.fragExpenseGasAmount.setText(
+                        getString(R.string.float_fmt, tempExpense.amount)
+                    )
+                    gasGridBinding.fragExpenseGasPrice.setText(
+                        getString(R.string.float_fmt, tempExpense.pricePerGal)
+                    )
+                } else {
+                    binding.expenseViewFlipper.displayedChild = 1
+                    otherExpenseBinding.fragExpenseOtherDate.text = tempExpense.date.format(dtfDate)
+                    otherExpenseBinding.fragExpenseOtherAmount.setText(
+                        getString(R.string.float_fmt, tempExpense.amount)
+                    )
+                    otherExpenseBinding.fragExpenseOtherPurpose.setText(tempExpense.purpose)
+                }
+            } else {
+                clearFields()
+            }
         }
     }
 
@@ -299,6 +295,6 @@ class ExpenseDialog(
     }
 
     companion object {
-        private const val TAG = APP + "EntryDialog"
+        private const val TAG = APP + "ExpenseDialog"
     }
 }

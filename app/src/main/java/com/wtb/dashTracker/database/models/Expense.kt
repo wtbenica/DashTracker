@@ -54,7 +54,7 @@ data class Expense(
 data class ExpensePurpose(
     @PrimaryKey(autoGenerate = true) val purposeId: Int = AUTO_ID,
     val name: String
-): DataModel() {
+) : DataModel() {
     override val id: Int
         get() = purposeId
 }
