@@ -17,32 +17,44 @@
 package com.wtb.dashTracker.database.models
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
-sealed class Expense : DataModel() {
-    abstract val date: LocalDate
-    abstract val amount: Float
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = ExpensePurpose::class,
+            parentColumns = ["purposeId"],
+            childColumns = ["purpose"],
+            onDelete = ForeignKey.NO_ACTION
+        )
+    ],
+    indices = [
+        Index(value = ["purpose"])
+    ]
+)
+data class Expense(
+    @PrimaryKey(autoGenerate = true) val expenseId: Int = AUTO_ID,
+    val date: LocalDate,
+    val amount: Float,
+    val purpose: Int,
+    val pricePerGal: Float?,
+) : DataModel() {
+    override val id: Int
+        get() = expenseId
 }
 
-@Entity
-data class GasExpense(
-    @PrimaryKey(autoGenerate = true) val gasId: Int = AUTO_ID,
-    override val date: LocalDate,
-    override val amount: Float,
-    val pricePerGal: Float,
-) : Expense() {
+@Entity(
+    indices = [
+        Index(value = ["name"], unique = true)
+    ]
+)
+data class ExpensePurpose(
+    @PrimaryKey(autoGenerate = true) val purposeId: Int = AUTO_ID,
+    val name: String
+): DataModel() {
     override val id: Int
-        get() = gasId
-}
-
-@Entity
-data class MaintenanceExpense(
-    @PrimaryKey(autoGenerate = true) val maintenanceId: Int = AUTO_ID,
-    override val date: LocalDate,
-    override val amount: Float,
-    val purpose: String
-) : Expense() {
-    override val id: Int
-        get() = maintenanceId
+        get() = purposeId
 }

@@ -27,7 +27,8 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:background="@drawable/bg_list_item"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:background="@drawable/bg_list_item_expanded">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_header"
@@ -48,7 +49,7 @@
                 style="@style/ListItemHeaderTextView.Subtitle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/list_item_title"
-                tools:text="7:03p - 9:56p" />
+                android:text="Gas" />
 
             <ImageView
                 android:id="@+id/list_item_recurring"
@@ -68,7 +69,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/list_item_recurring"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="$81.25" />
+                tools:text="$20.00" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,7 +80,7 @@
             tools:visibility="visible">
 
             <include
-                layout="@layout/list_item_entry_details_table"
+                layout="@layout/list_item_expense_gas_details_table"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"

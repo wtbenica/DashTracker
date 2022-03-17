@@ -32,29 +32,26 @@ import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
-import com.wtb.dashTracker.database.models.GasExpense
-import com.wtb.dashTracker.database.models.MaintenanceExpense
+import com.wtb.dashTracker.database.models.Expense
+import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragExpenseBinding
 import com.wtb.dashTracker.databinding.GridGasExpenseBinding
 import com.wtb.dashTracker.databinding.GridOtherExpenseBinding
 import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.extensions.toDateOrNull
+import com.wtb.dashTracker.extensions.toFloatOrNull
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmSaveDialog
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.views.FullWidthDialogFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 class ExpenseDialog(
-    private var gasExpense: GasExpense? = null,
-    private var maintenanceExpense: MaintenanceExpense? = null
+    private var expense: Expense? = null,
 ) : FullWidthDialogFragment() {
 
     private val viewModel: ExpenseViewModel by viewModels()
@@ -68,10 +65,8 @@ class ExpenseDialog(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val expenseId = gasExpense?.gasId
+        val expenseId = expense?.expenseId
         viewModel.loadDataModel(expenseId)
-        val maintId = maintenanceExpense?.maintenanceId
-        viewModel.loadMaintExpense(maintId)
     }
 
     override fun onCreateView(
@@ -139,7 +134,7 @@ class ExpenseDialog(
             if (result) {
                 saveOnExit = false
                 dismiss()
-                gasExpense?.let { e -> viewModel.delete(e) }
+                expense?.let { e -> viewModel.delete(e) }
             }
         }
 
@@ -164,28 +159,46 @@ class ExpenseDialog(
     }
 
     private fun saveValues() {
+        val date: LocalDate?
+        val name: String
+        val amount: Float?
+
         if (binding.expenseViewFlipper.displayedChild == 0) {
-            val currDate = gasGridBinding.fragExpenseGasDate.text.toDateOrNull()
+            val gasBinding = GridGasExpenseBinding.bind(binding.expenseViewFlipper.currentView)
 
-            val g = GasExpense(
-                gasId = gasExpense?.id ?: AUTO_ID,
-                date = currDate ?: LocalDate.now(),
-                amount = gasGridBinding.fragExpenseGasAmount.text.toString().toFloat(),
-                pricePerGal = gasGridBinding.fragExpenseGasPrice.text.toString().toFloat(),
-            )
-
-            viewModel.upsert(g)
-        } else if (binding.expenseViewFlipper.displayedChild == 1) {
+            date = gasBinding.fragExpenseGasDate.text.toDateOrNull()
+            name = "Gas"
+            amount = gasBinding.fragExpenseGasAmount.text.toFloatOrNull()
+        } else {
             val otherExpenseBinding =
                 GridOtherExpenseBinding.bind(binding.expenseViewFlipper.currentView)
 
-            val currDate = otherExpenseBinding.fragExpenseOtherDate.text.toDateOrNull()
+            date = otherExpenseBinding.fragExpenseOtherDate.text.toDateOrNull()
+            name = otherExpenseBinding.fragExpenseOtherPurpose.text.toString()
+            amount = otherExpenseBinding.fragExpenseOtherAmount.text.toFloatOrNull()
+        }
 
-            val m = MaintenanceExpense(
-                maintenanceId = gasExpense?.id ?: AUTO_ID,
-                date = currDate ?: LocalDate.now(),
-                amount = otherExpenseBinding.fragExpenseOtherAmount.text.toString().toFloat(),
-                purpose = otherExpenseBinding.fragExpenseOtherPurpose.text.toString()
+        CoroutineScope(Dispatchers.Main).launch {
+            var purposeId: Int? = viewModel.getPurposeIdByName(name)
+
+            if (purposeId == null) {
+                val purpose =
+                    ExpensePurpose(purposeId = AUTO_ID, name = name)
+                purposeId = withContext(Dispatchers.Main) {
+                    viewModel.upsertAsync(purpose).toInt()
+                }
+            }
+
+            val m = Expense(
+                expenseId = expense?.id ?: AUTO_ID,
+                date = date ?: LocalDate.now(),
+                amount = amount ?: 0F,
+                purpose = purposeId,
+                pricePerGal = if (binding.expenseViewFlipper.displayedChild == 0) {
+                    gasGridBinding.fragExpenseGasPrice.text.toString().toFloat()
+                } else {
+                    null
+                }
             )
 
             viewModel.upsert(m)
@@ -197,12 +210,7 @@ class ExpenseDialog(
 
         CoroutineScope(Dispatchers.Default).launch {
             viewModel.item.collectLatest {
-                gasExpense = it
-                updateUI()
-            }
-
-            viewModel.maintItem.collectLatest {
-                maintenanceExpense = it
+                expense = it
                 updateUI()
             }
         }
@@ -231,7 +239,7 @@ class ExpenseDialog(
 
     private fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
-            
+
 //            val tempEntry = expense
 //            if (tempEntry != null) {
 //                dateTextView.text = tempEntry.date.format(dtfDate)
@@ -249,7 +257,7 @@ class ExpenseDialog(
 //                tempEntry.cashTips?.let { ct -> cashTipsEditText.setText(ct.toString()) }
 //                tempEntry.numDeliveries?.let { nd -> numDeliveriesEditText.setText(nd.toString()) }
 //            } else {
-                clearFields()
+            clearFields()
 //            }
         }
     }
@@ -258,7 +266,7 @@ class ExpenseDialog(
         gasGridBinding.fragExpenseGasDate.text = LocalDate.now().format(dtfDate)
         otherExpenseBinding.fragExpenseOtherDate.text = LocalDate.now().format(dtfDate)
 
-    //        startTimeTextView.text = LocalDateTime.now().format(dtfTime)
+        //        startTimeTextView.text = LocalDateTime.now().format(dtfTime)
 //        endTimeTextView.text = ""
 //        startMileageEditText.text.clear()
 //        endMileageEditText.text.clear()

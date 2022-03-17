@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.entry_list
+package com.wtb.dashTracker.ui.frag_list_expense
 
 import android.content.Context
 import android.os.Bundle
@@ -48,21 +48,22 @@ import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.entry_list.ExpenseListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-class EntryListFragment : Fragment() {
+class ExpenseListFragment : Fragment() {
 
     private val viewModel: ExpenseListViewModel by viewModels()
-    private var callback: EntryListFragmentCallback? = null
+    private var callback: ExpenseListFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = context as EntryListFragmentCallback
+        callback = context as ExpenseListFragmentCallback
     }
 
     override fun onCreateView(
@@ -94,7 +95,7 @@ class EntryListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val entryAdapter = EntryAdapter().apply {
+        val entryAdapter = ExpenseAdapter().apply {
             registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                     recyclerView.scrollToPosition(positionStart)
@@ -117,10 +118,10 @@ class EntryListFragment : Fragment() {
         callback = null
     }
 
-    inner class EntryAdapter :
-        PagingDataAdapter<DashEntry, EntryHolder>(DIFF_CALLBACK) {
+    inner class ExpenseAdapter :
+        PagingDataAdapter<DashEntry, ExpenseHolder>(DIFF_CALLBACK) {
         override fun onBindViewHolder(
-            holder: EntryHolder,
+            holder: ExpenseHolder,
             position: Int,
             payloads: MutableList<Any>
         ) {
@@ -128,17 +129,17 @@ class EntryListFragment : Fragment() {
             getItem(position)?.let { holder.bind(it, payloads) }
         }
 
-        override fun onBindViewHolder(holder: EntryHolder, position: Int) {
+        override fun onBindViewHolder(holder: ExpenseHolder, position: Int) {
             getItem(position)?.let { holder.bind(it) }
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntryHolder =
-            EntryHolder(parent)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseHolder =
+            ExpenseHolder(parent)
     }
 
-    interface EntryListFragmentCallback
+    interface ExpenseListFragmentCallback
 
-    inner class EntryHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    inner class ExpenseHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
     ), View.OnClickListener {
         private lateinit var entry: DashEntry
@@ -182,7 +183,7 @@ class EntryListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
                 setOnClickListener {
-                    EntryDialog(this@EntryHolder.entry).show(
+                    EntryDialog(this@ExpenseHolder.entry).show(
                         parentFragmentManager,
                         "edit_details"
                     )
@@ -191,7 +192,7 @@ class EntryListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
                 setOnClickListener {
-                    ConfirmDeleteDialog(confirmId = this@EntryHolder.entry.entryId)
+                    ConfirmDeleteDialog(confirmId = this@ExpenseHolder.entry.entryId)
                         .show(parentFragmentManager, null)
                 }
             }
@@ -278,7 +279,7 @@ class EntryListFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = APP + "EntryListFragment"
+        private const val TAG = APP + "ExpenseListFragment"
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
             override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =

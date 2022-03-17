@@ -23,8 +23,8 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.DashEntryDao
-import com.wtb.dashTracker.database.daos.GasExpenseDao
-import com.wtb.dashTracker.database.daos.MaintenanceExpenseDao
+import com.wtb.dashTracker.database.daos.ExpenseDao
+import com.wtb.dashTracker.database.daos.ExpensePurposeDao
 import com.wtb.dashTracker.database.daos.WeeklyDao
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
@@ -47,11 +47,11 @@ class Repository private constructor(context: Context) {
     private val weeklyDao: WeeklyDao
         get() = db.weeklyDao()
 
-    private val gasExpenseDao: GasExpenseDao
-        get() = db.gasExpenseDao()
+    private val expenseDao: ExpenseDao
+        get() = db.expenseDao()
 
-    private val maintenanceExpenseDao: MaintenanceExpenseDao
-        get() = db.maintenanceExpenseDao()
+    private val expensePurposeDao: ExpensePurposeDao
+        get() = db.expensePurposeDao()
 
     /**
      * Dash Entry
@@ -110,10 +110,17 @@ class Repository private constructor(context: Context) {
     /**
      * Expense
      */
+    fun getExpenseFlowById(id: Int): Flow<Expense?> = expenseDao.getFlow(id)
 
-    fun getGasExpenseFlowById(id: Int): Flow<GasExpense?> = gasExpenseDao.getFlow(id)
-    fun getMaintenanceExpenseFlowById(id: Int): Flow<MaintenanceExpense?> =
-        maintenanceExpenseDao.getFlow(id)
+    val allExpensesPaged: Flow<PagingData<Expense>> = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+            enablePlaceholders = true
+        ),
+        pagingSourceFactory = {
+            expenseDao.getAllPagingSource()
+        }
+    ).flow
 
     /**
      * Generic<DataModel> functions
@@ -129,8 +136,8 @@ class Repository private constructor(context: Context) {
                 return res
             }
             is Weekly -> weeklyDao.upsert(model)
-            is GasExpense -> gasExpenseDao.upsert(model)
-            is MaintenanceExpense -> maintenanceExpenseDao.upsert(model)
+            is Expense -> expenseDao.upsert(model)
+            is ExpensePurpose -> expensePurposeDao.upsert(model)
         }
     }
 
@@ -139,8 +146,7 @@ class Repository private constructor(context: Context) {
             when (model) {
                 is DashEntry -> entryDao.insert(model)
                 is Weekly -> weeklyDao.insert(model)
-                is GasExpense -> TODO()
-                is MaintenanceExpense -> TODO()
+                is Expense -> expenseDao.insert(model)
             }
         }
     }
@@ -150,8 +156,7 @@ class Repository private constructor(context: Context) {
             when (model) {
                 is DashEntry -> entryDao.delete(model)
                 is Weekly -> weeklyDao.delete(model)
-                is GasExpense -> TODO()
-                is MaintenanceExpense -> TODO()
+                is Expense -> expenseDao.delete(model)
             }
         }
     }
@@ -180,6 +185,8 @@ class Repository private constructor(context: Context) {
             }
         }
     }
+
+    suspend fun getPurposeIdByName(name: String): Int? = db.expensePurposeDao().getPurposeIdByName(name)
 
     companion object {
         private var INSTANCE: Repository? = null

@@ -20,12 +20,12 @@ import android.content.Context
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
 import com.wtb.dashTracker.database.daos.DashEntryDao
-import com.wtb.dashTracker.database.daos.GasExpenseDao
-import com.wtb.dashTracker.database.daos.MaintenanceExpenseDao
+import com.wtb.dashTracker.database.daos.ExpenseDao
+import com.wtb.dashTracker.database.daos.ExpensePurposeDao
 import com.wtb.dashTracker.database.daos.WeeklyDao
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.GasExpense
-import com.wtb.dashTracker.database.models.MaintenanceExpense
+import com.wtb.dashTracker.database.models.Expense
+import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.Weekly
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.Executors
@@ -33,11 +33,10 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 3,
-    entities = [DashEntry::class, Weekly::class, GasExpense::class, MaintenanceExpense::class],
+    version = 2,
+    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 2, to = 3, spec = DashDatabase.Companion.AutoMigration_2_3::class),
     ],
     exportSchema = true,
 )
@@ -45,8 +44,8 @@ import java.util.concurrent.Executors
 abstract class DashDatabase : RoomDatabase() {
     abstract fun entryDao(): DashEntryDao
     abstract fun weeklyDao(): WeeklyDao
-    abstract fun gasExpenseDao(): GasExpenseDao
-    abstract fun maintenanceExpenseDao(): MaintenanceExpenseDao
+    abstract fun expenseDao(): ExpenseDao
+    abstract fun expensePurposeDao(): ExpensePurposeDao
 
     companion object {
         @Volatile

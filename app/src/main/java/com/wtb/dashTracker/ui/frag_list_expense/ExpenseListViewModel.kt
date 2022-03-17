@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_expense
+package com.wtb.dashTracker.ui.entry_list
 
-import com.wtb.dashTracker.database.models.Expense
-import com.wtb.dashTracker.ui.BaseViewModel
+import androidx.lifecycle.ViewModel
+import androidx.paging.PagingData
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class ExpenseViewModel : BaseViewModel<Expense>() {
-    override fun getItemFlowById(id: Int): Flow<Expense?> =
-        repository.getExpenseFlowById(id)
+class ExpenseListViewModel : ViewModel() {
+    private val repository: Repository = Repository.get()
 
-    suspend fun getPurposeIdByName(name: String) = repository.getPurposeIdByName(name)
+    val expenseList: Flow<PagingData<DashEntry>> = repository.allEntriesPaged
+
+    fun delete(entry: DashEntry) = repository.deleteModel(entry)
+
+    fun deleteEntryById(id: Int) = repository.deleteEntryById(id)
 }
-

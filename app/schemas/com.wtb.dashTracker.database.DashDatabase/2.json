@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "4360c2631d068f1e62e737b76927f174",
+    "identityHash": "1e7d5d98287efb6e793a75d6f0388e5a",
     "entities": [
       {
         "tableName": "DashEntry",
@@ -169,62 +169,12 @@
         "foreignKeys": []
       },
       {
-        "tableName": "GasExpense",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`gasId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `amount` REAL NOT NULL, `pricePerGal` REAL NOT NULL, `numGallons` REAL NOT NULL, `lastUpdated` TEXT NOT NULL)",
+        "tableName": "Expense",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expenseId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `amount` REAL NOT NULL, `purpose` INTEGER NOT NULL, `pricePerGal` REAL, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`purpose`) REFERENCES `ExpensePurpose`(`purposeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "gasId",
-            "columnName": "gasId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "date",
-            "columnName": "date",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "amount",
-            "columnName": "amount",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pricePerGal",
-            "columnName": "pricePerGal",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "numGallons",
-            "columnName": "numGallons",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "lastUpdated",
-            "columnName": "lastUpdated",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "gasId"
-          ],
-          "autoGenerate": true
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "MaintenanceExpense",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`maintenanceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `amount` REAL NOT NULL, `purpose` TEXT NOT NULL, `lastUpdated` TEXT NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "maintenanceId",
-            "columnName": "maintenanceId",
+            "fieldPath": "expenseId",
+            "columnName": "expenseId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -243,6 +193,66 @@
           {
             "fieldPath": "purpose",
             "columnName": "purpose",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pricePerGal",
+            "columnName": "pricePerGal",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "expenseId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Expense_purpose",
+            "unique": false,
+            "columnNames": [
+              "purpose"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Expense_purpose` ON `${TABLE_NAME}` (`purpose`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ExpensePurpose",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "purpose"
+            ],
+            "referencedColumns": [
+              "purposeId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ExpensePurpose",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`purposeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `lastUpdated` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "purposeId",
+            "columnName": "purposeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -255,18 +265,28 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "maintenanceId"
+            "purposeId"
           ],
           "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_ExpensePurpose_name",
+            "unique": true,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ExpensePurpose_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
         "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4360c2631d068f1e62e737b76927f174')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e7d5d98287efb6e793a75d6f0388e5a')"
     ]
   }
 }

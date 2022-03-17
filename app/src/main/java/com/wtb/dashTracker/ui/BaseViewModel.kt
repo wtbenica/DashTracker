@@ -22,14 +22,11 @@ import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-abstract class BaseViewModel<T: DataModel>: ViewModel() {
+abstract class BaseViewModel<T : DataModel> : ViewModel() {
     protected val repository = Repository.get()
 
     private val _id = MutableStateFlow(AUTO_ID)
@@ -61,6 +58,14 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
             }
         }
     }
+
+    suspend fun upsertAsync(dataModel: DataModel): Long = CoroutineScope(Dispatchers.Default).async {
+        val id = repository.upsertModel(dataModel)
+        if (id != -1L) {
+            _id.value = id.toInt()
+        }
+        return@async id
+    }.await()
 
     fun delete(dataModel: DataModel) = repository.deleteModel(dataModel)
 

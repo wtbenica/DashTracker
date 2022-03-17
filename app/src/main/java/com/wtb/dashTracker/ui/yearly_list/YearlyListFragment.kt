@@ -58,7 +58,7 @@ class YearlyListFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.frag_item_list, container, false)
 
-        recyclerView = view.findViewById(R.id.entry_list)
+        recyclerView = view.findViewById(R.id.item_list_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         return view
