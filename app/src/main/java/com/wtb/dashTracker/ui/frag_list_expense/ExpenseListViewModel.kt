@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.entry_list
+package com.wtb.dashTracker.ui.frag_list_expense
 
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
-import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Expense
+import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -27,9 +28,9 @@ import kotlinx.coroutines.flow.Flow
 class ExpenseListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()
 
-    val expenseList: Flow<PagingData<DashEntry>> = repository.allEntriesPaged
+    val expenseList: Flow<PagingData<FullExpense>> = repository.allExpensesPaged
 
-    fun delete(entry: DashEntry) = repository.deleteModel(entry)
+    fun delete(expense: Expense) = repository.deleteModel(expense)
 
-    fun deleteEntryById(id: Int) = repository.deleteEntryById(id)
+    fun deleteExpenseById(id: Int) = repository.deleteExpenseById(id)
 }

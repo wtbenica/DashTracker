@@ -16,10 +16,7 @@
 
 package com.wtb.dashTracker.database.models
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import java.time.LocalDate
 
 @Entity(
@@ -44,6 +41,9 @@ data class Expense(
 ) : DataModel() {
     override val id: Int
         get() = expenseId
+
+    val gallons: Float?
+        get() = pricePerGal?.let { amount / it }
 }
 
 @Entity(
@@ -57,4 +57,21 @@ data class ExpensePurpose(
 ) : DataModel() {
     override val id: Int
         get() = purposeId
+
+    override fun toString(): String = name
 }
+
+enum class Purpose(val id: Int, val purposeName: String) {
+    GAS(1, "Gas"),
+    LOAN(2, "Car Payment"),
+    INSURANCE(3, "Insurance"),
+    OIL(4, "Oil Change")
+}
+
+data class FullExpense(
+    @Embedded
+    val expense: Expense,
+
+    @Relation(parentColumn = "purpose", entityColumn = "purposeId")
+    val purpose: ExpensePurpose
+)

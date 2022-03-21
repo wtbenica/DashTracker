@@ -166,7 +166,7 @@
                     android:text="@string/units_avg_delivery" />
 
                 <TextView
-                    android:id="@+id/list_item_entry_avd_del"
+                    android:id="@+id/list_item_entry_avg_del"
                     style="@style/ValueStyle"
                     tools:text="$9.25" />
             </TableRow>

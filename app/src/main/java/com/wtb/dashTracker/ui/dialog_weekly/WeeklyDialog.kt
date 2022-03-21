@@ -191,7 +191,6 @@ class WeeklyDialog(
         weekly?.let { viewModel.upsert(it.weekly) }
     }
 
-
     inner class WeekSpinnerAdapter(
         context: Context,
         @LayoutRes resId: Int,
@@ -223,7 +222,8 @@ class WeeklyDialog(
             return cv
         }
 
-        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup
+        override fun getDropDownView(
+            position: Int, convertView: View?, parent: ViewGroup
         ): View {
             var cv = convertView
             if (cv == null) {

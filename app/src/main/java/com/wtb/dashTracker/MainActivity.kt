@@ -49,6 +49,7 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.database.models.DashEntry
@@ -61,6 +62,7 @@ import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
+import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
@@ -79,7 +81,8 @@ import java.util.zip.ZipInputStream
 
 
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
+class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback,
+    ExpenseListFragmentCallback {
 
     private val viewModel: MainActivityViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
@@ -126,6 +129,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         fun initMobileAds() {
             MobileAds.initialize(this@MainActivity)
 
+            MobileAds.setRequestConfiguration(
+                RequestConfiguration.Builder()
+                    .setTestDeviceIds(listOf("B7667F22237B480FF03CE252659EAA82")).build()
+            )
+
             mAdView = binding.adView
             val adRequest = AdRequest.Builder().build()
             mAdView.loadAd(adRequest)
@@ -145,6 +153,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                     R.id.navigation_weekly,
                     R.id.navigation_yearly,
                     R.id.navigation_insights,
+                    R.id.navigation_expenses
                 )
             )
 
@@ -276,12 +285,13 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             ::extractZip,
             ConfirmationDialog(
                 text = R.string.unzip_error,
-                requestKey ="confirmUnzipError",
+                requestKey = "confirmUnzipError",
                 message = "Error",
                 posButton = R.string.ok,
                 posAction = {},
                 negButton = null
-            ))
+            )
+        )
 
     private fun extractZip(uri: Uri) {
         ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
@@ -375,7 +385,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             FabMenuButtonInfo(
                 "Add Expense",
                 R.drawable.ic_nav_daily
-            ) { ExpenseDialog().show(fm, "new_expense_dialog")}
+            ) { ExpenseDialog().show(fm, "new_expense_dialog") }
 //            FabMenuButtonInfo(
 //                "Add Payout",
 //                R.drawable.chart

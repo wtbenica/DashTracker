@@ -20,9 +20,12 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.room.Transaction
+import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
+import com.wtb.dashTracker.database.models.FullExpense
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
@@ -36,7 +39,20 @@ abstract class ExpenseDao : BaseDao<Expense>("Expense", "expenseId") {
     abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<Expense?>
 
     @Query(SQL_GET_ALL)
-    abstract fun getAllPagingSource(): PagingSource<Int, Expense>
+    abstract override fun getAll(): Flow<List<Expense>>
+
+    @Transaction
+    @Query(SQL_GET_ALL)
+    abstract fun getAllPagingSource(): PagingSource<Int, FullExpense>
+
+    @RawQuery(observedEntities = [Expense::class])
+    abstract fun executeRawQuery(query: SupportSQLiteQuery): Int
+
+    fun deleteById(id: Int): Int {
+        val query = SimpleSQLiteQuery("DELETE FROM Expense WHERE expenseId = $id")
+
+        return executeRawQuery(query)
+    }
 
     companion object {
         private const val SQL_GET_ALL =
@@ -63,4 +79,7 @@ abstract class ExpensePurposeDao : BaseDao<ExpensePurpose>("ExpensePurpose", "pu
     """
     )
     abstract suspend fun getPurposeIdByName(name: String): Int?
+
+    @Query("SELECT * FROM ExpensePurpose ORDER BY name")
+    abstract override fun getAll(): Flow<List<ExpensePurpose>>
 }

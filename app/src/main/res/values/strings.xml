@@ -85,7 +85,7 @@
     <string name="label_action_export_csv">Export</string>
     <string name="label_action_import_csv">Import</string>
 
-    <string name="confirm_delete">The information will not be recoverable</string>
+    <string name="confirm_delete">The information you\'ve entered will not be recoverable</string>
     <string name="confirm_reset">Any changes will be permanently lost</string>
     <string name="csv_generation_failed">CSV generation failed</string>
 
@@ -115,4 +115,6 @@
     <string name="lbl_price">Price</string>
     <string name="lbl_gas">Gas</string>
     <string name="lbl_other">Other</string>
+    <string name="title_expenses">Expenses</string>
+    <string name="content_desc_recurring_expense">Recurring expense</string>
 </resources>

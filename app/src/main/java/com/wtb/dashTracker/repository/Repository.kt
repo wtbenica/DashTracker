@@ -76,7 +76,7 @@ class Repository private constructor(context: Context) {
 
     fun deleteEntryById(id: Int) {
         CoroutineScope(Dispatchers.Default).launch {
-            withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+            withContext(Dispatchers.Default) {
                 entryDao.deleteById(id)
             }.let {
                 entryPagingSource?.invalidate()
@@ -91,7 +91,7 @@ class Repository private constructor(context: Context) {
     /**
      * Weekly
      */
-    val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAll()
+    val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAllCompleteWeekly()
 
     private suspend fun allWeeklies(): List<Weekly> = weeklyDao.getAllSuspend()
 
@@ -110,17 +110,33 @@ class Repository private constructor(context: Context) {
     /**
      * Expense
      */
+    val allExpensePurposes: Flow<List<ExpensePurpose>> = expensePurposeDao.getAll()
+
     fun getExpenseFlowById(id: Int): Flow<Expense?> = expenseDao.getFlow(id)
 
-    val allExpensesPaged: Flow<PagingData<Expense>> = Pager(
+    private var expensePagingSource: PagingSource<Int, FullExpense>? = null
+
+    val allExpensesPaged: Flow<PagingData<FullExpense>> = Pager(
         config = PagingConfig(
             pageSize = 20,
             enablePlaceholders = true
         ),
         pagingSourceFactory = {
-            expenseDao.getAllPagingSource()
+            val ps = expenseDao.getAllPagingSource()
+            expensePagingSource = ps
+            ps
         }
     ).flow
+
+    fun deleteExpenseById(id: Int) {
+        CoroutineScope(Dispatchers.Default).launch {
+            withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+                expenseDao.deleteById(id)
+            }.let {
+                expensePagingSource?.invalidate()
+            }
+        }
+    }
 
     /**
      * Generic<DataModel> functions

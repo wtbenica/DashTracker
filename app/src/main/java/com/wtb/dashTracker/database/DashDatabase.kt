@@ -18,15 +18,12 @@ package com.wtb.dashTracker.database
 
 import android.content.Context
 import androidx.room.*
-import androidx.room.migration.AutoMigrationSpec
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.wtb.dashTracker.database.daos.DashEntryDao
 import com.wtb.dashTracker.database.daos.ExpenseDao
 import com.wtb.dashTracker.database.daos.ExpensePurposeDao
 import com.wtb.dashTracker.database.daos.WeeklyDao
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.Expense
-import com.wtb.dashTracker.database.models.ExpensePurpose
-import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.database.models.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.Executors
 
@@ -62,18 +59,32 @@ abstract class DashDatabase : RoomDatabase() {
                     DATABASE_NAME
                 )
                     .addMigrations()
+                    .addCallback(
+                        object : RoomDatabase.Callback() {
+                            override fun onCreate(db: SupportSQLiteDatabase) {
+                                super.onCreate(db)
+
+                                val purposes = Purpose.values().map { purpose ->
+                                    ExpensePurpose(purpose.id, purpose.purposeName)
+                                }
+
+                                Executors.newSingleThreadScheduledExecutor().execute {
+                                    getInstance(context).expensePurposeDao().upsertAll(purposes)
+                                }
+                            }
+                        }
+                    )
                     .build().also {
                         INSTANCE = it
                     }
             }
         }
-
-        @DeleteColumn(
-            tableName = "GasExpense",
-            columnName = "numGallons"
-        )
-        class AutoMigration_2_3 : AutoMigrationSpec
-
+//
+//        @DeleteColumn(
+//            tableName = "GasExpense",
+//            columnName = "numGallons"
+//        )
+//        class AutoMigration_2_3 : AutoMigrationSpec
     }
 }
 

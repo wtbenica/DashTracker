@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.dialog_expense
 
 import com.wtb.dashTracker.database.models.Expense
+import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.ui.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -27,5 +28,7 @@ class ExpenseViewModel : BaseViewModel<Expense>() {
         repository.getExpenseFlowById(id)
 
     suspend fun getPurposeIdByName(name: String) = repository.getPurposeIdByName(name)
+
+    val expensePurposes: Flow<List<ExpensePurpose>> = repository.allExpensePurposes
 }
 

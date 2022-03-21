@@ -184,15 +184,20 @@ enum class ConfirmType(val key: String) {
     SAVE("confirmSave")
 }
 
-class ConfirmDeleteDialog(confirmId: Int? = null) : ConfirmationDialog(
-    text = R.string.confirm_delete,
+class ConfirmDeleteDialog(
+    confirmId: Int? = null,
+    @StringRes text: Int? = null,
+) : ConfirmationDialog(
+    text = text ?: R.string.confirm_delete,
     requestKey = ConfirmType.DELETE.key,
     confirmId = confirmId,
     posButton = R.string.delete
 )
 
-class ConfirmResetDialog : ConfirmationDialog(
-    text = R.string.confirm_reset,
+class ConfirmResetDialog(
+    @StringRes text: Int? = null,
+) : ConfirmationDialog(
+    text = text ?: R.string.confirm_reset,
     requestKey = ConfirmType.RESET.key,
     posButton = R.string.reset
 )

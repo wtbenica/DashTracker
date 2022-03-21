@@ -51,7 +51,7 @@
                 tools:text="7:03p - 9:56p" />
 
             <ImageView
-                android:id="@+id/list_item_recurring"
+                android:id="@+id/list_item_alert"
                 style="@style/ListItemHeaderIncompleteIndicator"
                 android:layout_marginStart="@dimen/margin_half"
                 android:contentDescription="@string/content_desc_incomplete_entry"

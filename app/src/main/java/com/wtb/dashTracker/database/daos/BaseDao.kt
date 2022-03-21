@@ -39,6 +39,8 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
 
     abstract fun clear()
 
+    abstract fun getAll(): Flow<List<T>>
+
     protected abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<T?>
 
     fun getFlow(id: Int): Flow<T?> {

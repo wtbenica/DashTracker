@@ -51,45 +51,125 @@
                 app:layout_constraintTop_toBottomOf="@id/frag_expense_toolbar">
 
                 <LinearLayout
-                    android:id="@+id/frag_expense_table"
-                    style="@style/DialogContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:columnCount="2"
-                    android:orientation="vertical"
-                    android:rowCount="11">
+                    android:orientation="vertical">
 
-                    <com.google.android.material.tabs.TabLayout
-                        android:id="@+id/expense_type_tabs"
+                    <GridLayout
+                        android:id="@+id/frag_expense_table"
+                        style="@style/DialogContent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_default"
-                        app:tabIndicatorColor="?attr/colorPrimary"
-                        app:tabSelectedTextColor="?attr/colorTextPrimary"
-                        app:tabTextColor="?attr/colorTextPrimary">
+                        android:columnCount="3"
+                        android:orientation="vertical"
+                        android:rowCount="11">
 
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="match_parent"
+                        <!--    Row 0   -->
+                        <TextView
+                            style="@style/FragEntryHeaderTextView"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/lbl_gas" />
+                            android:layout_row="0"
+                            android:layout_column="0"
+                            android:focusable="false"
+                            android:labelFor="@id/frag_expense_date"
+                            android:text="@string/lbl_date" />
 
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:id="@+id/frag_expense_date"
+                            style="@style/FragEntryValueTextView"
+                            android:layout_width="0dp"
+                            android:layout_row="0"
+                            android:layout_column="1"
+                            android:layout_columnSpan="2"
+                            android:layout_columnWeight="1"
+                            android:textAlignment="textEnd"
+                            tools:text="Mon Nov 23, 2021" />
+
+                        <!--    Row 1   -->
+                        <TextView
+                            style="@style/FragEntryHeaderTextView"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/lbl_other" />
-                    </com.google.android.material.tabs.TabLayout>
+                            android:layout_row="1"
+                            android:layout_column="0"
+                            android:focusable="false"
+                            android:labelFor="@id/frag_expense_purpose"
+                            android:text="@string/lbl_purpose" />
 
-                    <!--    Row 1   -->
-                    <ViewFlipper
-                        android:id="@+id/expense_view_flipper"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            style="@style/FragEntryValueTextView"
+                            android:layout_row="1"
+                            android:layout_column="1"
+                            android:layout_columnSpan="2"
+                            android:layout_columnWeight="1"
+                            android:orientation="horizontal"
+                            android:paddingStart="0dp">
 
-                        <include layout="@layout/grid_gas_expense" />
+                            <ImageButton
+                                android:id="@+id/frag_expense_add_purpose_btn"
+                                android:layout_width="@dimen/min_touch_target"
+                                android:layout_height="@dimen/min_touch_target"
+                                android:layout_gravity="center"
+                                android:background="@drawable/bg_end_button"
+                                android:src="@drawable/ic_add"
+                                app:tint="?attr/colorTextPrimary" />
 
-                        <include layout="@layout/grid_other_expense" />
-                    </ViewFlipper>
+                            <Spinner
+                                android:id="@+id/frag_expense_purpose"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:paddingHorizontal="0dp"
+                                tools:listitem="@layout/dialog_frag_expense_purpose_spinner_item" />
 
+                        </LinearLayout>
+
+                        <!--    Row 2   -->
+                        <TextView
+                            style="@style/FragEntryHeaderTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_row="2"
+                            android:layout_column="0"
+                            android:focusable="false"
+                            android:labelFor="@id/frag_expense_amount"
+                            android:text="@string/lbl_amount" />
+
+                        <EditText
+                            android:id="@+id/frag_expense_amount"
+                            style="@style/FragEntryValueTextView"
+                            android:layout_width="0dp"
+                            android:layout_row="2"
+                            android:layout_column="1"
+                            android:layout_columnSpan="2"
+                            android:layout_columnWeight="1"
+                            android:importantForAutofill="no"
+                            android:inputType="numberDecimal" />
+
+                        <!--    Row 3   -->
+                        <TextView
+                            android:id="@+id/frag_expense_price_lbl"
+                            style="@style/FragEntryHeaderTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_row="3"
+                            android:layout_column="0"
+                            android:focusable="false"
+                            android:labelFor="@id/frag_expense_price"
+                            android:text="@string/lbl_price" />
+
+                        <EditText
+                            android:id="@+id/frag_expense_price"
+                            style="@style/FragEntryValueTextView"
+                            android:layout_width="0dp"
+                            android:layout_row="3"
+                            android:layout_column="1"
+                            android:layout_columnSpan="2"
+                            android:layout_columnWeight="1"
+                            android:importantForAutofill="no"
+                            android:inputType="numberDecimal" />
+                    </GridLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -110,7 +190,7 @@
                     android:src="@drawable/ic_action_delete" />
 
                 <ImageButton
-                    android:id="@+id/frag_expense_btn_cancel"
+                    android:id="@+id/frag_expense_btn_reset"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/desc_new_entry"
                     android:src="@drawable/ic_action_reset" />
