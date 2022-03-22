@@ -57,7 +57,7 @@ import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog

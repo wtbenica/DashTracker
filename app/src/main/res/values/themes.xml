@@ -163,6 +163,7 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryDark</item>
+        <item name="colorDialogSecondary">?attr/colorPrimary</item>
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?attr/colorTextPrimary</item>
         <item name="colorDialogItemOutline">?attr/colorPrimary</item>

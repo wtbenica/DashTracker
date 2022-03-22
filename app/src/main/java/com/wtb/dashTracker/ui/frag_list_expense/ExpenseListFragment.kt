@@ -23,6 +23,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -39,11 +40,13 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.ListItemExpenseBinding
+import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
 import com.wtb.dashTracker.extensions.formatted
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_EXTRA
+import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -133,10 +136,22 @@ class ExpenseListFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseHolder =
-            ExpenseHolder(parent)
+            when (viewType) {
+                0 -> GasExpenseHolder(parent)
+                else -> OtherExpenseHolder(parent)
+            }
 
+        override fun getItemViewType(position: Int): Int =
+            when (getItem(position)?.purpose?.purposeId) {
+                GAS.id -> 0
+                else -> 1
+            }
 
-        inner class ExpenseHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        abstract inner class ExpenseHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+            abstract fun bind(item: FullExpense, payloads: MutableList<Any>? = null)
+        }
+
+        inner class GasExpenseHolder(parent: ViewGroup) : ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense, parent, false)
         ), View.OnClickListener {
             private lateinit var expense: FullExpense
@@ -149,7 +164,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog(this@ExpenseHolder.expense.expense).show(
+                        ExpenseDialog(this@GasExpenseHolder.expense.expense).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -158,7 +173,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog(confirmId = this@ExpenseHolder.expense.expense.expenseId)
+                        ConfirmDeleteDialog(confirmId = this@GasExpenseHolder.expense.expense.expenseId)
                             .show(parentFragmentManager, null)
                     }
                 }
@@ -171,7 +186,70 @@ class ExpenseListFragment : Fragment() {
                 bindingAdapter?.notifyItemChanged(bindingAdapterPosition, detailsTable.visibility)
             }
 
-            fun bind(item: FullExpense, payloads: MutableList<Any>? = null) {
+            override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
+                this.expense = item
+
+                val detailsTableIsVisibile = (payloads?.let {
+                    if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) it[0] else null
+                } ?: GONE) == VISIBLE
+
+                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
+
+                binding.listItemTitle.text = this.expense.expense.date.formatted.uppercase()
+                binding.listItemTitle2.text =
+                    getStringOrElse(R.string.currency_unit, "-", this.expense.expense.amount)
+                binding.listItemSubtitle.text = this.expense.purpose.name
+                binding.listItemDetailsCard.visibility =
+                    if (expense.purpose.purposeId == GAS.id) VISIBLE else GONE
+                if (expense.purpose.purposeId == GAS.id) {
+                    binding.listItemPrice.text =
+                        getStringOrElse(
+                            R.string.currency_unit,
+                            "-",
+                            this.expense.expense.pricePerGal
+                        )
+                    binding.listItemGallons.text =
+                        getStringOrElse(R.string.float_fmt, "-", this.expense.expense.gallons)
+                }
+            }
+        }
+
+        inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseHolder(
+            LayoutInflater.from(context).inflate(R.layout.list_item_expense_non_gas, parent, false)
+        ), View.OnClickListener {
+            private lateinit var expense: FullExpense
+
+            private val binding: ListItemExpenseNonGasBinding = ListItemExpenseNonGasBinding.bind(itemView)
+            private val buttonBox: LinearLayout = binding.buttonBox
+
+            init {
+                itemView.setOnClickListener(this)
+
+                binding.listItemBtnEdit.apply {
+                    setOnClickListener {
+                        ExpenseDialog(this@OtherExpenseHolder.expense.expense).show(
+                            parentFragmentManager,
+                            "edit_details"
+                        )
+                    }
+                }
+
+                binding.listItemBtnDelete.apply {
+                    setOnClickListener {
+                        ConfirmDeleteDialog(confirmId = this@OtherExpenseHolder.expense.expense.expenseId)
+                            .show(parentFragmentManager, null)
+                    }
+                }
+            }
+
+            override fun onClick(v: View?) {
+                val currentVisibility = buttonBox.visibility
+                buttonBox.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
+                binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
+                bindingAdapter?.notifyItemChanged(bindingAdapterPosition, buttonBox.visibility)
+            }
+
+            override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
                 this.expense = item
 
                 val detailsTableIsVisibile = (payloads?.let {
@@ -186,16 +264,8 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemTitle.text = this.expense.expense.date.formatted.uppercase()
                 binding.listItemTitle2.text =
-                    getString(R.string.currency_unit, this.expense.expense.amount)
+                    getStringOrElse(R.string.currency_unit, "-", this.expense.expense.amount)
                 binding.listItemSubtitle.text = this.expense.purpose.name
-                binding.listItemDetailsCard.visibility =
-                    if (expense.purpose.purposeId == GAS.id) VISIBLE else GONE
-                if (expense.purpose.purposeId == GAS.id) {
-                    binding.listItemPrice.text =
-                        getString(R.string.currency_unit, this.expense.expense.pricePerGal)
-                    binding.listItemGallons.text =
-                        getString(R.string.float_fmt, this.expense.expense.gallons)
-                }
             }
         }
     }

@@ -21,6 +21,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -45,14 +46,12 @@ import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.DialogFragExpenseBinding
 import com.wtb.dashTracker.extensions.dtfDate
+import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.toDateOrNull
 import com.wtb.dashTracker.extensions.toFloatOrNull
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmResetDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmSaveDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.*
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,6 +67,7 @@ class ExpenseDialog(
 
     private val viewModel: ExpenseViewModel by viewModels()
 
+    private var explicitDismiss = false
     private var deleteBtnPressed = false
     private var saveBtnPressed = false
 
@@ -107,6 +107,10 @@ class ExpenseDialog(
             updateSaveButtonIsEnabled()
         }
 
+        binding.fragExpenseAddPurposeBtn.setOnClickListener {
+            ConfirmationDialogAddPurpose().show(parentFragmentManager, null)
+        }
+
         binding.fragExpensePurpose.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -141,7 +145,7 @@ class ExpenseDialog(
         }
 
         binding.fragExpenseBtnReset.setOnClickListener {
-            ConfirmResetDialog()
+            ConfirmResetDialog().show(parentFragmentManager, null)
         }
 
         updateUI()
@@ -186,7 +190,7 @@ class ExpenseDialog(
         }
 
     override fun onDestroy() {
-        if (!deleteBtnPressed && (isNotEmpty() || saveBtnPressed)) {
+        if (!deleteBtnPressed && (isNotEmpty() || saveBtnPressed) || !explicitDismiss) {
             saveValues()
         }
 
@@ -199,10 +203,10 @@ class ExpenseDialog(
             if (tempExpense != null) {
                 binding.fragExpenseDate.text = tempExpense.date.format(dtfDate)
                 binding.fragExpenseAmount.setText(
-                    getString(R.string.float_fmt, tempExpense.amount)
+                    getStringOrElse(R.string.float_fmt, "", tempExpense.amount)
                 )
                 binding.fragExpensePrice.setText(
-                    getString(R.string.float_fmt, tempExpense.pricePerGal)
+                    getStringOrElse(R.string.float_fmt, "", tempExpense.pricePerGal)
                 )
                 binding.fragExpensePurpose.apply {
                     (adapter as PurposeAdapter?)?.getPositionById(tempExpense.purpose)
@@ -224,7 +228,7 @@ class ExpenseDialog(
         val amount: Float? = binding.fragExpenseAmount.text.toFloatOrNull()
         val purposeId = (binding.fragExpensePurpose.selectedItem as ExpensePurpose).purposeId
         val pricePerGal = if (purposeId == GAS.id)
-            binding.fragExpensePrice.text.toString().toFloat()
+            binding.fragExpensePrice.text.toString().toFloatOrNull()
         else null
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -281,14 +285,29 @@ class ExpenseDialog(
             }
             dismiss()
         }
+
+        setFragmentResultListener(
+            ConfirmationDialogAddPurpose.RK_ADD_PURPOSE
+        ) { _, bundle ->
+            val result = bundle.getBoolean(ARG_CONFIRM)
+            if (result) {
+                bundle.getString(ConfirmationDialogAddPurpose.ARG_NEW_PURPOSE)
+                    ?.let { viewModel.upsert(ExpensePurpose(name= it)) }
+            }
+        }
     }
 
-    private fun isEmpty() =
-        binding.fragExpenseDate.text == LocalDate.now().format(dtfDate) &&
-                binding.fragExpenseAmount.text.isBlank() &&
-                binding.fragExpensePurpose.let {
-                    it.adapter.getItem(it.selectedItemPosition)
-                } == GAS.id && binding.fragExpensePrice.text.isBlank()
+    private fun isEmpty(): Boolean {
+        val isTodaysDate = binding.fragExpenseDate.text == LocalDate.now().format(dtfDate)
+        val amountIsBlank = binding.fragExpenseAmount.text.isNullOrBlank()
+        val isGasExpense = binding.fragExpensePurpose.let {
+            it.adapter.getItem(it.selectedItemPosition)
+        } == GAS.id
+        val priceIsBlank = binding.fragExpensePrice.text.isNullOrBlank()
+        val b = isTodaysDate && amountIsBlank && !isGasExpense && priceIsBlank
+        Log.d(TAG, "Empty: $b, Today: $isTodaysDate, Amount: $amountIsBlank, Gas: $isGasExpense, Price: $priceIsBlank")
+        return b
+    }
 
     private fun updateSaveButtonIsEnabled() {
         if (binding.fragExpenseAmount.text == null || binding.fragExpenseAmount.text.isEmpty() ||

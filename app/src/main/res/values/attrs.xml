@@ -90,6 +90,7 @@
 
     <!-- dialog -->
     <attr name="colorDialog" format="reference" />
+    <attr name="colorDialogSecondary" format="reference" />
     <attr name="colorDialogContentBg" format="reference" />
     <attr name="colorDialogTitle" format="reference" />
     <attr name="colorDialogText" format="reference" />

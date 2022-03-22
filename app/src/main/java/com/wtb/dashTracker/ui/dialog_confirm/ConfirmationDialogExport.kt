@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_confirm_delete
+package com.wtb.dashTracker.ui.dialog_confirm
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -23,16 +25,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
-import com.wtb.dashTracker.MainActivity
+import androidx.core.content.ContextCompat
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.databinding.DialogFragConfirmImportBinding
+import com.wtb.dashTracker.databinding.DialogFragConfirmExportBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.views.FullWidthDialogFragment
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalCoroutinesApi
-open class ConfirmationDialogImport(
-    val ctx: MainActivity
+
+open class ConfirmationDialogExport(
+    val ctx: Context,
+    val intent: Intent,
 ) : FullWidthDialogFragment() {
 
     override fun onCreateView(
@@ -42,11 +44,11 @@ open class ConfirmationDialogImport(
     ): View? {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        val binding = DialogFragConfirmImportBinding.inflate(inflater)
+        val binding = DialogFragConfirmExportBinding.inflate(inflater)
 
-        binding.showModifiedInfoBtn.setOnClickListener {
-            binding.modifiedInfoText.setVisibleIfTrue(binding.modifiedInfoText.visibility == GONE)
-            val rs = if (binding.modifiedInfoText.visibility == GONE)
+        binding.exportNotesBtn.setOnClickListener {
+            binding.exportNotesText.setVisibleIfTrue(binding.exportNotesText.visibility == GONE)
+            val rs = if (binding.exportNotesText.visibility == GONE)
                 R.drawable.ic_expand_down
             else
                 R.drawable.ic_expand_up
@@ -61,7 +63,11 @@ open class ConfirmationDialogImport(
         }
 
         val mPosAction = {
-            ctx.contentZipLauncher.launch("application/zip")
+            ContextCompat.startActivity(
+                ctx,
+                Intent.createChooser(intent, null),
+                null
+            )
         }
 
         binding.yesButton1.apply {

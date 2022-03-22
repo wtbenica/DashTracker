@@ -38,9 +38,9 @@ import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemBinding
 import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemSingleLineBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmResetDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
