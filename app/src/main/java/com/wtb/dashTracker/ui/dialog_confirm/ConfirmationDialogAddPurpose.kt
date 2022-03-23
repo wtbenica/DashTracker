@@ -30,7 +30,7 @@ import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 
 
-open class ConfirmationDialogAddPurpose(
+class ConfirmationDialogAddPurpose(
     private val purposeId: Int,
     private val prevPurpose: Int?
 ) : FullWidthDialogFragment() {

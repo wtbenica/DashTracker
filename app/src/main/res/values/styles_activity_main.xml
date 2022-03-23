@@ -64,4 +64,8 @@
     <style name="BottomNavItemTextAppearance.Inactive">
         <item name="android:textSize">?attr/textSizeBottomNavInactive</item>
     </style>
+
+    <style name="Bobby" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">?attr/colorPrimaryFaded</item>
+    </style>
 </resources>

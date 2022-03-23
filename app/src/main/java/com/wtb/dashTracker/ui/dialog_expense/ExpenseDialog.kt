@@ -413,7 +413,7 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
                     }
                 }
                 binding.editPurposeBtn.setOnClickListener {
-
+                    ConfirmationDialogEditPurposes().show(parentFragmentManager, null)
                 }
             } else {
                 tempConvertView = convertView

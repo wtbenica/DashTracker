@@ -33,4 +33,11 @@
         <item name="titleTextStyle">@style/TitleTextAppearance</item>
         <item name="background">?attr/colorUi</item>
     </style>
+
+    <style name="ChipStyle" parent="Widget.Material3.Chip.Assist">
+        <item name="chipStrokeColor">@color/chip_stroke</item>
+        <item name="chipBackgroundColor">@color/chip_surface</item>
+        <item name="chipIconVisible">false</item>
+        <item name="chipIcon">@drawable/ic_action_edit</item>
+    </style>
 </resources>
