@@ -173,6 +173,7 @@ class Repository private constructor(context: Context) {
                 is DashEntry -> entryDao.delete(model)
                 is Weekly -> weeklyDao.delete(model)
                 is Expense -> expenseDao.delete(model)
+                is ExpensePurpose -> expensePurposeDao.delete(model)
             }
         }
     }

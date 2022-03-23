@@ -164,7 +164,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog(this@GasExpenseHolder.expense.expense).show(
+                        ExpenseDialog(this@GasExpenseHolder.expense.id).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -173,7 +173,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog(confirmId = this@GasExpenseHolder.expense.expense.expenseId)
+                        ConfirmDeleteDialog(confirmId = this@GasExpenseHolder.expense.id)
                             .show(parentFragmentManager, null)
                     }
                 }
@@ -227,7 +227,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog(this@OtherExpenseHolder.expense.expense).show(
+                        ExpenseDialog(this@OtherExpenseHolder.expense.id).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -236,7 +236,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog(confirmId = this@OtherExpenseHolder.expense.expense.expenseId)
+                        ConfirmDeleteDialog(confirmId = this@OtherExpenseHolder.expense.id)
                             .show(parentFragmentManager, null)
                     }
                 }

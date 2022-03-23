@@ -85,6 +85,7 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryDark</item>
+        <item name="colorDialogSecondary">?attr/colorPrimary</item>
         <item name="colorDialogTitle">?attr/colorOnSecondary</item>
         <item name="colorDialogText">?attr/colorOnSurface</item>
         <item name="colorDialogItemOutline">?attr/colorPrimaryFaded</item>

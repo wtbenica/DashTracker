@@ -34,16 +34,16 @@ import java.time.LocalDate
 )
 data class Expense(
     @PrimaryKey(autoGenerate = true) val expenseId: Int = AUTO_ID,
-    val date: LocalDate,
-    val amount: Float,
-    val purpose: Int,
-    val pricePerGal: Float?,
+    var date: LocalDate = LocalDate.now(),
+    var amount: Float? = null,
+    var purpose: Int = Purpose.GAS.id,
+    var pricePerGal: Float? = null,
 ) : DataModel() {
     override val id: Int
         get() = expenseId
 
     val gallons: Float?
-        get() = pricePerGal?.let { amount / it }
+        get() = pricePerGal?.let { amount?.let { a -> a / it } }
 }
 
 @Entity(
@@ -53,12 +53,12 @@ data class Expense(
 )
 data class ExpensePurpose(
     @PrimaryKey(autoGenerate = true) val purposeId: Int = AUTO_ID,
-    val name: String
+    val name: String? = null
 ) : DataModel() {
     override val id: Int
         get() = purposeId
 
-    override fun toString(): String = name
+    override fun toString(): String = name ?: ""
 }
 
 enum class Purpose(val id: Int, val purposeName: String) {
@@ -74,4 +74,7 @@ data class FullExpense(
 
     @Relation(parentColumn = "purpose", entityColumn = "purposeId")
     val purpose: ExpensePurpose
-)
+) {
+    val id
+        get() = expense.expenseId
+}

@@ -23,12 +23,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.Repository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
@@ -74,6 +77,11 @@ class MainActivityViewModel : ViewModel() {
     fun importStream(entries: List<DashEntry>? = null, weeklies: List<Weekly>? = null) {
         repository.importStream(entries, weeklies)
     }
+
+    suspend fun upsertAsync(dataModel: DataModel): Long =
+        withContext(Dispatchers.Default) {
+            repository.upsertModel(dataModel)
+        }
 
     companion object {
 

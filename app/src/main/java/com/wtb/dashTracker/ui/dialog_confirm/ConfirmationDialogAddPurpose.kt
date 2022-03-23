@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
+import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 
@@ -43,7 +44,7 @@ open class ConfirmationDialogAddPurpose() : FullWidthDialogFragment() {
             dismiss()
             setFragmentResult(
                 RK_ADD_PURPOSE,
-                bundleOf(ARG_CONFIRM to false)
+                bundleOf(ARG_CONFIRM to false,)
             )
         }
 
@@ -54,7 +55,7 @@ open class ConfirmationDialogAddPurpose() : FullWidthDialogFragment() {
                     RK_ADD_PURPOSE,
                     bundleOf(
                         ARG_CONFIRM to true,
-                        ARG_NEW_PURPOSE to binding.dialogPurposeEditText.text.toString()
+                        ARG_PURPOSE_NAME to binding.dialogPurposeEditText.text.toString(),
                     )
                 )
             }
@@ -64,8 +65,10 @@ open class ConfirmationDialogAddPurpose() : FullWidthDialogFragment() {
     }
 
     companion object {
+        const val TAG = APP + "ConfirmDialogAddPurpose"
         const val ARG_CONFIRM = "confirm"
-        const val ARG_NEW_PURPOSE = "extra"
+        const val ARG_PURPOSE_NAME = "arg_purpose_name"
+        const val ARG_PURPOSE_ID = "arg_purpose_id"
         const val RK_ADD_PURPOSE = "add_purpose"
     }
 }
