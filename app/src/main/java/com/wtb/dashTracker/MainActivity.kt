@@ -54,10 +54,11 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
+import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
@@ -68,7 +69,7 @@ import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.dashTracker.views.getStringOrElse
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -368,29 +369,38 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         }
 
 
-    companion object {
-        const val APP = "GT_"
-        private const val TAG = APP + "MainActivity"
-        var isAuthenticated = false
-
-        private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
-            FabMenuButtonInfo(
-                "Add Entry",
-                R.drawable.ic_new_entry
-            ) { EntryDialog().show(fm, "new_entry_dialog") },
-            FabMenuButtonInfo(
-                "Add Adjustment",
-                R.drawable.ic_new_adjust
-            ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
-            FabMenuButtonInfo(
-                "Add Expense",
-                R.drawable.ic_nav_daily
-            ) { ExpenseDialog().show(fm, "new_expense_dialog") }
+    private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
+        FabMenuButtonInfo(
+            "Add Entry",
+            R.drawable.ic_new_entry
+        ) { EntryDialog().show(fm, "new_entry_dialog") },
+        FabMenuButtonInfo(
+            "Add Adjustment",
+            R.drawable.ic_new_adjust
+        ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
+        FabMenuButtonInfo(
+            "Add Expense",
+            R.drawable.ic_nav_daily
+        ) {
+            CoroutineScope(Dispatchers.Default).launch {
+                withContext(Dispatchers.Default) {
+                    viewModel.upsertAsync(Expense())
+                }.let {
+                    ExpenseDialog(it.toInt()).show(fm, "new_expense_dialog")
+                }
+            }
+        }
 //            FabMenuButtonInfo(
 //                "Add Payout",
 //                R.drawable.chart
 //            ) { PayoutDialog().show(fm, "new_payout_dialog") }
-        )
+    )
+
+
+    companion object {
+        const val APP = "GT_"
+        private const val TAG = APP + "MainActivity"
+        var isAuthenticated = false
 
         @ColorInt
         fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)

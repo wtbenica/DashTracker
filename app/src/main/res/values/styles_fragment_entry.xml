@@ -51,7 +51,7 @@
         <item name="android:dividerHeight">1dp</item>
         <item name="android:textAlignment">textEnd</item>
         <item name="android:textColor">?attr/colorDialogText</item>
-        <item name="android:popupBackground">@drawable/bg_popup_menu_2</item>
+        <item name="android:popupBackground">@drawable/bg_dialog_frag_popup_menu</item>
         <item name="android:dropDownSelector">?attr/colorOnPrimary</item>
     </style>
 

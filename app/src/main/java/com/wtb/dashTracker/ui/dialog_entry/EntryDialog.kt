@@ -38,11 +38,11 @@ import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmResetDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmSaveDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

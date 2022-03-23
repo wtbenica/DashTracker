@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_confirm_delete
+package com.wtb.dashTracker.ui.dialog_confirm
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
