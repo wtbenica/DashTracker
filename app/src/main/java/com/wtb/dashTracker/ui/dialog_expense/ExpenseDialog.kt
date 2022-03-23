@@ -40,7 +40,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.Purpose.GAS
@@ -50,6 +49,7 @@ import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.dialog_confirm.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PREV_PURPOSE
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PURPOSE_ID
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PURPOSE_NAME
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.RK_ADD_PURPOSE
@@ -73,20 +73,7 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (expenseId == AUTO_ID) {
-            CoroutineScope(Dispatchers.Default).launch {
-                withContext(Dispatchers.Default) {
-                    Log.d(TAG, "onCreate: new expense")
-                    viewModel.upsertAsync(Expense())
-                }.let { id ->
-                    Log.d(TAG, "onCreate: load new expense: $id")
-                    viewModel.loadDataModel(id.toInt())
-                }
-            }
-        } else {
-            Log.d(TAG, "onCreate: expId: $expenseId")
-            viewModel.loadDataModel(expenseId)
-        }
+        viewModel.loadDataModel(expenseId)
     }
 
     override fun onCreateView(
@@ -107,14 +94,30 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
             setOnClickListener {
                 DatePickerFragment(this).show(childFragmentManager, "date_picker")
             }
+            doOnTextChanged { text, _, _, _ ->
+                updateExpense(date = text?.toDateOrNull() ?: LocalDate.now())
+            }
         }
 
-        binding.fragExpenseAmount.doOnTextChanged { text, start, before, count ->
-            updateSaveButtonIsEnabled()
+        binding.fragExpenseAmount.apply {
+            doOnTextChanged { _, _, _, _ ->
+                updateSaveButtonIsEnabled()
+            }
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    updateExpense(amount = this.text.toFloatOrNull())
+                }
+            }
         }
-
-        binding.fragExpensePrice.doOnTextChanged { text, start, before, count ->
-            updateSaveButtonIsEnabled()
+        binding.fragExpensePrice.apply {
+            doOnTextChanged { _, _, _, _ ->
+                updateSaveButtonIsEnabled()
+            }
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    updateExpense(pricePerGal = this.text.toFloatOrNull())
+                }
+            }
         }
 
         binding.fragExpensePurpose.onItemSelectedListener =
@@ -125,7 +128,9 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
                     position: Int,
                     id: Long
                 ) {
-                    if ((binding.fragExpensePurpose.adapter.getItem(position) as ExpensePurpose).purposeId == GAS.id) {
+                    val purpose = parent?.getItemAtPosition(position) as ExpensePurpose?
+                    purpose?.purposeId?.let { updateExpense(purpose = it) }
+                    if (purpose?.purposeId == GAS.id) {
                         binding.fragExpensePrice.visibility = VISIBLE
                         binding.fragExpensePriceLbl.visibility = VISIBLE
                     } else {
@@ -169,17 +174,12 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
             ).apply {
                 setDropDownViewResource(R.layout.dialog_frag_expense_purpose_spinner_item)
             }
-            Log.d(
-                TAG,
-                "onViewCreated: Purpose list updated ${it.size}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            )
             updateUI()
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.item.collectLatest {
-                    Log.d(TAG, "onViewCreated: collectExpense: $it")
                     expense = it
                     updateUI()
                 }
@@ -241,33 +241,32 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
     }
 
     private fun saveValues() {
-        expense?.date = binding.fragExpenseDate.text.toDateOrNull() ?: LocalDate.now()
-        expense?.amount = binding.fragExpenseAmount.text.toFloatOrNull()
-        expense?.purpose = (binding.fragExpensePurpose.selectedItem as ExpensePurpose).purposeId
-        expense?.pricePerGal = if (expense?.purpose == GAS.id)
-            binding.fragExpensePrice.text.toString().toFloatOrNull()
-        else null
-//        val date: LocalDate? = binding.fragExpenseDate.text.toDateOrNull()
-//        val amount: Float? = binding.fragExpenseAmount.text.toFloatOrNull()
-//        val purposeId = (binding.fragExpensePurpose.selectedItem as ExpensePurpose).purposeId
-//        val pricePerGal = if (purposeId == GAS.id)
-//            binding.fragExpensePrice.text.toString().toFloatOrNull()
-//        else null
-//
-//        CoroutineScope(Dispatchers.Main).launch {
-//            val newExpense = Expense(
-//                expenseId = expense?.expenseId ?: AUTO_ID,
-//                date = date ?: LocalDate.now(),
-//                amount = amount ?: 0F,
-//                purpose = purposeId,
-//                pricePerGal = pricePerGal
-//            )
-//
-//            viewModel.upsert(newExpense)
-//        }
+        updateExpense(date = binding.fragExpenseDate.text.toDateOrNull() ?: LocalDate.now())
+        updateExpense(amount = binding.fragExpenseAmount.text.toFloatOrNull())
+        updateExpense(purpose = (binding.fragExpensePurpose.selectedItem as ExpensePurpose).purposeId)
+        updateExpense(
+            pricePerGal = if (expense?.purpose == GAS.id)
+                binding.fragExpensePrice.text.toString().toFloatOrNull()
+            else null
+        )
     }
 
     private fun saveExpense() = expense?.let { viewModel.upsert(it) }
+
+    private fun updateExpense(
+        date: LocalDate? = null,
+        amount: Float? = null,
+        purpose: Int? = null,
+        pricePerGal: Float? = null
+    ) {
+        expense?.let { e ->
+            date?.let { e.date = it }
+            amount?.let { e.amount = it }
+            purpose?.let { e.purpose = it }
+            pricePerGal?.let { e.pricePerGal = it }
+            saveExpense()
+        }
+    }
 
     private fun clearFields() {
         Log.d(TAG, "clearFields")
@@ -279,7 +278,6 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
         binding.fragExpenseAmount.text.clear()
         binding.fragExpensePrice.text.clear()
     }
-
 
     private fun setDialogListeners() {
         setFragmentResultListener(
@@ -320,6 +318,7 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
                         viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName))
                     }
                 } else {
+                    updateExpense(purpose = bundle.getInt(ARG_PREV_PURPOSE))
                     viewModel.delete(ExpensePurpose(purposeId = id))
                 }
                 binding.fragExpensePurpose.hideDropdown()
@@ -397,10 +396,21 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
                 val binding = DialogFragExpensePurposeDropdownHeaderBinding.inflate(layoutInflater)
                 tempConvertView = binding.root
                 binding.addPurposeBtn.setOnClickListener {
-                    ConfirmationDialogAddPurpose().show(
-                        parentFragmentManager,
-                        null
-                    )
+                    CoroutineScope(Dispatchers.Default).launch {
+                        withContext(Dispatchers.Default) {
+                            viewModel.upsertAsync(ExpensePurpose())
+                        }.let {
+                            val prevPurpose = expense?.purpose
+                            updateExpense(purpose = it.toInt())
+                            ConfirmationDialogAddPurpose(
+                                purposeId = it.toInt(),
+                                prevPurpose = prevPurpose
+                            ).show(
+                                parentFragmentManager,
+                                null
+                            )
+                        }
+                    }
                 }
                 binding.editPurposeBtn.setOnClickListener {
 
@@ -421,7 +431,7 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
                     viewHolder = tempConvertView.tag as PurposeSpinnerViewHolder?
                 }
 
-                getItem(position)?.name?.let { viewHolder?.line?.text = it }
+                viewHolder?.line?.text = getItem(position)?.name ?: ""
             }
 
             return tempConvertView

@@ -23,13 +23,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 
 
-open class ConfirmationDialogAddPurpose() : FullWidthDialogFragment() {
+open class ConfirmationDialogAddPurpose(
+    private val purposeId: Int,
+    private val prevPurpose: Int?
+) : FullWidthDialogFragment() {
+
+    private lateinit var binding: DialogFragConfirmAddPurposeBinding
+    private var deleteButtonPressed = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,14 +45,15 @@ open class ConfirmationDialogAddPurpose() : FullWidthDialogFragment() {
     ): View? {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        val binding = DialogFragConfirmAddPurposeBinding.inflate(inflater)
+        binding = DialogFragConfirmAddPurposeBinding.inflate(inflater)
+
+        binding.dialogPurposeEditText.doOnTextChanged { text: CharSequence?, _, _, _ ->
+            binding.yesButton1.isEnabled = !text.isNullOrBlank()
+        }
 
         binding.noButton.setOnClickListener {
+            deleteButtonPressed = true
             dismiss()
-            setFragmentResult(
-                RK_ADD_PURPOSE,
-                bundleOf(ARG_CONFIRM to false,)
-            )
         }
 
         binding.yesButton1.apply {
@@ -55,7 +63,9 @@ open class ConfirmationDialogAddPurpose() : FullWidthDialogFragment() {
                     RK_ADD_PURPOSE,
                     bundleOf(
                         ARG_CONFIRM to true,
-                        ARG_PURPOSE_NAME to binding.dialogPurposeEditText.text.toString(),
+                        ARG_PURPOSE_NAME to binding.dialogPurposeEditText.text.toString()
+                            .replaceFirstChar { it.uppercase() },
+                        ARG_PURPOSE_ID to purposeId,
                     )
                 )
             }
@@ -64,11 +74,38 @@ open class ConfirmationDialogAddPurpose() : FullWidthDialogFragment() {
         return binding.root
     }
 
+    override fun onDestroy() {
+        val text: CharSequence? = binding.dialogPurposeEditText.text
+        val deleteOnExit = text.isNullOrBlank() || deleteButtonPressed
+        if (deleteOnExit) {
+            setFragmentResult(
+                RK_ADD_PURPOSE,
+                bundleOf(
+                    ARG_CONFIRM to false,
+                    ARG_PURPOSE_ID to purposeId,
+                    ARG_PREV_PURPOSE to prevPurpose,
+                )
+            )
+        } else {
+            setFragmentResult(
+                RK_ADD_PURPOSE,
+                bundleOf(
+                    ARG_CONFIRM to true,
+                    ARG_PURPOSE_NAME to text.toString()
+                        .replaceFirstChar { it.uppercase() },
+                    ARG_PURPOSE_ID to purposeId,
+                )
+            )
+        }
+        super.onDestroy()
+    }
+
     companion object {
         const val TAG = APP + "ConfirmDialogAddPurpose"
         const val ARG_CONFIRM = "confirm"
         const val ARG_PURPOSE_NAME = "arg_purpose_name"
         const val ARG_PURPOSE_ID = "arg_purpose_id"
+        const val ARG_PREV_PURPOSE = "arg_prev_purpose"
         const val RK_ADD_PURPOSE = "add_purpose"
     }
 }
