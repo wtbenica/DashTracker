@@ -20,7 +20,7 @@
         <item name="tint">?attr/colorOverflowMenuButton</item>
     </style>
 
-    <style name="ActionBarOverflowMenuStyle" parent="Widget.AppCompat.PopupMenu.Overflow">
+    <style name="ActionBarOverflowMenuStyle" parent="Widget.Material3.PopupMenu.Overflow">
         <item name="android:popupBackground">@drawable/bg_popup_menu</item>
         <item name="android:textAppearance">@style/ActionBarOverflowMenuTextAppearance</item>
     </style>
@@ -36,7 +36,7 @@
         <item name="android:paddingHorizontal">@dimen/margin_narrow</item>
     </style>
 
-    <style name="SummaryBarItem" parent="Widget.AppCompat.TextView">
+    <style name="SummaryBarItem" parent="Widget.MaterialComponents.TextView">
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">?attr/colorSummaryBarItemText</item>
     </style>
@@ -59,13 +59,15 @@
 
     <style name="BottomNavItemTextAppearance.Active">
         <item name="android:textSize">?attr/textSizeBottomNavActive</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 
     <style name="BottomNavItemTextAppearance.Inactive">
         <item name="android:textSize">?attr/textSizeBottomNavInactive</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 
-    <style name="Bobby" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">?attr/colorPrimaryFaded</item>
+    <style name="BottomNavActiveIndicatorStyle" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">?attr/colorBottomNavItemIndicator</item>
     </style>
 </resources>

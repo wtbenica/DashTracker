@@ -44,7 +44,7 @@ import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.DialogFragExpenseBinding
-import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownHeaderBinding
+import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownFooterBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.dialog_confirm.*
@@ -392,8 +392,8 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
         ): View {
             var tempConvertView: View?
 
-            if (position == 0) {
-                val binding = DialogFragExpensePurposeDropdownHeaderBinding.inflate(layoutInflater)
+            if (position == count - 1) {
+                val binding = DialogFragExpensePurposeDropdownFooterBinding.inflate(layoutInflater)
                 tempConvertView = binding.root
                 binding.addPurposeBtn.setOnClickListener {
                     CoroutineScope(Dispatchers.Default).launch {
@@ -438,22 +438,22 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
         }
 
         fun getPositionById(id: Int): Int {
-            var pos = -2
+            var pos = -1
             itemList.forEachIndexed { index, purpose ->
                 if (id == purpose.purposeId) {
                     pos = index
                 }
             }
-            return pos + 1
+            return pos
         }
 
         override fun getCount(): Int = super.getCount() + 1
 
         override fun getItem(position: Int): ExpensePurpose? =
-            if (position == 0) {
+            if (position == count - 1) {
                 null
             } else {
-                super.getItem(position - 1)
+                super.getItem(position)
             }
     }
 

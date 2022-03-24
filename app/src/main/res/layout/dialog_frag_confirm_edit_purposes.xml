@@ -18,6 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingHorizontal="@dimen/margin_default">
 
     <androidx.cardview.widget.CardView
@@ -58,17 +59,69 @@
                         android:id="@+id/purpose_chipgroup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="@dimen/margin_default"
+                        android:padding="@dimen/margin_default"
+                        app:chipSpacing="@dimen/margin_narrow"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/ChipStyle"
+                            android:text="Aloha"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/ChipStyle"
+                            android:text="Hola"
+                            tools:chipIconVisible="true"
+                            tools:closeIconVisible="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/ChipStyle"
+                            android:text="Konichiwa"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/ChipStyle"
+                            android:text="Ciao"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/ChipStyle"
+                            android:text="Hello"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/ChipStyle"
+                            android:text="Guten Tag"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/ChipStyle"
+                            android:text="Bonjour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.chip.Chip
+                            style="@style/ChipStyle"
+                            android:text="Привет"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.chip.ChipGroup>
 
 
                     <View
                         android:id="@+id/divider_hor"
                         android:layout_width="0dp"
                         android:layout_height="1dp"
-                        android:layout_marginTop="@dimen/margin_default"
                         android:background="?attr/colorDialogItemOutline"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -80,6 +133,7 @@
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:text="Done"
+                        android:textSize="@dimen/text_size_large"
                         android:textColor="?attr/colorDialogText"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

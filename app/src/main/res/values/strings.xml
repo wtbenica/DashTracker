@@ -47,10 +47,12 @@
     <string name="desc_add_entry">Add Entry</string>
 
     <string name="currency_unit">$%.2f</string>
-    <string name="odometer_range" formatted="true">%1$.0f-%2$.0f</string>
+    <string name="blank_currency">$  -  </string>
+    <string name="odometer_range" formatted="true">%1$.0f - %2$.0f</string>
     <string name="time_range" formatted="false">%1$s - %2$s</string>
     <string name="format_hours">%.2fh</string>
     <string name="float_fmt">%.2f</string>
+    <string name="blank_float">  -  </string>
     <string name="week_number">Week %d</string>
     <string name="date_range">%1$s - %2$s</string>
     <string name="mileage_fmt">%.1f</string>
@@ -117,4 +119,11 @@
     <string name="lbl_other">Other</string>
     <string name="title_expenses">Expenses</string>
     <string name="content_desc_recurring_expense">Recurring expense</string>
+    <string name="message_new_expense">What is the new expense type?</string>
+    <string name="label_gas">Gas</string>
+    <string name="label_price">Price</string>
+    <string name="label_gallons">Gallons</string>
+    <string name="message_edit_expense">What is the new name for this expense type?</string>
+    <string name="dialog_title_edit_expense_type">Edit Expense Type Name</string>
+    <string name="dialog_title_new_expense_type">New Expense type</string>
 </resources>

@@ -15,6 +15,6 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="?attr/colorPrimaryDark" android:state_enabled="true" />
-    <item android:color="?attr/colorPrimary" />
+    <item android:color="?attr/colorPrimary" android:state_enabled="true" />
+    <item android:color="?attr/colorPrimaryVariant" />
 </selector>

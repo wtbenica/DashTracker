@@ -19,17 +19,44 @@ package com.wtb.dashTracker.extensions
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.wtb.dashTracker.R
+import java.time.LocalTime
 
 fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?) =
-    if (args.map { it != null }.reduce { acc, b -> acc && b }) getString(
-        resId,
-        *args
-    ) else ifNull
+    if (args.map { it != null }.reduce { acc, b -> acc && b })
+        getString(resId, *args)
+    else
+        ifNull
 
-fun Fragment.getCurrencyString(value: Float?): String {
-    val newValue = if (value != null && value <= 0f) null else value
-    return getStringOrElse(R.string.currency_unit, "-", newValue)
-}
+fun Fragment.getCurrencyString(value: Float?): String =
+    if (value == null || value == 0f || value.isNaN() || value.isInfinite())
+        getString(R.string.blank_currency)
+    else
+        getStringOrElse(R.string.currency_unit, "-", value)
+
+fun Fragment.getFloatString(value: Float?): String =
+    if (value == null || value == 0f || value.isNaN() || value.isInfinite())
+        getString(R.string.blank_float)
+    else
+        getStringOrElse(R.string.float_fmt, "-", value)
 
 fun Fragment.getMileageString(value: Float): String = getString(R.string.mileage_fmt, value)
+
+fun Fragment.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
+    if (start == null && end == null)
+        ""
+    else
+        getString(
+            R.string.time_range,
+            start?.format(dtfTime) ?: "",
+            end?.format(dtfTime) ?: ""
+        )
+
+fun Fragment.getOdometerRangeString(start: Float?, end: Float?): String =
+    if (start == null && end == null)
+        ""
+    else
+        getString(R.string.odometer_range, start, end)
+
+
+
 

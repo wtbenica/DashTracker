@@ -193,14 +193,7 @@ class EntryListFragment : Fragment() {
                 binding.listItemTitle.text = this.entry.date.formatted.uppercase()
                 binding.listItemTitle2.text = getCurrencyString(this.entry.totalEarned)
                 binding.listItemSubtitle.text =
-                    getStringOrElse(
-                        R.string.time_range,
-                        "",
-                        this.entry.startTime?.format(dtfTime),
-                        this.entry.endTime?.format(
-                            dtfTime
-                        )
-                    )
+                    getHoursRangeString(this.entry.startTime, this.entry.endTime)
                 binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.entry.isIncomplete)
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.entry.pay)
@@ -212,22 +205,18 @@ class EntryListFragment : Fragment() {
                 detailsBinding.listItemEntryHours.text =
                     getStringOrElse(R.string.float_fmt, "-", this.entry.totalHours)
                 detailsBinding.listItemEntryMileageRange.text =
-                    getStringOrElse(
-                        R.string.odometer_range,
-                        "",
-                        this.entry.startOdometer,
-                        this.entry.endOdometer
-                    )
+                    getOdometerRangeString(this.entry.startOdometer, this.entry.endOdometer)
                 detailsBinding.listItemEntryMileage.text = "${this.entry.mileage ?: "-"}"
                 detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.entry.mileage == null)
-                detailsBinding.listItemEntryNumDeliveries.text = "${this.entry.numDeliveries ?: "-"}"
+                detailsBinding.listItemEntryNumDeliveries.text =
+                    "${this.entry.numDeliveries ?: "-"}"
                 detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.entry.numDeliveries == null)
                 detailsBinding.listItemEntryHourly.text =
-                    getStringOrElse(R.string.currency_unit, "-", this.entry.hourly)
+                    getCurrencyString(this.entry.hourly)
                 detailsBinding.listItemEntryAvgDel.text =
-                    getStringOrElse(R.string.currency_unit, "-", this.entry.avgDelivery)
+                    getCurrencyString(this.entry.avgDelivery)
                 detailsBinding.listItemEntryHourlyDels.text =
-                    getStringOrElse(R.string.float_fmt, "-", this.entry.hourlyDeliveries)
+                    getFloatString(this.entry.hourlyDeliveries)
 
                 detailsTable.visibility = detailsTableVisibility
             }

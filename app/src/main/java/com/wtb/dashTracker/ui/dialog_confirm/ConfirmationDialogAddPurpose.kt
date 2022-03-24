@@ -26,13 +26,15 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 
 
 class ConfirmationDialogAddPurpose(
     private val purposeId: Int,
-    private val prevPurpose: Int?
+    private val prevPurpose: Int? = null,
+    private val currentName: String? = null
 ) : FullWidthDialogFragment() {
 
     private lateinit var binding: DialogFragConfirmAddPurposeBinding
@@ -46,6 +48,12 @@ class ConfirmationDialogAddPurpose(
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         binding = DialogFragConfirmAddPurposeBinding.inflate(inflater)
+
+        currentName?.let {
+            binding.newExpenseToolbar.title = getString(R.string.dialog_title_edit_expense_type)
+            binding.dialogPurposeEditText.setText(it)
+            binding.theQuestion.setText(R.string.message_edit_expense)
+        }
 
         binding.dialogPurposeEditText.doOnTextChanged { text: CharSequence?, _, _, _ ->
             binding.yesButton1.isEnabled = !text.isNullOrBlank()

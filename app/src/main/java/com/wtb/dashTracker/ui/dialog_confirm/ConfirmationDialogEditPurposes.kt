@@ -22,6 +22,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -30,6 +31,10 @@ import com.google.android.material.chip.Chip
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmEditPurposesBinding
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PURPOSE_ID
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PURPOSE_NAME
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.RK_ADD_PURPOSE
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseViewModel
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,6 +66,17 @@ class ConfirmationDialogEditPurposes() : FullWidthDialogFragment() {
             dismiss()
         }
 
+        setFragmentResultListener(RK_ADD_PURPOSE) { _, bundle ->
+            val result = bundle.getBoolean(ARG_CONFIRM)
+            bundle.getInt(ARG_PURPOSE_ID).let { id ->
+                if (result) {
+                    bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
+                        viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName))
+                    }
+                }
+            }
+        }
+
         return binding.root
     }
 
@@ -79,8 +95,11 @@ class ConfirmationDialogEditPurposes() : FullWidthDialogFragment() {
                                 text = it.name
 
                                 setOnClickListener {
-                                    this.isCloseIconVisible = !this.isCloseIconVisible
-                                    this.isChipIconVisible = !this.isChipIconVisible
+                                    ConfirmationDialogAddPurpose(
+                                        ep.purposeId,
+                                        ep.purposeId,
+                                        ep.name
+                                    ).show(parentFragmentManager, null)
                                 }
 
                                 setOnCloseIconClickListener {
@@ -96,10 +115,5 @@ class ConfirmationDialogEditPurposes() : FullWidthDialogFragment() {
 
     companion object {
         const val TAG = APP + "ConfirmDialogAddPurpose"
-        const val ARG_CONFIRM = "confirm"
-        const val ARG_PURPOSE_NAME = "arg_purpose_name"
-        const val ARG_PURPOSE_ID = "arg_purpose_id"
-        const val ARG_PREV_PURPOSE = "arg_prev_purpose"
-        const val RK_ADD_PURPOSE = "add_purpose"
     }
 }

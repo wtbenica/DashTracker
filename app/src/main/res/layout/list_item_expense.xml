@@ -49,7 +49,7 @@
             <TextView
                 android:id="@+id/list_item_subtitle"
                 style="@style/ListItemHeaderTextView.Subtitle"
-                android:text="Gas"
+                android:text="@string/label_gas"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/list_item_title" />
 
@@ -80,8 +80,6 @@
             android:id="@+id/list_item_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/margin_default"
-            android:paddingEnd="@dimen/margin_default"
             android:paddingBottom="0dp"
             android:visibility="gone"
             tools:visibility="visible">
@@ -89,6 +87,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/list_item_details_card"
                 android:layout_width="0dp"
+                android:layout_marginHorizontal="@dimen/margin_default"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -106,11 +105,11 @@
 
                         <TextView
                             style="@style/PayTableHeaderStyle"
-                            android:text="Price" />
+                            android:text="@string/label_price" />
 
                         <TextView
                             style="@style/PayTableHeaderStyle"
-                            android:text="Gallons" />
+                            android:text="@string/label_gallons" />
                     </TableRow>
 
                     <TableRow

@@ -147,7 +147,7 @@ class ExpenseListFragment : Fragment() {
                 else -> 1
             }
 
-        abstract inner class ExpenseHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        abstract inner class ExpenseHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             abstract fun bind(item: FullExpense, payloads: MutableList<Any>? = null)
         }
 
@@ -219,7 +219,8 @@ class ExpenseListFragment : Fragment() {
         ), View.OnClickListener {
             private lateinit var expense: FullExpense
 
-            private val binding: ListItemExpenseNonGasBinding = ListItemExpenseNonGasBinding.bind(itemView)
+            private val binding: ListItemExpenseNonGasBinding =
+                ListItemExpenseNonGasBinding.bind(itemView)
             private val buttonBox: LinearLayout = binding.buttonBox
 
             init {
