@@ -31,9 +31,12 @@ import java.time.LocalDate
 @ExperimentalCoroutinesApi
 @Dao
 abstract class WeeklyDao : BaseDao<Weekly>("weekly", "date") {
+    @Query(SQL_GET_ALL)
+    abstract override fun getAll(): Flow<List<Weekly>>
+
     @Transaction
     @Query(SQL_GET_ALL)
-    abstract fun getAll(): Flow<List<CompleteWeekly>>
+    abstract fun getAllCompleteWeekly(): Flow<List<CompleteWeekly>>
 
     @Transaction
     @Query(SQL_GET_ALL)

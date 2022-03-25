@@ -35,4 +35,9 @@
         android:id="@+id/navigation_insights"
         android:icon="@drawable/ic_nav_insights"
         android:title="@string/title_insights" />
+
+    <item
+        android:id="@+id/navigation_expenses"
+        android:icon="@drawable/ic_nav_insights"
+        android:title="@string/title_expenses" />
 </menu>

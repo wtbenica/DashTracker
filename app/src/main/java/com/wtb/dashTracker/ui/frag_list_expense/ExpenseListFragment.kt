@@ -23,9 +23,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -39,16 +37,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.databinding.ListItemEntryBinding
-import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
-import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_EXTRA
-import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.entry_list.ExpenseListViewModel
+import com.wtb.dashTracker.database.models.FullExpense
+import com.wtb.dashTracker.database.models.Purpose.GAS
+import com.wtb.dashTracker.databinding.ListItemExpenseBinding
+import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
+import com.wtb.dashTracker.extensions.formatted
+import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
+import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -87,7 +86,7 @@ class ExpenseListFragment : Fragment() {
             val result = bundle.getBoolean(ARG_CONFIRM)
             val id = bundle.getInt(ARG_EXTRA)
             if (result) {
-                viewModel.deleteEntryById(id)
+                viewModel.deleteExpenseById(id)
             }
         }
     }
@@ -95,19 +94,19 @@ class ExpenseListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val entryAdapter = ExpenseAdapter().apply {
+        val expenseAdapter = ExpenseAdapter().apply {
             registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                     recyclerView.scrollToPosition(positionStart)
                 }
             })
         }
-        recyclerView.adapter = entryAdapter
+        recyclerView.adapter = expenseAdapter
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.expenseList.collectLatest {
-                    entryAdapter.submitData(it)
+                    expenseAdapter.submitData(it)
                 }
             }
         }
@@ -118,8 +117,11 @@ class ExpenseListFragment : Fragment() {
         callback = null
     }
 
+    interface ExpenseListFragmentCallback
+
     inner class ExpenseAdapter :
-        PagingDataAdapter<DashEntry, ExpenseHolder>(DIFF_CALLBACK) {
+        PagingDataAdapter<FullExpense, ExpenseAdapter.ExpenseHolder>(DIFF_CALLBACK) {
+
         override fun onBindViewHolder(
             holder: ExpenseHolder,
             position: Int,
@@ -134,165 +136,154 @@ class ExpenseListFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseHolder =
-            ExpenseHolder(parent)
-    }
+            when (viewType) {
+                0 -> GasExpenseHolder(parent)
+                else -> OtherExpenseHolder(parent)
+            }
 
-    interface ExpenseListFragmentCallback
+        override fun getItemViewType(position: Int): Int =
+            when (getItem(position)?.purpose?.purposeId) {
+                GAS.id -> 0
+                else -> 1
+            }
 
-    inner class ExpenseHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
-    ), View.OnClickListener {
-        private lateinit var entry: DashEntry
-        private val binding = ListItemEntryBinding.bind(itemView)
-        private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
+        abstract inner class ExpenseHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            abstract fun bind(item: FullExpense, payloads: MutableList<Any>? = null)
+        }
 
-        private val dateTextView: TextView = itemView.findViewById(R.id.list_item_title)
-        private val hoursTextView: TextView = itemView.findViewById(R.id.list_item_subtitle)
-        private val totalPayTextView: TextView = itemView.findViewById(R.id.list_item_title_2)
-        private val payPlusCCsTextView: TextView =
-            itemView.findViewById(R.id.list_item_regular_pay)
-        private val cashTipsTextView: TextView = itemView.findViewById(R.id.list_item_cash_tips)
-        private val otherPayTextView: TextView = itemView.findViewById(R.id.list_item_other_pay)
-        private val incompleteAlertImageView: ImageView =
-            itemView.findViewById(R.id.list_item_recurring)
-        private val detailsTable: ConstraintLayout =
-            itemView.findViewById(R.id.list_item_details)
-        private val totalHoursTextView: TextView =
-            itemView.findViewById(R.id.list_item_entry_hours)
-        private val mileageTextView: TextView =
-            itemView.findViewById(R.id.list_item_entry_mileage_range)
+        inner class GasExpenseHolder(parent: ViewGroup) : ExpenseHolder(
+            LayoutInflater.from(context).inflate(R.layout.list_item_expense, parent, false)
+        ), View.OnClickListener {
+            private lateinit var expense: FullExpense
 
-        private val totalMileageTextView: TextView =
-            itemView.findViewById(R.id.list_item_entry_mileage)
+            private val binding: ListItemExpenseBinding = ListItemExpenseBinding.bind(itemView)
+            private val detailsTable: ConstraintLayout = binding.listItemDetails
 
-        private val numDeliveriesTextView: TextView =
-            itemView.findViewById(R.id.list_item_entry_num_deliveries)
+            init {
+                itemView.setOnClickListener(this)
 
-        private val hourlyTextView: TextView =
-            itemView.findViewById(R.id.list_item_entry_hourly)
+                binding.listItemBtnEdit.apply {
+                    setOnClickListener {
+                        ExpenseDialog.newInstance(expense.id).show(
+                            parentFragmentManager,
+                            "edit_details"
+                        )
+                    }
+                }
 
-        private val avgDeliveryTextView: TextView =
-            itemView.findViewById(R.id.list_item_entry_avd_del)
-
-        private val hourlyDeliveriesTextView: TextView =
-            itemView.findViewById(R.id.list_item_entry_hourly_dels)
-
-
-        init {
-            itemView.setOnClickListener(this)
-
-            itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
-                setOnClickListener {
-                    EntryDialog(this@ExpenseHolder.entry).show(
-                        parentFragmentManager,
-                        "edit_details"
-                    )
+                binding.listItemBtnDelete.apply {
+                    setOnClickListener {
+                        ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.expense.id)
+                            .show(parentFragmentManager, null)
+                    }
                 }
             }
 
-            itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
-                setOnClickListener {
-                    ConfirmDeleteDialog(confirmId = this@ExpenseHolder.entry.entryId)
-                        .show(parentFragmentManager, null)
+            override fun onClick(v: View?) {
+                val currentVisibility = detailsTable.visibility
+                detailsTable.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
+                binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
+                bindingAdapter?.notifyItemChanged(bindingAdapterPosition, detailsTable.visibility)
+            }
+
+            override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
+                this.expense = item
+
+                val detailsTableIsVisibile = (payloads?.let {
+                    if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) it[0] else null
+                } ?: GONE) == VISIBLE
+
+                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
+
+                binding.listItemTitle.text = this.expense.expense.date.formatted.uppercase()
+                binding.listItemTitle2.text =
+                    getStringOrElse(R.string.currency_unit, "-", this.expense.expense.amount)
+                binding.listItemSubtitle.text = this.expense.purpose.name
+                binding.listItemDetailsCard.visibility =
+                    if (expense.purpose.purposeId == GAS.id) VISIBLE else GONE
+                if (expense.purpose.purposeId == GAS.id) {
+                    binding.listItemPrice.text =
+                        getStringOrElse(
+                            R.string.currency_unit,
+                            "-",
+                            this.expense.expense.pricePerGal
+                        )
+                    binding.listItemGallons.text =
+                        getStringOrElse(R.string.float_fmt, "-", this.expense.expense.gallons)
                 }
             }
         }
 
-        override fun onClick(v: View?) {
-            val currentVisibility = detailsTable.visibility
-            detailsTable.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-            binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
-            bindingAdapter?.notifyItemChanged(bindingAdapterPosition, detailsTable.visibility)
-        }
+        inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseHolder(
+            LayoutInflater.from(context).inflate(R.layout.list_item_expense_non_gas, parent, false)
+        ), View.OnClickListener {
+            private lateinit var expense: FullExpense
 
-        fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
-            this.entry = item
+            private val binding: ListItemExpenseNonGasBinding =
+                ListItemExpenseNonGasBinding.bind(itemView)
+            private val buttonBox: LinearLayout = binding.buttonBox
 
-            val detailsTableVisibility = (payloads?.let {
-                if (it.size == 1 && it[0] in listOf(
-                        VISIBLE,
-                        GONE
-                    )
-                ) it[0] else null
-            } ?: GONE) as Int
+            init {
+                itemView.setOnClickListener(this)
 
-            binding.listItemWrapper.setBackgroundResource(if (detailsTableVisibility == VISIBLE) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
+                binding.listItemBtnEdit.apply {
+                    setOnClickListener {
+                        ExpenseDialog.newInstance(expense.id).show(
+                            parentFragmentManager,
+                            "edit_details"
+                        )
+                    }
+                }
 
-            dateTextView.text = this.entry.date.formatted.uppercase()
+                binding.listItemBtnDelete.apply {
+                    setOnClickListener {
+                        ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.expense.id)
+                            .show(parentFragmentManager, null)
+                    }
+                }
+            }
 
-            totalPayTextView.text =
-                getCurrencyString(this.entry.totalEarned)
+            override fun onClick(v: View?) {
+                val currentVisibility = buttonBox.visibility
+                buttonBox.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
+                binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
+                bindingAdapter?.notifyItemChanged(bindingAdapterPosition, buttonBox.visibility)
+            }
 
-            payPlusCCsTextView.text =
-                getCurrencyString(this.entry.pay)
+            override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
+                this.expense = item
 
-            cashTipsTextView.text =
-                getCurrencyString(this.entry.cashTips)
+                val detailsTableIsVisibile = (payloads?.let {
+                    if (it.size == 1 && it[0] in listOf(
+                            VISIBLE,
+                            GONE
+                        )
+                    ) it[0] else null
+                } ?: GONE) == VISIBLE
 
-            otherPayTextView.text =
-                getCurrencyString(this.entry.otherPay)
+                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
 
-            incompleteAlertImageView.visibility =
-                Companion.toVisibleIfTrueElseGone(this.entry.isIncomplete)
-
-            hoursTextView.text =
-                getStringOrElse(
-                    R.string.time_range,
-                    "",
-                    this.entry.startTime?.format(dtfTime),
-                    this.entry.endTime?.format(
-                        dtfTime
-                    )
-                )
-            detailsBinding.listItemAlertHours.setVisibleIfTrue(
-                this.entry.startTime == null || this.entry.endTime == null
-            )
-
-            totalHoursTextView.text =
-                getStringOrElse(R.string.float_fmt, "-", this.entry.totalHours)
-
-            mileageTextView.text =
-                getStringOrElse(
-                    R.string.odometer_range,
-                    "",
-                    this.entry.startOdometer,
-                    this.entry.endOdometer
-                )
-
-            totalMileageTextView.text = "${this.entry.mileage ?: "-"}"
-            detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.entry.mileage == null)
-
-            numDeliveriesTextView.text = "${this.entry.numDeliveries ?: "-"}"
-            detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.entry.numDeliveries == null)
-
-            hourlyTextView.text =
-                getStringOrElse(R.string.currency_unit, "-", this.entry.hourly)
-
-            avgDeliveryTextView.text =
-                getStringOrElse(R.string.currency_unit, "-", this.entry.avgDelivery)
-
-            hourlyDeliveriesTextView.text =
-                getStringOrElse(R.string.float_fmt, "-", this.entry.hourlyDeliveries)
-
-            detailsTable.visibility = detailsTableVisibility
+                binding.listItemTitle.text = this.expense.expense.date.formatted.uppercase()
+                binding.listItemTitle2.text =
+                    getStringOrElse(R.string.currency_unit, "-", this.expense.expense.amount)
+                binding.listItemSubtitle.text = this.expense.purpose.name
+            }
         }
     }
 
     companion object {
         private const val TAG = APP + "ExpenseListFragment"
 
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
-            override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =
-                oldItem.entryId == newItem.entryId
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FullExpense>() {
+            override fun areItemsTheSame(oldItem: FullExpense, newItem: FullExpense): Boolean =
+                oldItem.expense.expenseId == newItem.expense.expenseId
 
 
             override fun areContentsTheSame(
-                oldItem: DashEntry,
-                newItem: DashEntry
+                oldItem: FullExpense,
+                newItem: FullExpense
             ): Boolean =
                 oldItem == newItem
         }
-
-        fun toVisibleIfTrueElseGone(boolean: Boolean) = if (boolean) VISIBLE else GONE
     }
 }

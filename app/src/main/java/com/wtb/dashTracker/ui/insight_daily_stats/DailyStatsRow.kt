@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.views
+package com.wtb.dashTracker.ui.insight_daily_stats
 
 import android.content.Context
 import android.util.AttributeSet
@@ -23,6 +23,8 @@ import android.widget.GridLayout
 import androidx.annotation.StringRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragInsightsRowBinding
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getFloatString
 import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.*
@@ -53,15 +55,15 @@ class DailyStatsRow @JvmOverloads constructor(
 
         val amHourly = safeDiv(stats.amEarned, stats.amHours)
         binding.dailyStatsRowAmHourly.text =
-            context.getStringOrElse(R.string.currency_unit, amHourly)
+            context.getCurrencyString(amHourly)
 
         val pmHourly = safeDiv(stats.pmEarned, stats.pmHours)
         binding.dailyStatsRowPmHourly.text =
-            context.getStringOrElse(R.string.currency_unit, pmHourly)
+            context.getCurrencyString(pmHourly)
 
         val amAvgDel = safeDiv(stats.amEarned, stats.amDels)
         binding.dailyStatsRowAmAvgDel.text =
-            context.getStringOrElse(R.string.currency_unit, amAvgDel)
+            context.getCurrencyString(amAvgDel)
 
         binding.dailyStatsRowAmNumShifts.text =
             stats.amHours.let {
@@ -74,19 +76,19 @@ class DailyStatsRow @JvmOverloads constructor(
 
         val pmAvgDel = safeDiv(stats.pmEarned, stats.pmDels)
         binding.dailyStatsRowPmAvgDel.text =
-            context.getStringOrElse(R.string.currency_unit, pmAvgDel)
+            context.getCurrencyString(pmAvgDel)
 
         val amDelsPerHr = safeDiv(stats.amDels, stats.amHours)
         binding.dailyStatsRowAmDph.text =
-            context.getStringOrElse(R.string.float_fmt, amDelsPerHr)
+            context.getFloatString(amDelsPerHr)
 
         val pmDelsPerHr = safeDiv(stats.pmDels, stats.pmHours)
         binding.dailyStatsRowPmDph.text =
-            context.getStringOrElse(R.string.float_fmt, pmDelsPerHr)
+            context.getFloatString(pmDelsPerHr)
 
         binding.dailyStatsRowPmNumShifts.text =
             stats.pmHours.let {
-                if (it == 0f) "-" else context.getString(
+                if (it == null || it == 0f) "-" else context.getString(
                     R.string.format_hours,
                     it
                 )

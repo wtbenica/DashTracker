@@ -31,8 +31,8 @@ import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.database.models.Weekly.Companion.asList
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialogExport
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialogImport
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.*
 import java.time.LocalDate

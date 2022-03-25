@@ -76,7 +76,7 @@ class Repository private constructor(context: Context) {
 
     fun deleteEntryById(id: Int) {
         CoroutineScope(Dispatchers.Default).launch {
-            withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+            withContext(Dispatchers.Default) {
                 entryDao.deleteById(id)
             }.let {
                 entryPagingSource?.invalidate()
@@ -91,7 +91,7 @@ class Repository private constructor(context: Context) {
     /**
      * Weekly
      */
-    val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAll()
+    val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAllCompleteWeekly()
 
     private suspend fun allWeeklies(): List<Weekly> = weeklyDao.getAllSuspend()
 
@@ -110,17 +110,43 @@ class Repository private constructor(context: Context) {
     /**
      * Expense
      */
+    val allExpensePurposes: Flow<List<ExpensePurpose>> = expensePurposeDao.getAll()
+
+    val allFullPurposes: Flow<List<FullExpensePurpose>> = expensePurposeDao.getAllFull()
+
     fun getExpenseFlowById(id: Int): Flow<Expense?> = expenseDao.getFlow(id)
 
-    val allExpensesPaged: Flow<PagingData<Expense>> = Pager(
+    private var expensePagingSource: PagingSource<Int, FullExpense>? = null
+
+    val allExpensesPaged: Flow<PagingData<FullExpense>> = Pager(
         config = PagingConfig(
             pageSize = 20,
             enablePlaceholders = true
         ),
         pagingSourceFactory = {
-            expenseDao.getAllPagingSource()
+            val ps = expenseDao.getAllPagingSource()
+            expensePagingSource = ps
+            ps
         }
     ).flow
+
+    fun deleteExpenseById(id: Int) {
+        CoroutineScope(Dispatchers.Default).launch {
+            withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+                expenseDao.deleteById(id)
+            }.let {
+                expensePagingSource?.invalidate()
+            }
+        }
+    }
+
+    /**
+     * Expense Purpose
+     */
+    suspend fun getPurposeIdByName(name: String): Int? =
+        db.expensePurposeDao().getPurposeIdByName(name)
+
+    fun getExpensePurposeFlowById(id: Int): Flow<ExpensePurpose?> = expensePurposeDao.getFlow(id)
 
     /**
      * Generic<DataModel> functions
@@ -147,6 +173,7 @@ class Repository private constructor(context: Context) {
                 is DashEntry -> entryDao.insert(model)
                 is Weekly -> weeklyDao.insert(model)
                 is Expense -> expenseDao.insert(model)
+                is ExpensePurpose -> expensePurposeDao.insert(model)
             }
         }
     }
@@ -157,6 +184,7 @@ class Repository private constructor(context: Context) {
                 is DashEntry -> entryDao.delete(model)
                 is Weekly -> weeklyDao.delete(model)
                 is Expense -> expenseDao.delete(model)
+                is ExpensePurpose -> expensePurposeDao.delete(model)
             }
         }
     }
@@ -185,8 +213,6 @@ class Repository private constructor(context: Context) {
             }
         }
     }
-
-    suspend fun getPurposeIdByName(name: String): Int? = db.expensePurposeDao().getPurposeIdByName(name)
 
     companion object {
         private var INSTANCE: Repository? = null

@@ -38,7 +38,7 @@
         <item name="android:textAlignment">textEnd</item>
     </style>
 
-    <style name="DialogFragWeeklyDateSpinnerStyle">
+    <style name="DialogFragSpinnerStyle">
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_marginTop">@dimen/margin_narrow</item>
@@ -51,7 +51,7 @@
         <item name="android:dividerHeight">1dp</item>
         <item name="android:textAlignment">textEnd</item>
         <item name="android:textColor">?attr/colorDialogText</item>
-        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+        <item name="android:popupBackground">@drawable/bg_dialog_frag_popup_menu</item>
         <item name="android:dropDownSelector">?attr/colorOnPrimary</item>
     </style>
 

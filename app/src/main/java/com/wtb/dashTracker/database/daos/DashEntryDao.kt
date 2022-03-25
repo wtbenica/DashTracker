@@ -31,7 +31,7 @@ import java.time.LocalDate
 @Dao
 abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @Query(SQL_GET_ALL)
-    abstract fun getAll(): Flow<List<DashEntry>>
+    abstract override fun getAll(): Flow<List<DashEntry>>
 
     @Query(SQL_GET_ALL)
     abstract suspend fun getAllSuspend(): List<DashEntry>

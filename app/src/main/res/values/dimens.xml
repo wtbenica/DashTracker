@@ -21,7 +21,7 @@
     <dimen name="margin_half">8dp</dimen>
     <dimen name="margin_narrow">4dp</dimen>
 
-    <dimen name="fab_menu_offset">32dp</dimen>
+    <dimen name="fab_menu_offset">16dp</dimen>
     <dimen name="min_touch_target">48dp</dimen>
 
     <dimen name="text_size_xxl">24sp</dimen>

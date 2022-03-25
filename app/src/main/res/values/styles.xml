@@ -33,4 +33,18 @@
         <item name="titleTextStyle">@style/TitleTextAppearance</item>
         <item name="background">?attr/colorUi</item>
     </style>
+
+    <style name="ThisText" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/lalezar</item>
+    </style>
+
+    <style name="ChipStyle" parent="Widget.Material3.Chip.Assist">
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:textAppearance">@style/ThisText</item>
+        <item name="chipStrokeColor">@color/chip_stroke</item>
+        <item name="chipBackgroundColor">@color/chip_surface</item>
+        <item name="closeIconVisible">true</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="closeIconTint">?attr/colorOnSecondary</item>
+    </style>
 </resources>

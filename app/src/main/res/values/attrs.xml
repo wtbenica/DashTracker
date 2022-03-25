@@ -21,8 +21,6 @@
     <attr name="colorSecondaryDark" format="reference" />
     <attr name="colorDisabledFaded" format="reference" />
     <attr name="colorDisabled" format="reference" />
-    <attr name="colorBottomNavEnabled" format="reference|color" />
-    <attr name="colorBottomNavDisabled" format="reference|color" />
     <attr name="colorUi" format="reference" />
     <attr name="colorUIBackground" format="reference|color" />
     <attr name="colorOnPrimaryVariant" format="reference|color" />
@@ -42,6 +40,12 @@
     <attr name="colorActionBarText" format="reference" />
     <attr name="colorSummaryBarItemText" format="reference" />
     <attr name="colorBottomNavItem" format="reference|color" />
+    <attr name="colorBottomNavItemText" format="reference|color" />
+    <attr name="colorBottomNavEnabled" format="reference|color" />
+    <attr name="colorBottomNavDisabled" format="reference|color" />
+    <attr name="colorBottomNavTextEnabled" format="reference|color" />
+    <attr name="colorBottomNavTextDisabled" format="reference|color" />
+    <attr name="colorBottomNavItemIndicator" format="reference|color" />
     <attr name="colorFab" format="reference|color" />
     <attr name="colorFabDisabled" format="reference|color" />
     <attr name="colorFabIcon" format="reference|color" />
@@ -90,6 +94,7 @@
 
     <!-- dialog -->
     <attr name="colorDialog" format="reference" />
+    <attr name="colorDialogSecondary" format="reference" />
     <attr name="colorDialogContentBg" format="reference" />
     <attr name="colorDialogTitle" format="reference" />
     <attr name="colorDialogText" format="reference" />

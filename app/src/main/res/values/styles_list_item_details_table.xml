@@ -49,8 +49,7 @@
     </style>
 
     <style name="PayTable.Gas">
-        <item name="android:background">#FFF</item>
-        <item name="android:paddingVertical">@dimen/margin_narrow</item>
+        <item name="android:background">?attr/colorOnSecondary</item>
     </style>
 
     <style name="PayTableHeaderStyle">

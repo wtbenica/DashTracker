@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "1e7d5d98287efb6e793a75d6f0388e5a",
+    "identityHash": "232564e5dea19b8ccfb7cf545cbf6bad",
     "entities": [
       {
         "tableName": "DashEntry",
@@ -170,7 +170,7 @@
       },
       {
         "tableName": "Expense",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expenseId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `amount` REAL NOT NULL, `purpose` INTEGER NOT NULL, `pricePerGal` REAL, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`purpose`) REFERENCES `ExpensePurpose`(`purposeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expenseId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `amount` REAL, `purpose` INTEGER NOT NULL, `pricePerGal` REAL, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`purpose`) REFERENCES `ExpensePurpose`(`purposeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "expenseId",
@@ -188,7 +188,7 @@
             "fieldPath": "amount",
             "columnName": "amount",
             "affinity": "REAL",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "purpose",
@@ -242,7 +242,7 @@
       },
       {
         "tableName": "ExpensePurpose",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`purposeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `lastUpdated` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`purposeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `lastUpdated` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "purposeId",
@@ -254,7 +254,7 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "lastUpdated",
@@ -286,7 +286,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e7d5d98287efb6e793a75d6f0388e5a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '232564e5dea19b8ccfb7cf545cbf6bad')"
     ]
   }
 }

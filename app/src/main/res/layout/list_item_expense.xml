@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +31,10 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_header"
-            style="@style/ListItemHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/margin_default"
+            android:paddingVertical="@dimen/margin_half"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -47,18 +49,20 @@
             <TextView
                 android:id="@+id/list_item_subtitle"
                 style="@style/ListItemHeaderTextView.Subtitle"
+                android:text="@string/label_gas"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_title"
-                android:text="Gas" />
+                app:layout_constraintTop_toBottomOf="@id/list_item_title" />
 
             <ImageView
                 android:id="@+id/list_item_recurring"
-                style="@style/ListItemHeaderIncompleteIndicator"
-                android:layout_marginStart="@dimen/margin_half"
-                android:contentDescription="@string/content_desc_incomplete_entry"
-                app:layout_constraintBottom_toBottomOf="@id/list_item_title"
-                app:layout_constraintStart_toEndOf="@id/list_item_title"
-                app:layout_constraintTop_toTopOf="@id/list_item_title" />
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/content_desc_recurring_expense"
+                android:src="@drawable/ic_recurring"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/list_item_title"
+                app:tint="?attr/colorListItemTitle" />
 
             <TextView
                 android:id="@+id/list_item_title_2"
@@ -67,33 +71,71 @@
                 android:layout_weight="1"
                 android:textAlignment="textEnd"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/list_item_recurring"
+                app:layout_constraintStart_toEndOf="@id/list_item_title"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="$20.00" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_details"
-            style="@style/listItemDetailsPane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="0dp"
+            android:visibility="gone"
             tools:visibility="visible">
 
-            <include
-                layout="@layout/list_item_expense_gas_details_table"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/list_item_details_card"
                 android:layout_width="0dp"
+                android:layout_marginHorizontal="@dimen/margin_default"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_header" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TableLayout
+                    style="@style/PayTable.Gas"
+                    android:layout_width="match_parent"
+                    android:background="?attr/colorPrimaryFaded"
+                    android:layout_height="wrap_content">
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            style="@style/PayTableHeaderStyle"
+                            android:text="@string/label_price" />
+
+                        <TextView
+                            style="@style/PayTableHeaderStyle"
+                            android:text="@string/label_gallons" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/list_item_price"
+                            style="@style/PayTableValueStyle"
+                            tools:text="$5.299" />
+
+                        <TextView
+                            android:id="@+id/list_item_gallons"
+                            style="@style/PayTableValueStyle"
+                            tools:text="3.77" />
+                    </TableRow>
+                </TableLayout>
+            </androidx.cardview.widget.CardView>
 
             <ImageButton
                 android:id="@+id/list_item_btn_delete"
                 style="@style/ListItemButton"
                 android:contentDescription="@string/content_desc_remove"
                 android:src="@drawable/ic_action_delete"
-                app:layout_constraintBottom_toTopOf="@id/list_item_btn_edit"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit" />
 
             <ImageButton
                 android:id="@+id/list_item_btn_edit"
@@ -101,7 +143,8 @@
                 android:contentDescription="@string/content_desc_edit_button"
                 android:src="@drawable/ic_action_edit"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/list_item_details_card" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

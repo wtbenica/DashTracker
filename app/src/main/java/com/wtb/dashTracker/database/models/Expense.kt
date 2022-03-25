@@ -16,10 +16,7 @@
 
 package com.wtb.dashTracker.database.models
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import java.time.LocalDate
 
 @Entity(
@@ -37,13 +34,16 @@ import java.time.LocalDate
 )
 data class Expense(
     @PrimaryKey(autoGenerate = true) val expenseId: Int = AUTO_ID,
-    val date: LocalDate,
-    val amount: Float,
-    val purpose: Int,
-    val pricePerGal: Float?,
+    var date: LocalDate = LocalDate.now(),
+    var amount: Float? = null,
+    var purpose: Int = Purpose.GAS.id,
+    var pricePerGal: Float? = null,
 ) : DataModel() {
     override val id: Int
         get() = expenseId
+
+    val gallons: Float?
+        get() = pricePerGal?.let { amount?.let { a -> a / it } }
 }
 
 @Entity(
@@ -53,8 +53,36 @@ data class Expense(
 )
 data class ExpensePurpose(
     @PrimaryKey(autoGenerate = true) val purposeId: Int = AUTO_ID,
-    val name: String
+    var name: String? = null
 ) : DataModel() {
     override val id: Int
         get() = purposeId
+
+    override fun toString(): String = name ?: ""
 }
+
+enum class Purpose(val id: Int, val purposeName: String) {
+    GAS(1, "Gas"),
+    LOAN(2, "Car Payment"),
+    INSURANCE(3, "Insurance"),
+    OIL(4, "Oil Change")
+}
+
+data class FullExpense(
+    @Embedded
+    val expense: Expense,
+
+    @Relation(parentColumn = "purpose", entityColumn = "purposeId")
+    val purpose: ExpensePurpose
+) {
+    val id
+        get() = expense.expenseId
+}
+
+data class FullExpensePurpose(
+    @Embedded
+    val purpose: ExpensePurpose,
+
+    @Relation(parentColumn = "purposeId", entityColumn = "purpose")
+    val expenses: List<Expense>
+)
