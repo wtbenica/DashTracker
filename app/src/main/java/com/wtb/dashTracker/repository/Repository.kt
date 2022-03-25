@@ -112,6 +112,8 @@ class Repository private constructor(context: Context) {
      */
     val allExpensePurposes: Flow<List<ExpensePurpose>> = expensePurposeDao.getAll()
 
+    val allFullPurposes: Flow<List<FullExpensePurpose>> = expensePurposeDao.getAllFull()
+
     fun getExpenseFlowById(id: Int): Flow<Expense?> = expenseDao.getFlow(id)
 
     private var expensePagingSource: PagingSource<Int, FullExpense>? = null
@@ -139,6 +141,14 @@ class Repository private constructor(context: Context) {
     }
 
     /**
+     * Expense Purpose
+     */
+    suspend fun getPurposeIdByName(name: String): Int? =
+        db.expensePurposeDao().getPurposeIdByName(name)
+
+    fun getExpensePurposeFlowById(id: Int): Flow<ExpensePurpose?> = expensePurposeDao.getFlow(id)
+
+    /**
      * Generic<DataModel> functions
      */
     fun upsertModel(model: DataModel): Long {
@@ -163,6 +173,7 @@ class Repository private constructor(context: Context) {
                 is DashEntry -> entryDao.insert(model)
                 is Weekly -> weeklyDao.insert(model)
                 is Expense -> expenseDao.insert(model)
+                is ExpensePurpose -> expensePurposeDao.insert(model)
             }
         }
     }
@@ -202,8 +213,6 @@ class Repository private constructor(context: Context) {
             }
         }
     }
-
-    suspend fun getPurposeIdByName(name: String): Int? = db.expensePurposeDao().getPurposeIdByName(name)
 
     companion object {
         private var INSTANCE: Repository? = null

@@ -44,22 +44,25 @@ import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.DialogFragExpenseBinding
-import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownHeaderBinding
+import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownFooterBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.dialog_confirm.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PREV_PURPOSE
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PURPOSE_ID
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PURPOSE_NAME
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.RK_ADD_PURPOSE
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_ID
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
 import com.wtb.dashTracker.views.FullWidthDialogFragment
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
+class ExpenseDialog : FullWidthDialogFragment() {
 
     private var expense: Expense? = null
     private val viewModel: ExpenseViewModel by viewModels()
@@ -73,14 +76,14 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.loadDataModel(expenseId)
+        viewModel.loadDataModel(arguments?.getInt(ARG_EXPENSE_ID))
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setDialogListeners()
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -152,11 +155,11 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
         }
 
         binding.fragExpenseBtnDelete.setOnClickListener {
-            ConfirmDeleteDialog(null).show(parentFragmentManager, null)
+            ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
         }
 
         binding.fragExpenseBtnReset.setOnClickListener {
-            ConfirmResetDialog().show(parentFragmentManager, null)
+            ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
         }
 
         updateUI()
@@ -191,7 +194,7 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
         object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 if (isNotEmpty() && !saveBtnPressed) {
-                    ConfirmSaveDialog(
+                    ConfirmSaveDialog.newInstance(
                         text = R.string.confirm_save_entry_incomplete
                     ).show(parentFragmentManager, null)
                 } else {
@@ -310,16 +313,17 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
             dismiss()
         }
 
-        setFragmentResultListener(RK_ADD_PURPOSE) { _, bundle ->
+        setFragmentResultListener(
+            RK_ADD_PURPOSE
+        ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
             bundle.getInt(ARG_PURPOSE_ID).let { id ->
                 if (result) {
                     bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
-                        viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName))
+                        viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName), false)
                     }
                 } else {
-                    updateExpense(purpose = bundle.getInt(ARG_PREV_PURPOSE))
-                    viewModel.delete(ExpensePurpose(purposeId = id))
+                    updateExpense(purpose = id)
                 }
                 binding.fragExpensePurpose.hideDropdown()
             }
@@ -351,7 +355,15 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
 
     companion object {
         private const val TAG = APP + "ExpenseDialog"
+        private const val ARG_EXPENSE_ID = "expense_id"
+
+        fun newInstance(expenseId: Int) = ExpenseDialog().apply {
+            arguments = Bundle().apply {
+                putInt(ARG_EXPENSE_ID, expenseId)
+            }
+        }
     }
+
 
     inner class PurposeAdapter(
         context: Context,
@@ -392,28 +404,23 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
         ): View {
             var tempConvertView: View?
 
-            if (position == 0) {
-                val binding = DialogFragExpensePurposeDropdownHeaderBinding.inflate(layoutInflater)
+            if (position == count - 1) {
+                val binding = DialogFragExpensePurposeDropdownFooterBinding.inflate(layoutInflater)
                 tempConvertView = binding.root
                 binding.addPurposeBtn.setOnClickListener {
                     CoroutineScope(Dispatchers.Default).launch {
-                        withContext(Dispatchers.Default) {
-                            viewModel.upsertAsync(ExpensePurpose())
-                        }.let {
-                            val prevPurpose = expense?.purpose
-                            updateExpense(purpose = it.toInt())
-                            ConfirmationDialogAddPurpose(
-                                purposeId = it.toInt(),
-                                prevPurpose = prevPurpose
-                            ).show(
-                                parentFragmentManager,
-                                null
-                            )
-                        }
+                        val purposeId = viewModel.upsertAsync(ExpensePurpose())
+                        val prevPurpose = expense?.purpose
+                        updateExpense(purpose = purposeId.toInt())
+                        ConfirmationDialogAddOrModifyPurpose.newInstance(
+                            purposeId = purposeId.toInt(),
+                            prevPurpose = prevPurpose,
+                        ).show(parentFragmentManager, null)
                     }
+
                 }
                 binding.editPurposeBtn.setOnClickListener {
-
+                    ConfirmationDialogEditPurposes().show(parentFragmentManager, null)
                 }
             } else {
                 tempConvertView = convertView
@@ -438,22 +445,22 @@ class ExpenseDialog(private val expenseId: Int) : FullWidthDialogFragment() {
         }
 
         fun getPositionById(id: Int): Int {
-            var pos = -2
+            var pos = -1
             itemList.forEachIndexed { index, purpose ->
                 if (id == purpose.purposeId) {
                     pos = index
                 }
             }
-            return pos + 1
+            return pos
         }
 
         override fun getCount(): Int = super.getCount() + 1
 
         override fun getItem(position: Int): ExpensePurpose? =
-            if (position == 0) {
+            if (position == count - 1) {
                 null
             } else {
-                super.getItem(position - 1)
+                super.getItem(position)
             }
     }
 

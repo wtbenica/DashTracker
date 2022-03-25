@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_expense
+package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
 
-import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
-import com.wtb.dashTracker.database.models.FullExpensePurpose
 import com.wtb.dashTracker.ui.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class ExpenseViewModel : BaseViewModel<Expense>() {
-    override fun getItemFlowById(id: Int): Flow<Expense?> =
-        repository.getExpenseFlowById(id)
+class ConfirmationDialogAddOrModifyPurposeViewModel: BaseViewModel<ExpensePurpose>() {
+    override fun getItemFlowById(id: Int): Flow<ExpensePurpose?> = repository.getExpensePurposeFlowById(id)
 
-    suspend fun getPurposeIdByName(name: String) = repository.getPurposeIdByName(name)
-
-    val expensePurposes: Flow<List<ExpensePurpose>> = repository.allExpensePurposes
-
-    val fullPurposes: Flow<List<FullExpensePurpose>> = repository.allFullPurposes
 }
-

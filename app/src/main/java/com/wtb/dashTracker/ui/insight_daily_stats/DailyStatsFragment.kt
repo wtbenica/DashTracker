@@ -29,8 +29,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.FragInsightsBinding
-import com.wtb.dashTracker.views.DailyStats
-import com.wtb.dashTracker.views.DailyStatsRow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

@@ -134,7 +134,7 @@ class WeeklyListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
                 setOnClickListener {
-                    WeeklyDialog(this@WeeklyHolder.compWeekly.weekly.date).show(
+                    WeeklyDialog.newInstance(this@WeeklyHolder.compWeekly.weekly.date).show(
                         parentFragmentManager,
                         "edit_details"
                     )

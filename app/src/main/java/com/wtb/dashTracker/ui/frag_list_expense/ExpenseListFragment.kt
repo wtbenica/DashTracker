@@ -147,7 +147,7 @@ class ExpenseListFragment : Fragment() {
                 else -> 1
             }
 
-        abstract inner class ExpenseHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        abstract inner class ExpenseHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             abstract fun bind(item: FullExpense, payloads: MutableList<Any>? = null)
         }
 
@@ -164,7 +164,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog(this@GasExpenseHolder.expense.id).show(
+                        ExpenseDialog.newInstance(expense.id).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -173,7 +173,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog(confirmId = this@GasExpenseHolder.expense.id)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.expense.id)
                             .show(parentFragmentManager, null)
                     }
                 }
@@ -219,7 +219,8 @@ class ExpenseListFragment : Fragment() {
         ), View.OnClickListener {
             private lateinit var expense: FullExpense
 
-            private val binding: ListItemExpenseNonGasBinding = ListItemExpenseNonGasBinding.bind(itemView)
+            private val binding: ListItemExpenseNonGasBinding =
+                ListItemExpenseNonGasBinding.bind(itemView)
             private val buttonBox: LinearLayout = binding.buttonBox
 
             init {
@@ -227,7 +228,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog(this@OtherExpenseHolder.expense.id).show(
+                        ExpenseDialog.newInstance(expense.id).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -236,7 +237,7 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog(confirmId = this@OtherExpenseHolder.expense.id)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.expense.id)
                             .show(parentFragmentManager, null)
                     }
                 }

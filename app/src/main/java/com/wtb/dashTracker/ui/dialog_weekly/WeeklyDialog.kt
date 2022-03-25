@@ -46,9 +46,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class WeeklyDialog(
-    private var date: LocalDate = LocalDate.now().endOfWeek.minusDays(7)
-) : FullWidthDialogFragment() {
+class WeeklyDialog : FullWidthDialogFragment() {
 
     private var weekly: CompleteWeekly? = null
     private lateinit var binding: DialogFragWeeklyBinding
@@ -56,6 +54,9 @@ class WeeklyDialog(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val date: LocalDate =
+            arguments?.getSerializable(ARG_DATE) as LocalDate? ?: LocalDate.now().endOfWeek
+        // it is an insert here instead of upsert bc don't want to replace one if it already exists
         viewModel.insert(Weekly(date))
         viewModel.loadDate(date)
     }
@@ -106,7 +107,7 @@ class WeeklyDialog(
 
 
         binding.fragAdjustBtnCancel.setOnClickListener {
-            ConfirmResetDialog().show(parentFragmentManager, null)
+            ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
         }
 
         binding.fragAdjustBtnSave.setOnClickListener {
@@ -254,6 +255,16 @@ class WeeklyDialog(
 
     companion object {
         private const val TAG = APP + "BasePayAdjustDialog"
+        private const val ARG_DATE = "date"
+
+        fun newInstance(
+            date: LocalDate = LocalDate.now().endOfWeek.minusDays(7)
+        ) = WeeklyDialog().apply {
+            arguments = Bundle().apply {
+                putSerializable(ARG_DATE, date)
+            }
+        }
+
         fun getListOfWeeks(): Array<LocalDate> {
             val res = arrayListOf<LocalDate>()
             var endOfWeek = LocalDate.now().endOfWeek

@@ -52,20 +52,20 @@ abstract class BaseViewModel<T : DataModel> : ViewModel() {
 
     fun insert(dataModel: DataModel) = repository.saveModel(dataModel)
 
-    fun upsert(dataModel: DataModel) {
+    fun upsert(dataModel: DataModel, loadItem: Boolean = true) {
         CoroutineScope(Dispatchers.Default).launch {
             val id = repository.upsertModel(dataModel)
-            if (id != -1L) {
+            if (id != -1L && loadItem) {
                 Log.d(TAG, "upsert: id: $id ${dataModel::class}")
                 _id.value = id.toInt()
             }
         }
     }
 
-    suspend fun upsertAsync(dataModel: DataModel): Long =
+    suspend fun upsertAsync(dataModel: DataModel, loadItem: Boolean = true): Long =
         withContext(Dispatchers.Default) {
             val id = repository.upsertModel(dataModel)
-            if (id != -1L) {
+            if (id != -1L && loadItem) {
                 Log.d(TAG, "upsertAsync: id: $id ${dataModel::class}")
                 _id.value = id.toInt()
             }
