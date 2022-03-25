@@ -68,7 +68,7 @@ import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentC
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
-import com.wtb.dashTracker.views.getStringOrElse
+import com.wtb.dashTracker.ui.insight_daily_stats.getStringOrElse
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
