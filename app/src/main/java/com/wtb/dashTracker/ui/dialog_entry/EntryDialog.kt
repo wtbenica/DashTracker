@@ -53,11 +53,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
-class EntryDialog(
-    private var entry: DashEntry? = null
-) : FullWidthDialogFragment() {
+class EntryDialog : FullWidthDialogFragment() {
 
     private val viewModel: EntryViewModel by viewModels()
+    private var entry: DashEntry? = null
     private var saveOnExit = true
     private var startTimeChanged = false
     private var saveConfirmed = false
@@ -79,8 +78,7 @@ class EntryDialog(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val entryId = entry?.entryId
-
+        val entryId = arguments?.getInt(ARG_ENTRY_ID)
         viewModel.loadDataModel(entryId)
     }
 
@@ -127,13 +125,13 @@ class EntryDialog(
 
         deleteButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_delete).apply {
             setOnClickListener {
-                ConfirmDeleteDialog(null).show(parentFragmentManager, null)
+                ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
             }
         }
 
         cancelButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_cancel).apply {
             setOnClickListener {
-                ConfirmResetDialog().show(parentFragmentManager, null)
+                ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
             }
         }
 
@@ -182,11 +180,12 @@ class EntryDialog(
     private fun saveValues() {
 
         val currDate = dateTextView.text.toDateOrNull()
-        val totalMileage = if (startMileageEditText.text.isEmpty() && endMileageEditText.text.isEmpty()) {
-            totalMileageEditText.text.toFloatOrNull()
-        } else {
-            null
-        }
+        val totalMileage =
+            if (startMileageEditText.text.isEmpty() && endMileageEditText.text.isEmpty()) {
+                totalMileageEditText.text.toFloatOrNull()
+            } else {
+                null
+            }
         val e = DashEntry(
             entryId = entry?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
@@ -221,7 +220,7 @@ class EntryDialog(
         object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 if (isEmpty() && !saveConfirmed) {
-                    ConfirmSaveDialog(
+                    ConfirmSaveDialog.newInstance(
                         text = R.string.confirm_save_entry_incomplete
                     ).show(parentFragmentManager, null)
                 } else {
@@ -287,7 +286,14 @@ class EntryDialog(
                 numDeliveriesEditText.text.isBlank()
 
     companion object {
-
         private const val TAG = APP + "EntryDialog"
+        private const val ARG_ENTRY_ID = "entry_id"
+
+        fun newInstance(entryId: Int) =
+            EntryDialog().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_ENTRY_ID, entryId)
+                }
+            }
     }
 }

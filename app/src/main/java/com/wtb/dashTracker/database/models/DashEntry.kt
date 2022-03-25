@@ -46,17 +46,17 @@ const val AUTO_ID = 0
 )
 data class DashEntry(
     @PrimaryKey(autoGenerate = true) val entryId: Int = AUTO_ID,
-    val date: LocalDate,
+    val date: LocalDate = LocalDate.now(),
     val endDate: LocalDate = date,
-    val startTime: LocalTime?,
-    val endTime: LocalTime?,
-    val startOdometer: Float?,
-    val endOdometer: Float?,
+    val startTime: LocalTime? = LocalTime.now(),
+    val endTime: LocalTime? = null,
+    val startOdometer: Float? = null,
+    val endOdometer: Float? = null,
     var totalMileage: Float? = null,
-    val pay: Float?,
-    val otherPay: Float?,
-    val cashTips: Float?,
-    val numDeliveries: Int?,
+    val pay: Float? = null,
+    val otherPay: Float? = null,
+    val cashTips: Float? = null,
+    val numDeliveries: Int? = null,
     var week: LocalDate? = date.endOfWeek
 ) : DataModel() {
     override val id: Int

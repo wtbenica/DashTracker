@@ -53,7 +53,7 @@ data class Expense(
 )
 data class ExpensePurpose(
     @PrimaryKey(autoGenerate = true) val purposeId: Int = AUTO_ID,
-    val name: String? = null
+    var name: String? = null
 ) : DataModel() {
     override val id: Int
         get() = purposeId
@@ -78,3 +78,11 @@ data class FullExpense(
     val id
         get() = expense.expenseId
 }
+
+data class FullExpensePurpose(
+    @Embedded
+    val purpose: ExpensePurpose,
+
+    @Relation(parentColumn = "purposeId", entityColumn = "purpose")
+    val expenses: List<Expense>
+)

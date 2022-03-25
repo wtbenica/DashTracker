@@ -59,17 +59,21 @@ import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment.ExpenseListFragmentCallback
+import com.wtb.dashTracker.ui.insight_daily_stats.getStringOrElse
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
-import com.wtb.dashTracker.ui.insight_daily_stats.getStringOrElse
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -284,12 +288,12 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         getContentLauncher(
             FILE_ZIP,
             ::extractZip,
-            ConfirmationDialog(
+            ConfirmationDialog.newInstance(
                 text = R.string.unzip_error,
                 requestKey = "confirmUnzipError",
                 message = "Error",
                 posButton = R.string.ok,
-                posAction = {},
+                posAction = LambdaWrapper {},
                 negButton = null
             )
         )
@@ -373,27 +377,29 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         FabMenuButtonInfo(
             "Add Entry",
             R.drawable.ic_new_entry
-        ) { EntryDialog().show(fm, "new_entry_dialog") },
+        ) {
+            CoroutineScope(Dispatchers.Default).launch {
+                val id = viewModel.upsertAsync(DashEntry())
+                EntryDialog.newInstance(id.toInt()).show(fm, "new_entry_dialog")
+            }
+        },
         FabMenuButtonInfo(
             "Add Adjustment",
             R.drawable.ic_new_adjust
-        ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
+        ) { WeeklyDialog.newInstance().show(fm, "new_adjust_dialog") },
         FabMenuButtonInfo(
             "Add Expense",
             R.drawable.ic_nav_daily
         ) {
             CoroutineScope(Dispatchers.Default).launch {
-                withContext(Dispatchers.Default) {
-                    viewModel.upsertAsync(Expense())
-                }.let {
-                    ExpenseDialog(it.toInt()).show(fm, "new_expense_dialog")
-                }
+                val id = viewModel.upsertAsync(Expense())
+                ExpenseDialog.newInstance(id.toInt()).show(fm, "new_expense_dialog")
             }
-        }
-//            FabMenuButtonInfo(
-//                "Add Payout",
-//                R.drawable.chart
-//            ) { PayoutDialog().show(fm, "new_payout_dialog") }
+        },
+        //        FabMenuButtonInfo(
+        //            "Add Payout",
+        //            R.drawable.chart
+        //        ) { PayoutDialog().show(fm, "new_payout_dialog") }
     )
 
 

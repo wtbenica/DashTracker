@@ -30,11 +30,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.chip.Chip
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.ExpensePurpose
+import com.wtb.dashTracker.database.models.FullExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmEditPurposesBinding
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PURPOSE_ID
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.ARG_PURPOSE_NAME
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogAddPurpose.Companion.RK_ADD_PURPOSE
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_ID
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseViewModel
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,7 +49,7 @@ class ConfirmationDialogEditPurposes() : FullWidthDialogFragment() {
 
     private lateinit var binding: DialogFragConfirmEditPurposesBinding
     private val viewModel: ExpenseViewModel by viewModels()
-    private var itemList: List<ExpensePurpose>? = null
+    private var items: List<ExpensePurpose>? = null
 
     private var deleteButtonPressed = false
 
@@ -85,25 +87,26 @@ class ConfirmationDialogEditPurposes() : FullWidthDialogFragment() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.expensePurposes.collectLatest { itemList ->
+                viewModel.fullPurposes.collectLatest { itemList ->
                     binding.purposeChipgroup.removeAllViews()
                     itemList.forEach {
                         binding.purposeChipgroup.addView(object : Chip(context) {
-                            private val ep: ExpensePurpose = it
+                            private val ep: FullExpensePurpose = it
 
                             init {
-                                text = it.name
+                                text = it.purpose.name
 
                                 setOnClickListener {
-                                    ConfirmationDialogAddPurpose(
-                                        ep.purposeId,
-                                        ep.purposeId,
-                                        ep.name
+                                    ConfirmationDialogAddOrModifyPurpose.newInstance(
+                                        ep.purpose.purposeId,
+                                        isNew = false
                                     ).show(parentFragmentManager, null)
                                 }
 
+                                isCloseIconVisible = it.expenses.isEmpty()
+
                                 setOnCloseIconClickListener {
-                                    viewModel.delete(ep)
+                                    viewModel.delete(ep.purpose)
                                 }
                             }
                         })

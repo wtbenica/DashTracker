@@ -26,6 +26,7 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.FullExpense
+import com.wtb.dashTracker.database.models.FullExpensePurpose
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
@@ -82,4 +83,7 @@ abstract class ExpensePurposeDao : BaseDao<ExpensePurpose>("ExpensePurpose", "pu
 
     @Query("SELECT * FROM ExpensePurpose ORDER BY name")
     abstract override fun getAll(): Flow<List<ExpensePurpose>>
+
+    @Query("SELECT * FROM ExpensePurpose ORDER BY name")
+    abstract fun getAllFull(): Flow<List<FullExpensePurpose>>
 }

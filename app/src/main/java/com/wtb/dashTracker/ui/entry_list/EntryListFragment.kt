@@ -149,7 +149,7 @@ class EntryListFragment : Fragment() {
 
                 itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
                     setOnClickListener {
-                        EntryDialog(this@EntryHolder.entry).show(
+                        EntryDialog.newInstance(this@EntryHolder.entry.entryId).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -158,7 +158,7 @@ class EntryListFragment : Fragment() {
 
                 itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog(confirmId = this@EntryHolder.entry.entryId)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@EntryHolder.entry.entryId)
                             .show(parentFragmentManager, null)
                     }
                 }
