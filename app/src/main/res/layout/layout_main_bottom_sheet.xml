@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_draggable"
-            app:tint="?attr/colorOnSecondary" />
+            app:tint="?attr/colorOnPrimary" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/button_group_nav"
@@ -67,29 +67,18 @@
                 android:text="Trends" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/button_group_time_aggregator"
+        <ViewFlipper
+            android:id="@+id/bottom_sheet_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_half"
-            app:checkedButton="@id/daily_button"
-            app:selectionRequired="true"
-            app:singleSelection="true">
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/daily_button"
-                style="@style/bottomSheetToggleButton"
-                android:text="@string/title_daily" />
+            <include android:id="@+id/content_income"
+                layout="@layout/bottom_sheet_content_income" />
+            <include android:id="@+id/content_expense"
+                layout="@layout/bottom_sheet_content_expense" />
+            <include android:id="@+id/content_trends"
+                layout="@layout/bottom_sheet_content_trends" />
+        </ViewFlipper>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/weekly_button"
-                style="@style/bottomSheetToggleButton"
-                android:text="@string/title_weekly_list" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/yearly_button"
-                style="@style/bottomSheetToggleButton"
-                android:text="@string/title_yearly_list" />
-        </com.google.android.material.button.MaterialButtonToggleGroup>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

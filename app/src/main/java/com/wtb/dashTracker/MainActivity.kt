@@ -54,8 +54,7 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.Weekly
-import com.wtb.dashTracker.databinding.ActivityMainBinding
-import com.wtb.dashTracker.databinding.LayoutMainBottomSheetBinding
+import com.wtb.dashTracker.databinding.*
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
@@ -170,6 +169,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         fun initBottomSheet() {
             val sheetBinding: LayoutMainBottomSheetBinding =
                 LayoutMainBottomSheetBinding.bind(binding.bottomSheet.root)
+            val contentIncomeBinding = BottomSheetContentIncomeBinding.bind(sheetBinding.contentIncome.root)
+            val contentExpenseBinding = BottomSheetContentExpenseBinding.bind(sheetBinding.contentExpense.root)
+            val contentTrendsBinding = BottomSheetContentTrendsBinding.bind(sheetBinding.contentTrends.root)
             val behavior = BottomSheetBehavior.from(sheetBinding.root)
 
             behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -177,11 +179,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                     when (newState) {
                         BottomSheetBehavior.STATE_COLLAPSED -> {
                             sheetBinding.buttonGroupNav.isEnabled = false
-                            sheetBinding.buttonGroupTimeAggregator.isEnabled = false
+                            contentIncomeBinding.buttonGroupTimeAggregator.isEnabled = false
                         }
                         BottomSheetBehavior.STATE_EXPANDED -> {
                             sheetBinding.buttonGroupNav.isEnabled = true
-                            sheetBinding.buttonGroupTimeAggregator.isEnabled = true
+                            contentIncomeBinding.buttonGroupTimeAggregator.isEnabled = true
                         }
                         BottomSheetBehavior.STATE_DRAGGING,
                         BottomSheetBehavior.STATE_HALF_EXPANDED,
@@ -207,7 +209,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                 when (checkedId) {
                     R.id.income_button -> {
                         if (isChecked) {
-                            when (sheetBinding.buttonGroupTimeAggregator.checkedButtonId) {
+                            sheetBinding.bottomSheetContent.displayedChild = 0
+                            when (contentIncomeBinding.buttonGroupTimeAggregator.checkedButtonId) {
                                 R.id.daily_button -> {
                                     navController?.navigate(R.id.navigation_home)
                                 }
@@ -218,23 +221,24 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                                     navController?.navigate(R.id.navigation_yearly)
                                 }
                             }
-                            navController?.navigate(R.id.navigation_home)
                         }
                     }
                     R.id.expense_button -> {
                         if (isChecked) {
+                            sheetBinding.bottomSheetContent.displayedChild = 1
                             navController?.navigate(R.id.navigation_expenses)
                         }
                     }
                     R.id.trends_button -> {
                         if (isChecked) {
+                            sheetBinding.bottomSheetContent.displayedChild = 2
                             navController?.navigate(R.id.navigation_insights)
                         }
                     }
                 }
             }
 
-            sheetBinding.buttonGroupTimeAggregator.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            contentIncomeBinding.buttonGroupTimeAggregator.addOnButtonCheckedListener { group, checkedId, isChecked ->
                 when (checkedId) {
                     R.id.daily_button -> {
                         if (isChecked) {

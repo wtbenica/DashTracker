@@ -18,8 +18,8 @@
 <resources>
     <color name="brick_dark">#567</color>
     <color name="brick">#789</color>
-    <color name="brick_light">#ABC</color>
-    <color name="brick_faded">#CDE</color>
+    <color name="brick_light">#E0F0FF</color>
+    <color name="brick_faded">#F0F8FF</color>
     <color name="on_brick">#FEFEFE</color>
     <color name="on_brick_light">#F0F0F0</color>
 

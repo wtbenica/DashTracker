@@ -95,6 +95,9 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4437869822485207" />
         <entry key="app/src/main/res/layout/activity_main_fab_menu.xml" value="0.5241057542768274" />
         <entry key="app/src/main/res/layout/blank_fragment.xml" value="0.28730226592560926" />
+        <entry key="app/src/main/res/layout/bottom_sheet_content_expense.xml" value="0.2877297990594271" />
+        <entry key="app/src/main/res/layout/bottom_sheet_content_income.xml" value="0.2877297990594271" />
+        <entry key="app/src/main/res/layout/bottom_sheet_content_trends.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.40929535232383807" />
         <entry key="app/src/main/res/layout/daily_stats_row.xml" value="0.5324367088607594" />
         <entry key="app/src/main/res/layout/datetime_pickers.xml" value="0.39565217391304347" />
@@ -135,7 +138,7 @@
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/grid_gas_expense.xml" value="0.5" />
         <entry key="app/src/main/res/layout/grid_other_expense.xml" value="0.7490636704119851" />
-        <entry key="app/src/main/res/layout/layout_main_bottom_sheet.xml" value="1.0" />
+        <entry key="app/src/main/res/layout/layout_main_bottom_sheet.xml" value="0.4289827255278311" />
         <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.3652312599681021" />
         <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.456" />
         <entry key="app/src/main/res/layout/list_item_expense.xml" value="0.1" />
