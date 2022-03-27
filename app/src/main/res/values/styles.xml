@@ -47,4 +47,11 @@
         <item name="chipStrokeWidth">1dp</item>
         <item name="closeIconTint">?attr/colorOnSecondary</item>
     </style>
+
+    <style name="ShapeAppearanceBottomSheet" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSizeTopLeft">@dimen/margin_wide</item>
+        <item name="cornerSizeTopRight">@dimen/margin_wide</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
 </resources>

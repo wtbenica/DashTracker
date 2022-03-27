@@ -54,6 +54,7 @@
         <entry key="app/src/main/res/drawable/ic_bg.xml" value="0.15833333333333333" />
         <entry key="app/src/main/res/drawable/ic_circle.xml" value="0.1465" />
         <entry key="app/src/main/res/drawable/ic_daily.xml" value="0.147" />
+        <entry key="app/src/main/res/drawable/ic_draggable.xml" value="0.2755" />
         <entry key="app/src/main/res/drawable/ic_expand_down.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_expand_more.xml" value="0.107" />
         <entry key="app/src/main/res/drawable/ic_expand_up.xml" value="0.1" />
@@ -83,6 +84,7 @@
         <entry key="app/src/main/res/drawable/reset.xml" value="0.3525" />
         <entry key="app/src/main/res/drawable/rounded_corner_bg.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/drawable/save.xml" value="0.3525" />
+        <entry key="app/src/main/res/drawable/shape_bottom_sheet.xml" value="0.338" />
         <entry key="app/src/main/res/drawable/top_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/top_right_corner.xml" value="0.18645833333333334" />
         <entry key="app/src/main/res/font/anton.xml" value="0.1368106028217187" />
@@ -90,7 +92,7 @@
         <entry key="app/src/main/res/font/neucha.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/font/nunito_extralight.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/font/tauri.xml" value="0.1368106028217187" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.42047026279391425" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.4437869822485207" />
         <entry key="app/src/main/res/layout/activity_main_fab_menu.xml" value="0.5241057542768274" />
         <entry key="app/src/main/res/layout/blank_fragment.xml" value="0.28730226592560926" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.40929535232383807" />
@@ -104,7 +106,7 @@
         <entry key="app/src/main/res/layout/dialog_frag_confirm.xml" value="0.3137598597721297" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_2_button.xml" value="0.433354797166774" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_3_button.xml" value="0.35104166666666664" />
-        <entry key="app/src/main/res/layout/dialog_frag_confirm_add_purpose.xml" value="0.4948453608247423" />
+        <entry key="app/src/main/res/layout/dialog_frag_confirm_add_purpose.xml" value="0.4766949152542373" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_edit_purposes.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_export.xml" value="0.45141065830721006" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_import.xml" value="0.49189985272459497" />
@@ -133,6 +135,7 @@
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/grid_gas_expense.xml" value="0.5" />
         <entry key="app/src/main/res/layout/grid_other_expense.xml" value="0.7490636704119851" />
+        <entry key="app/src/main/res/layout/layout_main_bottom_sheet.xml" value="1.0" />
         <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.3652312599681021" />
         <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.456" />
         <entry key="app/src/main/res/layout/list_item_expense.xml" value="0.1" />

@@ -26,6 +26,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.activity.result.ActivityResultLauncher
@@ -42,21 +43,20 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ActivityMainBinding
+import com.wtb.dashTracker.databinding.LayoutMainBottomSheetBinding
+import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
@@ -65,7 +65,6 @@ import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment.ExpenseListFragmentCallback
-import com.wtb.dashTracker.ui.insight_daily_stats.getStringOrElse
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
@@ -144,44 +143,132 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             mAdView.loadAd(adRequest)
         }
 
-        fun initBottomNavBar() {
-            val navView: BottomNavigationView = binding.navView
-            navView.background = null
+//        fun initBottomNavBar() {
+//            val navView: BottomNavigationView = binding.navView
+//            navView.background = null
+//
+//            val navHostFragment =
+//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+//            val navController = navHostFragment?.findNavController()
+//
+//            val appBarConfiguration = AppBarConfiguration(
+//                setOf(
+//                    R.id.navigation_home,
+//                    R.id.navigation_weekly,
+//                    R.id.navigation_yearly,
+//                    R.id.navigation_insights,
+//                    R.id.navigation_expenses
+//                )
+//            )
+//
+//            navController?.let {
+//                setupActionBarWithNavController(navController, appBarConfiguration)
+//                navView.setupWithNavController(navController)
+//            }
+//        }
+
+        fun initBottomSheet() {
+            val sheetBinding: LayoutMainBottomSheetBinding =
+                LayoutMainBottomSheetBinding.bind(binding.bottomSheet.root)
+            val behavior = BottomSheetBehavior.from(sheetBinding.root)
+
+            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_COLLAPSED -> {
+                            sheetBinding.buttonGroupNav.isEnabled = false
+                            sheetBinding.buttonGroupTimeAggregator.isEnabled = false
+                        }
+                        BottomSheetBehavior.STATE_EXPANDED -> {
+                            sheetBinding.buttonGroupNav.isEnabled = true
+                            sheetBinding.buttonGroupTimeAggregator.isEnabled = true
+                        }
+                        BottomSheetBehavior.STATE_DRAGGING,
+                        BottomSheetBehavior.STATE_HALF_EXPANDED,
+                        BottomSheetBehavior.STATE_HIDDEN,
+                        BottomSheetBehavior.STATE_SETTLING -> {
+                            // Do nothing
+                        }
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+                }
+            })
+
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
             val navHostFragment =
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
             val navController = navHostFragment?.findNavController()
 
-            val appBarConfiguration = AppBarConfiguration(
-                setOf(
-                    R.id.navigation_home,
-                    R.id.navigation_weekly,
-                    R.id.navigation_yearly,
-                    R.id.navigation_insights,
-                    R.id.navigation_expenses
-                )
-            )
+            sheetBinding.buttonGroupNav.addOnButtonCheckedListener { group, checkedId, isChecked ->
+                when (checkedId) {
+                    R.id.income_button -> {
+                        if (isChecked) {
+                            when (sheetBinding.buttonGroupTimeAggregator.checkedButtonId) {
+                                R.id.daily_button -> {
+                                    navController?.navigate(R.id.navigation_home)
+                                }
+                                R.id.weekly_button -> {
+                                    navController?.navigate(R.id.navigation_weekly)
+                                }
+                                R.id.yearly_button -> {
+                                    navController?.navigate(R.id.navigation_yearly)
+                                }
+                            }
+                            navController?.navigate(R.id.navigation_home)
+                        }
+                    }
+                    R.id.expense_button -> {
+                        if (isChecked) {
+                            navController?.navigate(R.id.navigation_expenses)
+                        }
+                    }
+                    R.id.trends_button -> {
+                        if (isChecked) {
+                            navController?.navigate(R.id.navigation_insights)
+                        }
+                    }
+                }
+            }
 
-            navController?.let {
-                setupActionBarWithNavController(navController, appBarConfiguration)
-                navView.setupWithNavController(navController)
+            sheetBinding.buttonGroupTimeAggregator.addOnButtonCheckedListener { group, checkedId, isChecked ->
+                when (checkedId) {
+                    R.id.daily_button -> {
+                        if (isChecked) {
+                            navController?.navigate(R.id.navigation_home)
+                        }
+                    }
+                    R.id.weekly_button -> {
+                        if (isChecked) {
+                            navController?.navigate(R.id.navigation_weekly)
+                        }
+                    }
+                    R.id.yearly_button -> {
+                        if (isChecked) {
+                            navController?.navigate(R.id.navigation_yearly)
+                        }
+                    }
+                }
             }
         }
 
         fun initObservers() {
             viewModel.hourly.observe(this) {
                 binding.actMainHourly.text =
-                    getStringOrElse(R.string.currency_unit, it)
+                    getCurrencyString(it)
             }
 
             viewModel.thisWeek.observe(this) {
                 binding.actMainThisWeek.text =
-                    getStringOrElse(R.string.currency_unit, it)
+                    getCurrencyString(it)
             }
 
             viewModel.lastWeek.observe(this) {
                 binding.actMainLastWeek.text =
-                    getStringOrElse(R.string.currency_unit, it)
+                    getCurrencyString(it)
             }
         }
 
@@ -195,7 +282,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
         initBiometrics()
         initMobileAds()
-        initBottomNavBar()
+//        initBottomNavBar()
+        initBottomSheet()
         initObservers()
     }
 

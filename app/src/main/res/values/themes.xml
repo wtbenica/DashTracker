@@ -102,7 +102,7 @@
     </style>
 
     <style name="Base.DasherCompanion">
-        <item name="colorUi">?attr/colorPrimaryDark</item>
+        <item name="colorUi">?attr/colorPrimary</item>
         <item name="colorUIBackground">?attr/colorOnSecondaryVariant</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
