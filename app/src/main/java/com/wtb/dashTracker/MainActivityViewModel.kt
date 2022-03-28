@@ -26,6 +26,7 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -74,9 +75,12 @@ class MainActivityViewModel : ViewModel() {
     fun export(ctx: Context) = repository.export(ctx)
 
     fun import(ctx: Context) = repository.import(ctx)
+
     fun importStream(entries: List<DashEntry>? = null, weeklies: List<Weekly>? = null) {
         repository.importStream(entries, weeklies)
     }
+
+    fun setDeductionType(type: DeductionType) = repository.setDeductionType(type)
 
     suspend fun upsertAsync(dataModel: DataModel): Long =
         withContext(Dispatchers.Default) {

@@ -109,6 +109,20 @@
 
                 <TextView
                     style="@style/HeaderStyle"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:text="@string/header_mileage" />
+
+                <TextView
+                    android:id="@+id/list_item_weekly_miles"
+                    style="@style/ValueStyle"
+                    tools:text="380" />
+            </TableRow>
+
+            <TableRow style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
                     android:layout_column="0"
                     android:layout_span="2"
                     android:layout_weight="1"

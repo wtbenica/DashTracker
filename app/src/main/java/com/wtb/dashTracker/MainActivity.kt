@@ -56,6 +56,7 @@ import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.*
 import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.repository.DeductionType.*
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
@@ -169,9 +170,12 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         fun initBottomSheet() {
             val sheetBinding: LayoutMainBottomSheetBinding =
                 LayoutMainBottomSheetBinding.bind(binding.bottomSheet.root)
-            val contentIncomeBinding = BottomSheetContentIncomeBinding.bind(sheetBinding.contentIncome.root)
-            val contentExpenseBinding = BottomSheetContentExpenseBinding.bind(sheetBinding.contentExpense.root)
-            val contentTrendsBinding = BottomSheetContentTrendsBinding.bind(sheetBinding.contentTrends.root)
+            val contentIncomeBinding =
+                BottomSheetContentIncomeBinding.bind(sheetBinding.contentIncome.root)
+            val contentExpenseBinding =
+                BottomSheetContentExpenseBinding.bind(sheetBinding.contentExpense.root)
+            val contentTrendsBinding =
+                BottomSheetContentTrendsBinding.bind(sheetBinding.contentTrends.root)
             val behavior = BottomSheetBehavior.from(sheetBinding.root)
 
             behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -239,22 +243,30 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             }
 
             contentIncomeBinding.buttonGroupTimeAggregator.addOnButtonCheckedListener { group, checkedId, isChecked ->
-                when (checkedId) {
-                    R.id.daily_button -> {
-                        if (isChecked) {
+                if (isChecked) {
+                    when (checkedId) {
+                        R.id.daily_button -> {
                             navController?.navigate(R.id.navigation_home)
                         }
-                    }
-                    R.id.weekly_button -> {
-                        if (isChecked) {
+                        R.id.weekly_button -> {
                             navController?.navigate(R.id.navigation_weekly)
                         }
-                    }
-                    R.id.yearly_button -> {
-                        if (isChecked) {
+                        R.id.yearly_button -> {
                             navController?.navigate(R.id.navigation_yearly)
                         }
                     }
+                }
+            }
+
+            contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
+                if (isChecked) {
+                    when (checkedId) {
+                        R.id.gas_button -> viewModel.setDeductionType(GAS)
+                        R.id.actual_button -> viewModel.setDeductionType(ALL)
+                        R.id.standard_button -> viewModel.setDeductionType(STANDARD)
+                    }
+                } else {
+                    viewModel.setDeductionType(NONE)
                 }
             }
         }
@@ -504,7 +516,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)
 
         @ColorInt
-        fun getColorFabDisabled(context: Context) = getAttrColor(context, R.attr.colorFabDisabled)
+        fun getColorFabDisabled(context: Context) =
+            getAttrColor(context, R.attr.colorFabDisabled)
 
         @ColorInt
         fun getAttrColor(context: Context, @AttrRes id: Int): Int {

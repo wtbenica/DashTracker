@@ -95,6 +95,9 @@ data class CompleteWeekly(
     private val numDeliveries: Int
         get() = getTotalForWeek(DashEntry::numDeliveries)
 
+    val miles: Float
+        get() = getTotalForWeek(DashEntry::mileage)
+
     private fun getTotalForWeek(field: KProperty1<DashEntry, Float?>) = entries.map(field)
         .fold(0f) { acc, fl -> acc + (fl ?: 0f) }
 
@@ -125,4 +128,5 @@ data class CompleteWeekly(
             null
         }
 
+    fun netEarnings(cpm: Float): Float? = totalPay - miles * cpm
 }

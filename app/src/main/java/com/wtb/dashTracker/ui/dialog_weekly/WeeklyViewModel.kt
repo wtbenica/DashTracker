@@ -50,4 +50,6 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
     }
 
     val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = repository.allWeekliesPaged
+
+    val mileageDeduction: LiveData<Float> = repository.deductionAmount.asLiveData()
 }

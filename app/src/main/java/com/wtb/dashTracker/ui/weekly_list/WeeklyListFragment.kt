@@ -16,8 +16,10 @@
 
 package com.wtb.dashTracker.ui.weekly_list
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -37,10 +39,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.getStringOrElse
-import com.wtb.dashTracker.extensions.shortFormat
-import com.wtb.dashTracker.extensions.weekOfYear
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.toVisibleIfTrueElseGone
@@ -55,6 +54,7 @@ class WeeklyListFragment : Fragment() {
     private var callback: WeeklyListFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
+    private var mileageDeduction: Float = 0f
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -73,6 +73,7 @@ class WeeklyListFragment : Fragment() {
         return view
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -84,6 +85,12 @@ class WeeklyListFragment : Fragment() {
             })
         }
         recyclerView.adapter = entryAdapter
+
+        viewModel.mileageDeduction.observe(viewLifecycleOwner) {
+            mileageDeduction = it
+            recyclerView?.adapter?.notifyDataSetChanged()
+            Log.d("GT_WeeklyListFragment", "CPM: $mileageDeduction $it")
+        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -145,7 +152,13 @@ class WeeklyListFragment : Fragment() {
         override fun onClick(v: View?) {
             val currentVisibility = binding.listItemDetails.visibility
             binding.listItemDetails.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-            binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
+            binding.listItemWrapper.setBackgroundResource(
+                if (currentVisibility == VISIBLE) {
+                    R.drawable.bg_list_item
+                } else {
+                    R.drawable.bg_list_item_expanded
+                }
+            )
             bindingAdapter?.notifyItemChanged(
                 bindingAdapterPosition,
                 binding.listItemDetails.visibility
@@ -160,30 +173,43 @@ class WeeklyListFragment : Fragment() {
             this.compWeekly = item
 
             val listItemDetailsVisibility = (payloads?.let {
-                if (it.size == 1 && it[0] in listOf(
-                        VISIBLE,
-                        GONE
-                    )
-                ) it[0] else null
+                if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) {
+                    it[0]
+                } else {
+                    null
+                }
             } ?: GONE) as Int
 
-            binding.listItemWrapper.setBackgroundResource(if (listItemDetailsVisibility == VISIBLE) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
+            binding.listItemWrapper.setBackgroundResource(
+                if (listItemDetailsVisibility == VISIBLE) {
+                    R.drawable.bg_list_item_expanded
+                } else {
+                    R.drawable.bg_list_item
+                }
+            )
 
             binding.listItemTitle2.text =
                 getCurrencyString(
-                    if (compWeekly.totalPay != 0f) {
-                        compWeekly.totalPay
-                    } else {
-                        null
-                    }
+                    if (compWeekly.totalPay != 0f) { compWeekly.totalPay } else { null }
                 )
 
 
             binding.listItemSubtitle.text =
                 getString(R.string.week_number, compWeekly.weekly.date.weekOfYear)
 
+            binding.listItemSubtitle2.text =
+                getCurrencyString(
+                    (compWeekly.totalPay - compWeekly.miles * mileageDeduction).let {
+                        if (it != 0f) {
+                            it
+                        } else {
+                            null
+                        }
+                    }
+                )
+
             detailsBinding.listItemWeeklyAdjust.text =
-                getStringOrElse(R.string.currency_unit, "-", compWeekly.weekly.basePayAdjustment)
+                getCurrencyString(compWeekly.weekly.basePayAdjustment)
 
             binding.listItemAlert.visibility = toVisibleIfTrueElseGone(true)
 
@@ -197,15 +223,18 @@ class WeeklyListFragment : Fragment() {
             detailsBinding.listItemOtherPay.text = getCurrencyString(compWeekly.otherPay)
 
             detailsBinding.listItemWeeklyHours.text =
-                getStringOrElse(R.string.float_fmt, "-", compWeekly.hours)
+                getFloatString(compWeekly.hours)
 
             detailsBinding.listItemWeeklyHourly.text = getCurrencyString(compWeekly.hourly)
 
             detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(compWeekly.avgDelivery)
 
             detailsBinding.listItemWeeklyHourlyDels.text =
-                getStringOrElse(R.string.float_fmt, "-", compWeekly.delPerHour)
+                getFloatString(compWeekly.delPerHour)
 
+            detailsBinding.listItemWeeklyMiles.text =
+                getFloatString(compWeekly.miles)
+            
             binding.listItemAlert.visibility =
                 toVisibleIfTrueElseGone(this.compWeekly.weekly.isIncomplete)
 

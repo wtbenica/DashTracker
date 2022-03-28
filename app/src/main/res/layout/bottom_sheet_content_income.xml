@@ -14,30 +14,79 @@
   ~ limitations under the License.
   -->
 
-<com.google.android.material.button.MaterialButtonToggleGroup xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/button_group_time_aggregator"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/margin_half"
-    app:checkedButton="@id/daily_button"
-    app:selectionRequired="true"
-    app:singleSelection="true"
-    tools:showIn="@layout/layout_main_bottom_sheet">
+    android:columnCount="3"
+    android:useDefaultMargins="true">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/daily_button"
-        style="@style/bottomSheetToggleButton"
-        android:text="@string/title_daily" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="Group" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/weekly_button"
-        style="@style/bottomSheetToggleButton"
-        android:text="@string/title_weekly_list" />
+    <Space android:layout_width="@dimen/margin_narrow" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/yearly_button"
-        style="@style/bottomSheetToggleButton"
-        android:text="@string/title_yearly_list" />
-</com.google.android.material.button.MaterialButtonToggleGroup>
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/button_group_time_aggregator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="8dp"
+        app:checkedButton="@id/daily_button"
+        app:selectionRequired="true"
+        app:singleSelection="true"
+        tools:showIn="@layout/layout_main_bottom_sheet">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/daily_button"
+            style="@style/bottomSheetToggleButton"
+            android:text="@string/title_daily" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/weekly_button"
+            style="@style/bottomSheetToggleButton"
+            android:text="@string/title_weekly_list" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/yearly_button"
+            style="@style/bottomSheetToggleButton"
+            android:text="@string/title_yearly_list" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="@string/title_expenses" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/button_group_deduction_type"
+        android:layout_width="0dp"
+        android:layout_column="2"
+        android:layout_columnWeight="1"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/gas_button"
+            style="@style/bottomSheetToggleButton"
+            android:enabled="true"
+            android:text="Gas" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/actual_button"
+            style="@style/bottomSheetToggleButton"
+            android:enabled="true"
+            android:text="All" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/standard_button"
+            style="@style/bottomSheetToggleButton"
+            android:enabled="true"
+            android:text="Std." />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+</GridLayout>

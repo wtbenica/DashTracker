@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.repository
 
 import android.content.Context
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -31,6 +32,8 @@ import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import java.util.concurrent.Executors
 
@@ -52,6 +55,22 @@ class Repository private constructor(context: Context) {
 
     private val expensePurposeDao: ExpensePurposeDao
         get() = db.expensePurposeDao()
+
+    private val _deductionAmount: MutableStateFlow<Float> = MutableStateFlow(0f)
+
+    val deductionAmount: StateFlow<Float>
+        get() = _deductionAmount
+
+    fun setDeductionType(type: DeductionType) {
+        val amount = when (type) {
+            DeductionType.NONE -> 0f
+            DeductionType.GAS -> 0f
+            DeductionType.ALL -> 0f
+            DeductionType.STANDARD -> 0.585f
+        }
+        _deductionAmount.value = amount
+        Log.d("GT_Repository", "setDeductionType: ${type.name} $amount")
+    }
 
     /**
      * Dash Entry
@@ -105,7 +124,8 @@ class Repository private constructor(context: Context) {
         }
     ).flow
 
-    fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?> = weeklyDao.getWeeklyByDate(date)
+    fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?> =
+        weeklyDao.getWeeklyByDate(date)
 
     /**
      * Expense
@@ -146,7 +166,8 @@ class Repository private constructor(context: Context) {
     suspend fun getPurposeIdByName(name: String): Int? =
         db.expensePurposeDao().getPurposeIdByName(name)
 
-    fun getExpensePurposeFlowById(id: Int): Flow<ExpensePurpose?> = expensePurposeDao.getFlow(id)
+    fun getExpensePurposeFlowById(id: Int): Flow<ExpensePurpose?> =
+        expensePurposeDao.getFlow(id)
 
     /**
      * Generic<DataModel> functions
@@ -225,5 +246,9 @@ class Repository private constructor(context: Context) {
             return INSTANCE ?: throw IllegalStateException("Repository must be initialized")
         }
     }
+}
+
+enum class DeductionType {
+    NONE, GAS, ALL, STANDARD
 }
 
