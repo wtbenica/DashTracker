@@ -17,8 +17,8 @@
         <entry key="app/src/main/res/drawable/background_image_button.xml" value="0.15625" />
         <entry key="app/src/main/res/drawable/bg_dialog_frag_popup_menu.xml" value="0.1565" />
         <entry key="app/src/main/res/drawable/bg_edit_text.xml" value="0.1" />
-        <entry key="app/src/main/res/drawable/bg_end_button.xml" value="0.3235" />
-        <entry key="app/src/main/res/drawable/bg_end_button_2.xml" value="0.3515" />
+        <entry key="app/src/main/res/drawable/bg_end_button.xml" value="0.1565" />
+        <entry key="app/src/main/res/drawable/bg_end_button_2.xml" value="0.1565" />
         <entry key="app/src/main/res/drawable/bg_list_item_expanded.xml" value="0.336" />
         <entry key="app/src/main/res/drawable/bg_list_item_subtable.xml" value="0.3265" />
         <entry key="app/src/main/res/drawable/bg_popup_menu.xml" value="0.33" />
@@ -52,6 +52,7 @@
         <entry key="app/src/main/res/drawable/ic_add.xml" value="0.3235" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_circle_24.xml" value="0.3235" />
         <entry key="app/src/main/res/drawable/ic_bg.xml" value="0.15833333333333333" />
+        <entry key="app/src/main/res/drawable/ic_cancel.xml" value="0.2755" />
         <entry key="app/src/main/res/drawable/ic_circle.xml" value="0.1465" />
         <entry key="app/src/main/res/drawable/ic_daily.xml" value="0.147" />
         <entry key="app/src/main/res/drawable/ic_draggable.xml" value="0.2755" />

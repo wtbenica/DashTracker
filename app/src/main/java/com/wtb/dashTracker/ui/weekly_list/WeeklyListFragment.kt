@@ -88,7 +88,7 @@ class WeeklyListFragment : Fragment() {
 
         viewModel.mileageDeduction.observe(viewLifecycleOwner) {
             mileageDeduction = it
-            recyclerView?.adapter?.notifyDataSetChanged()
+            recyclerView.adapter?.notifyDataSetChanged()
             Log.d("GT_WeeklyListFragment", "CPM: $mileageDeduction $it")
         }
 
@@ -141,10 +141,8 @@ class WeeklyListFragment : Fragment() {
 
             itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
                 setOnClickListener {
-                    WeeklyDialog.newInstance(this@WeeklyHolder.compWeekly.weekly.date).show(
-                        parentFragmentManager,
-                        "edit_details"
-                    )
+                    WeeklyDialog.newInstance(this@WeeklyHolder.compWeekly.weekly.date)
+                        .show(parentFragmentManager, "edit_details")
                 }
             }
         }
@@ -190,9 +188,12 @@ class WeeklyListFragment : Fragment() {
 
             binding.listItemTitle2.text =
                 getCurrencyString(
-                    if (compWeekly.totalPay != 0f) { compWeekly.totalPay } else { null }
+                    if (compWeekly.totalPay != 0f) {
+                        compWeekly.totalPay
+                    } else {
+                        null
+                    }
                 )
-
 
             binding.listItemSubtitle.text =
                 getString(R.string.week_number, compWeekly.weekly.date.weekOfYear)
@@ -234,7 +235,7 @@ class WeeklyListFragment : Fragment() {
 
             detailsBinding.listItemWeeklyMiles.text =
                 getFloatString(compWeekly.miles)
-            
+
             binding.listItemAlert.visibility =
                 toVisibleIfTrueElseGone(this.compWeekly.weekly.isIncomplete)
 
