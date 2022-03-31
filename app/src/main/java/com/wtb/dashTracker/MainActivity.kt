@@ -42,6 +42,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
@@ -95,6 +96,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
     override val deductionType: StateFlow<DeductionType>
         get() = deductionTypeViewModel.deductionType
+    override var standardMileageDeductions: Map<Int, Float> = emptyMap()
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
@@ -268,9 +270,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
                 if (isChecked) {
                     when (checkedId) {
-                        R.id.gas_button -> viewModel.setDeductionType(GAS)
-                        R.id.actual_button -> viewModel.setDeductionType(ALL)
-                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(STANDARD)
+                        R.id.gas_button -> viewModel.setDeductionType(GAS_ONLY)
+                        R.id.actual_button -> viewModel.setDeductionType(ALL_EXPENSES)
+                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(
+                            STD_DEDUCTION
+                        )
                     }
                 } else {
                     deductionTypeViewModel.setDeductionType(NONE)
@@ -292,6 +296,14 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             viewModel.lastWeek.observe(this) {
                 binding.actMainLastWeek.text =
                     getCurrencyString(it)
+            }
+
+            deductionTypeViewModel.stdMileageDeductions.asLiveData().observe(this) {
+                val m = mutableMapOf<Int, Float>()
+                it.forEach { stdDeduct ->
+                    m[stdDeduct.year] = stdDeduct.amount
+                }
+                standardMileageDeductions = m
             }
         }
 

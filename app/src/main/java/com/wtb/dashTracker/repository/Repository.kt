@@ -23,10 +23,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import com.wtb.dashTracker.database.DashDatabase
-import com.wtb.dashTracker.database.daos.DashEntryDao
-import com.wtb.dashTracker.database.daos.ExpenseDao
-import com.wtb.dashTracker.database.daos.ExpensePurposeDao
-import com.wtb.dashTracker.database.daos.WeeklyDao
+import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVUtils
@@ -56,6 +53,9 @@ class Repository private constructor(context: Context) {
     private val expensePurposeDao: ExpensePurposeDao
         get() = db.expensePurposeDao()
 
+    private val standardMileageDeductionDao: StandardMileageDeductionDao
+        get() = db.standardMileageDeductionDao()
+
     private val _deductionAmount: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     val deductionAmount: StateFlow<Float>
@@ -64,9 +64,9 @@ class Repository private constructor(context: Context) {
     fun setDeductionType(type: DeductionType) {
         val amount = when (type) {
             DeductionType.NONE -> 0f
-            DeductionType.GAS -> 0f
-            DeductionType.ALL -> 0f
-            DeductionType.STANDARD -> 0.585f
+            DeductionType.GAS_ONLY -> 0f
+            DeductionType.ALL_EXPENSES -> 0f
+            DeductionType.STD_DEDUCTION -> 0.585f
         }
         _deductionAmount.value = amount
         Log.d("GT_Repository", "setDeductionType: ${type.name} $amount")
@@ -164,10 +164,15 @@ class Repository private constructor(context: Context) {
      * Expense Purpose
      */
     suspend fun getPurposeIdByName(name: String): Int? =
-        db.expensePurposeDao().getPurposeIdByName(name)
+        expensePurposeDao.getPurposeIdByName(name)
 
     fun getExpensePurposeFlowById(id: Int): Flow<ExpensePurpose?> =
         expensePurposeDao.getFlow(id)
+
+    /**
+     * Standard Mileage Deductions
+     */
+    fun getAllStdMileageDeduction(): Flow<List<StandardMileageDeduction>> = standardMileageDeductionDao.getAll()
 
     /**
      * Generic<DataModel> functions
@@ -185,6 +190,7 @@ class Repository private constructor(context: Context) {
             is Weekly -> weeklyDao.upsert(model)
             is Expense -> expenseDao.upsert(model)
             is ExpensePurpose -> expensePurposeDao.upsert(model)
+            is StandardMileageDeduction -> standardMileageDeductionDao.upsert(model)
         }
     }
 
@@ -195,6 +201,7 @@ class Repository private constructor(context: Context) {
                 is Weekly -> weeklyDao.insert(model)
                 is Expense -> expenseDao.insert(model)
                 is ExpensePurpose -> expensePurposeDao.insert(model)
+                is StandardMileageDeduction -> standardMileageDeductionDao.insert(model)
             }
         }
     }
@@ -206,6 +213,7 @@ class Repository private constructor(context: Context) {
                 is Weekly -> weeklyDao.delete(model)
                 is Expense -> expenseDao.delete(model)
                 is ExpensePurpose -> expensePurposeDao.delete(model)
+                is StandardMileageDeduction -> standardMileageDeductionDao.delete(model)
             }
         }
     }
@@ -249,6 +257,6 @@ class Repository private constructor(context: Context) {
 }
 
 enum class DeductionType {
-    NONE, GAS, ALL, STANDARD
+    NONE, GAS_ONLY, ALL_EXPENSES, STD_DEDUCTION
 }
 

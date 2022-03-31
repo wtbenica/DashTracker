@@ -68,6 +68,19 @@ enum class Purpose(val id: Int, val purposeName: String) {
     OIL(4, "Oil Change")
 }
 
+@Entity
+data class StandardMileageDeduction(
+    @PrimaryKey val year: Int,
+    var amount: Float
+): DataModel() {
+    override val id: Int
+        get() = year
+
+    companion object {
+        val STANDARD_DEDUCTIONS = mapOf(2021 to 0.56f, 2022 to 0.585f)
+    }
+}
+
 data class FullExpense(
     @Embedded
     val expense: Expense,

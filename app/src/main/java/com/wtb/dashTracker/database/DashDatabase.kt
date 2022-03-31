@@ -19,10 +19,7 @@ package com.wtb.dashTracker.database
 import android.content.Context
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.wtb.dashTracker.database.daos.DashEntryDao
-import com.wtb.dashTracker.database.daos.ExpenseDao
-import com.wtb.dashTracker.database.daos.ExpensePurposeDao
-import com.wtb.dashTracker.database.daos.WeeklyDao
+import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.Executors
@@ -30,10 +27,11 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 2,
-    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class],
+    version = 3,
+    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class, StandardMileageDeduction::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
     ],
     exportSchema = true,
 )
@@ -43,6 +41,7 @@ abstract class DashDatabase : RoomDatabase() {
     abstract fun weeklyDao(): WeeklyDao
     abstract fun expenseDao(): ExpenseDao
     abstract fun expensePurposeDao(): ExpensePurposeDao
+    abstract fun standardMileageDeductionDao(): StandardMileageDeductionDao
 
     companion object {
         @Volatile
@@ -68,8 +67,17 @@ abstract class DashDatabase : RoomDatabase() {
                                     ExpensePurpose(purpose.id, purpose.purposeName)
                                 }
 
+                                val standardDeductions =
+                                    StandardMileageDeduction.STANDARD_DEDUCTIONS.map {
+                                        StandardMileageDeduction(it.key, it.value)
+                                    }
+
                                 Executors.newSingleThreadScheduledExecutor().execute {
-                                    getInstance(context).expensePurposeDao().upsertAll(purposes)
+                                    getInstance(context).apply {
+                                        expensePurposeDao().upsertAll(purposes)
+                                        standardMileageDeductionDao().upsertAll(standardDeductions)
+                                    }
+
                                 }
                             }
                         }

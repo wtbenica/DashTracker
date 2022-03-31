@@ -98,15 +98,18 @@ data class CompleteWeekly(
     val miles: Float
         get() = getTotalForWeek(DashEntry::mileage)
 
-    fun getExpensesForWeek(costPerMile: Float, costPerMile2: Float? = null): Float = entries.map {
-        val year1 = this.weekly.date.year
-        if (it.date.year == year1) {
-            (it.mileage ?: 0f) * costPerMile
-        } else {
-            (it.mileage ?: 0f) * (costPerMile2 ?: costPerMile)
-        }
-    }.reduce { acc, fl -> acc + fl }
-
+    fun getExpensesForWeek(costPerMile: Float, costPerMile2: Float? = null): Float =
+        if (entries.isNotEmpty())
+            entries.map {
+                val year1 = this.weekly.date.year
+                if (it.date.year == year1) {
+                    (it.mileage ?: 0f) * costPerMile
+                } else {
+                    (it.mileage ?: 0f) * (costPerMile2 ?: costPerMile)
+                }
+            }.reduce { acc, fl -> acc + fl }
+        else
+            0f
 
     private fun getTotalForWeek(field: KProperty1<DashEntry, Float?>) = entries.map(field)
         .fold(0f) { acc, fl -> acc + (fl ?: 0f) }

@@ -132,6 +132,7 @@ class WeeklyListFragment : Fragment() {
 
     interface WeeklyListFragmentCallback {
         val deductionType: StateFlow<DeductionType>
+        val standardMileageDeductions: Map<Int, Float>
     }
 
     inner class WeeklyHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
@@ -176,11 +177,16 @@ class WeeklyListFragment : Fragment() {
 
             this.compWeekly = item
 
-            val costPerMile = when (deductionType) {
-                DeductionType.NONE -> 0f
-                DeductionType.GAS -> 0f
-                DeductionType.ALL -> 0f
-                DeductionType.STANDARD -> 0.585f
+            val costPerMile: Pair<Float, Float> = when (deductionType) {
+                DeductionType.NONE -> Pair(0f, 0f)
+                DeductionType.GAS_ONLY -> Pair(0f, 0f)
+                DeductionType.ALL_EXPENSES -> Pair(0f, 0f)
+                DeductionType.STD_DEDUCTION -> Pair(
+                    callback?.standardMileageDeductions?.get(this.compWeekly.weekly.date.year)
+                        ?: 0f,
+                    callback?.standardMileageDeductions?.get(this.compWeekly.weekly.date.plusDays(6).year)
+                        ?: 0f
+                )
             }
 
             val listItemDetailsVisibility = (payloads?.let {
@@ -213,7 +219,10 @@ class WeeklyListFragment : Fragment() {
 
             binding.listItemSubtitle2.text =
                 getCurrencyString(
-                    (compWeekly.totalPay - compWeekly.miles * costPerMile).let {
+                    (compWeekly.totalPay - compWeekly.getExpensesForWeek(
+                        costPerMile.first,
+                        costPerMile.second
+                    )).let {
                         if (it != 0f) {
                             it
                         } else {
