@@ -56,8 +56,10 @@ import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.*
 import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.DeductionType.*
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
@@ -72,6 +74,7 @@ import com.wtb.dashTracker.views.FabMenuButtonInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
@@ -89,6 +92,10 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     ExpenseListFragmentCallback {
 
     private val viewModel: MainActivityViewModel by viewModels()
+    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
+    override val deductionType: StateFlow<DeductionType>
+        get() = deductionTypeViewModel.deductionType
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
 
@@ -263,10 +270,10 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                     when (checkedId) {
                         R.id.gas_button -> viewModel.setDeductionType(GAS)
                         R.id.actual_button -> viewModel.setDeductionType(ALL)
-                        R.id.standard_button -> viewModel.setDeductionType(STANDARD)
+                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(STANDARD)
                     }
                 } else {
-                    viewModel.setDeductionType(NONE)
+                    deductionTypeViewModel.setDeductionType(NONE)
                 }
             }
         }

@@ -29,21 +29,25 @@ import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.toVisibleIfTrueElseGone
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -54,7 +58,7 @@ class WeeklyListFragment : Fragment() {
     private var callback: WeeklyListFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
-    private var mileageDeduction: Float = 0f
+    private var deductionType: DeductionType = DeductionType.NONE
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -86,10 +90,10 @@ class WeeklyListFragment : Fragment() {
         }
         recyclerView.adapter = entryAdapter
 
-        viewModel.mileageDeduction.observe(viewLifecycleOwner) {
-            mileageDeduction = it
-            recyclerView.adapter?.notifyDataSetChanged()
-            Log.d("GT_WeeklyListFragment", "CPM: $mileageDeduction $it")
+        callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
+            Log.d(APP + WeeklyListFragment::class.simpleName, "Setting deductiontype to ${it.name}")
+            deductionType = it
+            entryAdapter.notifyDataSetChanged()
         }
 
         lifecycleScope.launch {
@@ -126,7 +130,9 @@ class WeeklyListFragment : Fragment() {
 
     }
 
-    interface WeeklyListFragmentCallback
+    interface WeeklyListFragmentCallback {
+        val deductionType: StateFlow<DeductionType>
+    }
 
     inner class WeeklyHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.list_item_weekly, parent, false)
@@ -170,6 +176,13 @@ class WeeklyListFragment : Fragment() {
 
             this.compWeekly = item
 
+            val costPerMile = when (deductionType) {
+                DeductionType.NONE -> 0f
+                DeductionType.GAS -> 0f
+                DeductionType.ALL -> 0f
+                DeductionType.STANDARD -> 0.585f
+            }
+
             val listItemDetailsVisibility = (payloads?.let {
                 if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) {
                     it[0]
@@ -200,7 +213,7 @@ class WeeklyListFragment : Fragment() {
 
             binding.listItemSubtitle2.text =
                 getCurrencyString(
-                    (compWeekly.totalPay - compWeekly.miles * mileageDeduction).let {
+                    (compWeekly.totalPay - compWeekly.miles * costPerMile).let {
                         if (it != 0f) {
                             it
                         } else {
