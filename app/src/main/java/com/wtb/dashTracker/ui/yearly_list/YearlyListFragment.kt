@@ -16,6 +16,8 @@
 
 package com.wtb.dashTracker.ui.yearly_list
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,12 +27,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.wtb.dashTracker.DeductionCallback
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
@@ -38,6 +42,7 @@ import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getMileageString
+import com.wtb.dashTracker.repository.DeductionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -47,10 +52,17 @@ import java.time.LocalDate
 class YearlyListFragment : Fragment() {
 
     private val viewModel: YearlyListViewModel by viewModels()
+    private var callback: YearlyListFragmentCallback? = null
 
     private val yearlies = mutableListOf<Yearly>()
 
     private lateinit var recyclerView: RecyclerView
+    private var deductionType: DeductionType = DeductionType.NONE
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = context as YearlyListFragmentCallback
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,13 +90,21 @@ class YearlyListFragment : Fragment() {
 
         val hourly: Float
             get() = (reportedPay + cashTips) / hours
+
+        fun getExpenses(costPerMile: Float) = mileage * costPerMile
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val entryAdapter = YearlyAdapter()
         recyclerView.adapter = entryAdapter
+
+        callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
+            deductionType = it
+            entryAdapter.notifyDataSetChanged()
+        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -124,6 +144,8 @@ class YearlyListFragment : Fragment() {
             }
         }
     }
+
+    interface YearlyListFragmentCallback : DeductionCallback
 
     inner class YearlyAdapter : ListAdapter<Yearly, YearlyHolder>(DIFF_CALLBACK) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): YearlyHolder =
@@ -169,6 +191,14 @@ class YearlyListFragment : Fragment() {
         fun bind(item: Yearly, payloads: MutableList<Any>? = null) {
             this.yearly = item
 
+            val costPerMile: Float = when (deductionType) {
+                DeductionType.NONE -> 0f
+                DeductionType.GAS_ONLY -> 0f
+                DeductionType.ALL_EXPENSES -> 0f
+                DeductionType.STD_DEDUCTION -> callback?.standardMileageDeductions?.get(this.yearly.year)
+                    ?: 0f
+            }
+
             val listItemDetailsVisibility = (payloads?.let {
                 if (it.size == 1 && it[0] in listOf(
                         VISIBLE,
@@ -187,6 +217,9 @@ class YearlyListFragment : Fragment() {
             binding.listItemTitle.text = this.yearly.year.toString()
             binding.listItemTitle2.text =
                 getCurrencyString(this.yearly.reportedPay + this.yearly.cashTips)
+            binding.listItemSubtitle2.text =
+                getCurrencyString(this.yearly.reportedPay + this.yearly.cashTips - this.yearly.mileage * costPerMile)
+
             detailsBinding.listItemReportedIncome.text =
                 getCurrencyString(yearly.reportedPay)
             detailsBinding.listItemCashTips.text = getCurrencyString(yearly.cashTips)

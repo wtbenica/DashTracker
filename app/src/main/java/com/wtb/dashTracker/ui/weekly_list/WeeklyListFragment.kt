@@ -19,7 +19,6 @@ package com.wtb.dashTracker.ui.weekly_list
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -36,7 +35,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.DeductionCallback
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
@@ -47,7 +46,6 @@ import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.toVisibleIfTrueElseGone
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -91,7 +89,6 @@ class WeeklyListFragment : Fragment() {
         recyclerView.adapter = entryAdapter
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
-            Log.d(APP + WeeklyListFragment::class.simpleName, "Setting deductiontype to ${it.name}")
             deductionType = it
             entryAdapter.notifyDataSetChanged()
         }
@@ -109,6 +106,8 @@ class WeeklyListFragment : Fragment() {
         super.onDetach()
         callback = null
     }
+
+    interface WeeklyListFragmentCallback: DeductionCallback
 
     inner class EntryAdapter :
         PagingDataAdapter<CompleteWeekly, WeeklyHolder>(DIFF_CALLBACK) {
@@ -128,11 +127,6 @@ class WeeklyListFragment : Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeeklyHolder =
             WeeklyHolder(parent)
 
-    }
-
-    interface WeeklyListFragmentCallback {
-        val deductionType: StateFlow<DeductionType>
-        val standardMileageDeductions: Map<Int, Float>
     }
 
     inner class WeeklyHolder(parent: ViewGroup) : RecyclerView.ViewHolder(

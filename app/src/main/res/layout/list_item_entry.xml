@@ -69,6 +69,22 @@
                 app:layout_constraintStart_toEndOf="@id/list_item_recurring"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="$81.25" />
+
+
+            <TextView
+                android:id="@+id/list_item_subtitle_2_label"
+                style="@style/ListItemHeaderTextView.Subtitle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2"
+                android:text="Net" />
+
+            <TextView
+                android:id="@+id/list_item_subtitle_2"
+                style="@style/ListItemHeaderTextView.Subtitle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/list_item_title"
+                tools:text="$24.32" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
