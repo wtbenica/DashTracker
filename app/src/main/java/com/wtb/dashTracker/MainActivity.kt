@@ -69,6 +69,7 @@ import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
+import com.wtb.dashTracker.ui.yearly_list.YearlyListFragment.YearlyListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
@@ -90,7 +91,7 @@ import java.util.zip.ZipInputStream
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback,
-    ExpenseListFragmentCallback {
+    YearlyListFragmentCallback, ExpenseListFragmentCallback {
 
     private val viewModel: MainActivityViewModel by viewModels()
     private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
@@ -549,4 +550,10 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
     }
 }
+
+interface DeductionCallback {
+    val deductionType: StateFlow<DeductionType>
+    val standardMileageDeductions: Map<Int, Float>
+}
+
 

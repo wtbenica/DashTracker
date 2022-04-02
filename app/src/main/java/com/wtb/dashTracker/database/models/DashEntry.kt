@@ -190,6 +190,8 @@ data class DashEntry(
 
     override fun toString(): String = "$date: $startTime - $endTime $$totalEarned"
 
+    fun getExpenses(costPerMile: Float): Float = (mileage ?: 0f) * costPerMile
+
     companion object : CSVConvertible<DashEntry> {
         private val daySplitTime = LocalTime.of(17, 0)
         private val nightSplitTime = daySplitTime.minusHours(12)

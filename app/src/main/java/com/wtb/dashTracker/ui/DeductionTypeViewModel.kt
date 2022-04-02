@@ -46,4 +46,13 @@ class DeductionTypeViewModel : ViewModel() {
     }
 
     val stdMileageDeductions: Flow<List<StandardMileageDeduction>> = repository.getAllStdMileageDeduction()
+
+    fun calculateExpenses(deductionType: DeductionType) {
+        when (deductionType) {
+            DeductionType.NONE -> TODO()
+            DeductionType.GAS_ONLY -> TODO()
+            DeductionType.ALL_EXPENSES -> TODO()
+            DeductionType.STD_DEDUCTION -> TODO()
+        }
+    }
 }

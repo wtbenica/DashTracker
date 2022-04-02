@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.entry_list
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -29,18 +30,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wtb.dashTracker.DeductionCallback
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
@@ -57,6 +61,7 @@ class EntryListFragment : Fragment() {
     private var callback: EntryListFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
+    private var deductionType: DeductionType = DeductionType.NONE
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -89,6 +94,7 @@ class EntryListFragment : Fragment() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -100,6 +106,11 @@ class EntryListFragment : Fragment() {
             })
         }
         recyclerView.adapter = entryAdapter
+
+        callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
+            deductionType = it
+            entryAdapter.notifyDataSetChanged()
+        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -115,7 +126,7 @@ class EntryListFragment : Fragment() {
         callback = null
     }
 
-    interface EntryListFragmentCallback
+    interface EntryListFragmentCallback: DeductionCallback
 
     inner class EntryAdapter :
         PagingDataAdapter<DashEntry, EntryAdapter.EntryHolder>(DIFF_CALLBACK) {
@@ -174,6 +185,13 @@ class EntryListFragment : Fragment() {
             fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
                 this.entry = item
 
+                val costPerMile: Float = when (deductionType) {
+                    DeductionType.NONE -> 0f
+                    DeductionType.GAS_ONLY -> 0f
+                    DeductionType.ALL_EXPENSES -> 0f
+                    DeductionType.STD_DEDUCTION -> callback?.standardMileageDeductions?.get(this.entry.date.year)
+                } ?: 0f
+
                 val detailsTableVisibility = (payloads?.let {
                     if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) {
                         it[0]
@@ -195,6 +213,8 @@ class EntryListFragment : Fragment() {
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.entry.startTime, this.entry.endTime)
                 binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.entry.isIncomplete)
+                binding.listItemSubtitle2.text =
+                    getCurrencyString((this.entry.totalEarned ?: 0f) - this.entry.getExpenses(costPerMile))
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.entry.pay)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.entry.cashTips)
