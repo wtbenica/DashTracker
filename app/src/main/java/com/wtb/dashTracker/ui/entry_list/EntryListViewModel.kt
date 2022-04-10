@@ -34,5 +34,6 @@ class EntryListViewModel : ViewModel() {
 
     fun deleteEntryById(id: Int) = repository.deleteEntryById(id)
 
-    suspend fun getAllExpenseCPM(date: LocalDate): Float = repository.getAllExpenseCPM(date)
+    suspend fun getAllExpenseCPM(date: LocalDate, purposeId: Int? = null): Float =
+        repository.getAllExpenseCPM(date, purposeId)
 }

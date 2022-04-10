@@ -73,7 +73,6 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gas_button"
             style="@style/bottomSheetToggleButton"
-            android:enabled="false"
             android:text="Gas" />
 
         <com.google.android.material.button.MaterialButton

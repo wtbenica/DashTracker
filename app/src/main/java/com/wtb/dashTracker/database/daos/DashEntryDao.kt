@@ -75,32 +75,39 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @RawQuery(observedEntities = [Expense::class, DashEntry::class])
     abstract suspend fun getFloatByQuery(query: SupportSQLiteQuery): Float
 
-    suspend fun getCostPerMile(date: LocalDate): Float {
-        val startDate = date.minusDays(30)
+    suspend fun getCostPerMile(date: LocalDate, purposeId: Int? = null): Float {
+        val startDate = date.minusDays(NUM_DAYS_HISTORY)
         val query = SimpleSQLiteQuery(
             """SELECT (
             SELECT SUM(amount)
             FROM Expense
-            WHERE date BETWEEN '$startDate' and '$date') 
-        / (
-            SELECT max(endOdometer) - min(startOdometer)
-            from DashEntry
-            WHERE date BETWEEN '$startDate' AND '$date'
-            AND startOdometer != 0)"""
+            WHERE date BETWEEN '$startDate' and '$date'"""
+                    + if (purposeId != null) {
+                """ AND purpose = $purposeId) """
+            } else {
+                ")"
+            } +
+                    """ / (
+                        SELECT max (endOdometer) - min(startOdometer)
+                                from DashEntry
+                                WHERE date BETWEEN '$startDate' AND '$date'
+                                AND startOdometer != 0)"""
         )
         Log.d(APP + "DashEntryDao", "q: ${query.sql}")
         return getFloatByQuery(query)
     }
 
     companion object {
+        private const val NUM_DAYS_HISTORY: Long = 30
+
         private const val SQL_GET_ALL =
-            """SELECT * FROM DashEntry 
-            ORDER BY date desc, startTime desc"""
+            """SELECT * FROM DashEntry
+                ORDER BY date desc, startTime desc"""
 
         private const val SQL_GET_BY_DATE =
-            """SELECT * FROM DashEntry 
-            WHERE date >= :startDate 
-            AND date <= :endDate 
-            ORDER BY date desc, startTime desc"""
+            """SELECT * FROM DashEntry
+                WHERE date >= :startDate
+                AND date <= :endDate
+                ORDER BY date desc, startTime desc"""
     }
 }

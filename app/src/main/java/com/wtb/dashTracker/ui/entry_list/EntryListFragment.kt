@@ -43,6 +43,7 @@ import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
@@ -191,11 +192,8 @@ class EntryListFragment : Fragment() {
                     withContext(Dispatchers.Default) {
                         when (deductionType) {
                             DeductionType.NONE -> 0f
-                            DeductionType.GAS_ONLY -> 0f
-                            DeductionType.ALL_EXPENSES -> {
-                                Log.d(TAG, "About to call get all expenses")
-                                viewModel.getAllExpenseCPM(item.date)
-                            }
+                            DeductionType.GAS_ONLY -> viewModel.getAllExpenseCPM(item.date, GAS.id)
+                            DeductionType.ALL_EXPENSES -> viewModel.getAllExpenseCPM(item.date)
                             DeductionType.STD_DEDUCTION -> callback?.standardMileageDeductions?.get(
                                 this@EntryHolder.entry.date.year
                             )
