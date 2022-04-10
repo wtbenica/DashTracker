@@ -51,10 +51,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.database.models.Expense
-import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.*
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.DeductionType
@@ -271,8 +268,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
                 if (isChecked) {
                     when (checkedId) {
-                        R.id.gas_button -> viewModel.setDeductionType(GAS_ONLY)
-                        R.id.actual_button -> viewModel.setDeductionType(ALL_EXPENSES)
+                        R.id.gas_button -> deductionTypeViewModel.setDeductionType(GAS_ONLY)
+                        R.id.actual_button -> deductionTypeViewModel.setDeductionType(ALL_EXPENSES)
                         R.id.standard_button -> deductionTypeViewModel.setDeductionType(
                             STD_DEDUCTION
                         )
@@ -426,6 +423,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
             var entryModels: List<DashEntry> = emptyList()
             var weeklyModels: List<Weekly> = emptyList()
+            var expenseModels: List<Expense> = emptyList()
+            var purposeModels: List<ExpensePurpose> = emptyList()
+
             var nextEntry: ZipEntry? = zipIn.nextEntry
             while (nextEntry != null) {
                 val destFile = File(filesDir, nextEntry.name)
@@ -449,6 +449,16 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                                 Weekly.fromCSV(it)
                             }?.let { weeklyModels = it }
                         }
+                        entryName.startsWith(CSVUtils.FILE_EXPENSES, false) -> {
+                            getModelsFromCsv(inputStream) {
+                                Expense.fromCSV(it)
+                            }?.let { expenseModels = it }
+                        }
+                        entryName.startsWith(CSVUtils.FILE_PURPOSES, false) -> {
+                            getModelsFromCsv(inputStream) {
+                                ExpensePurpose.fromCSV(it)
+                            }?.let { purposeModels = it }
+                        }
                     }
                 }
 
@@ -459,7 +469,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
             viewModel.importStream(
                 entries = entryModels.ifEmpty { null },
-                weeklies = weeklyModels.ifEmpty { null }
+                weeklies = weeklyModels.ifEmpty { null },
+                expenses = expenseModels.ifEmpty { null },
+                purposes = purposeModels.ifEmpty { null }
             )
         }
     }

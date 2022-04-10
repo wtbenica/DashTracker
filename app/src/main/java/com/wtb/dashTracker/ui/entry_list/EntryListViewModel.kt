@@ -22,6 +22,7 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 class EntryListViewModel : ViewModel() {
@@ -32,4 +33,6 @@ class EntryListViewModel : ViewModel() {
     fun delete(entry: DashEntry) = repository.deleteModel(entry)
 
     fun deleteEntryById(id: Int) = repository.deleteEntryById(id)
+
+    suspend fun getAllExpenseCPM(date: LocalDate): Float = repository.getAllExpenseCPM(date)
 }

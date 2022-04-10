@@ -20,6 +20,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.wtb.dashTracker.database.models.Weekly.Companion.Columns.*
 import com.wtb.dashTracker.extensions.weekOfYear
 import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,19 +41,21 @@ data class Weekly(
         get() = basePayAdjustment == null
 
     companion object : CSVConvertible<Weekly> {
+        private enum class Columns(val headerName: String) {
+            DATE("Start of Week"),
+            ADJUST("Base Pay Adjustment"),
+            WEEK_NUM("Week Number"),
+            IS_NEW("isNew")
+        }
+
         override val headerList: List<String>
-            get() = listOf(
-                "Start of Week",
-                "Base Pay Adjustment",
-                "Week Number",
-                "isNew"
-            )
+            get() = Columns.values().map(Columns::headerName)
 
         override fun fromCSV(row: Map<String, String>): Weekly =
             Weekly(
-                date = LocalDate.parse(row["Start of Week"]),
-                basePayAdjustment = row["Base Pay Adjustment"]?.toFloatOrNull(),
-                isNew = row["isNew"]?.toBoolean() ?: false,
+                date = LocalDate.parse(row[DATE.headerName]),
+                basePayAdjustment = row[ADJUST.headerName]?.toFloatOrNull(),
+                isNew = row[IS_NEW.headerName]?.toBoolean() ?: false,
             )
 
         override fun Weekly.asList(): List<*> =

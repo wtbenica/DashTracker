@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.database.models
 
 import androidx.room.*
+import com.wtb.dashTracker.util.CSVConvertible
 import java.time.LocalDate
 
 @Entity(
@@ -44,6 +45,34 @@ data class Expense(
 
     val gallons: Float?
         get() = pricePerGal?.let { amount?.let { a -> a / it } }
+
+    companion object : CSVConvertible<Expense> {
+        private enum class Columns(val headerName: String) {
+            DATE("Date"),
+            AMOUNT("Amount"),
+            PURPOSE("Purpose"),
+            PRICE_PER_GAL("Price Per Gallon")
+        }
+
+        override val headerList: List<String>
+            get() = Columns.values().map(Columns::headerName)
+
+        override fun fromCSV(row: Map<String, String>): Expense =
+            Expense(
+                date = LocalDate.parse(row[Columns.DATE.headerName]),
+                amount = row[Columns.AMOUNT.headerName]?.toFloatOrNull(),
+                purpose = row[Columns.PURPOSE.headerName]?.toInt() ?: Purpose.GAS.id,
+                pricePerGal = row[Columns.PRICE_PER_GAL.headerName]?.toFloatOrNull()
+            )
+
+        override fun Expense.asList(): List<*> =
+            listOf(
+                date,
+                amount,
+                purpose,
+                pricePerGal
+            )
+    }
 }
 
 @Entity(
@@ -59,6 +88,28 @@ data class ExpensePurpose(
         get() = purposeId
 
     override fun toString(): String = name ?: ""
+
+    companion object: CSVConvertible<ExpensePurpose> {
+        private enum class Columns(val headerName: String) {
+            ID("Purpose Id"),
+            NAME("Name")
+        }
+
+        override val headerList: List<String>
+            get() = Columns.values().map(Columns::headerName)
+
+        override fun fromCSV(row: Map<String, String>): ExpensePurpose =
+            ExpensePurpose(
+                purposeId = row[Columns.ID.headerName]?.toInt() ?: AUTO_ID,
+                name = row[Columns.NAME.headerName]
+            )
+
+        override fun ExpensePurpose.asList(): List<*> =
+            listOf(
+                purposeId,
+                name
+            )
+    }
 }
 
 enum class Purpose(val id: Int, val purposeName: String) {

@@ -79,7 +79,6 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/actual_button"
             style="@style/bottomSheetToggleButton"
-            android:enabled="false"
             android:text="All" />
 
         <com.google.android.material.button.MaterialButton

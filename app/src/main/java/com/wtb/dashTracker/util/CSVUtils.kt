@@ -25,10 +25,10 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.database.models.DashEntry.Companion.asList
-import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.database.models.Expense.Companion.asList
+import com.wtb.dashTracker.database.models.ExpensePurpose.Companion.asList
 import com.wtb.dashTracker.database.models.Weekly.Companion.asList
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
@@ -45,7 +45,13 @@ class CSVUtils {
     private val repository: Repository
         get() = Repository.get()
 
-    fun export(entries: List<DashEntry>?, weeklies: List<Weekly>?, ctx: Context) {
+    fun export(
+        entries: List<DashEntry>?,
+        weeklies: List<Weekly>?,
+        expenses: List<Expense>,
+        purposes: List<ExpensePurpose>,
+        ctx: Context
+    ) {
         fun generateFile(context: Context, fileName: String): File? {
             val csvFile = File(context.filesDir, fileName)
             csvFile.createNewFile()
@@ -71,6 +77,24 @@ class CSVUtils {
                 writeRow(Weekly.headerList)
                 weeklies?.forEach { weekly ->
                     writeRow(weekly.asList())
+                }
+            }
+        }
+
+        fun exportExpenses(csvFile: File, expenses: List<Expense>?) {
+            csvWriter().open(csvFile, append = false) {
+                writeRow(Expense.headerList)
+                expenses?.forEach { expense ->
+                    writeRow(expense.asList())
+                }
+            }
+        }
+
+        fun exportPurposes(csvFile: File, purposes: List<ExpensePurpose>?) {
+            csvWriter().open(csvFile, append = false) {
+                writeRow(ExpensePurpose.headerList)
+                purposes?.forEach { purpose ->
+                    writeRow(purpose.asList())
                 }
             }
         }
@@ -107,14 +131,20 @@ class CSVUtils {
 
         val dailyFile: File? = generateFile(ctx, getEntriesFileName())
         val weeklyFile: File? = generateFile(ctx, getWeekliesFileName())
+        val expenseFile: File? = generateFile(ctx, getExpensesFileName())
+        val purposeFile: File? = generateFile(ctx, getPurposesFileName())
 
-        if (dailyFile != null && weeklyFile != null) {
+        if (dailyFile != null && weeklyFile != null && expenseFile != null && purposeFile != null) {
             exportEntries(dailyFile, entries)
             exportWeeklies(weeklyFile, weeklies)
+            exportExpenses(expenseFile, expenses)
+            exportPurposes(purposeFile, purposes)
 
-            val zipFile: File = zipFiles(ctx, dailyFile, weeklyFile)
+            val zipFile: File = zipFiles(ctx, dailyFile, weeklyFile, expenseFile, purposeFile)
             dailyFile.delete()
             weeklyFile.delete()
+            expenseFile.delete()
+            purposeFile.delete()
 
             (ctx as MainActivity).runOnUiThread {
                 ConfirmationDialogExport(
@@ -151,6 +181,8 @@ class CSVUtils {
         const val FILE_ZIP = "dash_tracker_"
         const val FILE_ENTRIES = "dash_tracker_entries_"
         const val FILE_WEEKLIES = "dash_tracker_weeklies_"
+        const val FILE_EXPENSES = "dash_tracker_expenses_"
+        const val FILE_PURPOSES = "dash_tracker_purposes_"
 
         private fun getEntriesFileName() =
             "$FILE_ENTRIES${LocalDate.now().toString().replace('-', '_')}.csv"
@@ -160,6 +192,12 @@ class CSVUtils {
 
         private fun getWeekliesFileName() =
             "$FILE_WEEKLIES${LocalDate.now().toString().replace('-', '_')}.csv"
+
+        private fun getExpensesFileName() =
+            "$FILE_EXPENSES${LocalDate.now().toString().replace('-', '_')}.csv"
+
+        private fun getPurposesFileName() =
+            "$FILE_PURPOSES${LocalDate.now().toString().replace('-', '_')}.csv"
     }
 }
 

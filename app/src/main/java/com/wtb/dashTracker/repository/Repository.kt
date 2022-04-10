@@ -130,6 +130,8 @@ class Repository private constructor(context: Context) {
     /**
      * Expense
      */
+    private suspend fun allExpenses(): List<Expense> = expenseDao.getAllSuspend()
+
     val allExpensePurposes: Flow<List<ExpensePurpose>> = expensePurposeDao.getAll()
 
     val allFullPurposes: Flow<List<FullExpensePurpose>> = expensePurposeDao.getAllFull()
@@ -166,13 +168,16 @@ class Repository private constructor(context: Context) {
     suspend fun getPurposeIdByName(name: String): Int? =
         expensePurposeDao.getPurposeIdByName(name)
 
+    private suspend fun allPurposes(): List<ExpensePurpose> = expensePurposeDao.getAllSuspend()
+
     fun getExpensePurposeFlowById(id: Int): Flow<ExpensePurpose?> =
         expensePurposeDao.getFlow(id)
 
     /**
      * Standard Mileage Deductions
      */
-    fun getAllStdMileageDeduction(): Flow<List<StandardMileageDeduction>> = standardMileageDeductionDao.getAll()
+    fun getAllStdMileageDeduction(): Flow<List<StandardMileageDeduction>> =
+        standardMileageDeductionDao.getAll()
 
     /**
      * Generic<DataModel> functions
@@ -220,7 +225,7 @@ class Repository private constructor(context: Context) {
 
     fun export(ctx: Context) {
         CoroutineScope(Dispatchers.Default).launch {
-            csvUtil.export(allEntries(), allWeeklies(), ctx)
+            csvUtil.export(allEntries(), allWeeklies(), allExpenses(), allPurposes(), ctx)
         }
     }
 
@@ -229,7 +234,9 @@ class Repository private constructor(context: Context) {
 
     fun importStream(
         entries: List<DashEntry>? = null,
-        weeklies: List<Weekly>? = null
+        weeklies: List<Weekly>? = null,
+        expenses: List<Expense>? = null,
+        purposes: List<ExpensePurpose>? = null
     ) {
         CoroutineScope(Dispatchers.Default).launch {
             weeklies?.let {
@@ -240,8 +247,23 @@ class Repository private constructor(context: Context) {
                 entryDao.clear()
                 entryDao.upsertAll(it)
             }
+
+            if (expenses != null && purposes != null) {
+                expenseDao.clear()
+                expensePurposeDao.clear()
+                expensePurposeDao.upsertAll(purposes)
+                expenseDao.upsertAll(expenses)
+            } else if (expenses != null) {
+                expenseDao.clear()
+                expenseDao.upsertAll(expenses)
+            } else if (purposes != null) {
+                expensePurposeDao.clear()
+                expensePurposeDao.upsertAll(purposes)
+            }
         }
     }
+
+    suspend fun getAllExpenseCPM(date: LocalDate): Float = entryDao.getCostPerMile(date)
 
     companion object {
         private var INSTANCE: Repository? = null

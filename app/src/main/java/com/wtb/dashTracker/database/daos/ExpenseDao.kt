@@ -26,6 +26,7 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 @Dao
@@ -39,6 +40,9 @@ abstract class ExpenseDao : BaseDao<Expense>("Expense", "expenseId") {
     @Query(SQL_GET_ALL)
     abstract override fun getAll(): Flow<List<Expense>>
 
+    @Query(SQL_GET_ALL)
+    abstract suspend fun getAllSuspend(): List<Expense>
+
     @Transaction
     @Query(SQL_GET_ALL)
     abstract fun getAllPagingSource(): PagingSource<Int, FullExpense>
@@ -50,6 +54,16 @@ abstract class ExpenseDao : BaseDao<Expense>("Expense", "expenseId") {
         val query = SimpleSQLiteQuery("DELETE FROM Expense WHERE expenseId = $id")
 
         return executeRawQuery(query)
+    }
+
+
+    fun getExpenses(date: LocalDate) {
+        val query = SimpleSQLiteQuery(
+            """SELECT SUM(amount)
+                FROM Expense
+                WHERE date BETWEEN ${date.minusDays(60)} AND $date
+            """
+        )
     }
 
     companion object {
@@ -78,17 +92,25 @@ abstract class ExpensePurposeDao : BaseDao<ExpensePurpose>("ExpensePurpose", "pu
     )
     abstract suspend fun getPurposeIdByName(name: String): Int?
 
-    @Query("SELECT * FROM ExpensePurpose ORDER BY name")
+    @Query(SQL_GET_ALL)
     abstract override fun getAll(): Flow<List<ExpensePurpose>>
 
+    @Query(SQL_GET_ALL)
+    abstract suspend fun getAllSuspend(): List<ExpensePurpose>
+
     @Transaction
-    @Query("SELECT * FROM ExpensePurpose ORDER BY name")
+    @Query(SQL_GET_ALL)
     abstract fun getAllFull(): Flow<List<FullExpensePurpose>>
+
+    companion object {
+        private const val SQL_GET_ALL = "SELECT * FROM ExpensePurpose ORDER BY name"
+    }
 }
 
 @ExperimentalCoroutinesApi
 @Dao
-abstract class StandardMileageDeductionDao : BaseDao<StandardMileageDeduction>("StandardMileageDeduction", "year") {
+abstract class StandardMileageDeductionDao :
+    BaseDao<StandardMileageDeduction>("StandardMileageDeduction", "year") {
     @Query("DELETE FROM StandardMileageDeduction")
     abstract override fun clear()
 

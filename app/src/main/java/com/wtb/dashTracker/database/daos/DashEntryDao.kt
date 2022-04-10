@@ -16,13 +16,16 @@
 
 package com.wtb.dashTracker.database.daos
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
+import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Expense
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -68,6 +71,26 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
         startDate: LocalDate = LocalDate.MIN,
         endDate: LocalDate = LocalDate.MAX
     ): PagingSource<Int, DashEntry>
+
+    @RawQuery(observedEntities = [Expense::class, DashEntry::class])
+    abstract suspend fun getFloatByQuery(query: SupportSQLiteQuery): Float
+
+    suspend fun getCostPerMile(date: LocalDate): Float {
+        val startDate = date.minusDays(30)
+        val query = SimpleSQLiteQuery(
+            """SELECT (
+            SELECT SUM(amount)
+            FROM Expense
+            WHERE date BETWEEN '$startDate' and '$date') 
+        / (
+            SELECT max(endOdometer) - min(startOdometer)
+            from DashEntry
+            WHERE date BETWEEN '$startDate' AND '$date'
+            AND startOdometer != 0)"""
+        )
+        Log.d(APP + "DashEntryDao", "q: ${query.sql}")
+        return getFloatByQuery(query)
+    }
 
     companion object {
         private const val SQL_GET_ALL =

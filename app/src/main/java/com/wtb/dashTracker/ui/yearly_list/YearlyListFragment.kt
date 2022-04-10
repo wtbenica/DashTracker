@@ -38,6 +38,7 @@ import com.wtb.dashTracker.DeductionCallback
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
@@ -109,6 +110,7 @@ class YearlyListFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allWeeklies.collectLatest { cwList: List<CompleteWeekly> ->
+                    // TODO: Something tells me this could be done better with sql
                     yearlies.clear()
                     var numChecked = 0
                     var year =
@@ -121,19 +123,15 @@ class YearlyListFragment : Fragment() {
                         val res = Yearly(year)
                         thisYears.forEach { cw: CompleteWeekly ->
                             res.adjust += cw.weekly.basePayAdjustment ?: 0f
-                            res.pay += cw.entries.mapNotNull { entry ->
-                                entry.pay
-                            }
+                            res.pay += cw.entries.mapNotNull(DashEntry::pay)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.otherPay += cw.entries.mapNotNull { entry ->
-                                entry.otherPay
-                            }
+                            res.otherPay += cw.entries.mapNotNull(DashEntry::otherPay)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.cashTips += cw.entries.mapNotNull { entry -> entry.cashTips }
+                            res.cashTips += cw.entries.mapNotNull(DashEntry::cashTips)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.mileage += cw.entries.mapNotNull { entry -> entry.mileage }
+                            res.mileage += cw.entries.mapNotNull (DashEntry::mileage)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.hours += cw.entries.mapNotNull { entry -> entry.totalHours }
+                            res.hours += cw.entries.mapNotNull (DashEntry::totalHours)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
                         }
                         yearlies.add(res)

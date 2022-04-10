@@ -183,6 +183,7 @@ class WeeklyListFragment : Fragment() {
                 )
             }
 
+
             val listItemDetailsVisibility = (payloads?.let {
                 if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) {
                     it[0]
@@ -198,6 +199,19 @@ class WeeklyListFragment : Fragment() {
                     R.drawable.bg_list_item
                 }
             )
+
+            binding.listItemTitle.text =
+                getStringOrElse(
+                    R.string.time_range,
+                    "",
+                    this.compWeekly.weekly.date.minusDays(6).shortFormat.uppercase(),
+                    this.compWeekly.weekly.date.shortFormat.uppercase()
+                )
+
+            binding.listItemAlert.visibility =
+                toVisibleIfTrueElseGone(this.compWeekly.weekly.isIncomplete)
+
+            binding.listItemDetails.visibility = listItemDetailsVisibility
 
             binding.listItemTitle2.text =
                 getCurrencyString(
@@ -251,19 +265,6 @@ class WeeklyListFragment : Fragment() {
 
             detailsBinding.listItemWeeklyMiles.text =
                 getFloatString(compWeekly.miles)
-
-            binding.listItemAlert.visibility =
-                toVisibleIfTrueElseGone(this.compWeekly.weekly.isIncomplete)
-
-            binding.listItemTitle.text =
-                getStringOrElse(
-                    R.string.time_range,
-                    "",
-                    this.compWeekly.weekly.date.minusDays(6).shortFormat.uppercase(),
-                    this.compWeekly.weekly.date.shortFormat.uppercase()
-                )
-
-            binding.listItemDetails.visibility = listItemDetailsVisibility
         }
     }
 

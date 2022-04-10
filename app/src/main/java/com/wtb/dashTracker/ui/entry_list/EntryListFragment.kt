@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.entry_list
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -38,6 +39,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.DeductionCallback
+import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
@@ -50,9 +52,8 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 class EntryListFragment : Fragment() {
@@ -126,7 +127,7 @@ class EntryListFragment : Fragment() {
         callback = null
     }
 
-    interface EntryListFragmentCallback: DeductionCallback
+    interface EntryListFragmentCallback : DeductionCallback
 
     inner class EntryAdapter :
         PagingDataAdapter<DashEntry, EntryAdapter.EntryHolder>(DIFF_CALLBACK) {
@@ -185,12 +186,37 @@ class EntryListFragment : Fragment() {
             fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
                 this.entry = item
 
-                val costPerMile: Float = when (deductionType) {
-                    DeductionType.NONE -> 0f
-                    DeductionType.GAS_ONLY -> 0f
-                    DeductionType.ALL_EXPENSES -> 0f
-                    DeductionType.STD_DEDUCTION -> callback?.standardMileageDeductions?.get(this.entry.date.year)
-                } ?: 0f
+                var costPerMile: Float?
+                CoroutineScope(Dispatchers.Default).launch {
+                    withContext(Dispatchers.Default) {
+                        when (deductionType) {
+                            DeductionType.NONE -> 0f
+                            DeductionType.GAS_ONLY -> 0f
+                            DeductionType.ALL_EXPENSES -> {
+                                Log.d(TAG, "About to call get all expenses")
+                                viewModel.getAllExpenseCPM(item.date)
+                            }
+                            DeductionType.STD_DEDUCTION -> callback?.standardMileageDeductions?.get(
+                                this@EntryHolder.entry.date.year
+                            )
+                        }
+                    }.let {
+                        costPerMile = it
+                        (context as MainActivity).runOnUiThread {
+                            Log.d(
+                                TAG,
+                                "Something Something ${deductionType.name} $costPerMile $it"
+                            )
+                            binding.listItemSubtitle2.text =
+                                getCurrencyString(
+                                    (this@EntryHolder.entry.totalEarned
+                                        ?: 0f) - this@EntryHolder.entry.getExpenses(
+                                        costPerMile ?: 0f
+                                    )
+                                )
+                        }
+                    }
+                }
 
                 val detailsTableVisibility = (payloads?.let {
                     if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) {
@@ -213,8 +239,6 @@ class EntryListFragment : Fragment() {
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.entry.startTime, this.entry.endTime)
                 binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.entry.isIncomplete)
-                binding.listItemSubtitle2.text =
-                    getCurrencyString((this.entry.totalEarned ?: 0f) - this.entry.getExpenses(costPerMile))
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.entry.pay)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.entry.cashTips)
