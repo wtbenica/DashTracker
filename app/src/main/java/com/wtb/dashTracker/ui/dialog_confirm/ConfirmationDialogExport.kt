@@ -25,6 +25,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmExportBinding
@@ -33,7 +34,7 @@ import com.wtb.dashTracker.views.FullWidthDialogFragment
 
 
 open class ConfirmationDialogExport(
-    val ctx: Context,
+    private val ctx: Context,
     val intent: Intent,
 ) : FullWidthDialogFragment() {
 
@@ -53,7 +54,7 @@ open class ConfirmationDialogExport(
             else
                 R.drawable.ic_expand_up
 
-            binding.expandArray.setImageResource(rs)
+            binding.exportNotesBtn.icon = AppCompatResources.getDrawable(requireContext(), rs)
         }
 
         binding.noButton.apply {

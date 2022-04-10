@@ -51,7 +51,7 @@
             android:layout_row="1"
             android:layout_column="0"
             android:layout_gravity="center_vertical"
-            android:text="Show" />
+            android:text="@string/label_show" />
 
         <Space
             android:layout_width="8dp"
@@ -73,18 +73,18 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/income_button"
                 style="@style/bottomSheetToggleButton"
-                android:text="Income" />
+                android:text="@string/label_income" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/expense_button"
                 style="@style/bottomSheetToggleButton"
                 android:enabled="true"
-                android:text="Expenses" />
+                android:text="@string/label_expenses" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/trends_button"
                 style="@style/bottomSheetToggleButton"
-                android:text="Trends" />
+                android:text="@string/label_trends" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <com.google.android.material.card.MaterialCardView

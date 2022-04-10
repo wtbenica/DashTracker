@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:text="Group" />
+        android:text="@string/bottom_sheet_income_lbl_period" />
 
     <Space android:layout_width="@dimen/margin_narrow" />
 
@@ -73,18 +73,18 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gas_button"
             style="@style/bottomSheetToggleButton"
-            android:text="Gas" />
+            android:text="@string/expense_purpose_gas" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/actual_button"
             style="@style/bottomSheetToggleButton"
-            android:text="All" />
+            android:text="@string/expense_purpose_all" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/standard_button"
             style="@style/bottomSheetToggleButton"
             android:enabled="true"
-            android:text="Std." />
+            android:text="@string/expense_purpose_standard" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
 </GridLayout>

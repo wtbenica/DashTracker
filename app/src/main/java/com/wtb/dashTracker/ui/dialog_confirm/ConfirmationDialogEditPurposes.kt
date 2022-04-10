@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 
 
 @ExperimentalCoroutinesApi
-class ConfirmationDialogEditPurposes() : FullWidthDialogFragment() {
+class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
 
     private lateinit var binding: DialogFragConfirmEditPurposesBinding
     private val viewModel: ExpenseViewModel by viewModels()

@@ -32,7 +32,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 open class ConfirmationDialogImport(
-    val ctx: MainActivity
+    private val ctx: MainActivity
 ) : FullWidthDialogFragment() {
 
     override fun onCreateView(

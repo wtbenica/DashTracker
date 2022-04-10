@@ -59,7 +59,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.apply {
-            fun getIntNotZero(key: String): Int? = getInt(key)?.let {
+            fun getIntNotZero(key: String): Int? = getInt(key).let {
                 if (it != 0)
                     it
                 else

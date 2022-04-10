@@ -46,7 +46,7 @@
             android:layout_marginStart="@dimen/margin_default"
             android:layout_marginBottom="@dimen/margin_half"
             android:gravity="bottom"
-            android:text="Not Gas" />
+            android:text="@string/lbl_other" />
 
         <ImageView
             android:id="@+id/list_item_recurring"

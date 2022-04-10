@@ -76,7 +76,7 @@
                 style="@style/ListItemHeaderTextView.Subtitle"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2"
-                android:text="Net" />
+                android:text="@string/list_item_label_net" />
 
             <TextView
                 android:id="@+id/list_item_subtitle_2"
