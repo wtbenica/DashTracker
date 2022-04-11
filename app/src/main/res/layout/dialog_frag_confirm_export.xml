@@ -65,7 +65,8 @@
                         android:padding="@dimen/margin_default"
                         android:text="@string/confirm_export"
                         android:textColor="?attr/colorDialogText"
-                        android:textSize="@dimen/text_size_med" />
+                        android:textSize="@dimen/text_size_med"
+                        android:textStyle="bold" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/export_notes_btn"

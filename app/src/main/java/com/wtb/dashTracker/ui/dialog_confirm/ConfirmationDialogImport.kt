@@ -23,6 +23,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmImportBinding
@@ -44,14 +45,14 @@ open class ConfirmationDialogImport(
 
         val binding = DialogFragConfirmImportBinding.inflate(inflater)
 
-        binding.showModifiedInfoBtn.setOnClickListener {
+        binding.importNotesBtn.setOnClickListener {
             binding.modifiedInfoText.setVisibleIfTrue(binding.modifiedInfoText.visibility == GONE)
             val rs = if (binding.modifiedInfoText.visibility == GONE)
                 R.drawable.ic_expand_down
             else
                 R.drawable.ic_expand_up
 
-            binding.expandArray.setImageResource(rs)
+            binding.importNotesBtn.icon = AppCompatResources.getDrawable(requireContext(), rs)
         }
 
         binding.noButton.apply {

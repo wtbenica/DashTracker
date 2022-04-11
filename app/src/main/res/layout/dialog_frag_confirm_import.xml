@@ -51,114 +51,89 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/colorDialogContentBg">
+                    android:background="?attr/colorDialogContentBg"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/the_question"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:padding="@dimen/margin_default"
                         android:text="@string/confirm_import"
                         android:textColor="?attr/colorDialogText"
                         android:textSize="@dimen/text_size_med"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textStyle="bold" />
 
-                    <LinearLayout
-                        android:id="@+id/show_modified_info_btn"
-                        android:layout_width="0dp"
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/import_notes_btn"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:padding="@dimen/margin_default"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/the_question">
-
-                        <ImageView
-                            android:id="@+id/expand_array"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_expand_down"
-                            app:tint="?attr/colorTextPrimary" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:fontFamily="sans-serif"
-                            android:paddingHorizontal="@dimen/margin_narrow"
-                            android:text="@string/confirm_import_show_modified_info_lbl"
-                            android:textAllCaps="false"
-                            android:textColor="?attr/colorDialogText"
-                            android:textSize="@dimen/text_size_sm"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                        android:layout_marginHorizontal="@dimen/margin_half"
+                        android:layout_marginBottom="@dimen/margin_default"
+                        android:text="@string/confirm_export_notes_lbl"
+                        android:textAlignment="textStart"
+                        android:textColor="?attr/colorDialogText"
+                        android:textSize="@dimen/text_size_large"
+                        app:icon="@drawable/ic_expand_down"
+                        app:iconGravity="end"
+                        app:iconSize="@dimen/margin_wide"
+                        app:iconTint="?attr/colorDialogText" />
 
                     <TextView
                         android:id="@+id/modified_info_text"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:paddingHorizontal="@dimen/margin_default"
-                        android:paddingBottom="@dimen/margin_default"
+                        android:layout_marginBottom="@dimen/margin_default"
                         android:text="@string/confirm_import_show_modified_info_text"
                         android:textColor="?attr/colorDialogText"
                         android:textSize="@dimen/text_size_med"
                         android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/show_modified_info_btn"
                         tools:visibility="visible" />
 
                     <View
                         android:id="@+id/divider_hor"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="?attr/colorDialogItemOutline"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/modified_info_text" />
+                        android:background="?attr/colorDialogItemOutline" />
 
-                    <Button
-                        android:id="@+id/no_button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:text="@string/cancel"
-                        android:textColor="?attr/colorDialogText"
-                        app:layout_constraintEnd_toStartOf="@id/divider_vert"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <View
-                        android:id="@+id/divider_vert"
-                        android:layout_width="1dp"
-                        android:layout_height="0dp"
-                        android:background="?attr/colorDialogItemOutline"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/yes_button_1"
-                        app:layout_constraintStart_toEndOf="@id/no_button"
-                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+                        <Button
+                            android:id="@+id/no_button"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@android:color/transparent"
+                            android:text="@string/cancel"
+                            android:textColor="?attr/colorDialogText" />
 
-                    <Button
-                        android:id="@+id/yes_button_1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:padding="0dp"
-                        android:text="@string/label_action_import_csv"
-                        android:textColor="?attr/colorDialogText"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/divider_vert"
-                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                        <View
+                            android:id="@+id/divider_vert"
+                            android:layout_width="1dp"
+                            android:layout_height="0dp"
+                            android:background="?attr/colorDialogItemOutline" />
+
+                        <Button
+                            android:id="@+id/yes_button_1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@android:color/transparent"
+                            android:padding="0dp"
+                            android:text="@string/label_action_import_csv"
+                            android:textColor="?attr/colorDialogText"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
