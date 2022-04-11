@@ -212,6 +212,8 @@ class EntryListFragment : Fragment() {
                                         costPerMile ?: 0f
                                     )
                                 )
+
+                            detailsBinding.listItemEntryCpm.text = getCurrencyString(costPerMile)
                         }
                     }
                 }

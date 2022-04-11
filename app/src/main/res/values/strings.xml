@@ -137,4 +137,5 @@
     <string name="label_trends">Trends</string>
     <string name="label_show">Show</string>
     <string name="label_done">Done</string>
+    <string name="label_cost_per_mile">Cost per mile</string>
 </resources>

@@ -128,6 +128,19 @@
 
                 <TextView
                     style="@style/HeaderStyle"
+                    android:text="@string/label_cost_per_mile" />
+
+                <TextView
+                    android:id="@+id/list_item_entry_cpm"
+                    style="@style/ValueStyle"
+                    android:layout_weight="1"
+                    tools:text="$0.18" />
+            </TableRow>
+
+            <TableRow style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
                     android:text="@string/header_num_deliveries" />
 
                 <ImageView
