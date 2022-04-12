@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.DeductionCallback
+import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
@@ -45,9 +46,8 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.toVisibleIfTrueElseGone
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 class WeeklyListFragment : Fragment() {
@@ -107,7 +107,7 @@ class WeeklyListFragment : Fragment() {
         callback = null
     }
 
-    interface WeeklyListFragmentCallback: DeductionCallback
+    interface WeeklyListFragmentCallback : DeductionCallback
 
     inner class EntryAdapter :
         PagingDataAdapter<CompleteWeekly, WeeklyHolder>(DIFF_CALLBACK) {
@@ -171,18 +171,21 @@ class WeeklyListFragment : Fragment() {
 
             this.compWeekly = item
 
-            val costPerMile: Pair<Float, Float> = when (deductionType) {
-                DeductionType.NONE -> Pair(0f, 0f)
-                DeductionType.GAS_ONLY -> Pair(0f, 0f)
-                DeductionType.ALL_EXPENSES -> Pair(0f, 0f)
-                DeductionType.STD_DEDUCTION -> Pair(
-                    callback?.standardMileageDeductions?.get(this.compWeekly.weekly.date.year)
-                        ?: 0f,
-                    callback?.standardMileageDeductions?.get(this.compWeekly.weekly.date.plusDays(6).year)
-                        ?: 0f
-                )
-            }
+            CoroutineScope(Dispatchers.Default).launch {
+                withContext(Dispatchers.Default) {
+                    viewModel.getExpensesAndCostPerMile(
+                        this@WeeklyHolder.compWeekly,
+                        deductionType
+                    )
+                }.let { (expenses, cpm) ->
+                    (context as MainActivity).runOnUiThread {
+                        binding.listItemSubtitle2.text =
+                            getCurrencyString(compWeekly.totalPay - expenses)
+                        detailsBinding.listItemWeeklyCpm.text = getCurrencyString(cpm)
+                    }
+                }
 
+            }
 
             val listItemDetailsVisibility = (payloads?.let {
                 if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) {
@@ -224,20 +227,6 @@ class WeeklyListFragment : Fragment() {
 
             binding.listItemSubtitle.text =
                 getString(R.string.week_number, compWeekly.weekly.date.weekOfYear)
-
-            binding.listItemSubtitle2.text =
-                getCurrencyString(
-                    (compWeekly.totalPay - compWeekly.getExpensesForWeek(
-                        costPerMile.first,
-                        costPerMile.second
-                    )).let {
-                        if (it != 0f) {
-                            it
-                        } else {
-                            null
-                        }
-                    }
-                )
 
             detailsBinding.listItemWeeklyAdjust.text =
                 getCurrencyString(compWeekly.weekly.basePayAdjustment)

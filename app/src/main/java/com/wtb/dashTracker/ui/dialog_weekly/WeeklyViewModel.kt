@@ -23,8 +23,9 @@ import androidx.paging.PagingData
 import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.BaseViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 
@@ -51,5 +52,22 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
 
     val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = repository.allWeekliesPaged
 
-    val mileageDeduction: LiveData<Float> = repository.deductionAmount.asLiveData()
-}
+    suspend fun getExpensesAndCostPerMile(
+        compWeekly: CompleteWeekly,
+        deductionType: DeductionType
+    ): Pair<Float, Float> =
+        CoroutineScope(Dispatchers.Default).async {
+                var expenses: Float = 0f
+                withContext(Dispatchers.Default) {
+                    compWeekly.entries.forEach { entry ->
+                        withContext(Dispatchers.Default) {
+                            repository.getCostPerMile2(entry.date, deductionType)
+                        }.let { cpm: Float? ->
+                            expenses += entry.getExpenses(cpm ?: 0f)
+                        }
+                    }.let {
+                        return@let Pair(expenses, expenses / compWeekly.miles)
+                    }
+                }
+            }.await()
+        }

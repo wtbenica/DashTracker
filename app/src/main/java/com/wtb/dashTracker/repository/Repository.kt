@@ -263,7 +263,17 @@ class Repository private constructor(context: Context) {
         }
     }
 
-    suspend fun getCostPerMile(date: LocalDate, purpose: Purpose? = null): Float = entryDao.getCostPerMile(date, purpose)
+    suspend fun getCostPerMile2(date: LocalDate, purpose: DeductionType): Float =
+        when (purpose) {
+            DeductionType.NONE -> 0f
+            DeductionType.GAS_ONLY -> entryDao.getCostPerMile(date, Purpose.GAS)
+            DeductionType.ALL_EXPENSES -> entryDao.getCostPerMile(date)
+            DeductionType.STD_DEDUCTION -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
+        }
+
+
+    suspend fun getCostPerMile(date: LocalDate, purpose: Purpose? = null): Float =
+        entryDao.getCostPerMile(date, purpose)
 
     companion object {
         private var INSTANCE: Repository? = null

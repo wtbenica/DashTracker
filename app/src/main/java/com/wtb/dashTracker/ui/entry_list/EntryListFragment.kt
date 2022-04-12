@@ -42,7 +42,6 @@ import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
@@ -189,16 +188,9 @@ class EntryListFragment : Fragment() {
                 var costPerMile: Float?
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(Dispatchers.Default) {
-                        when (deductionType) {
-                            DeductionType.NONE -> 0f
-                            DeductionType.GAS_ONLY -> viewModel.getCostPerMile(item.date, GAS)
-                            DeductionType.ALL_EXPENSES -> viewModel.getCostPerMile(item.date)
-                            DeductionType.STD_DEDUCTION -> callback?.standardMileageDeductions?.get(
-                                this@EntryHolder.entry.date.year
-                            )
-                        }
-                    }.let {
-                        costPerMile = it
+                        viewModel.getCostPerMile(entry.date, deductionType)
+                    }.let { it: Float? ->
+                        costPerMile = it ?: 0f
                         (context as MainActivity).runOnUiThread {
                             binding.listItemSubtitle2.text =
                                 getCurrencyString(
