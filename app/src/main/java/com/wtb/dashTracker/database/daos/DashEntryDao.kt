@@ -26,6 +26,7 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Expense
+import com.wtb.dashTracker.database.models.Purpose
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -75,15 +76,16 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @RawQuery(observedEntities = [Expense::class, DashEntry::class])
     abstract suspend fun getFloatByQuery(query: SupportSQLiteQuery): Float
 
-    suspend fun getCostPerMile(date: LocalDate, purposeId: Int? = null): Float {
+    suspend fun getCostPerMile(date: LocalDate, purpose: Purpose? = null): Float {
         val startDate = date.minusDays(NUM_DAYS_HISTORY)
+
         val query = SimpleSQLiteQuery(
             """SELECT (
             SELECT SUM(amount)
             FROM Expense
             WHERE date BETWEEN '$startDate' and '$date'"""
-                    + if (purposeId != null) {
-                """ AND purpose = $purposeId) """
+                    + if (purpose != null) {
+                """ AND purpose = ${purpose.id}) """
             } else {
                 ")"
             } +

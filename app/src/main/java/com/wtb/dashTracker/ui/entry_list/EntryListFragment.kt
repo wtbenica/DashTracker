@@ -19,7 +19,6 @@ package com.wtb.dashTracker.ui.entry_list
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -192,8 +191,8 @@ class EntryListFragment : Fragment() {
                     withContext(Dispatchers.Default) {
                         when (deductionType) {
                             DeductionType.NONE -> 0f
-                            DeductionType.GAS_ONLY -> viewModel.getAllExpenseCPM(item.date, GAS.id)
-                            DeductionType.ALL_EXPENSES -> viewModel.getAllExpenseCPM(item.date)
+                            DeductionType.GAS_ONLY -> viewModel.getCostPerMile(item.date, GAS)
+                            DeductionType.ALL_EXPENSES -> viewModel.getCostPerMile(item.date)
                             DeductionType.STD_DEDUCTION -> callback?.standardMileageDeductions?.get(
                                 this@EntryHolder.entry.date.year
                             )
@@ -201,16 +200,12 @@ class EntryListFragment : Fragment() {
                     }.let {
                         costPerMile = it
                         (context as MainActivity).runOnUiThread {
-                            Log.d(
-                                TAG,
-                                "Something Something ${deductionType.name} $costPerMile $it"
-                            )
                             binding.listItemSubtitle2.text =
                                 getCurrencyString(
-                                    (this@EntryHolder.entry.totalEarned
-                                        ?: 0f) - this@EntryHolder.entry.getExpenses(
-                                        costPerMile ?: 0f
-                                    )
+                                    (this@EntryHolder.entry.totalEarned ?: 0f) -
+                                            this@EntryHolder.entry.getExpenses(
+                                                costPerMile ?: 0f
+                                            )
                                 )
 
                             detailsBinding.listItemEntryCpm.text = getCurrencyString(costPerMile)

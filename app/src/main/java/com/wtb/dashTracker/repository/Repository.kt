@@ -263,7 +263,7 @@ class Repository private constructor(context: Context) {
         }
     }
 
-    suspend fun getAllExpenseCPM(date: LocalDate, purposeId: Int? = null): Float = entryDao.getCostPerMile(date, purposeId)
+    suspend fun getCostPerMile(date: LocalDate, purpose: Purpose? = null): Float = entryDao.getCostPerMile(date, purpose)
 
     companion object {
         private var INSTANCE: Repository? = null

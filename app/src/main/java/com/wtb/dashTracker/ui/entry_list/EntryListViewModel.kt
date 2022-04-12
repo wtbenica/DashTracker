@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.entry_list
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Purpose
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,6 @@ class EntryListViewModel : ViewModel() {
 
     fun deleteEntryById(id: Int) = repository.deleteEntryById(id)
 
-    suspend fun getAllExpenseCPM(date: LocalDate, purposeId: Int? = null): Float =
-        repository.getAllExpenseCPM(date, purposeId)
+    suspend fun getCostPerMile(date: LocalDate, purpose: Purpose? = null): Float =
+        repository.getCostPerMile(date, purpose)
 }
