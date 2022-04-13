@@ -19,7 +19,6 @@
 package com.wtb.dashTracker.ui.insight_daily_stats
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +27,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.FragInsightsBinding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -85,8 +83,6 @@ class DailyStatsFragment : Fragment() {
                 val stats: DailyStats = entries.filter { entry: DashEntry ->
                     entry.startDateTime?.dayOfWeek == day
                 }.fold(DailyStats(day = day)) { a: DailyStats, d: DashEntry ->
-                    if (d.totalHours == 0f)
-                        Log.d(APP + "DailyStatsFragment", "${d.dayDels} ${d.nightDels} ${d.dayEarned} ${d.nightEarned} ${d.hourly}")
                     DailyStats(
                         day = a.day,
                         amHours = (a.amHours ?: 0f) + (d.dayHours ?: 0f),
@@ -99,9 +95,6 @@ class DailyStatsFragment : Fragment() {
                         pmNumShifts = (a.pmNumShifts ?: 0) + (if ((d.nightHours ?: 0f) > 0f) 1 else 0),
                     )
                 }
-
-                if (day == DayOfWeek.MONDAY)
-                    Log.d(APP + "DailyStatsFragment", "${stats.amDels} ${stats.pmDels}")
 
                 DailyStatsRow(requireContext(), null, stats).addToGridLayout(
                     binding.dailyStatsFragmentTable,
