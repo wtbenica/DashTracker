@@ -83,11 +83,12 @@ data class DashEntry(
         get() = startTime?.let {
             endTime?.let {
                 val startsDuringDay = startTime in nightSplitTime..daySplitTime
-                val endsDuringday = endTime in nightSplitTime..daySplitTime
+                val endsDuringDay = endTime in nightSplitTime..daySplitTime
                 val startsEarly = startTime < nightSplitTime
 
                 if (date == endDate) {
-                    if (startsDuringDay && endsDuringday) totalHours
+                    if (startTime == endTime) 0f
+                    else if (startsDuringDay && endsDuringDay) totalHours
                     else if (startTime >= daySplitTime) 0f
                     else Duration.between(startTime, daySplitTime).toMinutes() / 60f
                 } else {
@@ -126,20 +127,20 @@ data class DashEntry(
     val dayDels: Float?
         get() = dayHours?.let { dh ->
             totalHours?.let { th ->
-                numDeliveries?.let { nd -> nd * (dh / th) }
+                numDeliveries?.let { nd -> nd * (dh / (if (th != 0f) th else 1f)) }
             }
         }
 
     val nightDels: Float?
         get() = nightHours?.let { nh ->
             totalHours?.let { th ->
-                numDeliveries?.let { nd -> nd * (nh / th) }
+                numDeliveries?.let { nd -> nd * (nh / (if (th != 0f) th else 1f)) }
             }
         }
 
     val hourly: Float?
         get() = totalHours?.let { th ->
-            totalEarned?.let { te -> te / th }
+            totalEarned?.let { te -> if (th != 0f) te / th else 0f }
         }
 
     val avgDelivery: Float?
@@ -147,9 +148,7 @@ data class DashEntry(
 
     val hourlyDeliveries: Float?
         get() = totalHours?.let { th ->
-            numDeliveries?.let { nd ->
-                nd / th
-            }
+            numDeliveries?.let { nd -> if (th != 0f) nd / th else 0f }
         }
 
     val mileage: Float?
