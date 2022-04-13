@@ -61,7 +61,7 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
                 withContext(Dispatchers.Default) {
                     compWeekly.entries.forEach { entry ->
                         withContext(Dispatchers.Default) {
-                            repository.getCostPerMile2(entry.date, deductionType)
+                            repository.getCostPerMile(entry.date, deductionType)
                         }.let { cpm: Float? ->
                             expenses += entry.getExpenses(cpm ?: 0f)
                         }

@@ -56,6 +56,9 @@ class Repository private constructor(context: Context) {
     private val standardMileageDeductionDao: StandardMileageDeductionDao
         get() = db.standardMileageDeductionDao()
 
+    private val transactionDao: TransactionDao
+        get() = db.transactionDao()
+
     private val _deductionAmount: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     val deductionAmount: StateFlow<Float>
@@ -105,7 +108,13 @@ class Repository private constructor(context: Context) {
 
     fun getEntryFlowById(id: Int) = entryDao.getFlow(id)
 
-    fun getBasePayAdjustFlowById(id: Int) = weeklyDao.getFlow(id)
+    suspend fun getCostPerMile(date: LocalDate, purpose: DeductionType): Float =
+        when (purpose) {
+            DeductionType.NONE -> 0f
+            DeductionType.GAS_ONLY -> entryDao.getCostPerMile(date, Purpose.GAS)
+            DeductionType.ALL_EXPENSES -> entryDao.getCostPerMile(date)
+            DeductionType.STD_DEDUCTION -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
+        }
 
     /**
      * Weekly
@@ -126,6 +135,19 @@ class Repository private constructor(context: Context) {
 
     fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?> =
         weeklyDao.getWeeklyByDate(date)
+
+    fun getBasePayAdjustFlowById(id: Int) = weeklyDao.getFlow(id)
+
+    /**
+     * Yearly
+     */
+    suspend fun getAnnualCostPerMile(year: Int, purpose: DeductionType): Float =
+        when (purpose) {
+            DeductionType.NONE -> 0f
+            DeductionType.GAS_ONLY -> transactionDao.getAnnualCostPerMile(year, Purpose.GAS)
+            DeductionType.ALL_EXPENSES -> transactionDao.getAnnualCostPerMile(year)
+            DeductionType.STD_DEDUCTION -> standardMileageDeductionDao.get(year)?.amount ?: 0f
+        }
 
     /**
      * Expense
@@ -262,18 +284,6 @@ class Repository private constructor(context: Context) {
             }
         }
     }
-
-    suspend fun getCostPerMile2(date: LocalDate, purpose: DeductionType): Float =
-        when (purpose) {
-            DeductionType.NONE -> 0f
-            DeductionType.GAS_ONLY -> entryDao.getCostPerMile(date, Purpose.GAS)
-            DeductionType.ALL_EXPENSES -> entryDao.getCostPerMile(date)
-            DeductionType.STD_DEDUCTION -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
-        }
-
-
-    suspend fun getCostPerMile(date: LocalDate, purpose: Purpose? = null): Float =
-        entryDao.getCostPerMile(date, purpose)
 
     companion object {
         private var INSTANCE: Repository? = null

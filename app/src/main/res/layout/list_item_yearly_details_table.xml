@@ -93,6 +93,19 @@
 
                 <TextView
                     style="@style/HeaderStyle"
+                    android:text="@string/label_cost_per_mile" />
+
+                <TextView
+                    android:id="@+id/list_item_yearly_cpm"
+                    style="@style/ValueStyle"
+                    android:layout_weight="1"
+                    tools:text="$0.18" />
+            </TableRow>
+
+            <TableRow style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
                     android:layout_span="2"
                     android:layout_weight="1"
                     android:text="@string/header_hours" />

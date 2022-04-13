@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.DeductionCallback
+import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.CompleteWeekly
@@ -44,9 +45,8 @@ import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
@@ -92,6 +92,9 @@ class YearlyListFragment : Fragment() {
         val hourly: Float
             get() = (reportedPay + cashTips) / hours
 
+        val totalPay: Float
+            get() = pay + otherPay + adjust + cashTips
+
         fun getExpenses(costPerMile: Float) = mileage * costPerMile
     }
 
@@ -129,9 +132,9 @@ class YearlyListFragment : Fragment() {
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
                             res.cashTips += cw.entries.mapNotNull(DashEntry::cashTips)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.mileage += cw.entries.mapNotNull (DashEntry::mileage)
+                            res.mileage += cw.entries.mapNotNull(DashEntry::mileage)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.hours += cw.entries.mapNotNull (DashEntry::totalHours)
+                            res.hours += cw.entries.mapNotNull(DashEntry::totalHours)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
                         }
                         yearlies.add(res)
@@ -189,12 +192,22 @@ class YearlyListFragment : Fragment() {
         fun bind(item: Yearly, payloads: MutableList<Any>? = null) {
             this.yearly = item
 
-            val costPerMile: Float = when (deductionType) {
-                DeductionType.NONE -> 0f
-                DeductionType.GAS_ONLY -> 0f
-                DeductionType.ALL_EXPENSES -> 0f
-                DeductionType.STD_DEDUCTION -> callback?.standardMileageDeductions?.get(this.yearly.year)
-                    ?: 0f
+            var costPerMile: Float?
+            CoroutineScope(Dispatchers.Default).launch {
+                withContext(Dispatchers.Default) {
+                    viewModel.getAnnualCostPerMile(yearly.year, deductionType)
+                }.let { it: Float? ->
+                    costPerMile = it ?: 0f
+                    (context as MainActivity).runOnUiThread {
+                        binding.listItemSubtitle2.text =
+                            getCurrencyString(
+                                yearly.totalPay - yearly.getExpenses(
+                                    costPerMile ?: 0f
+                                )
+                            )
+                        detailsBinding.listItemYearlyCpm.text = getCurrencyString(it)
+                    }
+                }
             }
 
             val listItemDetailsVisibility = (payloads?.let {
@@ -215,8 +228,6 @@ class YearlyListFragment : Fragment() {
             binding.listItemTitle.text = this.yearly.year.toString()
             binding.listItemTitle2.text =
                 getCurrencyString(this.yearly.reportedPay + this.yearly.cashTips)
-            binding.listItemSubtitle2.text =
-                getCurrencyString(this.yearly.reportedPay + this.yearly.cashTips - this.yearly.mileage * costPerMile)
 
             detailsBinding.listItemReportedIncome.text =
                 getCurrencyString(yearly.reportedPay)

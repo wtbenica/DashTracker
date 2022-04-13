@@ -42,6 +42,7 @@ abstract class DashDatabase : RoomDatabase() {
     abstract fun expenseDao(): ExpenseDao
     abstract fun expensePurposeDao(): ExpensePurposeDao
     abstract fun standardMileageDeductionDao(): StandardMileageDeductionDao
+    abstract fun transactionDao(): TransactionDao
 
     companion object {
         @Volatile
