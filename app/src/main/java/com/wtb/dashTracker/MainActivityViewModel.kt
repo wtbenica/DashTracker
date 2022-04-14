@@ -23,7 +23,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
-import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -81,8 +80,6 @@ class MainActivityViewModel : ViewModel() {
     ) {
         repository.importStream(entries, weeklies, expenses, purposes)
     }
-
-    fun setDeductionType(type: DeductionType) = repository.setDeductionType(type)
 
     suspend fun upsertAsync(dataModel: DataModel): Long =
         withContext(Dispatchers.Default) {

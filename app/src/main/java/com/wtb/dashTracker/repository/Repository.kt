@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.repository
 
 import android.content.Context
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -29,8 +28,6 @@ import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import java.util.concurrent.Executors
 
@@ -58,22 +55,6 @@ class Repository private constructor(context: Context) {
 
     private val transactionDao: TransactionDao
         get() = db.transactionDao()
-
-    private val _deductionAmount: MutableStateFlow<Float> = MutableStateFlow(0f)
-
-    val deductionAmount: StateFlow<Float>
-        get() = _deductionAmount
-
-    fun setDeductionType(type: DeductionType) {
-        val amount = when (type) {
-            DeductionType.NONE -> 0f
-            DeductionType.GAS_ONLY -> 0f
-            DeductionType.ALL_EXPENSES -> 0f
-            DeductionType.STD_DEDUCTION -> 0.585f
-        }
-        _deductionAmount.value = amount
-        Log.d("GT_Repository", "setDeductionType: ${type.name} $amount")
-    }
 
     /**
      * Dash Entry
@@ -111,8 +92,8 @@ class Repository private constructor(context: Context) {
     suspend fun getCostPerMile(date: LocalDate, purpose: DeductionType): Float =
         when (purpose) {
             DeductionType.NONE -> 0f
-            DeductionType.GAS_ONLY -> entryDao.getCostPerMile(date, Purpose.GAS)
-            DeductionType.ALL_EXPENSES -> entryDao.getCostPerMile(date)
+            DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDate(date, Purpose.GAS)
+            DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
             DeductionType.STD_DEDUCTION -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
         }
 
@@ -143,10 +124,18 @@ class Repository private constructor(context: Context) {
      */
     suspend fun getAnnualCostPerMile(year: Int, purpose: DeductionType): Float =
         when (purpose) {
-            DeductionType.NONE -> 0f
-            DeductionType.GAS_ONLY -> transactionDao.getAnnualCostPerMile(year, Purpose.GAS)
-            DeductionType.ALL_EXPENSES -> transactionDao.getAnnualCostPerMile(year)
-            DeductionType.STD_DEDUCTION -> standardMileageDeductionDao.get(year)?.amount ?: 0f
+            DeductionType.NONE -> {
+                0f
+            }
+            DeductionType.GAS_ONLY -> {
+                transactionDao.getCostPerMileAnnual(year, Purpose.GAS)
+            }
+            DeductionType.ALL_EXPENSES -> {
+                transactionDao.getCostPerMileAnnual(year)
+            }
+            DeductionType.STD_DEDUCTION -> {
+                standardMileageDeductionDao.get(year)?.amount ?: 0f
+            }
         }
 
     /**

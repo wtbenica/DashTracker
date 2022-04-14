@@ -26,6 +26,16 @@ import com.wtb.dashTracker.database.models.Purpose
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 
+fun <T> List<T>.toStringList(): String {
+    val res = StringBuilder()
+    forEachIndexed { index, t ->
+        res.append(t)
+        if (index < size - 1)
+            res.append(", ")
+    }
+    return res.toString()
+}
+
 @Dao
 @ExperimentalCoroutinesApi
 abstract class TransactionDao {
@@ -33,20 +43,18 @@ abstract class TransactionDao {
     @RawQuery(observedEntities = [Expense::class, DashEntry::class])
     abstract suspend fun getFloatByQuery(query: SupportSQLiteQuery): Float
 
-    suspend fun getAnnualCostPerMile(
-        year: Int,
-        purpose: Purpose? = null
+    private suspend fun getCpm(
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+        vararg purpose: Purpose? = emptyArray()
     ): Float {
-        val startDate = LocalDate.of(year, 1, 1)
-        val endDate = LocalDate.of(year, 12, 31)
-
         val query = SimpleSQLiteQuery(
             """SELECT (
             SELECT SUM(amount)
             FROM Expense
             WHERE date BETWEEN '$startDate' and '$endDate'"""
-                    + if (purpose != null) {
-                """ AND purpose = ${purpose.id}) """
+                    + if (purpose.isNotEmpty()) {
+                """ AND purpose in (${purpose.mapNotNull { it?.id }.toStringList()})) """
             } else {
                 ")"
             } +
@@ -58,5 +66,28 @@ abstract class TransactionDao {
         )
 
         return getFloatByQuery(query)
+    }
+
+    suspend fun getCostPerMileByDate(
+        date: LocalDate,
+        vararg purpose: Purpose? = emptyArray()
+    ): Float {
+        val startDate = date.minusDays(NUM_DAYS_HISTORY)
+
+        return getCpm(startDate, date, *purpose)
+    }
+
+    suspend fun getCostPerMileAnnual(
+        year: Int,
+        vararg purpose: Purpose? = emptyArray()
+    ): Float {
+        val startDate = LocalDate.of(year, 1, 1)
+        val endDate = LocalDate.of(year, 12, 31)
+
+        return getCpm(startDate, endDate, *purpose)
+    }
+
+    companion object {
+        private const val NUM_DAYS_HISTORY: Long = 30
     }
 }
