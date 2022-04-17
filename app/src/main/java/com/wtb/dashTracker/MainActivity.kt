@@ -42,8 +42,10 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.asLiveData
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -68,7 +70,10 @@ import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
+import com.wtb.dashTracker.ui.frag_income.IncomeFragment
+import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment
 import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment.ExpenseListFragmentCallback
+import com.wtb.dashTracker.ui.insight_daily_stats.DailyStatsFragment
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.ui.yearly_list.YearlyListFragment.YearlyListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils
@@ -101,6 +106,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
     override var standardMileageDeductions: Map<Int, Float> = emptyMap()
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var sheetBinding: BottomSheetBinding
     private lateinit var mAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,39 +160,8 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             mAdView.loadAd(adRequest)
         }
 
-        fun initBottomNavBar() {
-            val navView: BottomNavigationView = binding.navView
-            navView.background = null
-
-            val navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-            val navController = navHostFragment?.findNavController()
-
-            val appBarConfiguration = AppBarConfiguration(
-                setOf(
-                    R.id.navigation_home,
-                    R.id.navigation_expenses,
-                    R.id.navigation_insights
-                )
-            )
-
-            navView.setOnItemSelectedListener {
-                Log.d(
-                    TAG,
-                    "SMIZE: $it ${R.id.navigation_home} ${R.id.navigation_expenses} ${R.id.navigation_insights}"
-                )
-                false
-            }
-
-            navController?.let {
-                setupActionBarWithNavController(navController, appBarConfiguration)
-                navView.setupWithNavController(navController)
-            }
-        }
-
         fun initBottomSheet() {
-            val sheetBinding: LayoutMainBottomSheetBinding =
-                LayoutMainBottomSheetBinding.bind(binding.bottomSheet.root)
+            sheetBinding = BottomSheetBinding.bind(binding.bottomSheet.root)
             val contentIncomeBinding =
                 BottomSheetContentIncomeBinding.bind(sheetBinding.contentIncome.root)
             val contentExpenseBinding =
@@ -200,7 +175,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
                     when (newState) {
-
                         BottomSheetBehavior.STATE_EXPANDED -> {
                             sheetBinding.contentCard.isEnabled = true
                         }
@@ -217,10 +191,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
             })
 
-//            val navHostFragment =
-//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-//            val navController = navHostFragment?.findNavController()
-////
 ////            sheetBinding.buttonGroupNav.addOnButtonCheckedListener { group, checkedId, isChecked ->
 ////                when (checkedId) {
 ////                    R.id.income_button -> {
@@ -228,7 +198,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 ////                            sheetBinding.bottomSheetContent.displayedChild = 0
 ////                            when (contentIncomeBinding.buttonGroupTimeAggregator.checkedButtonId) {
 ////                                R.id.daily_button -> {
-////                                    navController?.navigate(R.id.navigation_home)
+////                                    navController?.navigate(R.id.navigation_income)
 ////                                }
 ////                                R.id.weekly_button -> {
 ////                                    navController?.navigate(R.id.navigation_weekly)
@@ -258,7 +228,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 //                if (isChecked) {
 //                    when (checkedId) {
 //                        R.id.daily_button -> {
-//                            navController?.navigate(R.id.navigation_home)
+//                            navController?.navigate(R.id.navigation_income)
 //                        }
 //                        R.id.weekly_button -> {
 //                            navController?.navigate(R.id.navigation_weekly)
@@ -270,19 +240,75 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 //                }
 //            }
 //
-//            contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
-//                if (isChecked) {
-//                    when (checkedId) {
-//                        R.id.gas_button -> deductionTypeViewModel.setDeductionType(DeductionType.GAS_ONLY)
-//                        R.id.actual_button -> deductionTypeViewModel.setDeductionType(DeductionType.ALL_EXPENSES)
-//                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(
-//                            DeductionType.STD_DEDUCTION
-//                        )
-//                    }
-//                } else {
-//                    deductionTypeViewModel.setDeductionType(DeductionType.NONE)
-//                }
-//            }
+            contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
+                if (isChecked) {
+                    when (checkedId) {
+                        R.id.gas_button -> deductionTypeViewModel.setDeductionType(DeductionType.GAS_ONLY)
+                        R.id.actual_button -> deductionTypeViewModel.setDeductionType(DeductionType.ALL_EXPENSES)
+                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(
+                            DeductionType.STD_DEDUCTION
+                        )
+                    }
+                } else {
+                    deductionTypeViewModel.setDeductionType(DeductionType.NONE)
+                }
+            }
+        }
+
+        fun initBottomNavBar() {
+            val navView: BottomNavigationView = binding.navView
+            navView.background = null
+
+            val appBarConfiguration = AppBarConfiguration(
+                setOf(
+                    R.id.navigation_income,
+                    R.id.navigation_expenses,
+                    R.id.navigation_insights
+                )
+            )
+
+            val navHostFragment: Fragment? =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+            val navController: NavController? = navHostFragment?.findNavController()
+
+            navController?.let {
+                setupActionBarWithNavController(it, appBarConfiguration)
+                navView.setupWithNavController(it)
+            }
+
+            navView.setOnItemSelectedListener { item ->
+                Log.d(
+                    TAG,
+                    "SMIZE: ${item.itemId} ${R.id.navigation_income} ${R.id.navigation_expenses} ${R.id.navigation_insights}"
+                )
+
+                val fragment: Fragment
+                when (item.itemId) {
+                    R.id.navigation_income -> {
+                        sheetBinding.bottomSheetContent.displayedChild = 0
+                        fragment = IncomeFragment()
+                        supportActionBar?.setTitle(R.string.label_income)
+                    }
+                    R.id.navigation_expenses -> {
+                        sheetBinding.bottomSheetContent.displayedChild = 1
+                        fragment = ExpenseListFragment()
+                        supportActionBar?.setTitle(R.string.title_expenses)
+                    }
+                    R.id.navigation_insights -> {
+                        sheetBinding.bottomSheetContent.displayedChild = 2
+                        fragment = DailyStatsFragment()
+                        supportActionBar?.setTitle(R.string.label_trends)
+                    }
+                    else -> throw IllegalArgumentException("Invalid menu item selected")
+                }
+
+                val transacttion = supportFragmentManager.beginTransaction()
+                transacttion.replace(R.id.nav_host_fragment_activity_main, fragment)
+                transacttion.addToBackStack(null)
+                transacttion.commit()
+
+                return@setOnItemSelectedListener true
+            }
         }
 
         fun initObservers() {

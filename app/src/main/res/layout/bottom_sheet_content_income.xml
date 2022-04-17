@@ -39,7 +39,7 @@
         app:checkedButton="@id/daily_button"
         app:selectionRequired="true"
         app:singleSelection="true"
-        tools:showIn="@layout/layout_main_bottom_sheet">
+        tools:showIn="@layout/bottom_sheet">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/daily_button"

@@ -133,7 +133,7 @@
 
         <include
             android:id="@+id/bottom_sheet"
-            layout="@layout/layout_main_bottom_sheet" />
+            layout="@layout/bottom_sheet" />
 
         <!--        <com.google.android.material.bottomappbar.BottomAppBar-->
         <!--            android:id="@+id/bottom_app_bar"-->
@@ -261,7 +261,7 @@
             android:animateLayoutChanges="true"
             app:backgroundTint="?attr/colorUi"
             app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"
-            app:itemIconSize="@dimen/margin_default"
+            app:itemIconSize="@dimen/margin_wide"
             app:itemIconTint="?attr/colorBottomNavItem"
             app:itemTextColor="?attr/colorBottomNavItemText"
             app:labelVisibilityMode="labeled"

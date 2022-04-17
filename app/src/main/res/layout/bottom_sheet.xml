@@ -35,7 +35,7 @@
 
         <ImageView
             android:id="@+id/bottom_sheet_handle"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/margin_wide"
             android:layout_height="@dimen/min_touch_target"
             android:layout_gravity="center_horizontal"
             android:contentDescription="@string/content_desc_drag_handle"

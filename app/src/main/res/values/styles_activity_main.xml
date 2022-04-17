@@ -74,7 +74,7 @@
     <style name="bottomSheet" parent="Widget.Material3.CardView.Elevated">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceBottomSheet</item>
         <item name="strokeWidth">0dp</item>
-        <item name="backgroundTint">?attr/colorPrimaryVariant</item>
+        <item name="backgroundTint">?attr/colorUi</item>
         <item name="behavior_peekHeight">@dimen/min_touch_target</item>
         <item name="layout_behavior">@string/bottom_sheet_behavior</item>
         <item name="android:fitsSystemWindows">true</item>
