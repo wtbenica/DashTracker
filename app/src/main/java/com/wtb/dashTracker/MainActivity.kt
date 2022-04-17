@@ -22,6 +22,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.provider.Settings
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -44,18 +45,21 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.*
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.repository.DeductionType.*
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
@@ -150,29 +154,35 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             mAdView.loadAd(adRequest)
         }
 
-//        fun initBottomNavBar() {
-//            val navView: BottomNavigationView = binding.navView
-//            navView.background = null
-//
-//            val navHostFragment =
-//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-//            val navController = navHostFragment?.findNavController()
-//
-//            val appBarConfiguration = AppBarConfiguration(
-//                setOf(
-//                    R.id.navigation_home,
-//                    R.id.navigation_weekly,
-//                    R.id.navigation_yearly,
-//                    R.id.navigation_insights,
-//                    R.id.navigation_expenses
-//                )
-//            )
-//
-//            navController?.let {
-//                setupActionBarWithNavController(navController, appBarConfiguration)
-//                navView.setupWithNavController(navController)
-//            }
-//        }
+        fun initBottomNavBar() {
+            val navView: BottomNavigationView = binding.navView
+            navView.background = null
+
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+            val navController = navHostFragment?.findNavController()
+
+            val appBarConfiguration = AppBarConfiguration(
+                setOf(
+                    R.id.navigation_home,
+                    R.id.navigation_expenses,
+                    R.id.navigation_insights
+                )
+            )
+
+            navView.setOnItemSelectedListener {
+                Log.d(
+                    TAG,
+                    "SMIZE: $it ${R.id.navigation_home} ${R.id.navigation_expenses} ${R.id.navigation_insights}"
+                )
+                false
+            }
+
+            navController?.let {
+                setupActionBarWithNavController(navController, appBarConfiguration)
+                navView.setupWithNavController(navController)
+            }
+        }
 
         fun initBottomSheet() {
             val sheetBinding: LayoutMainBottomSheetBinding =
@@ -185,99 +195,94 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                 BottomSheetContentTrendsBinding.bind(sheetBinding.contentTrends.root)
             val behavior = BottomSheetBehavior.from(sheetBinding.root)
 
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
             behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
                     when (newState) {
-                        BottomSheetBehavior.STATE_COLLAPSED -> {
-                            sheetBinding.buttonGroupNav.isEnabled = false
-                            contentIncomeBinding.buttonGroupTimeAggregator.isEnabled = false
-                        }
+
                         BottomSheetBehavior.STATE_EXPANDED -> {
-                            sheetBinding.buttonGroupNav.isEnabled = true
-                            contentIncomeBinding.buttonGroupTimeAggregator.isEnabled = true
+                            sheetBinding.contentCard.isEnabled = true
                         }
-                        BottomSheetBehavior.STATE_DRAGGING,
-                        BottomSheetBehavior.STATE_HALF_EXPANDED,
-                        BottomSheetBehavior.STATE_HIDDEN,
-                        BottomSheetBehavior.STATE_SETTLING -> {
-                            // Do nothing
+                        else -> {
+                            sheetBinding.contentCard.isEnabled = false
                         }
                     }
                 }
 
                 override fun onSlide(bottomSheet: View, slideOffset: Float) {
-
+                    sheetBinding.contentCard.alpha = slideOffset
+                    sheetBinding.bottomSheetHandle.alpha = 1 - slideOffset
                 }
+
             })
 
-            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-
-            val navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-            val navController = navHostFragment?.findNavController()
-
-            sheetBinding.buttonGroupNav.addOnButtonCheckedListener { group, checkedId, isChecked ->
-                when (checkedId) {
-                    R.id.income_button -> {
-                        if (isChecked) {
-                            sheetBinding.bottomSheetContent.displayedChild = 0
-                            when (contentIncomeBinding.buttonGroupTimeAggregator.checkedButtonId) {
-                                R.id.daily_button -> {
-                                    navController?.navigate(R.id.navigation_home)
-                                }
-                                R.id.weekly_button -> {
-                                    navController?.navigate(R.id.navigation_weekly)
-                                }
-                                R.id.yearly_button -> {
-                                    navController?.navigate(R.id.navigation_yearly)
-                                }
-                            }
-                        }
-                    }
-                    R.id.expense_button -> {
-                        if (isChecked) {
-                            sheetBinding.bottomSheetContent.displayedChild = 1
-                            navController?.navigate(R.id.navigation_expenses)
-                        }
-                    }
-                    R.id.trends_button -> {
-                        if (isChecked) {
-                            sheetBinding.bottomSheetContent.displayedChild = 2
-                            navController?.navigate(R.id.navigation_insights)
-                        }
-                    }
-                }
-            }
-
-            contentIncomeBinding.buttonGroupTimeAggregator.addOnButtonCheckedListener { group, checkedId, isChecked ->
-                if (isChecked) {
-                    when (checkedId) {
-                        R.id.daily_button -> {
-                            navController?.navigate(R.id.navigation_home)
-                        }
-                        R.id.weekly_button -> {
-                            navController?.navigate(R.id.navigation_weekly)
-                        }
-                        R.id.yearly_button -> {
-                            navController?.navigate(R.id.navigation_yearly)
-                        }
-                    }
-                }
-            }
-
-            contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
-                if (isChecked) {
-                    when (checkedId) {
-                        R.id.gas_button -> deductionTypeViewModel.setDeductionType(GAS_ONLY)
-                        R.id.actual_button -> deductionTypeViewModel.setDeductionType(ALL_EXPENSES)
-                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(
-                            STD_DEDUCTION
-                        )
-                    }
-                } else {
-                    deductionTypeViewModel.setDeductionType(NONE)
-                }
-            }
+//            val navHostFragment =
+//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+//            val navController = navHostFragment?.findNavController()
+////
+////            sheetBinding.buttonGroupNav.addOnButtonCheckedListener { group, checkedId, isChecked ->
+////                when (checkedId) {
+////                    R.id.income_button -> {
+////                        if (isChecked) {
+////                            sheetBinding.bottomSheetContent.displayedChild = 0
+////                            when (contentIncomeBinding.buttonGroupTimeAggregator.checkedButtonId) {
+////                                R.id.daily_button -> {
+////                                    navController?.navigate(R.id.navigation_home)
+////                                }
+////                                R.id.weekly_button -> {
+////                                    navController?.navigate(R.id.navigation_weekly)
+////                                }
+////                                R.id.yearly_button -> {
+////                                    navController?.navigate(R.id.navigation_yearly)
+////                                }
+////                            }
+////                        }
+////                    }
+////                    R.id.expense_button -> {
+////                        if (isChecked) {
+////                            sheetBinding.bottomSheetContent.displayedChild = 1
+////                            navController?.navigate(R.id.navigation_expenses)
+////                        }
+////                    }
+////                    R.id.trends_button -> {
+////                        if (isChecked) {
+////                            sheetBinding.bottomSheetContent.displayedChild = 2
+////                            navController?.navigate(R.id.navigation_insights)
+////                        }
+////                    }
+////                }
+////            }
+//
+//            contentIncomeBinding.buttonGroupTimeAggregator.addOnButtonCheckedListener { group, checkedId, isChecked ->
+//                if (isChecked) {
+//                    when (checkedId) {
+//                        R.id.daily_button -> {
+//                            navController?.navigate(R.id.navigation_home)
+//                        }
+//                        R.id.weekly_button -> {
+//                            navController?.navigate(R.id.navigation_weekly)
+//                        }
+//                        R.id.yearly_button -> {
+//                            navController?.navigate(R.id.navigation_yearly)
+//                        }
+//                    }
+//                }
+//            }
+//
+//            contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
+//                if (isChecked) {
+//                    when (checkedId) {
+//                        R.id.gas_button -> deductionTypeViewModel.setDeductionType(DeductionType.GAS_ONLY)
+//                        R.id.actual_button -> deductionTypeViewModel.setDeductionType(DeductionType.ALL_EXPENSES)
+//                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(
+//                            DeductionType.STD_DEDUCTION
+//                        )
+//                    }
+//                } else {
+//                    deductionTypeViewModel.setDeductionType(DeductionType.NONE)
+//                }
+//            }
         }
 
         fun initObservers() {
@@ -315,7 +320,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
         initBiometrics()
         initMobileAds()
-//        initBottomNavBar()
+        initBottomNavBar()
         initBottomSheet()
         initObservers()
     }

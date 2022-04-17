@@ -71,6 +71,7 @@
     <string name="content_desc_fab_menu_closed">Open add item menu</string>
     <string name="content_desc_edit_button">Edit this entry</string>
     <string name="content_desc_remove">Remove this entry</string>
+    <string name="content_desc_drag_handle">Drag handle for bottom sheet</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -80,7 +81,7 @@
     <string name="reset">Reset</string>
     <string name="save">Save</string>
 
-    <string name="action_licenses">Licenses</string>
+    <string name="label_action_licenses">Licenses</string>
     <string name="label_action_export">Export</string>
     <string name="label_action_import">Import</string>
 
