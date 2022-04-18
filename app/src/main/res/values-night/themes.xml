@@ -32,22 +32,22 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorUi</item>
 
         <!-- Text -->
-        <item name="android:textColor">?attr/colorTextSecondary</item>
+        <item name="android:textColor">?attr/colorTextPrimary</item>
         <item name="android:textColorPrimary">@color/primary_text_color</item>
         <item name="android:textColorSecondary">@color/secondary_text_color</item>
 
-        <item name="colorTextPrimary">?attr/colorOnPrimary</item>
+        <item name="colorTextPrimary">?attr/colorOnSecondary</item>
         <item name="colorTextPrimaryDisabled">?attr/colorSecondary</item>
-        <item name="colorTextSecondary">?attr/colorOnSecondary</item>
+        <item name="colorTextSecondary">?attr/colorOnPrimary</item>
         <item name="colorTextSecondaryDisabled">?attr/colorSecondaryFaded</item>
 
         <item name="colorSurface">?attr/colorSecondary</item>
         <item name="colorOnSurface">?attr/colorOnSecondary</item>
 
         <!-- activity_main.xml -->
-        <item name="colorActionBarText">@color/secondary_text_color</item>
+        <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorToolbar">?attr/colorPrimary</item>
-        <item name="colorSummaryBarItemText">?attr/colorTextSecondary</item>
+        <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorFab">?attr/colorAccent</item>
         <item name="colorFabDisabled">?attr/colorPrimary</item>
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
@@ -62,25 +62,29 @@
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
+        <!-- fragment_income -->
+        <item name="colorTabIndicator">?attr/colorPrimaryFaded</item>
+        <item name="colorTabText">?attr/colorTextPrimary</item>
+
         <!-- list_item -->
         <item name="colorListItem">?attr/colorSecondaryDark</item>
         <item name="colorListItemExpanded">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
-        <item name="colorListItemTitle">?attr/colorTextSecondary</item>
-        <item name="colorListItemSubtitle">?attr/colorTextSecondary</item>
+        <item name="colorListItemTitle">?attr/colorTextPrimary</item>
+        <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
         <item name="colorListItemDetailsToolbar">?attr/colorListItemAccent</item>
-        <item name="colorRowHeaderPayText">?attr/colorTextSecondary</item>
-        <item name="colorRowValuePayText">?attr/colorTextSecondary</item>
+        <item name="colorRowHeaderPayText">?attr/colorTextPrimary</item>
+        <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
         <item name="colorRowHeaderText">?attr/colorOnSurface</item>
         <item name="colorRowValueText">?attr/colorOnSurface</item>
         <item name="colorRowValueSecondaryText">?attr/colorOnSurface</item>
 
         <!-- daily stats row -->
-        <item name="colorDailyStatsRowHeaderText">?attr/colorTextPrimary</item>
-        <item name="colorDailyStatsRowValueText">?attr/colorTextPrimary</item>
+        <item name="colorDailyStatsRowHeaderText">?attr/colorTextSecondary</item>
+        <item name="colorDailyStatsRowValueText">?attr/colorTextSecondary</item>
         <item name="colorDailyStatsRowDayText">?attr/colorOnSurface</item>
         <item name="colorDayHeader">@color/daytime_solid</item>
         <item name="colorDayValue">@color/daytime_light</item>

@@ -84,6 +84,10 @@
         <item name="textSizeBottomNavActive">@dimen/text_size_large</item>
         <item name="textSizeBottomNavInactive">@dimen/text_size_med</item>
 
+        <!-- fragment_income -->
+        <item name="colorTabIndicator">?attr/colorUi</item>
+        <item name="colorTabText">?attr/colorTextPrimary</item>
+
         <!-- list_item -->
         <item name="textSizeListItemTitle">@dimen/text_size_xlarge</item>
         <item name="textSizeListItemSubtitle">@dimen/text_size_med</item>
@@ -125,7 +129,7 @@
         <item name="colorOnSurface">@color/primary_text_color</item>
 
         <!-- activity_main.xml -->
-        <item name="colorActionBarText">@color/primary_text_color</item>
+        <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorToolbar">?attr/colorPrimaryVariant</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorFab">?attr/colorAccent</item>

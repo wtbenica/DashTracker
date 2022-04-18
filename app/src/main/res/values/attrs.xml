@@ -58,6 +58,10 @@
     <attr name="textSizeBottomNavActive" format="reference" />
     <attr name="textSizeBottomNavInactive" format="reference" />
 
+    <!-- fragment_income -->
+    <attr name="colorTabIndicator" format="reference" />
+    <attr name="colorTabText" format="reference" />
+
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
     <attr name="colorListItemAccent" format="reference" />
