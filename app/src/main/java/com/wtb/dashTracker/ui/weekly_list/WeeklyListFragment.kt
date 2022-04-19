@@ -25,6 +25,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.core.content.res.ResourcesCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -210,12 +211,8 @@ class WeeklyListFragment : Fragment() {
                     this.compWeekly.weekly.date.minusDays(6).shortFormat.uppercase(),
                     this.compWeekly.weekly.date.shortFormat.uppercase()
                 )
-
             binding.listItemAlert.visibility =
-                toVisibleIfTrueElseGone(this.compWeekly.weekly.isIncomplete)
-
-            binding.listItemDetails.visibility = listItemDetailsVisibility
-
+                toVisibleIfTrueElseGone(compWeekly.weekly.isIncomplete)
             binding.listItemTitle2.text =
                 getCurrencyString(
                     if (compWeekly.totalPay != 0f) {
@@ -224,36 +221,31 @@ class WeeklyListFragment : Fragment() {
                         null
                     }
                 )
-
             binding.listItemSubtitle.text =
                 getString(R.string.week_number, compWeekly.weekly.date.weekOfYear)
 
+            binding.listItemDetails.visibility = listItemDetailsVisibility
+            val basePayAdjust = compWeekly.weekly.basePayAdjustment
             detailsBinding.listItemWeeklyAdjust.text =
-                getCurrencyString(compWeekly.weekly.basePayAdjustment)
-
-            binding.listItemAlert.visibility = toVisibleIfTrueElseGone(true)
-
+                getCurrencyString(basePayAdjust)
             detailsBinding.listItemRegularPay.text = getCurrencyString(compWeekly.regularPay)
-
             detailsBinding.listItemWeeklyAdjust.text =
-                getCurrencyString(compWeekly.weekly.basePayAdjustment)
+                getCurrencyString(basePayAdjust)
+            detailsBinding.listItemWeeklyAdjust.setTextColor(
+                getColor(
+                    resources,
+                    if (basePayAdjust == null) R.color.alert else R.color.on_regular,
+                    null
+                )
+            )
 
             detailsBinding.listItemCashTips.text = getCurrencyString(compWeekly.cashTips)
-
             detailsBinding.listItemOtherPay.text = getCurrencyString(compWeekly.otherPay)
-
-            detailsBinding.listItemWeeklyHours.text =
-                getFloatString(compWeekly.hours)
-
+            detailsBinding.listItemWeeklyHours.text = getFloatString(compWeekly.hours)
             detailsBinding.listItemWeeklyHourly.text = getCurrencyString(compWeekly.hourly)
-
             detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(compWeekly.avgDelivery)
-
-            detailsBinding.listItemWeeklyHourlyDels.text =
-                getFloatString(compWeekly.delPerHour)
-
-            detailsBinding.listItemWeeklyMiles.text =
-                getFloatString(compWeekly.miles)
+            detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(compWeekly.delPerHour)
+            detailsBinding.listItemWeeklyMiles.text = getFloatString(compWeekly.miles)
         }
     }
 

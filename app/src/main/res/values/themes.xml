@@ -106,7 +106,7 @@
     </style>
 
     <style name="Base.DasherCompanion">
-        <item name="colorUi">?attr/colorPrimaryDark</item>
+        <item name="colorUi">?attr/colorPrimary</item>
         <item name="colorUIBackground">?attr/colorOnSecondaryVariant</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
@@ -141,14 +141,14 @@
         <item name="colorBottomNavTextEnabled">?attr/colorOnPrimary</item>
         <item name="colorBottomNavDisabled">?attr/colorOnPrimaryVariant</item>
         <item name="colorBottomNavTextDisabled">?attr/colorOnPrimaryVariant</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorPrimary</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorPrimaryVariant</item>
         <item name="colorPopupBackground">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>
-        <item name="colorListItemExpanded">?attr/colorPrimary</item>
+        <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
