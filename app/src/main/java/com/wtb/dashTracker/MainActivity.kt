@@ -26,7 +26,6 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
-import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.activity.result.ActivityResultLauncher
@@ -41,21 +40,24 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.asLiveData
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.database.models.*
-import com.wtb.dashTracker.databinding.*
+import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.repository.DeductionType.*
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
@@ -63,10 +65,8 @@ import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
+import com.wtb.dashTracker.ui.frag_income.IncomeFragment
 import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment.ExpenseListFragmentCallback
-import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
-import com.wtb.dashTracker.ui.yearly_list.YearlyListFragment.YearlyListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
@@ -85,16 +85,18 @@ import java.time.format.DateTimeParseException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback,
-    YearlyListFragmentCallback, ExpenseListFragmentCallback {
+class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback, IncomeFragment.IncomeFragmentCallback {
 
     private val viewModel: MainActivityViewModel by viewModels()
     private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
+
     override val deductionType: StateFlow<DeductionType>
         get() = deductionTypeViewModel.deductionType
-    override var standardMileageDeductions: Map<Int, Float> = emptyMap()
+
+    override fun setDeductionType(dType: DeductionType) {
+        deductionTypeViewModel.setDeductionType(dType)
+    }
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
@@ -150,133 +152,25 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             mAdView.loadAd(adRequest)
         }
 
-//        fun initBottomNavBar() {
-//            val navView: BottomNavigationView = binding.navView
-//            navView.background = null
-//
-//            val navHostFragment =
-//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-//            val navController = navHostFragment?.findNavController()
-//
-//            val appBarConfiguration = AppBarConfiguration(
-//                setOf(
-//                    R.id.navigation_home,
-//                    R.id.navigation_weekly,
-//                    R.id.navigation_yearly,
-//                    R.id.navigation_insights,
-//                    R.id.navigation_expenses
-//                )
-//            )
-//
-//            navController?.let {
-//                setupActionBarWithNavController(navController, appBarConfiguration)
-//                navView.setupWithNavController(navController)
-//            }
-//        }
+        fun initBottomNavBar() {
+            val navView: BottomNavigationView = binding.navView
+            navView.background = null
 
-        fun initBottomSheet() {
-            val sheetBinding: LayoutMainBottomSheetBinding =
-                LayoutMainBottomSheetBinding.bind(binding.bottomSheet.root)
-            val contentIncomeBinding =
-                BottomSheetContentIncomeBinding.bind(sheetBinding.contentIncome.root)
-            val contentExpenseBinding =
-                BottomSheetContentExpenseBinding.bind(sheetBinding.contentExpense.root)
-            val contentTrendsBinding =
-                BottomSheetContentTrendsBinding.bind(sheetBinding.contentTrends.root)
-            val behavior = BottomSheetBehavior.from(sheetBinding.root)
+            val appBarConfiguration = AppBarConfiguration(
+                setOf(
+                    R.id.navigation_income,
+                    R.id.navigation_expenses,
+                    R.id.navigation_insights
+                )
+            )
 
-            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    when (newState) {
-                        BottomSheetBehavior.STATE_COLLAPSED -> {
-                            sheetBinding.buttonGroupNav.isEnabled = false
-                            contentIncomeBinding.buttonGroupTimeAggregator.isEnabled = false
-                        }
-                        BottomSheetBehavior.STATE_EXPANDED -> {
-                            sheetBinding.buttonGroupNav.isEnabled = true
-                            contentIncomeBinding.buttonGroupTimeAggregator.isEnabled = true
-                        }
-                        BottomSheetBehavior.STATE_DRAGGING,
-                        BottomSheetBehavior.STATE_HALF_EXPANDED,
-                        BottomSheetBehavior.STATE_HIDDEN,
-                        BottomSheetBehavior.STATE_SETTLING -> {
-                            // Do nothing
-                        }
-                    }
-                }
-
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {
-
-                }
-            })
-
-            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-
-            val navHostFragment =
+            val navHostFragment: Fragment? =
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-            val navController = navHostFragment?.findNavController()
+            val navController: NavController? = navHostFragment?.findNavController()
 
-            sheetBinding.buttonGroupNav.addOnButtonCheckedListener { group, checkedId, isChecked ->
-                when (checkedId) {
-                    R.id.income_button -> {
-                        if (isChecked) {
-                            sheetBinding.bottomSheetContent.displayedChild = 0
-                            when (contentIncomeBinding.buttonGroupTimeAggregator.checkedButtonId) {
-                                R.id.daily_button -> {
-                                    navController?.navigate(R.id.navigation_home)
-                                }
-                                R.id.weekly_button -> {
-                                    navController?.navigate(R.id.navigation_weekly)
-                                }
-                                R.id.yearly_button -> {
-                                    navController?.navigate(R.id.navigation_yearly)
-                                }
-                            }
-                        }
-                    }
-                    R.id.expense_button -> {
-                        if (isChecked) {
-                            sheetBinding.bottomSheetContent.displayedChild = 1
-                            navController?.navigate(R.id.navigation_expenses)
-                        }
-                    }
-                    R.id.trends_button -> {
-                        if (isChecked) {
-                            sheetBinding.bottomSheetContent.displayedChild = 2
-                            navController?.navigate(R.id.navigation_insights)
-                        }
-                    }
-                }
-            }
-
-            contentIncomeBinding.buttonGroupTimeAggregator.addOnButtonCheckedListener { group, checkedId, isChecked ->
-                if (isChecked) {
-                    when (checkedId) {
-                        R.id.daily_button -> {
-                            navController?.navigate(R.id.navigation_home)
-                        }
-                        R.id.weekly_button -> {
-                            navController?.navigate(R.id.navigation_weekly)
-                        }
-                        R.id.yearly_button -> {
-                            navController?.navigate(R.id.navigation_yearly)
-                        }
-                    }
-                }
-            }
-
-            contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
-                if (isChecked) {
-                    when (checkedId) {
-                        R.id.gas_button -> deductionTypeViewModel.setDeductionType(GAS_ONLY)
-                        R.id.actual_button -> deductionTypeViewModel.setDeductionType(ALL_EXPENSES)
-                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(
-                            STD_DEDUCTION
-                        )
-                    }
-                } else {
-                    deductionTypeViewModel.setDeductionType(NONE)
-                }
+            navController?.let {
+                setupActionBarWithNavController(it, appBarConfiguration)
+                navView.setupWithNavController(it)
             }
         }
 
@@ -295,14 +189,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                 binding.actMainLastWeek.text =
                     getCurrencyString(it)
             }
-
-            deductionTypeViewModel.stdMileageDeductions.asLiveData().observe(this) {
-                val m = mutableMapOf<Int, Float>()
-                it.forEach { stdDeduct ->
-                    m[stdDeduct.year] = stdDeduct.amount
-                }
-                standardMileageDeductions = m
-            }
         }
 
         installSplashScreen()
@@ -315,8 +201,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
         initBiometrics()
         initMobileAds()
-//        initBottomNavBar()
-        initBottomSheet()
+        initBottomNavBar()
         initObservers()
     }
 

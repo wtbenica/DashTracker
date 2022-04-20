@@ -19,6 +19,7 @@
     <attr name="colorPrimaryFaded" format="reference" />
     <attr name="colorSecondaryFaded" format="reference" />
     <attr name="colorSecondaryDark" format="reference" />
+    <attr name="colorAlert" format="reference" />
     <attr name="colorDisabledFaded" format="reference" />
     <attr name="colorDisabled" format="reference" />
     <attr name="colorUi" format="reference" />
@@ -57,6 +58,13 @@
     <attr name="textSizeSummaryBarValue" format="reference" />
     <attr name="textSizeBottomNavActive" format="reference" />
     <attr name="textSizeBottomNavInactive" format="reference" />
+
+    <!-- fragment_income -->
+    <attr name="colorTabIndicator" format="reference" />
+    <attr name="colorTabText" format="reference" />
+    <attr name="colorGroupButton" format="reference" />
+    <attr name="colorGroupButtonDisabled" format="reference" />
+    <attr name="colorGroupStroke" format="reference" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />

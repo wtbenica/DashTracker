@@ -59,12 +59,9 @@
         <item name="colorOnSecondaryVariant">@color/on_brick_light</item>
 
         <item name="colorAccent">@color/accent</item>
+        <item name="colorAlert">@color/alert</item>
 
         <item name="defaultCornerRadius">@dimen/margin_half</item>
-
-        <!-- Text -->
-        <item name="android:fontFamily">@font/lalezar</item>
-        <item name="titleFontFamily">@font/lalezar</item>
 
         <!-- View Styles -->
         <item name="android:actionBarWidgetTheme">@style/WidgetTheme</item>
@@ -76,6 +73,11 @@
 
         <item name="android:datePickerDialogTheme">@style/MyDatePickerStyle</item>
         <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
+
+
+        <!-- Text -->
+        <item name="android:fontFamily">@font/lalezar</item>
+        <item name="titleFontFamily">@font/lalezar</item>
 
         <!-- activity_main -->
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
@@ -125,7 +127,7 @@
         <item name="colorOnSurface">@color/primary_text_color</item>
 
         <!-- activity_main.xml -->
-        <item name="colorActionBarText">@color/primary_text_color</item>
+        <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorToolbar">?attr/colorPrimaryVariant</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorFab">?attr/colorAccent</item>
@@ -137,14 +139,21 @@
         <item name="colorBottomNavTextEnabled">?attr/colorOnPrimary</item>
         <item name="colorBottomNavDisabled">?attr/colorOnPrimaryVariant</item>
         <item name="colorBottomNavTextDisabled">?attr/colorOnPrimaryVariant</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorPrimary</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorPrimaryVariant</item>
         <item name="colorPopupBackground">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
+        <!-- fragment_income -->
+        <item name="colorTabIndicator">?attr/colorUi</item>
+        <item name="colorTabText">?attr/colorTextPrimary</item>
+        <item name="colorGroupButton">?attr/colorPrimaryFaded</item>
+        <item name="colorGroupButtonDisabled">?attr/colorOnSecondary</item>
+        <item name="colorGroupStroke">?attr/colorPrimary</item>
+
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>
-        <item name="colorListItemExpanded">?attr/colorPrimary</item>
+        <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>

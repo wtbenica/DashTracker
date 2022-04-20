@@ -30,8 +30,8 @@
     <color name="regular">#405040</color>
     <color name="light">#607060</color>
     <color name="faded">#809080</color>
-    <color name="on_regular">#343438</color>
-    <color name="on_regular_light">#454549</color>
+    <color name="on_regular">#242428</color>
+    <color name="on_regular_light">#343438</color>
 
     <color name="daytime_solid">#C8C860</color>
     <color name="daytime_light">#CFCF88</color>

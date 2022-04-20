@@ -49,9 +49,6 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
 
     private lateinit var binding: DialogFragConfirmEditPurposesBinding
     private val viewModel: ExpenseViewModel by viewModels()
-    private var items: List<ExpensePurpose>? = null
-
-    private var deleteButtonPressed = false
 
     override fun onCreateView(
         inflater: LayoutInflater,

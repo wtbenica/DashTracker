@@ -185,12 +185,6 @@ class Repository private constructor(context: Context) {
         expensePurposeDao.getFlow(id)
 
     /**
-     * Standard Mileage Deductions
-     */
-    fun getAllStdMileageDeduction(): Flow<List<StandardMileageDeduction>> =
-        standardMileageDeductionDao.getAll()
-
-    /**
      * Generic<DataModel> functions
      */
     fun upsertModel(model: DataModel): Long {
@@ -287,7 +281,7 @@ class Repository private constructor(context: Context) {
     }
 }
 
-enum class DeductionType {
-    NONE, GAS_ONLY, ALL_EXPENSES, STD_DEDUCTION
+enum class DeductionType(val text: String) {
+    NONE("None"), GAS_ONLY("Gas"), ALL_EXPENSES("All"), STD_DEDUCTION("IRS Rate")
 }
 

@@ -19,7 +19,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:paddingHorizontal="@dimen/margin_default">
+    android:paddingHorizontal="@dimen/margin_default"
+    tools:keep="@layout/dialog_frag_confirm_edit_purposes">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

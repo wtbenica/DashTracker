@@ -70,21 +70,4 @@
     <style name="BottomNavActiveIndicatorStyle" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">?attr/colorBottomNavItemIndicator</item>
     </style>
-    
-    <style name="bottomSheet" parent="Widget.Material3.CardView.Elevated">
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceBottomSheet</item>
-        <item name="behavior_peekHeight">@dimen/min_touch_target</item>
-        <item name="strokeWidth">0dp</item>
-        <item name="backgroundTint">?attr/colorUi</item>
-        <item name="layout_behavior">@string/bottom_sheet_behavior</item>
-    </style>
-    
-    <style name="bottomSheetToggleButton" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-        <item name="backgroundTint">@color/nav_button</item>
-        <item name="strokeColor">@color/nav_button_stroke</item>
-        <item name="strokeWidth">1dp</item>
-    </style>
 </resources>

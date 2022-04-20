@@ -272,7 +272,7 @@
                         android:layout_column="0"
                         android:focusable="false"
                         android:labelFor="@id/frag_entry_num_deliveries"
-                        android:text="@string/label_num_deliveries" />
+                        android:text="@string/lbl_num_deliveries" />
 
                     <EditText
                         android:id="@+id/frag_entry_num_deliveries"

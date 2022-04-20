@@ -16,20 +16,15 @@
 
 package com.wtb.dashTracker.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.wtb.dashTracker.MainActivity.Companion.APP
-import com.wtb.dashTracker.database.models.StandardMileageDeduction
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @ExperimentalCoroutinesApi
 class DeductionTypeViewModel : ViewModel() {
-    private val repository = Repository.get()
 
     private val _deductionType: MutableStateFlow<DeductionType> =
         MutableStateFlow(DeductionType.NONE)
@@ -39,11 +34,5 @@ class DeductionTypeViewModel : ViewModel() {
 
     fun setDeductionType(type: DeductionType) {
         _deductionType.value = type
-        Log.d(
-            APP + DeductionTypeViewModel::class.simpleName,
-            "setDeductionType: ${type.name} ${deductionType.value.name}"
-        )
     }
-
-    val stdMileageDeductions: Flow<List<StandardMileageDeduction>> = repository.getAllStdMileageDeduction()
 }

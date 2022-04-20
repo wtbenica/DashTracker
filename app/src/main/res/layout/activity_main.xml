@@ -20,7 +20,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorUIBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:keep="@layout/activity_main">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/container"
@@ -118,136 +119,47 @@
             style="@style/Widget.Material3.FloatingActionButton.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_wide"
             android:contentDescription="@string/desc_add_entry"
             android:src="@drawable/anim_fab_expand"
-            android:translationY="-48dp"
-            app:elevation="1dp"
-            app:layout_anchor="@id/bottom_sheet"
-            app:layout_anchorGravity="end"
+            android:translationY="-16dp"
+            app:layout_anchor="@id/bottom_app_bar"
             app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
+            app:layout_dodgeInsetEdges="bottom"
             app:tint="?attr/colorFabIcon"
             tools:ignore="ImageContrastCheck" />
 
-        <!--        <com.google.android.material.bottomappbar.BottomAppBar-->
-        <!--            android:id="@+id/bottom_app_bar"-->
-        <!--            style="@style/Widget.MaterialComponents.BottomAppBar"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_gravity="bottom"-->
-        <!--            android:animateLayoutChanges="true"-->
-        <!--            android:backgroundTint="?attr/colorUi"-->
-        <!--            android:minHeight="?android:attr/actionBarSize"-->
-        <!--            android:paddingVertical="@dimen/margin_narrow"-->
-        <!--            app:elevation="1dp"-->
-        <!--            app:fabAlignmentMode="end"-->
-        <!--            app:fabAnimationMode="scale"-->
-        <!--            app:fabCradleMargin="0dp"-->
-        <!--            app:fabCradleRoundedCornerRadius="@dimen/margin_default"-->
-        <!--            app:hideOnScroll="true"-->
-        <!--            app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">-->
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottom_app_bar"
+            style="@style/Widget.Material3.BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:animateLayoutChanges="true"
+            android:backgroundTint="?attr/colorUi"
+            android:minHeight="?android:attr/actionBarSize"
+            android:paddingStart="0dp"
+            android:paddingEnd="96dp"
+            app:elevation="1dp"
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="scale"
+            app:fabCradleMargin="@dimen/margin_narrow"
+            app:fabCradleRoundedCornerRadius="@dimen/margin_narrow"
+            app:hideOnScroll="true"
+            app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
 
-        <!--            <com.google.android.material.bottomnavigation.BottomNavigationView-->
-        <!--                android:id="@+id/nav_view"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="match_parent"-->
-        <!--                android:animateLayoutChanges="true"-->
-        <!--                android:background="@android:color/transparent"-->
-        <!--                android:paddingStart="8dp"-->
-        <!--                android:paddingEnd="96dp"-->
-        <!--                app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"-->
-        <!--                app:itemIconTint="?attr/colorBottomNavItem"-->
-        <!--                app:itemTextColor="?attr/colorBottomNavItemText"-->
-        <!--                app:labelVisibilityMode="labeled"-->
-        <!--                app:menu="@menu/bottom_nav_menu" />-->
-        <!--        </com.google.android.material.bottomappbar.BottomAppBar>-->
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/nav_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"
+                app:itemIconSize="@dimen/margin_wide"
+                app:itemIconTint="?attr/colorBottomNavItem"
+                app:itemTextColor="?attr/colorBottomNavItemText"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/bottom_nav_menu" />
 
-        <include
-            android:id="@+id/bottom_sheet"
-            layout="@layout/layout_main_bottom_sheet" />
-
-        <!--        <com.google.android.material.card.MaterialCardView-->
-        <!--            android:id="@+id/bottom_sheet"-->
-        <!--            style="@style/bottomSheet"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:fitsSystemWindows="true"-->
-        <!--            app:backgroundTint="?attr/colorUi"-->
-        <!--            tools:behavior_peekHeight="100%">-->
-
-        <!--            <LinearLayout-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_margin="0dp"-->
-        <!--                android:orientation="vertical"-->
-        <!--                android:padding="@dimen/margin_default">-->
-
-        <!--                <com.google.android.material.button.MaterialButtonToggleGroup-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    app:selectionRequired="true"-->
-        <!--                    app:singleSelection="true">-->
-
-        <!--                    <com.google.android.material.button.MaterialButton-->
-        <!--                        style="@style/Widget.Material3.Button.OutlinedButton"-->
-        <!--                        android:layout_width="0dp"-->
-        <!--                        android:layout_height="match_parent"-->
-        <!--                        android:layout_weight="1"-->
-        <!--                        android:text="Income"-->
-        <!--                        app:backgroundTint="?attr/colorOnSecondary"-->
-        <!--                        app:strokeColor="?attr/colorPrimaryVariant" />-->
-
-        <!--                    <com.google.android.material.button.MaterialButton-->
-        <!--                        style="@style/Widget.Material3.Button.OutlinedButton"-->
-        <!--                        android:layout_width="0dp"-->
-        <!--                        android:layout_height="match_parent"-->
-        <!--                        android:layout_weight="1"-->
-        <!--                        android:text="Expenses"-->
-        <!--                        app:backgroundTint="?attr/colorOnSecondary"-->
-        <!--                        app:strokeColor="?attr/colorPrimaryVariant" />-->
-
-        <!--                    <com.google.android.material.button.MaterialButton-->
-        <!--                        style="@style/Widget.Material3.Button.OutlinedButton"-->
-        <!--                        android:layout_width="0dp"-->
-        <!--                        android:layout_height="match_parent"-->
-        <!--                        android:layout_weight="1"-->
-        <!--                        android:text="Trends"-->
-        <!--                        app:backgroundTint="?attr/colorOnSecondary"-->
-        <!--                        app:strokeColor="?attr/colorPrimaryVariant" />-->
-        <!--                </com.google.android.material.button.MaterialButtonToggleGroup>-->
-
-        <!--                <TextView-->
-        <!--                    style="@style/FragEntryHeaderTextView"-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:text="Group by:" />-->
-
-        <!--                <com.google.android.material.slider.Slider-->
-        <!--                    style="@style/Base.DasherCompanion"-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:stepSize="1"-->
-        <!--                    app:tickVisible="true"-->
-        <!--                    android:valueFrom="0"-->
-        <!--                    android:valueTo="2"/>-->
-
-        <!--                <TextView-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:text="Look at my text" />-->
-
-        <!--                <TextView-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:text="Look at my text" />-->
-
-        <!--                <TextView-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:text="Look at my text" />-->
-
-        <!--            </LinearLayout>-->
-        <!--        </com.google.android.material.card.MaterialCardView>-->
+        </com.google.android.material.bottomappbar.BottomAppBar>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"

@@ -51,6 +51,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.frag_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -58,14 +59,15 @@ import kotlinx.coroutines.flow.collectLatest
 class EntryListFragment : Fragment() {
 
     private val viewModel: EntryListViewModel by viewModels()
-    private var callback: EntryListFragmentCallback? = null
+
+    private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
     private var deductionType: DeductionType = DeductionType.NONE
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = context as EntryListFragmentCallback
+        callback = context as IncomeFragment.IncomeFragmentCallback
     }
 
     override fun onCreateView(
@@ -176,10 +178,16 @@ class EntryListFragment : Fragment() {
             }
 
             override fun onClick(v: View?) {
-                val currentVisibility = detailsTable.visibility
-                detailsTable.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-                binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
-                bindingAdapter?.notifyItemChanged(bindingAdapterPosition, detailsTable.visibility)
+//                detailsTable.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
+                if (detailsTable.visibility == VISIBLE) {
+                    detailsTable.collapse()
+                    binding.listItemWrapper.setBackgroundResource(R.drawable.bg_list_item)
+                    bindingAdapter?.notifyItemChanged(bindingAdapterPosition, GONE)
+                } else {
+                    detailsTable.expand()
+                    binding.listItemWrapper.setBackgroundResource(R.drawable.bg_list_item_expanded)
+                    bindingAdapter?.notifyItemChanged(bindingAdapterPosition, VISIBLE)
+                }
             }
 
             fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
@@ -189,8 +197,8 @@ class EntryListFragment : Fragment() {
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(Dispatchers.Default) {
                         viewModel.getCostPerMile(entry.date, deductionType)
-                    }.let { it: Float? ->
-                        costPerMile = it ?: 0f
+                    }.let { cpm: Float? ->
+                        costPerMile = cpm ?: 0f
                         (context as MainActivity).runOnUiThread {
                             binding.listItemSubtitle2.text =
                                 getCurrencyString(

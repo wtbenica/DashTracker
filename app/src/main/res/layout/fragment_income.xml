@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2022 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimaryVariant"
+    android:orientation="vertical"
+    tools:context=".ui.frag_income.IncomeFragment">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/frag_income_tab_layout"
+        style="@style/FragIncomeTabLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/filter_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_daily" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_weekly_list" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_yearly_list" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/filter_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/min_touch_target"
+        android:background="?attr/colorPrimary"
+        android:contentDescription="@string/content_desc_expand_item_list_options_button"
+        android:minWidth="@dimen/min_touch_target"
+        android:text="@string/label_cpm"
+        app:icon="@drawable/ic_arrow_more"
+        app:iconPadding="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorTextPrimary" />
+
+    <LinearLayout
+        android:id="@+id/filter_box"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorTabIndicator"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/margin_narrow"
+        android:paddingBottom="@dimen/margin_default"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/min_touch_target"
+            android:gravity="bottom"
+            android:labelFor="@id/button_group_deduction_type"
+            android:text="@string/label_set_cpm_method" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/button_group_deduction_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/none_button"
+                style="@style/materialToggleButton"
+                android:text="@string/label_none" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/gas_button"
+                style="@style/materialToggleButton"
+                android:text="@string/expense_purpose_gas" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/actual_button"
+                style="@style/materialToggleButton"
+                android:text="@string/expense_purpose_all" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/standard_button"
+                style="@style/materialToggleButton"
+                android:text="@string/expense_purpose_standard" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+    </LinearLayout>
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/frag_income_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="?attr/colorUIBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_box" />
+</androidx.constraintlayout.widget.ConstraintLayout>

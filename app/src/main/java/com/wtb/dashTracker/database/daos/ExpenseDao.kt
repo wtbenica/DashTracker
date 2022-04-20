@@ -26,7 +26,6 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 @Dao
@@ -56,15 +55,6 @@ abstract class ExpenseDao : BaseDao<Expense>("Expense", "expenseId") {
         return executeRawQuery(query)
     }
 
-
-    fun getExpenses(date: LocalDate) {
-        val query = SimpleSQLiteQuery(
-            """SELECT SUM(amount)
-                FROM Expense
-                WHERE date BETWEEN ${date.minusDays(60)} AND $date
-            """
-        )
-    }
 
     companion object {
         private const val SQL_GET_ALL =

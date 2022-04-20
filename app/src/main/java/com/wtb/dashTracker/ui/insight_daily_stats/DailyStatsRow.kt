@@ -29,11 +29,6 @@ import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.*
 
-fun Context.getStringOrElse(@StringRes resId: Int, formatArg: Any?): String =
-    formatArg?.let {
-        getString(resId, it)
-    } ?: "-"
-
 
 class DailyStatsRow @JvmOverloads constructor(
     context: Context,
