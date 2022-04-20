@@ -54,7 +54,7 @@ import java.time.LocalDate
 class YearlyListFragment : Fragment() {
 
     private val viewModel: YearlyListViewModel by viewModels()
-    internal var callback: IncomeFragment.IncomeFragmentCallback? = null
+    private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private val yearlies = mutableListOf<Yearly>()
 
@@ -197,8 +197,8 @@ class YearlyListFragment : Fragment() {
             CoroutineScope(Dispatchers.Default).launch {
                 withContext(Dispatchers.Default) {
                     viewModel.getAnnualCostPerMile(yearly.year, deductionType)
-                }.let { it: Float? ->
-                    costPerMile = it ?: 0f
+                }.let { cpm: Float? ->
+                    costPerMile = cpm ?: 0f
                     (context as MainActivity).runOnUiThread {
                         binding.listItemSubtitle2.text =
                             getCurrencyString(
@@ -206,7 +206,7 @@ class YearlyListFragment : Fragment() {
                                     costPerMile ?: 0f
                                 )
                             )
-                        detailsBinding.listItemYearlyCpm.text = getCurrencyString(it)
+                        detailsBinding.listItemYearlyCpm.text = getCurrencyString(cpm)
                     }
                 }
             }

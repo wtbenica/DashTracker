@@ -21,7 +21,6 @@ import android.content.Intent
 import android.content.Intent.EXTRA_STREAM
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.R
@@ -30,11 +29,13 @@ import com.wtb.dashTracker.database.models.DashEntry.Companion.asList
 import com.wtb.dashTracker.database.models.Expense.Companion.asList
 import com.wtb.dashTracker.database.models.ExpensePurpose.Companion.asList
 import com.wtb.dashTracker.database.models.Weekly.Companion.asList
-import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileInputStream
 import java.time.LocalDate
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -42,8 +43,6 @@ import java.util.zip.ZipOutputStream
 
 @ExperimentalCoroutinesApi
 class CSVUtils {
-    private val repository: Repository
-        get() = Repository.get()
 
     fun export(
         entries: List<DashEntry>?,
@@ -168,14 +167,6 @@ class CSVUtils {
             ConfirmationDialogImport(ctx).show(ctx.supportFragmentManager, null)
         }
     }
-
-    private fun <T : DataModel> getModelsFromCsv(
-        path: InputStream?,
-        function: (Map<String, String>) -> T
-    ): List<T>? =
-        path?.let { inStream ->
-            csvReader().readAllWithHeader(inStream).map { function(it) }
-        }
 
     companion object {
         const val FILE_ZIP = "dash_tracker_"

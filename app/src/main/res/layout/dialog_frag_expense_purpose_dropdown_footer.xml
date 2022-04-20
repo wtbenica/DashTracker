@@ -27,7 +27,8 @@
         android:layout_height="@dimen/min_touch_target"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_action_edit"
-        app:tint="?attr/colorTextPrimary" />
+        app:tint="?attr/colorTextPrimary"
+        android:contentDescription="@string/content_desc_edit_purpose_list" />
 
     <ImageButton
         android:id="@+id/add_purpose_btn"
@@ -35,6 +36,7 @@
         android:layout_height="@dimen/min_touch_target"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_add"
-        app:tint="?attr/colorTextPrimary" />
+        app:tint="?attr/colorTextPrimary"
+        android:contentDescription="@string/content_desc_add_purpose" />
 
 </LinearLayout>

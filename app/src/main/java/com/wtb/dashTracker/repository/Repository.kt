@@ -185,12 +185,6 @@ class Repository private constructor(context: Context) {
         expensePurposeDao.getFlow(id)
 
     /**
-     * Standard Mileage Deductions
-     */
-    fun getAllStdMileageDeduction(): Flow<List<StandardMileageDeduction>> =
-        standardMileageDeductionDao.getAll()
-
-    /**
      * Generic<DataModel> functions
      */
     fun upsertModel(model: DataModel): Long {

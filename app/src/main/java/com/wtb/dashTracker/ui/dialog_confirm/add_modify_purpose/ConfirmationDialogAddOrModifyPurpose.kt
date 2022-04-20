@@ -50,7 +50,6 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
     private var deleteButtonPressed = false
 
     private val prevPurpose: Int? = null
-    private val currentName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

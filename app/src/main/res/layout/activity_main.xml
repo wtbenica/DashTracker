@@ -20,7 +20,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorUIBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:keep="@layout/activity_main">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/container"
@@ -136,6 +137,7 @@
             android:animateLayoutChanges="true"
             android:backgroundTint="?attr/colorUi"
             android:minHeight="?android:attr/actionBarSize"
+            android:paddingStart="0dp"
             android:paddingEnd="96dp"
             app:elevation="1dp"
             app:fabAlignmentMode="end"

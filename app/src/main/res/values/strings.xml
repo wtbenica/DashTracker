@@ -21,6 +21,7 @@
     <string name="title_weekly_list">Weekly</string>
     <string name="title_insights">Insights</string>
     <string name="title_yearly_list">Yearly</string>
+    <string name="title_expenses">Expenses</string>
 
     <string name="lbl_date">Date</string>
     <string name="lbl_start_time">Start Time</string>
@@ -31,7 +32,7 @@
     <string name="lbl_total_mileage">Total Mileage</string>
     <string name="lbl_pay">Regular Pay</string>
     <string name="lbl_cash_tips">Cash Tips</string>
-    <string name="label_num_deliveries">Num. Deliveries</string>
+    <string name="lbl_num_deliveries">Num. Deliveries</string>
     <string name="lbl_hourly">Hourly</string>
     <string name="lbl_this_week">This Week</string>
     <string name="lbl_other_pay">Other Pay</string>
@@ -118,7 +119,6 @@
     <string name="lbl_price">Price</string>
     <string name="lbl_gas">Gas</string>
     <string name="lbl_other">Other</string>
-    <string name="title_expenses">Expenses</string>
     <string name="content_desc_recurring_expense">Recurring expense</string>
     <string name="message_new_expense">What is the new expense type?</string>
     <string name="label_gas">Gas</string>
@@ -141,4 +141,8 @@
     <string name="label_cost_per_mile">Cost per mile</string>
     <string name="content_desc_expand_item_list_options_button">Toggle item list options menu</string>
     <string name="label_set_cpm_method">Calculate cost per mile using:</string>
+    <string name="content_desc_edit_purpose_list">Edit list</string>
+    <string name="content_desc_add_purpose">Add purpose</string>
+    <string name="label_cpm">CPM</string>
+    <string name="label_none">None</string>
 </resources>

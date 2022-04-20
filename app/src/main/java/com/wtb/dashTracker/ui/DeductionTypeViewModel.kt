@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 @ExperimentalCoroutinesApi
 class DeductionTypeViewModel : ViewModel() {
-    private val repository = Repository.get()
 
     private val _deductionType: MutableStateFlow<DeductionType> =
         MutableStateFlow(DeductionType.NONE)

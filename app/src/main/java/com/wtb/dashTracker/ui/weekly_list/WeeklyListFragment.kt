@@ -54,7 +54,7 @@ import kotlinx.coroutines.flow.collectLatest
 class WeeklyListFragment : Fragment() {
 
     private val viewModel: WeeklyViewModel by viewModels()
-    internal var callback: IncomeFragment.IncomeFragmentCallback? = null
+    private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
     private var deductionType: DeductionType = DeductionType.NONE

@@ -28,8 +28,6 @@ class ExpenseViewModel : BaseViewModel<Expense>() {
     override fun getItemFlowById(id: Int): Flow<Expense?> =
         repository.getExpenseFlowById(id)
 
-    suspend fun getPurposeIdByName(name: String) = repository.getPurposeIdByName(name)
-
     val expensePurposes: Flow<List<ExpensePurpose>> = repository.allExpensePurposes
 
     val fullPurposes: Flow<List<FullExpensePurpose>> = repository.allFullPurposes

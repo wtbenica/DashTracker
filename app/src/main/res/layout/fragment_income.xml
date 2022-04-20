@@ -55,7 +55,7 @@
         android:background="?attr/colorPrimary"
         android:contentDescription="@string/content_desc_expand_item_list_options_button"
         android:minWidth="@dimen/min_touch_target"
-        android:text="CPM"
+        android:text="@string/label_cpm"
         app:icon="@drawable/ic_arrow_more"
         app:iconPadding="0dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +93,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/none_button"
                 style="@style/materialToggleButton"
-                android:text="None" />
+                android:text="@string/label_none" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/gas_button"

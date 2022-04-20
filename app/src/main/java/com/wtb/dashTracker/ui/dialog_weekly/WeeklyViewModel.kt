@@ -57,7 +57,7 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
         deductionType: DeductionType
     ): Pair<Float, Float> =
         CoroutineScope(Dispatchers.Default).async {
-                var expenses: Float = 0f
+                var expenses = 0f
                 withContext(Dispatchers.Default) {
                     compWeekly.entries.forEach { entry ->
                         withContext(Dispatchers.Default) {
