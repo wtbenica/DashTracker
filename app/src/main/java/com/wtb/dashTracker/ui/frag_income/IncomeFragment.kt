@@ -104,7 +104,7 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
         binding.filterBtn.setOnClickListener {
             if (btnGroup.visibility == VISIBLE) {
                 btnGroup.collapse()
-                binding.filterBtn.setIconResource(R.drawable.ic_arrow_more)
+                binding.filterBtn.setIconResource(R.drawable.ic_arrow_expand)
                 binding.filterBtn.text = when (binding.buttonGroupDeductionType.checkedButtonId) {
                     R.id.gas_button -> "CPM: " + DeductionType.GAS_ONLY.text
                     R.id.actual_button -> "CPM: " + DeductionType.ALL_EXPENSES.text
@@ -113,7 +113,7 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
                 }
             } else {
                 btnGroup.expand()
-                binding.filterBtn.setIconResource(R.drawable.ic_arrow_less)
+                binding.filterBtn.setIconResource(R.drawable.ic_arrow_collapse)
                 binding.filterBtn.text = null
             }
         }
@@ -124,19 +124,15 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
             if (isChecked) {
                 when (checkedId) {
                     R.id.none_button -> {
-//                        binding.filterBtn.text = DeductionType.NONE.text
                         callback.setDeductionType(DeductionType.NONE)
                     }
                     R.id.gas_button -> {
-//                        binding.filterBtn.text = DeductionType.GAS_ONLY.text
                         callback.setDeductionType(DeductionType.GAS_ONLY)
                     }
                     R.id.actual_button -> {
-//                        binding.filterBtn.text = DeductionType.ALL_EXPENSES.text
                         callback.setDeductionType(DeductionType.ALL_EXPENSES)
                     }
                     R.id.standard_button -> {
-//                        binding.filterBtn.text = DeductionType.STD_DEDUCTION.text
                         callback.setDeductionType(DeductionType.STD_DEDUCTION)
                     }
                 }

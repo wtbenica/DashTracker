@@ -68,6 +68,7 @@
         <item name="colorGroupButton">?attr/colorPrimaryFaded</item>
         <item name="colorGroupButtonDisabled">?attr/colorOnPrimary</item>
         <item name="colorGroupStroke">?attr/colorPrimaryDark</item>
+        <item name="colorOptionsMenu">?attr/colorPrimaryFaded</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorSecondaryDark</item>

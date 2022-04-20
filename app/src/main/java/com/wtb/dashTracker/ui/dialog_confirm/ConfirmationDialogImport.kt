@@ -48,9 +48,9 @@ open class ConfirmationDialogImport(
         binding.importNotesBtn.setOnClickListener {
             binding.modifiedInfoText.setVisibleIfTrue(binding.modifiedInfoText.visibility == GONE)
             val rs = if (binding.modifiedInfoText.visibility == GONE)
-                R.drawable.ic_expand_down
+                R.drawable.ic_arrow_expand
             else
-                R.drawable.ic_expand_up
+                R.drawable.ic_arrow_collapse
 
             binding.importNotesBtn.icon = AppCompatResources.getDrawable(requireContext(), rs)
         }

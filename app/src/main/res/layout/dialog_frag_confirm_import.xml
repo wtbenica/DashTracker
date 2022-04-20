@@ -80,7 +80,7 @@
                         android:textAlignment="textStart"
                         android:textColor="?attr/colorDialogText"
                         android:textSize="@dimen/text_size_large"
-                        app:icon="@drawable/ic_expand_down"
+                        app:icon="@drawable/ic_arrow_expand"
                         app:iconGravity="end"
                         app:iconSize="@dimen/margin_wide"
                         app:iconTint="?attr/colorDialogText" />

@@ -65,6 +65,7 @@
     <attr name="colorGroupButton" format="reference" />
     <attr name="colorGroupButtonDisabled" format="reference" />
     <attr name="colorGroupStroke" format="reference" />
+    <attr name="colorOptionsMenu" format="reference" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
@@ -76,6 +77,8 @@
     <attr name="textSizeListItemSubtitle" format="reference" />
     <attr name="listItemCornerRadius" format="reference" />
     <attr name="listItemThinBorder" format="reference" />
+    <attr name="dimenListItemMarginVertical" format="reference|dimension" />
+    <attr name="dimenListItemMarginHorizontal" format="reference|dimension" />
 
     <!-- list_item_details -->
     <attr name="colorListItemDetails" format="reference" />

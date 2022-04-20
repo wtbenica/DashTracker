@@ -50,9 +50,9 @@ open class ConfirmationDialogExport(
         binding.exportNotesBtn.setOnClickListener {
             binding.exportNotesText.setVisibleIfTrue(binding.exportNotesText.visibility == GONE)
             val rs = if (binding.exportNotesText.visibility == GONE)
-                R.drawable.ic_expand_down
+                R.drawable.ic_arrow_expand
             else
-                R.drawable.ic_expand_up
+                R.drawable.ic_arrow_collapse
 
             binding.exportNotesBtn.icon = AppCompatResources.getDrawable(requireContext(), rs)
         }
