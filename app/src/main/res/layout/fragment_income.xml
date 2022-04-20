@@ -14,23 +14,103 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorPrimaryVariant"
     android:orientation="vertical"
     tools:context=".ui.frag_income.IncomeFragment">
 
     <com.google.android.material.tabs.TabLayout
-        style="@style/FragIncomeTabLayout"
         android:id="@+id/frag_income_tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        style="@style/FragIncomeTabLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/filter_butt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_daily" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_weekly_list" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_yearly_list" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <ImageButton
+        android:id="@+id/filter_butt"
+        android:background="@android:color/transparent"
+        android:layout_width="@dimen/min_touch_target"
+        android:layout_height="@dimen/min_touch_target"
+        android:src="@drawable/ic_expand_more"
+        app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnPrimary"
+        android:contentDescription="@string/content_desc_expand_item_list_options_button" />
+
+    <LinearLayout
+        android:id="@+id/filter_box"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_half"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/label_set_cpm_method" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/button_group_deduction_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/gas_button"
+                style="@style/bottomSheetToggleButton"
+                android:text="@string/expense_purpose_gas" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/actual_button"
+                style="@style/bottomSheetToggleButton"
+                android:text="@string/expense_purpose_all" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/standard_button"
+                style="@style/bottomSheetToggleButton"
+                android:enabled="true"
+                android:text="@string/expense_purpose_standard" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+    </LinearLayout>
+
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/frag_income_view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
-</LinearLayout>
+        android:layout_weight="1"
+        android:background="?attr/colorUIBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_box" />
+</androidx.constraintlayout.widget.ConstraintLayout>

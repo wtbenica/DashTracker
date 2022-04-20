@@ -19,16 +19,26 @@ package com.wtb.dashTracker.ui.frag_income
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragmentIncomeBinding
+import com.wtb.dashTracker.extensions.collapse
+import com.wtb.dashTracker.extensions.expand
+import com.wtb.dashTracker.extensions.rotateDown
+import com.wtb.dashTracker.extensions.rotateUp
+import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment
 import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
 import com.wtb.dashTracker.ui.yearly_list.YearlyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,16 +50,31 @@ private const val ARG_PARAM2 = "param2"
  * Use the [IncomeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class IncomeFragment : Fragment() {
+@ExperimentalCoroutinesApi
+class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback,
+    EntryListFragment.EntryListFragmentCallback,
+    YearlyListFragment.YearlyListFragmentCallback {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
+    override val deductionType: StateFlow<DeductionType>
+        get() = deductionTypeViewModel.deductionType
+    override var standardMileageDeductions: Map<Int, Float> = emptyMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+        }
+
+        deductionTypeViewModel.stdMileageDeductions.asLiveData().observe(this) {
+            val m = mutableMapOf<Int, Float>()
+            it.forEach { stdDeduct ->
+                m[stdDeduct.year] = stdDeduct.amount
+            }
+            standardMileageDeductions = m
         }
     }
 
@@ -78,20 +103,44 @@ class IncomeFragment : Fragment() {
                 else -> getString(R.string.title_daily)
             }
         }.attach()
+
+        val btnGroup = binding.filterBox
+        binding.filterButt.setOnClickListener {
+            if (btnGroup.visibility == VISIBLE) {
+                btnGroup.collapse()
+                binding.filterButt.rotateDown()
+            } else {
+                btnGroup.expand()
+                binding.filterButt.rotateUp()
+            }
+        }
+
+        binding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.gas_button -> deductionTypeViewModel.setDeductionType(DeductionType.GAS_ONLY)
+                    R.id.actual_button -> deductionTypeViewModel.setDeductionType(DeductionType.ALL_EXPENSES)
+                    R.id.standard_button -> deductionTypeViewModel.setDeductionType(
+                        DeductionType.STD_DEDUCTION
+                    )
+                }
+            } else {
+                deductionTypeViewModel.setDeductionType(DeductionType.NONE)
+            }
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @ExperimentalCoroutinesApi
     inner class IncomePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = NUM_PAGES
 
         override fun createFragment(position: Int): Fragment =
             when (position) {
-                1 -> WeeklyListFragment()
-                2 -> YearlyListFragment()
-                else -> EntryListFragment()
+                1 -> WeeklyListFragment().apply { callback = this@IncomeFragment }
+                2 -> YearlyListFragment().apply { callback = this@IncomeFragment }
+                else -> EntryListFragment().apply { callback = this@IncomeFragment }
             }
     }
-
 
     companion object {
         private const val NUM_PAGES = 3

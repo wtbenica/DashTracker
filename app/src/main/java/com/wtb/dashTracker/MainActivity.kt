@@ -42,7 +42,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.asLiveData
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -57,20 +56,15 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
-import com.wtb.dashTracker.databinding.BottomSheetBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment.ExpenseListFragmentCallback
-import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
-import com.wtb.dashTracker.ui.yearly_list.YearlyListFragment.YearlyListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
@@ -89,19 +83,12 @@ import java.time.format.DateTimeParseException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback,
-    YearlyListFragmentCallback, ExpenseListFragmentCallback {
+class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback {
 
     private val viewModel: MainActivityViewModel by viewModels()
-    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
-    override val deductionType: StateFlow<DeductionType>
-        get() = deductionTypeViewModel.deductionType
-    override var standardMileageDeductions: Map<Int, Float> = emptyMap()
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var sheetBinding: BottomSheetBinding
     private lateinit var mAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,101 +141,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             val adRequest = AdRequest.Builder().build()
             mAdView.loadAd(adRequest)
         }
-//
-//        fun initBottomSheet() {
-//            sheetBinding = BottomSheetBinding.bind(binding.bottomSheet.root)
-//            val contentIncomeBinding =
-//                BottomSheetContentIncomeBinding.bind(sheetBinding.contentIncome.root)
-//            val contentExpenseBinding =
-//                BottomSheetContentExpenseBinding.bind(sheetBinding.contentExpense.root)
-//            val contentTrendsBinding =
-//                BottomSheetContentTrendsBinding.bind(sheetBinding.contentTrends.root)
-//            val behavior = BottomSheetBehavior.from(sheetBinding.root)
-//
-//            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-//
-//            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-//                override fun onStateChanged(bottomSheet: View, newState: Int) {
-//                    when (newState) {
-//                        BottomSheetBehavior.STATE_EXPANDED -> {
-//                            sheetBinding.contentCard.isEnabled = true
-//                        }
-//                        else -> {
-//                            sheetBinding.contentCard.isEnabled = false
-//                        }
-//                    }
-//                }
-//
-//                override fun onSlide(bottomSheet: View, slideOffset: Float) {
-//                    sheetBinding.contentCard.alpha = slideOffset
-//                    sheetBinding.bottomSheetHandle.alpha = 1 - slideOffset
-//                }
-//
-//            })
-//
-//////            sheetBinding.buttonGroupNav.addOnButtonCheckedListener { group, checkedId, isChecked ->
-//////                when (checkedId) {
-//////                    R.id.income_button -> {
-//////                        if (isChecked) {
-//////                            sheetBinding.bottomSheetContent.displayedChild = 0
-//////                            when (contentIncomeBinding.buttonGroupTimeAggregator.checkedButtonId) {
-//////                                R.id.daily_button -> {
-//////                                    navController?.navigate(R.id.navigation_income)
-//////                                }
-//////                                R.id.weekly_button -> {
-//////                                    navController?.navigate(R.id.navigation_weekly)
-//////                                }
-//////                                R.id.yearly_button -> {
-//////                                    navController?.navigate(R.id.navigation_yearly)
-//////                                }
-//////                            }
-//////                        }
-//////                    }
-//////                    R.id.expense_button -> {
-//////                        if (isChecked) {
-//////                            sheetBinding.bottomSheetContent.displayedChild = 1
-//////                            navController?.navigate(R.id.navigation_expenses)
-//////                        }
-//////                    }
-//////                    R.id.trends_button -> {
-//////                        if (isChecked) {
-//////                            sheetBinding.bottomSheetContent.displayedChild = 2
-//////                            navController?.navigate(R.id.navigation_insights)
-//////                        }
-//////                    }
-//////                }
-//////            }
-////
-////            contentIncomeBinding.buttonGroupTimeAggregator.addOnButtonCheckedListener { group, checkedId, isChecked ->
-////                if (isChecked) {
-////                    when (checkedId) {
-////                        R.id.daily_button -> {
-////                            navController?.navigate(R.id.navigation_income)
-////                        }
-////                        R.id.weekly_button -> {
-////                            navController?.navigate(R.id.navigation_weekly)
-////                        }
-////                        R.id.yearly_button -> {
-////                            navController?.navigate(R.id.navigation_yearly)
-////                        }
-////                    }
-////                }
-////            }
-////
-//            contentIncomeBinding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
-//                if (isChecked) {
-//                    when (checkedId) {
-//                        R.id.gas_button -> deductionTypeViewModel.setDeductionType(DeductionType.GAS_ONLY)
-//                        R.id.actual_button -> deductionTypeViewModel.setDeductionType(DeductionType.ALL_EXPENSES)
-//                        R.id.standard_button -> deductionTypeViewModel.setDeductionType(
-//                            DeductionType.STD_DEDUCTION
-//                        )
-//                    }
-//                } else {
-//                    deductionTypeViewModel.setDeductionType(DeductionType.NONE)
-//                }
-//            }
-//        }
 
         fun initBottomNavBar() {
             val navView: BottomNavigationView = binding.navView
@@ -270,40 +162,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                 setupActionBarWithNavController(it, appBarConfiguration)
                 navView.setupWithNavController(it)
             }
-//
-//            navView.setOnItemSelectedListener { item ->
-//                Log.d(
-//                    TAG,
-//                    "SMIZE: ${item.itemId} ${R.id.navigation_income} ${R.id.navigation_expenses} ${R.id.navigation_insights}"
-//                )
-//
-//                val fragment: Fragment
-//                when (item.itemId) {
-//                    R.id.navigation_income -> {
-//                        sheetBinding.bottomSheetContent.displayedChild = 0
-//                        fragment = IncomeFragment()
-//                        supportActionBar?.setTitle(R.string.label_income)
-//                    }
-//                    R.id.navigation_expenses -> {
-//                        sheetBinding.bottomSheetContent.displayedChild = 1
-//                        fragment = ExpenseListFragment()
-//                        supportActionBar?.setTitle(R.string.title_expenses)
-//                    }
-//                    R.id.navigation_insights -> {
-//                        sheetBinding.bottomSheetContent.displayedChild = 2
-//                        fragment = DailyStatsFragment()
-//                        supportActionBar?.setTitle(R.string.label_trends)
-//                    }
-//                    else -> throw IllegalArgumentException("Invalid menu item selected")
-//                }
-//
-//                val transacttion = supportFragmentManager.beginTransaction()
-//                transacttion.replace(R.id.nav_host_fragment_activity_main, fragment)
-//                transacttion.addToBackStack(null)
-//                transacttion.commit()
-//
-//                return@setOnItemSelectedListener true
-//            }
         }
 
         fun initObservers() {
@@ -321,14 +179,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                 binding.actMainLastWeek.text =
                     getCurrencyString(it)
             }
-
-            deductionTypeViewModel.stdMileageDeductions.asLiveData().observe(this) {
-                val m = mutableMapOf<Int, Float>()
-                it.forEach { stdDeduct ->
-                    m[stdDeduct.year] = stdDeduct.amount
-                }
-                standardMileageDeductions = m
-            }
         }
 
         installSplashScreen()
@@ -342,7 +192,6 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         initBiometrics()
         initMobileAds()
         initBottomNavBar()
-//        initBottomSheet()
         initObservers()
     }
 

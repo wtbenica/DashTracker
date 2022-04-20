@@ -53,7 +53,7 @@ import java.time.LocalDate
 class YearlyListFragment : Fragment() {
 
     private val viewModel: YearlyListViewModel by viewModels()
-    private var callback: YearlyListFragmentCallback? = null
+    internal var callback: YearlyListFragmentCallback? = null
 
     private val yearlies = mutableListOf<Yearly>()
 
@@ -62,7 +62,6 @@ class YearlyListFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = context as YearlyListFragmentCallback
     }
 
     override fun onCreateView(

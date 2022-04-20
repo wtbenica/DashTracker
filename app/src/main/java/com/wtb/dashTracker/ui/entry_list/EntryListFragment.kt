@@ -58,14 +58,13 @@ import kotlinx.coroutines.flow.collectLatest
 class EntryListFragment : Fragment() {
 
     private val viewModel: EntryListViewModel by viewModels()
-    private var callback: EntryListFragmentCallback? = null
+    internal var callback: EntryListFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
     private var deductionType: DeductionType = DeductionType.NONE
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = context as EntryListFragmentCallback
     }
 
     override fun onCreateView(

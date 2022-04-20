@@ -20,6 +20,10 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.animation.Animation
+import android.view.animation.Transformation
+import android.widget.ImageButton
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     val x = ev?.x?.toInt()
@@ -35,4 +39,90 @@ fun View.isTouchTarget(ev: MotionEvent?): Boolean {
 
 fun View.setVisibleIfTrue(boolean: Boolean) {
     visibility = if (boolean) VISIBLE else GONE
+}
+
+fun View.expand() {
+    val matchParentMeasureSpec =
+        View.MeasureSpec.makeMeasureSpec((parent as View).width, View.MeasureSpec.EXACTLY)
+    val wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+    measure(matchParentMeasureSpec, wrapContentMeasureSpec)
+    val targetHeight = measuredHeight
+
+    layoutParams.height = 1
+    visibility = VISIBLE
+
+    val animation = object : Animation() {
+        override fun willChangeBounds(): Boolean = true
+
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            layoutParams.height = if (interpolatedTime >= 1f) {
+                WRAP_CONTENT
+            } else {
+                (targetHeight * interpolatedTime).toInt()
+            }
+            requestLayout()
+        }
+    }.apply {
+        duration = (targetHeight / context.resources.displayMetrics.density).toLong()
+    }
+
+    startAnimation(animation)
+}
+
+fun View.collapse() {
+    val initHeight = measuredHeight
+
+    val animation = object : Animation() {
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            layoutParams.height = if (interpolatedTime >= 1f) {
+                visibility = GONE
+                0
+            } else {
+                initHeight - (initHeight * interpolatedTime).toInt()
+            }
+            requestLayout()
+        }
+
+        override fun willChangeBounds(): Boolean = true
+    }.apply {
+        duration = (initHeight / context.resources.displayMetrics.density).toLong()
+    }
+
+    startAnimation(animation)
+}
+
+fun ImageButton.rotateDown() {
+    val initRotation = rotation
+
+    val animation = object: Animation() {
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            rotation = if (interpolatedTime == 1f) {
+                0f
+            } else {
+                initRotation - (180 * interpolatedTime)
+            }
+        }
+    }.apply {
+        duration = 300L
+    }
+
+    startAnimation(animation)
+}
+
+fun ImageButton.rotateUp() {
+    val initRotation = rotation
+
+    val animation = object: Animation() {
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            rotation = if (interpolatedTime == 1f) {
+                180f
+            } else {
+                initRotation - (180 * interpolatedTime)
+            }
+        }
+    }.apply {
+        duration = 300L
+    }
+
+    startAnimation(animation)
 }

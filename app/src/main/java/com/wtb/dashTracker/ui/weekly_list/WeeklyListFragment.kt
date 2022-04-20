@@ -54,14 +54,13 @@ import kotlinx.coroutines.flow.collectLatest
 class WeeklyListFragment : Fragment() {
 
     private val viewModel: WeeklyViewModel by viewModels()
-    private var callback: WeeklyListFragmentCallback? = null
+    internal var callback: WeeklyListFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
     private var deductionType: DeductionType = DeductionType.NONE
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = context as WeeklyListFragmentCallback
     }
 
     override fun onCreateView(
