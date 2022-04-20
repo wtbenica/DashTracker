@@ -43,6 +43,7 @@
         <entry key="app/src/main/res/drawable/enable_textview.xml" value="0.15092592592592594" />
         <entry key="app/src/main/res/drawable/expand_arrow.xml" value="0.107" />
         <entry key="app/src/main/res/drawable/fab_menu_item_lbl_bg.xml" value="0.22552083333333334" />
+        <entry key="app/src/main/res/drawable/flaite.xml" value="0.2325" />
         <entry key="app/src/main/res/drawable/gobble_background.xml" value="0.17222222222222222" />
         <entry key="app/src/main/res/drawable/gobble_foreground.xml" value="0.22" />
         <entry key="app/src/main/res/drawable/gt_bg.xml" value="0.14166666666666666" />
@@ -51,6 +52,7 @@
         <entry key="app/src/main/res/drawable/ic_action_edit.xml" value="0.1465" />
         <entry key="app/src/main/res/drawable/ic_add.xml" value="0.3235" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_circle_24.xml" value="0.3235" />
+        <entry key="app/src/main/res/drawable/ic_baseline_arrow_forward_ios_24.xml" value="0.2325" />
         <entry key="app/src/main/res/drawable/ic_bg.xml" value="0.15833333333333333" />
         <entry key="app/src/main/res/drawable/ic_cancel.xml" value="0.2755" />
         <entry key="app/src/main/res/drawable/ic_circle.xml" value="0.1465" />
@@ -135,7 +137,7 @@
         <entry key="app/src/main/res/layout/fragment_entry.xml" value="0.35104166666666664" />
         <entry key="app/src/main/res/layout/fragment_entry_list.xml" value="0.11296296296296296" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.35104166666666664" />
-        <entry key="app/src/main/res/layout/fragment_income.xml" value="0.322690992018244" />
+        <entry key="app/src/main/res/layout/fragment_income.xml" value="0.75" />
         <entry key="app/src/main/res/layout/fragment_insights.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />

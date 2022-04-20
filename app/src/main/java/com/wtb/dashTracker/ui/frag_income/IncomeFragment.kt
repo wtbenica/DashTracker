@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.frag_income
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,15 +24,12 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.asLiveData
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragmentIncomeBinding
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
-import com.wtb.dashTracker.extensions.rotateDown
-import com.wtb.dashTracker.extensions.rotateUp
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment
@@ -57,24 +55,22 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var callback: IncomeFragmentCallback
     private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
     override val deductionType: StateFlow<DeductionType>
         get() = deductionTypeViewModel.deductionType
     override var standardMileageDeductions: Map<Int, Float> = emptyMap()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = (context as IncomeFragmentCallback)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
-        }
-
-        deductionTypeViewModel.stdMileageDeductions.asLiveData().observe(this) {
-            val m = mutableMapOf<Int, Float>()
-            it.forEach { stdDeduct ->
-                m[stdDeduct.year] = stdDeduct.amount
-            }
-            standardMileageDeductions = m
         }
     }
 
@@ -105,27 +101,47 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
         }.attach()
 
         val btnGroup = binding.filterBox
-        binding.filterButt.setOnClickListener {
+        binding.filterBtn.setOnClickListener {
             if (btnGroup.visibility == VISIBLE) {
                 btnGroup.collapse()
-                binding.filterButt.rotateDown()
+                binding.filterBtn.setIconResource(R.drawable.ic_arrow_more)
+                binding.filterBtn.text = when (binding.buttonGroupDeductionType.checkedButtonId) {
+                    R.id.gas_button -> "CPM: " + DeductionType.GAS_ONLY.text
+                    R.id.actual_button -> "CPM: " + DeductionType.ALL_EXPENSES.text
+                    R.id.standard_button -> "CPM: " + DeductionType.STD_DEDUCTION.text
+                    else -> "CPM"
+                }
             } else {
                 btnGroup.expand()
-                binding.filterButt.rotateUp()
+                binding.filterBtn.setIconResource(R.drawable.ic_arrow_less)
+                binding.filterBtn.text = null
             }
         }
+
+        binding.noneButton.isChecked = true
 
         binding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
-                    R.id.gas_button -> deductionTypeViewModel.setDeductionType(DeductionType.GAS_ONLY)
-                    R.id.actual_button -> deductionTypeViewModel.setDeductionType(DeductionType.ALL_EXPENSES)
-                    R.id.standard_button -> deductionTypeViewModel.setDeductionType(
-                        DeductionType.STD_DEDUCTION
-                    )
+                    R.id.none_button -> {
+//                        binding.filterBtn.text = DeductionType.NONE.text
+                        callback.setDeductionType(DeductionType.NONE)
+                    }
+                    R.id.gas_button -> {
+//                        binding.filterBtn.text = DeductionType.GAS_ONLY.text
+                        callback.setDeductionType(DeductionType.GAS_ONLY)
+                    }
+                    R.id.actual_button -> {
+//                        binding.filterBtn.text = DeductionType.ALL_EXPENSES.text
+                        callback.setDeductionType(DeductionType.ALL_EXPENSES)
+                    }
+                    R.id.standard_button -> {
+//                        binding.filterBtn.text = DeductionType.STD_DEDUCTION.text
+                        callback.setDeductionType(DeductionType.STD_DEDUCTION)
+                    }
                 }
             } else {
-                deductionTypeViewModel.setDeductionType(DeductionType.NONE)
+                callback.setDeductionType(DeductionType.NONE)
             }
         }
     }
@@ -136,10 +152,15 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
 
         override fun createFragment(position: Int): Fragment =
             when (position) {
-                1 -> WeeklyListFragment().apply { callback = this@IncomeFragment }
-                2 -> YearlyListFragment().apply { callback = this@IncomeFragment }
-                else -> EntryListFragment().apply { callback = this@IncomeFragment }
+                1 -> WeeklyListFragment()
+                2 -> YearlyListFragment()
+                else -> EntryListFragment()
             }
+    }
+
+    interface IncomeFragmentCallback {
+        fun setDeductionType(dType: DeductionType)
+        val deductionType: StateFlow<DeductionType>
     }
 
     companion object {

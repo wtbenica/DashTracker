@@ -59,12 +59,9 @@
         <item name="colorOnSecondaryVariant">@color/on_brick_light</item>
 
         <item name="colorAccent">@color/accent</item>
+        <item name="colorAlert">@color/alert</item>
 
         <item name="defaultCornerRadius">@dimen/margin_half</item>
-
-        <!-- Text -->
-        <item name="android:fontFamily">@font/lalezar</item>
-        <item name="titleFontFamily">@font/lalezar</item>
 
         <!-- View Styles -->
         <item name="android:actionBarWidgetTheme">@style/WidgetTheme</item>
@@ -77,16 +74,17 @@
         <item name="android:datePickerDialogTheme">@style/MyDatePickerStyle</item>
         <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
 
+
+        <!-- Text -->
+        <item name="android:fontFamily">@font/lalezar</item>
+        <item name="titleFontFamily">@font/lalezar</item>
+
         <!-- activity_main -->
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
         <item name="textSizeSummaryBarHeader">@dimen/text_size_med</item>
         <item name="textSizeSummaryBarValue">@dimen/text_size_xlarge</item>
         <item name="textSizeBottomNavActive">@dimen/text_size_large</item>
         <item name="textSizeBottomNavInactive">@dimen/text_size_med</item>
-
-        <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorUi</item>
-        <item name="colorTabText">?attr/colorTextPrimary</item>
 
         <!-- list_item -->
         <item name="textSizeListItemTitle">@dimen/text_size_xlarge</item>
@@ -145,6 +143,13 @@
         <item name="colorPopupBackground">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
+
+        <!-- fragment_income -->
+        <item name="colorTabIndicator">?attr/colorUi</item>
+        <item name="colorTabText">?attr/colorTextPrimary</item>
+        <item name="colorGroupButton">?attr/colorPrimaryFaded</item>
+        <item name="colorGroupButtonDisabled">?attr/colorOnSecondary</item>
+        <item name="colorGroupStroke">?attr/colorPrimary</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>

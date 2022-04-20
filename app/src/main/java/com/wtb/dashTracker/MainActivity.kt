@@ -59,11 +59,13 @@ import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
+import com.wtb.dashTracker.ui.frag_income.IncomeFragment
 import com.wtb.dashTracker.ui.frag_list_expense.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
@@ -84,9 +86,17 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback {
+class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback, IncomeFragment.IncomeFragmentCallback {
 
     private val viewModel: MainActivityViewModel by viewModels()
+    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
+
+    override val deductionType: StateFlow<DeductionType>
+        get() = deductionTypeViewModel.deductionType
+
+    override fun setDeductionType(dType: DeductionType) {
+        deductionTypeViewModel.setDeductionType(dType)
+    }
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView

@@ -128,9 +128,9 @@
     <string name="dialog_title_edit_expense_type">Edit Expense Type Name</string>
     <string name="dialog_title_new_expense_type">New Expense type</string>
     <string name="bottom_sheet_income_lbl_period">Period</string>
-    <string name="expense_purpose_gas">Gas Only</string>
-    <string name="expense_purpose_all">All Expenses</string>
-    <string name="expense_purpose_standard">Std. Mileage</string>
+    <string name="expense_purpose_gas">Gas</string>
+    <string name="expense_purpose_all">All</string>
+    <string name="expense_purpose_standard">IRS Rate</string>
     <string name="dummy_text_label">Lorem ipso</string>
     <string name="list_item_label_net">Net</string>
     <string name="label_income">Income</string>

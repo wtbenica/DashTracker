@@ -25,7 +25,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
-import androidx.core.content.res.ResourcesCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -47,6 +46,7 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.entry_list.EntryListFragment.Companion.toVisibleIfTrueElseGone
+import com.wtb.dashTracker.ui.frag_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -54,13 +54,14 @@ import kotlinx.coroutines.flow.collectLatest
 class WeeklyListFragment : Fragment() {
 
     private val viewModel: WeeklyViewModel by viewModels()
-    internal var callback: WeeklyListFragmentCallback? = null
+    internal var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private lateinit var recyclerView: RecyclerView
     private var deductionType: DeductionType = DeductionType.NONE
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        callback = context as IncomeFragment.IncomeFragmentCallback
     }
 
     override fun onCreateView(
@@ -231,12 +232,13 @@ class WeeklyListFragment : Fragment() {
             detailsBinding.listItemWeeklyAdjust.text =
                 getCurrencyString(basePayAdjust)
             detailsBinding.listItemWeeklyAdjust.setTextColor(
-                getColor(
-                    resources,
-                    if (basePayAdjust == null) R.color.alert else R.color.on_regular,
-                    null
-                )
+                if (compWeekly.weekly.basePayAdjustment == null) {
+                    MainActivity.getAttrColor(requireContext(), R.attr.colorAlert)
+                } else {
+                    MainActivity.getAttrColor(requireContext(), R.attr.colorTextPrimary)
+                }
             )
+
 
             detailsBinding.listItemCashTips.text = getCurrencyString(compWeekly.cashTips)
             detailsBinding.listItemOtherPay.text = getCurrencyString(compWeekly.otherPay)

@@ -45,6 +45,7 @@ import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.frag_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
@@ -53,7 +54,7 @@ import java.time.LocalDate
 class YearlyListFragment : Fragment() {
 
     private val viewModel: YearlyListViewModel by viewModels()
-    internal var callback: YearlyListFragmentCallback? = null
+    internal var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private val yearlies = mutableListOf<Yearly>()
 
@@ -62,6 +63,7 @@ class YearlyListFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        callback = context as IncomeFragment.IncomeFragmentCallback
     }
 
     override fun onCreateView(

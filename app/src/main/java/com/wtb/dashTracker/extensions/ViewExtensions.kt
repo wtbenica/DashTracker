@@ -23,7 +23,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.animation.Animation
 import android.view.animation.Transformation
-import android.widget.ImageButton
+import com.google.android.material.button.MaterialButton
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     val x = ev?.x?.toInt()
@@ -91,7 +91,7 @@ fun View.collapse() {
     startAnimation(animation)
 }
 
-fun ImageButton.rotateDown() {
+fun MaterialButton.rotateDown() {
     val initRotation = rotation
 
     val animation = object: Animation() {
@@ -109,7 +109,7 @@ fun ImageButton.rotateDown() {
     startAnimation(animation)
 }
 
-fun ImageButton.rotateUp() {
+fun MaterialButton.rotateUp() {
     val initRotation = rotation
 
     val animation = object: Animation() {
