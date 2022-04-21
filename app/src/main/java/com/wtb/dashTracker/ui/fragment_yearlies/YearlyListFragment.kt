@@ -96,7 +96,11 @@ class YearlyListFragment : Fragment() {
         val totalPay: Float
             get() = pay + otherPay + adjust + cashTips
 
-        fun getExpenses(costPerMile: Float) = mileage * costPerMile
+        fun getExpenses(costPerMile: Float): Float = mileage * costPerMile
+
+        fun getNet(cpm: Float): Float = totalPay - getExpenses(cpm)
+
+        fun getHourly(cpm: Float): Float = getNet(cpm) / hours
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -183,7 +187,9 @@ class YearlyListFragment : Fragment() {
         override fun onClick(v: View?) {
             val currentVisibility = binding.listItemDetails.visibility
             binding.listItemDetails.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-            binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
+            binding.listItemWrapper.setBackgroundResource(
+                if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded
+            )
             bindingAdapter?.notifyItemChanged(
                 bindingAdapterPosition,
                 binding.listItemDetails.visibility
@@ -191,22 +197,48 @@ class YearlyListFragment : Fragment() {
         }
 
         fun bind(item: Yearly, payloads: MutableList<Any>? = null) {
+            fun showExpenseFields() {
+                binding.listItemSubtitle2Label.visibility = VISIBLE
+                binding.listItemSubtitle2.visibility = VISIBLE
+                detailsBinding.listItemYearlyCpmRow.visibility = VISIBLE
+                detailsBinding.listItemYearlyNetRow.visibility = VISIBLE
+            }
+
+            fun hideExpenseFields() {
+                binding.listItemSubtitle2Label.visibility = GONE
+                binding.listItemSubtitle2.visibility = GONE
+                detailsBinding.listItemYearlyCpmRow.visibility = GONE
+                detailsBinding.listItemYearlyNetRow.visibility = GONE
+            }
+
             this.yearly = item
 
-            var costPerMile: Float?
             CoroutineScope(Dispatchers.Default).launch {
                 withContext(Dispatchers.Default) {
                     viewModel.getAnnualCostPerMile(yearly.year, deductionType)
                 }.let { cpm: Float? ->
-                    costPerMile = cpm ?: 0f
+                    val costPerMile: Float = cpm ?: 0f
                     (context as MainActivity).runOnUiThread {
-                        binding.listItemSubtitle2.text =
-                            getCurrencyString(
-                                yearly.totalPay - yearly.getExpenses(
-                                    costPerMile ?: 0f
+                        when (deductionType) {
+                            DeductionType.NONE -> hideExpenseFields()
+                            else -> {
+                                showExpenseFields()
+
+                                binding.listItemSubtitle2Label.text = deductionType.fullDesc
+
+                                binding.listItemSubtitle2.text =
+                                    getCurrencyString(yearly.getExpenses(costPerMile))
+
+                                detailsBinding.listItemYearlyCpm.text = getCurrencyString(costPerMile)
+
+                                detailsBinding.listItemYearlyNet.text =
+                                    getCurrencyString(this@YearlyHolder.yearly.getNet(costPerMile))
+
+                                detailsBinding.listItemYearlyHourly.text = getCurrencyString(
+                                    this@YearlyHolder.yearly.getHourly(costPerMile)
                                 )
-                            )
-                        detailsBinding.listItemYearlyCpm.text = getCurrencyString(cpm)
+                            }
+                        }
                     }
                 }
             }

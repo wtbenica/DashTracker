@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +15,9 @@
   -->
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_item_details_card"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item_details_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:showIn="@layout/list_item_yearly">
@@ -89,7 +88,9 @@
                     tools:text="3,201" />
             </TableRow>
 
-            <TableRow style="@style/DetailsRow">
+            <TableRow
+                android:id="@+id/list_item_yearly_cpm_row"
+                style="@style/DetailsRow">
 
                 <TextView
                     style="@style/HeaderStyle"
@@ -100,6 +101,21 @@
                     style="@style/ValueStyle"
                     android:layout_weight="1"
                     tools:text="$0.18" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/list_item_yearly_net_row"
+                style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
+                    android:text="@string/lbl_net_earnings" />
+
+                <TextView
+                    android:id="@+id/list_item_yearly_net"
+                    style="@style/ValueStyle"
+                    android:layout_weight="1"
+                    tools:text="$56.18" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">
