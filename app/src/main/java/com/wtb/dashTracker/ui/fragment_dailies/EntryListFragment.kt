@@ -227,7 +227,7 @@ class EntryListFragment : Fragment() {
                     detailsBinding.listItemEntryNetRow.visibility = VISIBLE
                 }
 
-                fun hideEpenseFields() {
+                fun hideExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = GONE
                     binding.listItemSubtitle2.visibility = GONE
                     detailsBinding.listItemEntryCpmRow.visibility = GONE
@@ -243,12 +243,11 @@ class EntryListFragment : Fragment() {
                         val costPerMile = cpm ?: 0f
                         (context as MainActivity).runOnUiThread {
                             when (deductionType) {
-                                DeductionType.NONE -> hideEpenseFields()
+                                DeductionType.NONE -> hideExpenseFields()
                                 else -> {
                                     showExpenseFields()
+
                                     binding.listItemSubtitle2Label.text = deductionType.fullDesc
-                                    detailsBinding.listItemEntryNet.text =
-                                        getCurrencyString(this@EntryHolder.entry.getNet(costPerMile))
 
                                     binding.listItemSubtitle2.text = getCurrencyString(
                                         this@EntryHolder.entry.getExpenses(costPerMile)
@@ -256,6 +255,9 @@ class EntryListFragment : Fragment() {
 
                                     detailsBinding.listItemEntryCpm.text =
                                         getCurrencyString(costPerMile)
+
+                                    detailsBinding.listItemEntryNet.text =
+                                        getCurrencyString(this@EntryHolder.entry.getNet(costPerMile))
 
                                     detailsBinding.listItemEntryHourly.text = getCurrencyString(
                                         this@EntryHolder.entry.getHourly(costPerMile)

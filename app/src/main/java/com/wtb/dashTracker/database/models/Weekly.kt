@@ -131,5 +131,9 @@ data class CompleteWeekly(
             null
         }
 
-    fun netEarnings(cpm: Float): Float? = totalPay - miles * cpm
+    fun getNet(costPerMile: Float): Float = totalPay - miles * costPerMile
+
+    fun getHourly(cpm: Float): Float = getNet(cpm) / hours
+
+    fun getAvgDelivery(cpm: Float): Float = getNet(cpm) / numDeliveries
 }

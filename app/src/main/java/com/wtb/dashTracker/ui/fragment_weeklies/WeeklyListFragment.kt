@@ -166,6 +166,20 @@ class WeeklyListFragment : Fragment() {
         }
 
         fun bind(item: CompleteWeekly, payloads: MutableList<Any>? = null) {
+            fun showExpenseFields() {
+                binding.listItemSubtitle2Label.visibility = VISIBLE
+                binding.listItemSubtitle2.visibility = VISIBLE
+                detailsBinding.listItemWeeklyCpmRow.visibility = VISIBLE
+                detailsBinding.listItemWeeklyNetRow.visibility = VISIBLE
+            }
+
+            fun hideExpenseFields() {
+                binding.listItemSubtitle2Label.visibility = GONE
+                binding.listItemSubtitle2.visibility = GONE
+                detailsBinding.listItemWeeklyCpmRow.visibility = GONE
+                detailsBinding.listItemWeeklyNetRow.visibility = GONE
+            }
+
             if (item.isEmpty) {
                 viewModel.delete(item.weekly)
             }
@@ -180,9 +194,29 @@ class WeeklyListFragment : Fragment() {
                     )
                 }.let { (expenses, cpm) ->
                     (context as MainActivity).runOnUiThread {
-                        binding.listItemSubtitle2.text =
-                            getCurrencyString(compWeekly.totalPay - expenses)
-                        detailsBinding.listItemWeeklyCpm.text = getCurrencyString(cpm)
+                        when (deductionType) {
+                            DeductionType.NONE -> hideExpenseFields()
+                            else -> {
+                                showExpenseFields()
+
+                                binding.listItemSubtitle2Label.text = deductionType.fullDesc
+
+                                binding.listItemSubtitle2.text = getCurrencyString(expenses)
+
+                                detailsBinding.listItemWeeklyCpm.text = getCurrencyString(cpm)
+
+                                detailsBinding.listItemWeeklyNet.text =
+                                    getCurrencyString(this@WeeklyHolder.compWeekly.getNet(cpm))
+
+                                detailsBinding.listItemWeeklyHourly.text = getCurrencyString(
+                                    this@WeeklyHolder.compWeekly.getHourly(cpm)
+                                )
+
+                                detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(
+                                    this@WeeklyHolder.compWeekly.getAvgDelivery(cpm)
+                                )
+                            }
+                        }
                     }
                 }
 
