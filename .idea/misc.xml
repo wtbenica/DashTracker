@@ -129,14 +129,14 @@
         <entry key="app/src/main/res/layout/dialog_frag_confirm_export.xml" value="0.288034188034188" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_import.xml" value="0.3126967471143757" />
         <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.35052083333333334" />
-        <entry key="app/src/main/res/layout/dialog_frag_expense.xml" value="0.75" />
+        <entry key="app/src/main/res/layout/dialog_frag_expense.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_expense_purpose_dropdown_footer.xml" value="1.0" />
         <entry key="app/src/main/res/layout/dialog_frag_expense_purpose_dropdown_header.xml" value="0.75" />
         <entry key="app/src/main/res/layout/dialog_frag_expense_purpose_dropdown_item.xml" value="0.22" />
         <entry key="app/src/main/res/layout/dialog_frag_expense_purpose_spinner_item.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_frag_payout.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/dialog_frag_weekly.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/dialog_frag_weekly_spinner_item_single_line.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/dialog_frag_weekly.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/dialog_frag_weekly_spinner_item_single_line.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_weekly_spinner_item.xml" value="0.48459958932238195" />
         <entry key="app/src/main/res/layout/dialog_weekly_spinner_item_single_line.xml" value="0.5584725536992841" />
         <entry key="app/src/main/res/layout/dropdown_single_item.xml" value="0.67" />

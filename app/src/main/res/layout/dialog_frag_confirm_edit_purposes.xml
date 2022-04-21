@@ -133,7 +133,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:text="@string/label_done"
+                        android:text="@string/lbl_done"
                         android:textSize="@dimen/text_size_large"
                         android:textColor="?attr/colorDialogText"
                         app:layout_constraintEnd_toEndOf="parent"

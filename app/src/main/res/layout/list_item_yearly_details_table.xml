@@ -93,7 +93,7 @@
 
                 <TextView
                     style="@style/HeaderStyle"
-                    android:text="@string/label_cost_per_mile" />
+                    android:text="@string/lbl_cost_per_mile" />
 
                 <TextView
                     android:id="@+id/list_item_yearly_cpm"

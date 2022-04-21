@@ -94,9 +94,9 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
-                1 -> getString(R.string.title_weekly_list)
-                2 -> getString(R.string.title_yearly_list)
-                else -> getString(R.string.title_daily)
+                1 -> getString(R.string.frag_title_weekly_list)
+                2 -> getString(R.string.frag_title_yearly_list)
+                else -> getString(R.string.frag_title_daily_list)
             }
         }.attach()
 

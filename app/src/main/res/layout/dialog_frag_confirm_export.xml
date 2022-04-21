@@ -64,7 +64,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:padding="@dimen/margin_default"
-                        android:text="@string/confirm_export"
+                        android:text="@string/dialog_text_export"
                         android:textColor="?attr/colorDialogText"
                         android:textSize="@dimen/text_size_med"
                         android:textStyle="bold" />
@@ -91,7 +91,7 @@
                         android:fontFamily="sans-serif"
                         android:paddingHorizontal="@dimen/margin_default"
                         android:layout_marginBottom="@dimen/margin_default"
-                        android:text="@string/confirm_export_notes_text"
+                        android:text="@string/dialog_notes_export"
                         android:textColor="?attr/colorDialogText"
                         android:textSize="@dimen/text_size_med"
                         android:visibility="gone"
@@ -129,7 +129,7 @@
                             android:layout_weight="1"
                             android:background="@android:color/transparent"
                             android:padding="0dp"
-                            android:text="@string/label_action_export_csv"
+                            android:text="@string/dialog_title_export"
                             android:textColor="?attr/colorDialogText"
                             android:textStyle="bold" />
                     </LinearLayout>

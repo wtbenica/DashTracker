@@ -21,15 +21,15 @@
     <item
         android:id="@+id/navigation_income"
         android:icon="@drawable/ic_income"
-        android:title="@string/label_income" />
+        android:title="@string/frag_title_income" />
 
     <item
         android:id="@+id/navigation_expenses"
         android:icon="@drawable/ic_expense"
-        android:title="@string/label_expenses" />
+        android:title="@string/frag_title_expenses" />
 
     <item
         android:id="@+id/navigation_insights"
         android:icon="@drawable/ic_insights"
-        android:title="@string/label_trends" />
+        android:title="@string/frag_title_trends" />
 </menu>

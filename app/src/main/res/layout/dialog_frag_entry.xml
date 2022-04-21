@@ -300,20 +300,20 @@
                 <ImageButton
                     android:id="@+id/frag_entry_btn_delete"
                     style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/desc_delete_entry"
+                    android:contentDescription="@string/content_desc_delete"
                     android:src="@drawable/ic_action_delete" />
 
                 <ImageButton
                     android:id="@+id/frag_entry_btn_cancel"
                     style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/desc_new_entry"
+                    android:contentDescription="@string/content_desc_reset"
                     android:src="@drawable/ic_action_reset" />
 
 
                 <ImageButton
                     android:id="@+id/frag_entry_btn_save"
                     style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/desc_new_entry"
+                    android:contentDescription="@string/content_desc_save"
                     android:src="@drawable/ic_action_save" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

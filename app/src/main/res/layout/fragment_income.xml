@@ -34,17 +34,17 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title_daily" />
+            android:text="@string/frag_title_daily_list" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title_weekly_list" />
+            android:text="@string/frag_title_weekly_list" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title_yearly_list" />
+            android:text="@string/frag_title_yearly_list" />
     </com.google.android.material.tabs.TabLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -57,7 +57,7 @@
         app:cornerRadius="0dp"
         android:contentDescription="@string/content_desc_expand_item_list_options_button"
         android:minWidth="@dimen/min_touch_target"
-        android:text="@string/label_cpm"
+        android:text="@string/lbl_cpm"
         app:icon="@drawable/ic_arrow_expand"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -82,7 +82,7 @@
             android:layout_height="@dimen/min_touch_target"
             android:gravity="bottom"
             android:labelFor="@id/button_group_deduction_type"
-            android:text="@string/label_set_cpm_method" />
+            android:text="@string/lbl_set_cpm_method" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/button_group_deduction_type"
@@ -94,7 +94,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/none_button"
                 style="@style/materialToggleButton"
-                android:text="@string/label_none" />
+                android:text="@string/lbl_none" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/gas_button"

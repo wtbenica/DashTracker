@@ -17,11 +17,12 @@
 <resources>
     <string name="app_name">DashTracker</string>
 
-    <string name="title_daily">Daily</string>
-    <string name="title_weekly_list">Weekly</string>
-    <string name="title_insights">Insights</string>
-    <string name="title_yearly_list">Yearly</string>
-    <string name="title_expenses">Expenses</string>
+    <string name="frag_title_daily_list">Daily</string>
+    <string name="frag_title_weekly_list">Weekly</string>
+    <string name="frag_title_yearly_list">Yearly</string>
+    <string name="frag_title_expenses">Expenses</string>
+    <string name="frag_title_income">Income</string>
+    <string name="frag_title_trends">Trends</string>
 
     <string name="lbl_date">Date</string>
     <string name="lbl_start_time">Start Time</string>
@@ -38,15 +39,62 @@
     <string name="lbl_other_pay">Other Pay</string>
     <string name="lbl_last_week">Last Week</string>
     <string name="lbl_amount">Amount</string>
+    <string name="lbl_base_pay_adjust">Base Pay\nAdjust</string>
     <string name="lbl_total_earned">Total\nEarned</string>
     <string name="lbl_adjust">Base Pay Adjustment</string>
     <string name="lbl_shifts">shifts</string>
     <string name="lbl_reported_income">Reported Income</string>
+    <string name="lbl_purpose">Purpose</string>
+    <string name="lbl_gallons">Gallons</string>
+    <string name="lbl_price">Price</string>
+    <string name="lbl_gas">Gas</string>
+    <string name="lbl_other">Other</string>
+    <string name="list_item_label_net">Net</string>
+    <string name="lbl_show">Show</string>
+    <string name="lbl_done">Done</string>
+    <string name="lbl_cost_per_mile">Cost per mile</string>
+    <string name="lbl_set_cpm_method">Calculate cost per mile using:</string>
+    <string name="lbl_cpm">CPM</string>
+    <string name="lbl_none">None</string>
 
-    <string name="desc_new_entry">New Entry</string>
-    <string name="desc_delete_entry">Delete entry</string>
-    <string name="desc_add_entry">Add Entry</string>
+    <string name="content_desc_delete">Delete</string>
+    <string name="content_desc_reset">Reset</string>
+    <string name="content_desc_save">Save</string>
+    <string name="content_desc_fab_menu">Open menu</string>
+    <string name="content_desc_incomplete_entry">Incomplete entry</string>
+    <string name="content_desc_fab_menu_closed">Open add item menu</string>
+    <string name="content_desc_edit_button">Edit this entry</string>
+    <string name="content_desc_remove">Remove this entry</string>
+    <string name="content_desc_drag_handle">Drag handle for bottom sheet</string>
+    <string name="content_desc_recurring_expense">Recurring expense</string>
+    <string name="content_desc_edit_purpose_list">Edit list</string>
+    <string name="content_desc_add_purpose">Add purpose</string>
+    <string name="content_desc_expand_item_list_options_button">Toggle item list options menu</string>
 
+    <!-- Action Overflow Menu -->
+    <string name="label_action_licenses">Licenses</string>
+    <string name="label_action_export">Export</string>
+    <string name="label_action_import">Import</string>
+
+    <!-- DialogFragment Titles -->
+    <string name="dialog_title_export">Export</string>
+    <string name="dialog_title_import">Import</string>
+    <string name="dialog_title_weekly">Weekly</string>
+
+    <!--  DialogFragment Text  -->
+    <string name="dialog_text_import">Please locate the ZIP file you would like to import. The imported data will overwrite any existing data.</string>
+    <string name="dialog_notes_import"><b>If you have modified the CSV files:</b>\n\n<ul>
+        <li>The CSV files must be put into a zip file in order to import.\n\n</li>
+        <li>The CSV files names must start with \'dash_tracker_entries_\' or \'dash_tracker_weeklies_\', as appropriate.\n\n</li>
+        <li>Specific values are expected in the header row. If you\'ve changed any of the header row values, you must change them back. You can create a new export to find the appropriate values.</li></ul>
+    </string>
+    <string name="dialog_text_export">This will create a ZIP file containing a CSV-formatted backup of your data.</string>
+    <string name="dialog_notes_export"><ul>
+        <li>Choose a secure location to save the ZIP file and any extracted files, as anyone with access to them will be able to open them.\n\n</li>
+        <li>Creating a manual backup is purely optional, because Android already periodically backs up your app data, if you have it enabled in <b>Settings > System > Backup</b>. Any time you reinstall the app, your data will be automatically restored from the last available backup.</li></ul>
+    </string>
+
+    <!-- String Formats -->
     <string name="currency_unit">$%.2f</string>
     <string name="blank_currency">$  -  </string>
     <string name="odometer_range" formatted="true">%1$.0f - %2$.0f</string>
@@ -68,12 +116,6 @@
     <string name="header_mileage">Miles</string>
     <string name="header_num_deliveries">Deliveries</string>
 
-    <string name="content_desc_incomplete_entry">Incomplete entry</string>
-    <string name="content_desc_fab_menu_closed">Open add item menu</string>
-    <string name="content_desc_edit_button">Edit this entry</string>
-    <string name="content_desc_remove">Remove this entry</string>
-    <string name="content_desc_drag_handle">Drag handle for bottom sheet</string>
-
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
@@ -82,48 +124,19 @@
     <string name="reset">Reset</string>
     <string name="save">Save</string>
 
-    <string name="label_action_licenses">Licenses</string>
-    <string name="label_action_export">Export</string>
-    <string name="label_action_import">Import</string>
-
-    <string name="label_action_export_csv">Export</string>
-    <string name="label_action_import_csv">Import</string>
-
     <string name="confirm_delete">The information you\'ve entered will not be recoverable</string>
     <string name="confirm_reset">Any changes will be permanently lost</string>
     <string name="csv_generation_failed">CSV generation failed</string>
 
-    <string name="dialog_weekly_title">Weekly</string>
 
     <string name="confirm_dialog">Confirm %s</string>
-    <string name="confirm_save_entry_incomplete">
-        This entry is incomplete. Do you want to save it anyways?
-    </string>
+    <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>
 
-    <string name="confirm_export">This will create a ZIP file containing a CSV-formatted backup of your data.</string>
-    <string name="confirm_import">Please locate the ZIP file you would like to import. The imported data will overwrite any existing data.</string>
     <string name="confirm_import_show_modified_info_lbl">Notes</string>
-    <string name="confirm_import_show_modified_info_text"><b>If you have modified the CSV files:</b>\n\n<ul>
-        <li>The CSV files must be put into a zip file in order to import.\n\n</li>
-        <li>The CSV files names must start with \'dash_tracker_entries_\' or \'dash_tracker_weeklies_\', as appropriate.\n\n</li>
-        <li>Specific values are expected in the header row. If you\'ve changed any of the header row values, you must change them back. You can create a new export to find the appropriate values.</li></ul>
-    </string>
-    <string name="unzip_error">Unable to unzip file</string>
     <string name="confirm_export_notes_lbl">Notes</string>
-    <string name="confirm_export_notes_text"><ul>
-        <li>Choose a secure location to save the ZIP file and any extracted files, as anyone with access to them will be able to open them.\n\n</li>
-        <li>Creating a manual backup is purely optional, because Android already periodically backs up your app data, if you have it enabled in <b>Settings > System > Backup</b>. Any time you reinstall the app, your data will be automatically restored from the last available backup.</li></ul>
-    </string>
-    <string name="lbl_purpose">Purpose</string>
-    <string name="lbl_gallons">Gallons</string>
-    <string name="lbl_price">Price</string>
-    <string name="lbl_gas">Gas</string>
-    <string name="lbl_other">Other</string>
-    <string name="content_desc_recurring_expense">Recurring expense</string>
+    <string name="unzip_error">Unable to unzip file</string>
+
     <string name="message_new_expense">What is the new expense type?</string>
-    <string name="label_gas">Gas</string>
-    <string name="label_price">Price</string>
-    <string name="label_gallons">Gallons</string>
     <string name="message_edit_expense">What is the new name for this expense type?</string>
     <string name="dialog_title_edit_expense_type">Edit Expense Type Name</string>
     <string name="dialog_title_new_expense_type">New Expense type</string>
@@ -132,17 +145,4 @@
     <string name="expense_purpose_all">All</string>
     <string name="expense_purpose_standard">IRS Rate</string>
     <string name="dummy_text_label">Lorem ipso</string>
-    <string name="list_item_label_net">Net</string>
-    <string name="label_income">Income</string>
-    <string name="label_expenses">Expenses</string>
-    <string name="label_trends">Trends</string>
-    <string name="label_show">Show</string>
-    <string name="label_done">Done</string>
-    <string name="label_cost_per_mile">Cost per mile</string>
-    <string name="content_desc_expand_item_list_options_button">Toggle item list options menu</string>
-    <string name="label_set_cpm_method">Calculate cost per mile using:</string>
-    <string name="content_desc_edit_purpose_list">Edit list</string>
-    <string name="content_desc_add_purpose">Add purpose</string>
-    <string name="label_cpm">CPM</string>
-    <string name="label_none">None</string>
 </resources>

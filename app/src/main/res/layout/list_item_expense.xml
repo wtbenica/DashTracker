@@ -49,9 +49,9 @@
             <TextView
                 android:id="@+id/list_item_subtitle"
                 style="@style/ListItemHeaderTextView.Subtitle"
-                android:text="@string/label_gas"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_title" />
+                app:layout_constraintTop_toBottomOf="@id/list_item_title"
+                tools:text="@string/lbl_gas" />
 
             <ImageView
                 android:id="@+id/list_item_recurring"
@@ -87,8 +87,8 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/list_item_details_card"
                 android:layout_width="0dp"
-                android:layout_marginHorizontal="@dimen/margin_default"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_default"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -96,8 +96,8 @@
                 <TableLayout
                     style="@style/PayTable.Gas"
                     android:layout_width="match_parent"
-                    android:background="?attr/colorPrimaryFaded"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorPrimaryFaded">
 
                     <TableRow
                         android:layout_width="match_parent"
@@ -105,11 +105,11 @@
 
                         <TextView
                             style="@style/PayTableHeaderStyle"
-                            android:text="@string/label_price" />
+                            android:text="@string/lbl_price" />
 
                         <TextView
                             style="@style/PayTableHeaderStyle"
-                            android:text="@string/label_gallons" />
+                            android:text="@string/lbl_gallons" />
                     </TableRow>
 
                     <TableRow

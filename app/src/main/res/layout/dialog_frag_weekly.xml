@@ -40,7 +40,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:title="@string/dialog_weekly_title" />
+                app:title="@string/dialog_title_weekly" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_adjust_table_card"
@@ -76,7 +76,7 @@
                             android:id="@+id/frag_adjust_date"
                             style="@style/DialogFragSpinnerStyle"
                             android:layout_width="0dp"
-                            tools:text="Mon Nov 23, 2021" />
+                            tools:listitem="@layout/dialog_frag_weekly_spinner_item_single_line" />
                     </TableRow>
 
                     <TableRow
@@ -89,7 +89,7 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:labelFor="@id/frag_adjust_amount"
-                            android:text="@string/lbl_amount" />
+                            android:text="@string/lbl_base_pay_adjust" />
 
                         <EditText
                             android:id="@+id/frag_adjust_amount"
@@ -137,13 +137,13 @@
                 <ImageButton
                     android:id="@+id/frag_adjust_btn_cancel"
                     style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/desc_new_entry"
+                    android:contentDescription="@string/content_desc_reset"
                     android:src="@drawable/ic_action_reset" />
 
                 <ImageButton
                     android:id="@+id/frag_adjust_btn_save"
                     style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/desc_new_entry"
+                    android:contentDescription="@string/content_desc_save"
                     android:src="@drawable/ic_action_save" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
