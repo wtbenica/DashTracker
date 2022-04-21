@@ -20,10 +20,12 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
@@ -31,12 +33,13 @@ import com.wtb.dashTracker.databinding.FragmentIncomeBinding
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.fragment_dailies.EntryListFragment
 import com.wtb.dashTracker.ui.fragment_weeklies.WeeklyListFragment
 import com.wtb.dashTracker.ui.fragment_yearlies.YearlyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,10 +59,7 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var callback: IncomeFragmentCallback
-    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
-    override val deductionType: StateFlow<DeductionType>
-        get() = deductionTypeViewModel.deductionType
-    override var standardMileageDeductions: Map<Int, Float> = emptyMap()
+    private var cpmButtonText: String? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -86,9 +86,7 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentIncomeBinding.bind(view)
-
         val tabLayout = binding.fragIncomeTabLayout
-
         val viewPager = binding.fragIncomeViewPager
         viewPager.adapter = IncomePagerAdapter(this)
 
@@ -102,15 +100,10 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
 
         val btnGroup = binding.filterBox
         binding.filterBtn.setOnClickListener {
-            if (btnGroup.visibility == VISIBLE) {
+            if (btnGroup.isVisible) {
                 btnGroup.collapse()
                 binding.filterBtn.setIconResource(R.drawable.ic_arrow_expand)
-                binding.filterBtn.text = when (binding.buttonGroupDeductionType.checkedButtonId) {
-                    R.id.gas_button -> "CPM: " + DeductionType.GAS_ONLY.text
-                    R.id.actual_button -> "CPM: " + DeductionType.ALL_EXPENSES.text
-                    R.id.standard_button -> "CPM: " + DeductionType.STD_DEDUCTION.text
-                    else -> "CPM"
-                }
+                binding.filterBtn.text = cpmButtonText
             } else {
                 btnGroup.expand()
                 binding.filterBtn.setIconResource(R.drawable.ic_arrow_collapse)
@@ -138,6 +131,22 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
                 }
             } else {
                 callback.setDeductionType(DeductionType.NONE)
+            }
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                callback.deductionType.collectLatest {
+                    cpmButtonText =
+                        if (it == DeductionType.NONE) {
+                            "CPM"
+                        } else {
+                            "CPM: " + it.text
+                        }
+                    if (!btnGroup.isVisible) {
+                        binding.filterBtn.text = this@IncomeFragment.cpmButtonText
+                    }
+                }
             }
         }
     }
