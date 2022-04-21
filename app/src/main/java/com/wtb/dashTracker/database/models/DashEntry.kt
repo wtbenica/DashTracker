@@ -144,7 +144,15 @@ data class DashEntry(
         }
 
     val avgDelivery: Float?
-        get() = numDeliveries?.let { nd -> totalEarned?.let { te -> te / nd } }
+        get() = numDeliveries?.let { nd ->
+            totalEarned?.let { te ->
+                if (nd > 0) {
+                    te / nd
+                } else {
+                    0f
+                }
+            }
+        }
 
     val hourlyDeliveries: Float?
         get() = totalHours?.let { th ->
@@ -191,6 +199,29 @@ data class DashEntry(
     override fun toString(): String = "$date: $startTime - $endTime $$totalEarned"
 
     fun getExpenses(costPerMile: Float): Float = (mileage ?: 0f) * costPerMile
+
+    fun getHourly(costPerMile: Float): Float? = totalHours?.let { th ->
+        totalEarned?.let { te ->
+            if (th != 0f) {
+                (te - getExpenses(costPerMile)) / th
+            } else {
+                0f
+            }
+        }
+    }
+
+    fun getAvgDelivery(costPerMile: Float): Float? = numDeliveries?.let { nd ->
+        totalEarned?.let { te ->
+            if (nd > 0) {
+                (te - getExpenses(costPerMile)) / nd
+            } else {
+                0f
+            }
+        }
+    }
+
+    fun getNet(costPerMile: Float): Float? =
+        totalEarned?.let { te -> te - getExpenses(costPerMile) }
 
     companion object : CSVConvertible<DashEntry> {
         private val daySplitTime = LocalTime.of(17, 0)

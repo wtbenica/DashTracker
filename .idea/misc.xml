@@ -149,15 +149,15 @@
         <entry key="app/src/main/res/layout/fragment_entry.xml" value="0.35104166666666664" />
         <entry key="app/src/main/res/layout/fragment_entry_list.xml" value="0.11296296296296296" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.35104166666666664" />
-        <entry key="app/src/main/res/layout/fragment_income.xml" value="0.6601371204701273" />
+        <entry key="app/src/main/res/layout/fragment_income.xml" value="0.6434034416826003" />
         <entry key="app/src/main/res/layout/fragment_insights.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/grid_gas_expense.xml" value="0.5" />
         <entry key="app/src/main/res/layout/grid_other_expense.xml" value="0.7490636704119851" />
         <entry key="app/src/main/res/layout/layout_main_bottom_sheet.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.3385093167701863" />
-        <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.288034188034188" />
+        <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.7001897533206831" />
         <entry key="app/src/main/res/layout/list_item_expense.xml" value="0.284086112283664" />
         <entry key="app/src/main/res/layout/list_item_expense_gas.xml" value="0.5" />
         <entry key="app/src/main/res/layout/list_item_expense_gas_details_table.xml" value="0.5" />

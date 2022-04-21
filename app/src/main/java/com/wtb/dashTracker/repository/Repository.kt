@@ -281,7 +281,10 @@ class Repository private constructor(context: Context) {
     }
 }
 
-enum class DeductionType(val text: String) {
-    NONE("None"), GAS_ONLY("Gas"), ALL_EXPENSES("All"), STD_DEDUCTION("IRS Rate")
+enum class DeductionType(val text: String, val fullDesc: String? = null) {
+    NONE("None"),
+    GAS_ONLY("Gas", "Gas Cost"),
+    ALL_EXPENSES("All", "All Costs"),
+    STD_DEDUCTION("IRS Rate", "IRS Std.")
 }
 

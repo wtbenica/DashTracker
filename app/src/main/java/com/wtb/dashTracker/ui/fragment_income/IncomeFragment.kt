@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.frag_income
+package com.wtb.dashTracker.ui.fragment_income
 
 import android.content.Context
 import android.os.Bundle
@@ -32,9 +32,9 @@ import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.DeductionTypeViewModel
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment
-import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment
-import com.wtb.dashTracker.ui.yearly_list.YearlyListFragment
+import com.wtb.dashTracker.ui.fragment_dailies.EntryListFragment
+import com.wtb.dashTracker.ui.fragment_weeklies.WeeklyListFragment
+import com.wtb.dashTracker.ui.fragment_yearlies.YearlyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 

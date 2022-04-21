@@ -21,7 +21,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingBottom="?attr/actionBarSize"
-    tools:context=".ui.insight_daily_stats.DailyStatsFragment">
+    tools:context=".ui.fragment_trends.DailyStatsFragment">
 
     <GridLayout
         android:id="@+id/daily_stats_fragment_table"

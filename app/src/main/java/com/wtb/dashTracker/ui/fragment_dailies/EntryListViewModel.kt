@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.insight_daily_stats
+package com.wtb.dashTracker.ui.fragment_dailies
 
 import androidx.lifecycle.ViewModel
+import androidx.paging.PagingData
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class DailyStatsViewModel : ViewModel() {
+class EntryListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()
 
-    internal val entryList: Flow<List<DashEntry>> = repository.allEntries
+    val entryList: Flow<PagingData<DashEntry>> = repository.allEntriesPaged
+
+    fun delete(entry: DashEntry) = repository.deleteModel(entry)
+
+    fun deleteEntryById(id: Int) = repository.deleteEntryById(id)
+
+    suspend fun getCostPerMile(date: LocalDate, deductionType: DeductionType): Float =
+        repository.getCostPerMile(date, deductionType)
 }

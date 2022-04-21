@@ -206,7 +206,7 @@ class WeeklyDialog : FullWidthDialogFragment() {
                 val binding = DialogFragWeeklySpinnerItemSingleLineBinding.inflate(layoutInflater)
                 cv = binding.root
                 viewHolder = WeekSpinnerViewHolder(
-                    binding.dialogAdjustWeekSpinnerItemWeek,
+                    null,
                     binding.dialogAdjustWeekSpinnerItemDates
                 )
                 cv.tag = viewHolder
@@ -215,8 +215,6 @@ class WeeklyDialog : FullWidthDialogFragment() {
             }
             val endWeek: LocalDate = itemList[position]
             val startWeek = endWeek.minusDays(6)
-            val weekOfYear = endWeek.weekOfYear
-            viewHolder?.weekNumber?.text = getString(R.string.week_number, weekOfYear)
             viewHolder?.dates?.text =
                 getString(R.string.date_range, startWeek.shortFormat, endWeek.shortFormat)
 
@@ -249,7 +247,7 @@ class WeeklyDialog : FullWidthDialogFragment() {
     }
 
     data class WeekSpinnerViewHolder(
-        val weekNumber: TextView,
+        val weekNumber: TextView?,
         val dates: TextView
     )
 

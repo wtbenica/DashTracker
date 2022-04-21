@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.yearly_list
+package com.wtb.dashTracker.ui.fragment_yearlies
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -45,7 +45,7 @@ import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.ui.frag_income.IncomeFragment
+import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate

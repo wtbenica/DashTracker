@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.insight_daily_stats
+package com.wtb.dashTracker.ui.fragment_trends
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.GridLayout
-import androidx.annotation.StringRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragInsightsRowBinding
 import com.wtb.dashTracker.extensions.getCurrencyString

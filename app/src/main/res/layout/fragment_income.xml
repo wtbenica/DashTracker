@@ -20,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.frag_income.IncomeFragment">
+    tools:context=".ui.fragment_income.IncomeFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/frag_income_tab_layout"
@@ -69,8 +69,8 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorOptionsMenu"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/margin_narrow"
-        android:paddingBottom="@dimen/margin_default"
+        android:paddingVertical="@dimen/margin_default"
+        android:paddingHorizontal="@dimen/margin_default"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,8 +79,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/min_touch_target"
-            android:gravity="bottom"
+            android:layout_height="wrap_content"
             android:labelFor="@id/button_group_deduction_type"
             android:text="@string/lbl_set_cpm_method" />
 

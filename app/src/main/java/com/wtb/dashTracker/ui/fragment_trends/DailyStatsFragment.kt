@@ -16,7 +16,7 @@
 
 @file:Suppress("unused")
 
-package com.wtb.dashTracker.ui.insight_daily_stats
+package com.wtb.dashTracker.ui.fragment_trends
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,7 +28,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.databinding.FragInsightsBinding
+import com.wtb.dashTracker.databinding.FragTrendsBinding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,7 +37,7 @@ import java.time.DayOfWeek
 @ExperimentalCoroutinesApi
 class DailyStatsFragment : Fragment() {
 
-    private var _binding: FragInsightsBinding? = null
+    private var _binding: FragTrendsBinding? = null
     private val binding
         get() = _binding!!
     private var _entries: List<DashEntry>? = null
@@ -54,7 +54,7 @@ class DailyStatsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragInsightsBinding.inflate(inflater)
+        _binding = FragTrendsBinding.inflate(inflater)
         return binding.root
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.frag_list_expense
+package com.wtb.dashTracker.ui.fragment_expenses
 
 import android.content.Context
 import android.os.Bundle

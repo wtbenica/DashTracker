@@ -145,4 +145,5 @@
     <string name="expense_purpose_all">All</string>
     <string name="expense_purpose_standard">IRS Rate</string>
     <string name="dummy_text_label">Lorem ipso</string>
+    <string name="lbl_net_earnings">Net earnings</string>
 </resources>

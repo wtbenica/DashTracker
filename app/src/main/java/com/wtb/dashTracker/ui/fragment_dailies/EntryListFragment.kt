@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.entry_list
+package com.wtb.dashTracker.ui.fragment_dailies
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -51,7 +51,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.frag_income.IncomeFragment
+import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -178,7 +178,6 @@ class EntryListFragment : Fragment() {
             }
 
             override fun onClick(v: View?) {
-//                detailsTable.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
                 if (detailsTable.visibility == VISIBLE) {
                     detailsTable.collapse()
                     binding.listItemWrapper.setBackgroundResource(R.drawable.bg_list_item)
@@ -190,25 +189,83 @@ class EntryListFragment : Fragment() {
                 }
             }
 
+            fun updateUi() {
+                binding.listItemTitle.text = this.entry.date.formatted.uppercase()
+                binding.listItemTitle2.text = getCurrencyString(this.entry.totalEarned)
+                binding.listItemSubtitle.text =
+                    getHoursRangeString(this.entry.startTime, this.entry.endTime)
+                binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.entry.isIncomplete)
+
+                detailsBinding.listItemRegularPay.text = getCurrencyString(this.entry.pay)
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.entry.cashTips)
+                detailsBinding.listItemOtherPay.text = getCurrencyString(this.entry.otherPay)
+                detailsBinding.listItemAlertHours.setVisibleIfTrue(
+                    this.entry.startTime == null || this.entry.endTime == null
+                )
+                detailsBinding.listItemEntryHours.text =
+                    getStringOrElse(R.string.float_fmt, "-", this.entry.totalHours)
+                detailsBinding.listItemEntryMileageRange.text =
+                    getOdometerRangeString(this.entry.startOdometer, this.entry.endOdometer)
+                detailsBinding.listItemEntryMileage.text = "${this.entry.mileage ?: "-"}"
+                detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.entry.mileage == null)
+                detailsBinding.listItemEntryNumDeliveries.text =
+                    "${this.entry.numDeliveries ?: "-"}"
+                detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.entry.numDeliveries == null)
+                detailsBinding.listItemEntryHourly.text =
+                    getCurrencyString(this.entry.hourly)
+                detailsBinding.listItemEntryAvgDel.text =
+                    getCurrencyString(this.entry.avgDelivery)
+                detailsBinding.listItemEntryHourlyDels.text =
+                    getFloatString(this.entry.hourlyDeliveries)
+            }
+
             fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
+                fun showExpenseFields() {
+                    binding.listItemSubtitle2Label.visibility = VISIBLE
+                    binding.listItemSubtitle2.visibility = VISIBLE
+                    detailsBinding.listItemEntryCpmRow.visibility = VISIBLE
+                    detailsBinding.listItemEntryNetRow.visibility = VISIBLE
+                }
+
+                fun hideEpenseFields() {
+                    binding.listItemSubtitle2Label.visibility = GONE
+                    binding.listItemSubtitle2.visibility = GONE
+                    detailsBinding.listItemEntryCpmRow.visibility = GONE
+                    detailsBinding.listItemEntryNetRow.visibility = GONE
+                }
+
                 this.entry = item
 
-                var costPerMile: Float?
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(Dispatchers.Default) {
                         viewModel.getCostPerMile(entry.date, deductionType)
                     }.let { cpm: Float? ->
-                        costPerMile = cpm ?: 0f
+                        val costPerMile = cpm ?: 0f
                         (context as MainActivity).runOnUiThread {
-                            binding.listItemSubtitle2.text =
-                                getCurrencyString(
-                                    (this@EntryHolder.entry.totalEarned ?: 0f) -
-                                            this@EntryHolder.entry.getExpenses(
-                                                costPerMile ?: 0f
-                                            )
-                                )
+                            when (deductionType) {
+                                DeductionType.NONE -> hideEpenseFields()
+                                else -> {
+                                    showExpenseFields()
+                                    binding.listItemSubtitle2Label.text = deductionType.fullDesc
+                                    detailsBinding.listItemEntryNet.text =
+                                        getCurrencyString(this@EntryHolder.entry.getNet(costPerMile))
 
-                            detailsBinding.listItemEntryCpm.text = getCurrencyString(costPerMile)
+                                    binding.listItemSubtitle2.text = getCurrencyString(
+                                        this@EntryHolder.entry.getExpenses(costPerMile)
+                                    )
+
+                                    detailsBinding.listItemEntryCpm.text =
+                                        getCurrencyString(costPerMile)
+
+                                    detailsBinding.listItemEntryHourly.text = getCurrencyString(
+                                        this@EntryHolder.entry.getHourly(costPerMile)
+                                    )
+
+                                    detailsBinding.listItemEntryAvgDel.text = getCurrencyString(
+                                        this@EntryHolder.entry.getAvgDelivery(costPerMile)
+                                    )
+                                }
+                            }
                         }
                     }
                 }

@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.yearly_list
+package com.wtb.dashTracker.ui.fragment_expenses
 
 import androidx.lifecycle.ViewModel
-import com.wtb.dashTracker.database.models.CompleteWeekly
-import com.wtb.dashTracker.repository.DeductionType
+import androidx.paging.PagingData
+import com.wtb.dashTracker.database.models.Expense
+import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class YearlyListViewModel : ViewModel() {
+class ExpenseListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()
 
-    val allWeeklies: Flow<List<CompleteWeekly>> = repository.allWeeklies
+    val expenseList: Flow<PagingData<FullExpense>> = repository.allExpensesPaged
 
-    suspend fun getAnnualCostPerMile(year: Int, purpose: DeductionType): Float =
-        repository.getAnnualCostPerMile(year, purpose)
+    fun delete(expense: Expense) = repository.deleteModel(expense)
+
+    fun deleteExpenseById(id: Int) = repository.deleteExpenseById(id)
 }
