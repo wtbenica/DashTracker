@@ -189,36 +189,6 @@ class EntryListFragment : Fragment() {
                 }
             }
 
-            fun updateUi() {
-                binding.listItemTitle.text = this.entry.date.formatted.uppercase()
-                binding.listItemTitle2.text = getCurrencyString(this.entry.totalEarned)
-                binding.listItemSubtitle.text =
-                    getHoursRangeString(this.entry.startTime, this.entry.endTime)
-                binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.entry.isIncomplete)
-
-                detailsBinding.listItemRegularPay.text = getCurrencyString(this.entry.pay)
-                detailsBinding.listItemCashTips.text = getCurrencyString(this.entry.cashTips)
-                detailsBinding.listItemOtherPay.text = getCurrencyString(this.entry.otherPay)
-                detailsBinding.listItemAlertHours.setVisibleIfTrue(
-                    this.entry.startTime == null || this.entry.endTime == null
-                )
-                detailsBinding.listItemEntryHours.text =
-                    getStringOrElse(R.string.float_fmt, "-", this.entry.totalHours)
-                detailsBinding.listItemEntryMileageRange.text =
-                    getOdometerRangeString(this.entry.startOdometer, this.entry.endOdometer)
-                detailsBinding.listItemEntryMileage.text = "${this.entry.mileage ?: "-"}"
-                detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.entry.mileage == null)
-                detailsBinding.listItemEntryNumDeliveries.text =
-                    "${this.entry.numDeliveries ?: "-"}"
-                detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.entry.numDeliveries == null)
-                detailsBinding.listItemEntryHourly.text =
-                    getCurrencyString(this.entry.hourly)
-                detailsBinding.listItemEntryAvgDel.text =
-                    getCurrencyString(this.entry.avgDelivery)
-                detailsBinding.listItemEntryHourlyDels.text =
-                    getFloatString(this.entry.hourlyDeliveries)
-            }
-
             fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
                 fun showExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
@@ -253,8 +223,7 @@ class EntryListFragment : Fragment() {
                                         this@EntryHolder.entry.getExpenses(costPerMile)
                                     )
 
-                                    detailsBinding.listItemEntryCpm.text =
-                                        getCurrencyString(costPerMile)
+                                    detailsBinding.listItemEntryCpm.text = getCpmString(costPerMile)
 
                                     detailsBinding.listItemEntryNet.text =
                                         getCurrencyString(this@EntryHolder.entry.getNet(costPerMile))

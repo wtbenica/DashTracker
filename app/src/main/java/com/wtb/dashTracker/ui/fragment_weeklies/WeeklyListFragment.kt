@@ -203,7 +203,7 @@ class WeeklyListFragment : Fragment() {
 
                                 binding.listItemSubtitle2.text = getCurrencyString(expenses)
 
-                                detailsBinding.listItemWeeklyCpm.text = getCurrencyString(cpm)
+                                detailsBinding.listItemWeeklyCpm.text = getCpmString(cpm)
 
                                 detailsBinding.listItemWeeklyNet.text =
                                     getCurrencyString(this@WeeklyHolder.compWeekly.getNet(cpm))

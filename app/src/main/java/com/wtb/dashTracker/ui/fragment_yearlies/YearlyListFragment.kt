@@ -93,7 +93,7 @@ class YearlyListFragment : Fragment() {
         val hourly: Float
             get() = (reportedPay + cashTips) / hours
 
-        val totalPay: Float
+        internal val totalPay: Float
             get() = pay + otherPay + adjust + cashTips
 
         fun getExpenses(costPerMile: Float): Float = mileage * costPerMile
@@ -259,11 +259,8 @@ class YearlyListFragment : Fragment() {
             )
 
             binding.listItemTitle.text = this.yearly.year.toString()
-            binding.listItemTitle2.text =
-                getCurrencyString(this.yearly.reportedPay + this.yearly.cashTips)
-
-            detailsBinding.listItemReportedIncome.text =
-                getCurrencyString(yearly.reportedPay)
+            binding.listItemTitle2.text = getCurrencyString(this.yearly.totalPay)
+            detailsBinding.listItemReportedIncome.text = getCurrencyString(yearly.reportedPay)
             detailsBinding.listItemCashTips.text = getCurrencyString(yearly.cashTips)
             detailsBinding.listItemYearlyMileage.text = getMileageString(yearly.mileage)
             detailsBinding.listItemYearlyHours.text = getString(R.string.format_hours, yearly.hours)
