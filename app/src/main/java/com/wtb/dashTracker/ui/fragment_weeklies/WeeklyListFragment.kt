@@ -25,6 +25,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -46,6 +47,7 @@ import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
+import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
@@ -131,35 +133,24 @@ class WeeklyListFragment : Fragment() {
 
     }
 
-    inner class WeeklyHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    inner class WeeklyHolder(parent: ViewGroup) : BaseItemHolder<CompleteWeekly>(
         LayoutInflater.from(parent.context).inflate(R.layout.list_item_weekly, parent, false)
-    ), View.OnClickListener {
-        private lateinit var compWeekly: CompleteWeekly
-
+    ) {
         private val binding: ListItemWeeklyBinding = ListItemWeeklyBinding.bind(itemView)
         private val detailsBinding: ListItemWeeklyDetailsTableBinding =
             ListItemWeeklyDetailsTableBinding.bind(itemView)
-        private val detailsTable: ConstraintLayout = binding.listItemDetails
+
+        override val collapseArea: ConstraintLayout
+            get() = binding.listItemDetails
+        override val backgroundArea: LinearLayout
+            get() = binding.listItemWrapper
 
         init {
-            itemView.setOnClickListener(this)
-
             itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
                 setOnClickListener {
-                    WeeklyDialog.newInstance(this@WeeklyHolder.compWeekly.weekly.date)
+                    WeeklyDialog.newInstance(this@WeeklyHolder.item.weekly.date)
                         .show(parentFragmentManager, "edit_details")
                 }
-            }
-        }
-
-        override fun onClick(v: View?) {
-            if (detailsTable.visibility == VISIBLE) {
-                detailsTable.collapse()
-                binding.listItemWrapper.transitionBackground(R.attr.colorListItemExpanded, R.attr.colorListItem)
-
-            } else {
-                detailsTable.expand()
-                binding.listItemWrapper.transitionBackground(R.attr.colorListItem, R.attr.colorListItemExpanded)
             }
         }
 
@@ -178,16 +169,16 @@ class WeeklyListFragment : Fragment() {
                 detailsBinding.listItemWeeklyNetRow.visibility = GONE
             }
 
-            if (item.isEmpty) {
-                viewModel.delete(item.weekly)
-            }
+            this.item = item
 
-            this.compWeekly = item
+            if (this.item.isEmpty) {
+                viewModel.delete(this.item.weekly)
+            }
 
             CoroutineScope(Dispatchers.Default).launch {
                 withContext(Dispatchers.Default) {
                     viewModel.getExpensesAndCostPerMile(
-                        this@WeeklyHolder.compWeekly,
+                        this@WeeklyHolder.item,
                         deductionType
                     )
                 }.let { (expenses, cpm) ->
@@ -204,14 +195,14 @@ class WeeklyListFragment : Fragment() {
                                 detailsBinding.listItemWeeklyCpm.text = getCpmString(cpm)
 
                                 detailsBinding.listItemWeeklyNet.text =
-                                    getCurrencyString(this@WeeklyHolder.compWeekly.getNet(cpm))
+                                    getCurrencyString(this@WeeklyHolder.item.getNet(cpm))
 
                                 detailsBinding.listItemWeeklyHourly.text = getCurrencyString(
-                                    this@WeeklyHolder.compWeekly.getHourly(cpm)
+                                    this@WeeklyHolder.item.getHourly(cpm)
                                 )
 
                                 detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(
-                                    this@WeeklyHolder.compWeekly.getAvgDelivery(cpm)
+                                    this@WeeklyHolder.item.getAvgDelivery(cpm)
                                 )
                             }
                         }
@@ -220,51 +211,34 @@ class WeeklyListFragment : Fragment() {
 
             }
 
-            val listItemDetailsVisibility = (payloads?.let {
-                if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) {
-                    it[0]
-                } else {
-                    null
-                }
-            } ?: GONE) as Int
-
-            binding.listItemWrapper.setBackgroundResource(
-                if (listItemDetailsVisibility == VISIBLE) {
-                    R.drawable.bg_list_item_expanded
-                } else {
-                    R.drawable.bg_list_item
-                }
-            )
-
             binding.listItemTitle.text =
                 getStringOrElse(
                     R.string.time_range,
                     "",
-                    this.compWeekly.weekly.date.minusDays(6).shortFormat.uppercase(),
-                    this.compWeekly.weekly.date.shortFormat.uppercase()
+                    this.item.weekly.date.minusDays(6).shortFormat.uppercase(),
+                    this.item.weekly.date.shortFormat.uppercase()
                 )
             binding.listItemAlert.visibility =
-                toVisibleIfTrueElseGone(compWeekly.weekly.isIncomplete)
+                toVisibleIfTrueElseGone(this.item.weekly.isIncomplete)
             binding.listItemTitle2.text =
                 getCurrencyString(
-                    if (compWeekly.totalPay != 0f) {
-                        compWeekly.totalPay
+                    if (this.item.totalPay != 0f) {
+                        this.item.totalPay
                     } else {
                         null
                     }
                 )
             binding.listItemSubtitle.text =
-                getString(R.string.week_number, compWeekly.weekly.date.weekOfYear)
+                getString(R.string.week_number, this.item.weekly.date.weekOfYear)
 
-            binding.listItemDetails.visibility = listItemDetailsVisibility
-            val basePayAdjust = compWeekly.weekly.basePayAdjustment
+            val basePayAdjust = this.item.weekly.basePayAdjustment
             detailsBinding.listItemWeeklyAdjust.text =
                 getCurrencyString(basePayAdjust)
-            detailsBinding.listItemRegularPay.text = getCurrencyString(compWeekly.regularPay)
+            detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.regularPay)
             detailsBinding.listItemWeeklyAdjust.text =
                 getCurrencyString(basePayAdjust)
             detailsBinding.listItemWeeklyAdjust.setTextColor(
-                if (compWeekly.weekly.basePayAdjustment == null) {
+                if (this.item.weekly.basePayAdjustment == null) {
                     MainActivity.getAttrColor(requireContext(), R.attr.colorAlert)
                 } else {
                     MainActivity.getAttrColor(requireContext(), R.attr.colorTextPrimary)
@@ -272,13 +246,15 @@ class WeeklyListFragment : Fragment() {
             )
 
 
-            detailsBinding.listItemCashTips.text = getCurrencyString(compWeekly.cashTips)
-            detailsBinding.listItemOtherPay.text = getCurrencyString(compWeekly.otherPay)
-            detailsBinding.listItemWeeklyHours.text = getFloatString(compWeekly.hours)
-            detailsBinding.listItemWeeklyHourly.text = getCurrencyString(compWeekly.hourly)
-            detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(compWeekly.avgDelivery)
-            detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(compWeekly.delPerHour)
-            detailsBinding.listItemWeeklyMiles.text = getFloatString(compWeekly.miles)
+            detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
+            detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
+            detailsBinding.listItemWeeklyHours.text = getFloatString(this.item.hours)
+            detailsBinding.listItemWeeklyHourly.text = getCurrencyString(this.item.hourly)
+            detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(this.item.avgDelivery)
+            detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(this.item.delPerHour)
+            detailsBinding.listItemWeeklyMiles.text = getFloatString(this.item.miles)
+
+            setPayloadVisibility(payloads)
         }
     }
 

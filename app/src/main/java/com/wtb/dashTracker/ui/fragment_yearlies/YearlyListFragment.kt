@@ -24,7 +24,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -43,8 +42,11 @@ import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
-import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.extensions.getCpmString
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -171,31 +173,17 @@ class YearlyListFragment : Fragment() {
         }
     }
 
-    inner class YearlyHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    inner class YearlyHolder(parent: ViewGroup) : BaseItemHolder<Yearly>(
         LayoutInflater.from(parent.context).inflate(R.layout.list_item_yearly, parent, false)
-    ),
-        View.OnClickListener {
-        private lateinit var yearly: Yearly
-
+    ) {
         private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
         private val detailsBinding: ListItemYearlyDetailsTableBinding =
             ListItemYearlyDetailsTableBinding.bind(itemView)
-        private val detailsTable: ConstraintLayout = binding.listItemDetails
 
-        init {
-            itemView.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View?) {
-            if (detailsTable.visibility == VISIBLE) {
-                detailsTable.collapse()
-                binding.listItemWrapper.transitionBackground(R.attr.colorListItemExpanded, R.attr.colorListItem)
-
-            } else {
-                detailsTable.expand()
-                binding.listItemWrapper.transitionBackground(R.attr.colorListItem, R.attr.colorListItemExpanded)
-            }
-        }
+        override val collapseArea: ViewGroup
+            get() = binding.listItemDetails
+        override val backgroundArea: ViewGroup
+            get() = binding.listItemWrapper
 
         fun bind(item: Yearly, payloads: MutableList<Any>? = null) {
             fun showExpenseFields() {
@@ -212,11 +200,11 @@ class YearlyListFragment : Fragment() {
                 detailsBinding.listItemYearlyNetRow.visibility = GONE
             }
 
-            this.yearly = item
+            this.item = item
 
             CoroutineScope(Dispatchers.Default).launch {
                 withContext(Dispatchers.Default) {
-                    viewModel.getAnnualCostPerMile(yearly.year, deductionType)
+                    viewModel.getAnnualCostPerMile(this@YearlyHolder.item.year, deductionType)
                 }.let { cpm: Float? ->
                     val costPerMile: Float = cpm ?: 0f
                     (context as MainActivity).runOnUiThread {
@@ -228,15 +216,15 @@ class YearlyListFragment : Fragment() {
                                 binding.listItemSubtitle2Label.text = deductionType.fullDesc
 
                                 binding.listItemSubtitle2.text =
-                                    getCurrencyString(yearly.getExpenses(costPerMile))
+                                    getCurrencyString(this@YearlyHolder.item.getExpenses(costPerMile))
 
                                 detailsBinding.listItemYearlyCpm.text = getCpmString(costPerMile)
 
                                 detailsBinding.listItemYearlyNet.text =
-                                    getCurrencyString(this@YearlyHolder.yearly.getNet(costPerMile))
+                                    getCurrencyString(this@YearlyHolder.item.getNet(costPerMile))
 
                                 detailsBinding.listItemYearlyHourly.text = getCurrencyString(
-                                    this@YearlyHolder.yearly.getHourly(costPerMile)
+                                    this@YearlyHolder.item.getHourly(costPerMile)
                                 )
                             }
                         }
@@ -244,29 +232,15 @@ class YearlyListFragment : Fragment() {
                 }
             }
 
-            val listItemDetailsVisibility = (payloads?.let {
-                if (it.size == 1 && it[0] in listOf(
-                        VISIBLE,
-                        GONE
-                    )
-                ) it[0] else null
-            } ?: GONE) as Int
+            binding.listItemTitle.text = this.item.year.toString()
+            binding.listItemTitle2.text = getCurrencyString(this.item.totalPay)
+            detailsBinding.listItemReportedIncome.text = getCurrencyString(this.item.reportedPay)
+            detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
+            detailsBinding.listItemYearlyMileage.text = getMileageString(this.item.mileage)
+            detailsBinding.listItemYearlyHours.text = getString(R.string.format_hours, item.hours)
+            detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.item.hourly)
 
-            binding.listItemWrapper.setBackgroundResource(
-                if (listItemDetailsVisibility == VISIBLE)
-                    R.drawable.bg_list_item_expanded
-                else
-                    R.drawable.bg_list_item
-            )
-
-            binding.listItemTitle.text = this.yearly.year.toString()
-            binding.listItemTitle2.text = getCurrencyString(this.yearly.totalPay)
-            detailsBinding.listItemReportedIncome.text = getCurrencyString(yearly.reportedPay)
-            detailsBinding.listItemCashTips.text = getCurrencyString(yearly.cashTips)
-            detailsBinding.listItemYearlyMileage.text = getMileageString(yearly.mileage)
-            detailsBinding.listItemYearlyHours.text = getString(R.string.format_hours, yearly.hours)
-            detailsBinding.listItemYearlyHourly.text = getCurrencyString(yearly.hourly)
-            binding.listItemDetails.visibility = listItemDetailsVisibility
+            setPayloadVisibility(payloads)
         }
     }
 

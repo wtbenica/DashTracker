@@ -18,7 +18,6 @@ package com.wtb.dashTracker.extensions
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
@@ -29,7 +28,6 @@ import android.view.animation.Transformation
 import androidx.annotation.AttrRes
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
-import com.wtb.dashTracker.MainActivity.Companion.APP
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     val x = ev?.x?.toInt()
@@ -110,7 +108,6 @@ fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
     colorAnimation.addUpdateListener {
         if (it.animatedValue is Int) {
             val color = it.animatedValue as Int
-            Log.d(APP + "ViewExtensions", "Color: $color")
             setBackgroundColor(color)
         }
     }

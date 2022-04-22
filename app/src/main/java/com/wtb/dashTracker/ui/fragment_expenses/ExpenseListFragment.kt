@@ -20,10 +20,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -40,12 +37,14 @@ import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.ListItemExpenseBinding
 import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
-import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.extensions.formatted
+import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
+import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -145,24 +144,24 @@ class ExpenseListFragment : Fragment() {
                 else -> 1
             }
 
-        abstract inner class ExpenseHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView) {
             abstract fun bind(item: FullExpense, payloads: MutableList<Any>? = null)
         }
 
         inner class GasExpenseHolder(parent: ViewGroup) : ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense, parent, false)
         ), View.OnClickListener {
-            private lateinit var expense: FullExpense
-
             private val binding: ListItemExpenseBinding = ListItemExpenseBinding.bind(itemView)
-            private val detailsTable: ConstraintLayout = binding.listItemDetails
+
+            override val collapseArea: ViewGroup
+                get() = binding.listItemDetails
+            override val backgroundArea: ViewGroup
+                get() = binding.listItemWrapper
 
             init {
-                itemView.setOnClickListener(this)
-
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog.newInstance(expense.id).show(
+                        ExpenseDialog.newInstance(item.id).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -171,73 +170,47 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.expense.id)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.item.id)
                             .show(parentFragmentManager, null)
                     }
                 }
             }
 
-            override fun onClick(v: View?) {
-                if (detailsTable.visibility == VISIBLE) {
-                    detailsTable.collapse()
-                    binding.listItemWrapper.transitionBackground(
-                        R.attr.colorListItemExpanded,
-                        R.attr.colorListItem
-                    )
-
-                } else {
-                    detailsTable.expand()
-                    binding.listItemWrapper.transitionBackground(
-                        R.attr.colorListItem,
-                        R.attr.colorListItemExpanded
-                    )
-                }
-            }
-
             override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
-                this.expense = item
+                this.item = item
 
-//                val detailsTableIsVisibile = (payloads?.let {
-//                    if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) it[0] else null
-//                } ?: GONE) == VISIBLE
-//
-//                if (detailsTableIsVisibile && !detailsTable.isVisible) {
-//                    detailsTable.expand()
-//                    binding.listItemWrapper.transitionBackground(R.attr.colorListItem, R.attr.colorListItemExpanded)
-//                }
-//
-//                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
-
-                binding.listItemTitle.text = this.expense.expense.date.formatted.uppercase()
+                binding.listItemTitle.text = this.item.expense.date.formatted.uppercase()
                 binding.listItemTitle2.text =
-                    getStringOrElse(R.string.currency_unit, "-", this.expense.expense.amount)
-                binding.listItemSubtitle.text = this.expense.purpose.name
+                    getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
+                binding.listItemSubtitle.text = this.item.purpose.name
                 binding.listItemPrice.text =
                     getStringOrElse(
                         R.string.currency_unit,
                         "-",
-                        this.expense.expense.pricePerGal
+                        this.item.expense.pricePerGal
                     )
                 binding.listItemGallons.text =
-                    getStringOrElse(R.string.float_fmt, "-", this.expense.expense.gallons)
+                    getStringOrElse(R.string.float_fmt, "-", this.item.expense.gallons)
+
+                setPayloadVisibility(payloads)
             }
         }
 
-        inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseHolder(
+        inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseAdapter.ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense_non_gas, parent, false)
         ), View.OnClickListener {
-            private lateinit var expense: FullExpense
-
             private val binding: ListItemExpenseNonGasBinding =
                 ListItemExpenseNonGasBinding.bind(itemView)
-            private val buttonBox: LinearLayout = binding.buttonBox
+
+            override val collapseArea: ViewGroup
+                get() = binding.buttonBox
+            override val backgroundArea: ViewGroup
+                get() = binding.listItemWrapper
 
             init {
-                itemView.setOnClickListener(this)
-
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog.newInstance(expense.id).show(
+                        ExpenseDialog.newInstance(item.id).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -246,49 +219,21 @@ class ExpenseListFragment : Fragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.expense.id)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.item.id)
                             .show(parentFragmentManager, null)
                     }
                 }
             }
 
-            override fun onClick(v: View?) {
-                if (buttonBox.visibility == VISIBLE) {
-                    buttonBox.collapse()
-                    binding.listItemWrapper.transitionBackground(
-                        R.attr.colorListItemExpanded,
-                        R.attr.colorListItem
-                    )
-                } else {
-                    buttonBox.expand()
-                    binding.listItemWrapper.transitionBackground(
-                        R.attr.colorListItem,
-                        R.attr.colorListItemExpanded
-                    )
-                }
-//                val currentVisibility = buttonBox.visibility
-//                buttonBox.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-//                binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
-//                bindingAdapter?.notifyItemChanged(bindingAdapterPosition, buttonBox.visibility)
-            }
-
             override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
-                this.expense = item
+                this.item = item
 
-//                val detailsTableIsVisibile = (payloads?.let {
-//                    if (it.size == 1 && it[0] in listOf(
-//                            VISIBLE,
-//                            GONE
-//                        )
-//                    ) it[0] else null
-//                } ?: GONE) == VISIBLE
-//
-//                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
-
-                binding.listItemTitle.text = this.expense.expense.date.formatted.uppercase()
+                binding.listItemTitle.text = this.item.expense.date.formatted.uppercase()
                 binding.listItemTitle2.text =
-                    getStringOrElse(R.string.currency_unit, "-", this.expense.expense.amount)
-                binding.listItemSubtitle.text = this.expense.purpose.name
+                    getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
+                binding.listItemSubtitle.text = this.item.purpose.name
+
+                setPayloadVisibility(payloads)
             }
         }
     }

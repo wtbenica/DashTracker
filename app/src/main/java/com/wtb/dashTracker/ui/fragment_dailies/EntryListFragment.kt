@@ -25,6 +25,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -51,6 +52,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -148,21 +150,23 @@ class EntryListFragment : Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntryHolder =
             EntryHolder(parent)
 
-        inner class EntryHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        inner class EntryHolder(parent: ViewGroup) : BaseItemHolder<DashEntry>(
             LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
-        ), View.OnClickListener {
-            private lateinit var entry: DashEntry
+        ) {
+//            private lateinit var entry: DashEntry
 
             private val binding = ListItemEntryBinding.bind(itemView)
             private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
-            private val detailsTable: ConstraintLayout = binding.listItemDetails
+
+            override val collapseArea: ConstraintLayout
+                get() = binding.listItemDetails
+            override val backgroundArea: LinearLayout
+                get() = binding.listItemWrapper
 
             init {
-                itemView.setOnClickListener(this)
-
                 itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
                     setOnClickListener {
-                        EntryDialog.newInstance(this@EntryHolder.entry.entryId).show(
+                        EntryDialog.newInstance(this@EntryHolder.item.entryId).show(
                             parentFragmentManager,
                             "edit_details"
                         )
@@ -171,20 +175,9 @@ class EntryListFragment : Fragment() {
 
                 itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(confirmId = this@EntryHolder.entry.entryId)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@EntryHolder.item.entryId)
                             .show(parentFragmentManager, null)
                     }
-                }
-            }
-
-            override fun onClick(v: View?) {
-                if (detailsTable.visibility == VISIBLE) {
-                    detailsTable.collapse()
-                    binding.listItemWrapper.transitionBackground(R.attr.colorListItemExpanded, R.attr.colorListItem)
-
-                } else {
-                    detailsTable.expand()
-                    binding.listItemWrapper.transitionBackground(R.attr.colorListItem, R.attr.colorListItemExpanded)
                 }
             }
 
@@ -203,11 +196,12 @@ class EntryListFragment : Fragment() {
                     detailsBinding.listItemEntryNetRow.visibility = GONE
                 }
 
-                this.entry = item
+//                this.entry = item
+                this.item = item
 
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(Dispatchers.Default) {
-                        viewModel.getCostPerMile(entry.date, deductionType)
+                        viewModel.getCostPerMile(item.date, deductionType)
                     }.let { cpm: Float? ->
                         val costPerMile = cpm ?: 0f
                         (context as MainActivity).runOnUiThread {
@@ -219,20 +213,20 @@ class EntryListFragment : Fragment() {
                                     binding.listItemSubtitle2Label.text = deductionType.fullDesc
 
                                     binding.listItemSubtitle2.text = getCurrencyString(
-                                        this@EntryHolder.entry.getExpenses(costPerMile)
+                                        this@EntryHolder.item.getExpenses(costPerMile)
                                     )
 
                                     detailsBinding.listItemEntryCpm.text = getCpmString(costPerMile)
 
                                     detailsBinding.listItemEntryNet.text =
-                                        getCurrencyString(this@EntryHolder.entry.getNet(costPerMile))
+                                        getCurrencyString(this@EntryHolder.item.getNet(costPerMile))
 
                                     detailsBinding.listItemEntryHourly.text = getCurrencyString(
-                                        this@EntryHolder.entry.getHourly(costPerMile)
+                                        this@EntryHolder.item.getHourly(costPerMile)
                                     )
 
                                     detailsBinding.listItemEntryAvgDel.text = getCurrencyString(
-                                        this@EntryHolder.entry.getAvgDelivery(costPerMile)
+                                        this@EntryHolder.item.getAvgDelivery(costPerMile)
                                     )
                                 }
                             }
@@ -240,51 +234,35 @@ class EntryListFragment : Fragment() {
                     }
                 }
 
-                val detailsTableVisibility = (payloads?.let {
-                    if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) {
-                        it[0]
-                    } else {
-                        null
-                    }
-                } ?: GONE) as Int
-
-                binding.listItemWrapper.setBackgroundResource(
-                    if (detailsTableVisibility == VISIBLE) {
-                        R.drawable.bg_list_item_expanded
-                    } else {
-                        R.drawable.bg_list_item
-                    }
-                )
-
-                binding.listItemTitle.text = this.entry.date.formatted.uppercase()
-                binding.listItemTitle2.text = getCurrencyString(this.entry.totalEarned)
+                binding.listItemTitle.text = this.item.date.formatted.uppercase()
+                binding.listItemTitle2.text = getCurrencyString(this.item.totalEarned)
                 binding.listItemSubtitle.text =
-                    getHoursRangeString(this.entry.startTime, this.entry.endTime)
-                binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.entry.isIncomplete)
+                    getHoursRangeString(this.item.startTime, this.item.endTime)
+                binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.item.isIncomplete)
 
-                detailsBinding.listItemRegularPay.text = getCurrencyString(this.entry.pay)
-                detailsBinding.listItemCashTips.text = getCurrencyString(this.entry.cashTips)
-                detailsBinding.listItemOtherPay.text = getCurrencyString(this.entry.otherPay)
+                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.pay)
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
+                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
                 detailsBinding.listItemAlertHours.setVisibleIfTrue(
-                    this.entry.startTime == null || this.entry.endTime == null
+                    this.item.startTime == null || this.item.endTime == null
                 )
                 detailsBinding.listItemEntryHours.text =
-                    getStringOrElse(R.string.float_fmt, "-", this.entry.totalHours)
+                    getStringOrElse(R.string.float_fmt, "-", this.item.totalHours)
                 detailsBinding.listItemEntryMileageRange.text =
-                    getOdometerRangeString(this.entry.startOdometer, this.entry.endOdometer)
-                detailsBinding.listItemEntryMileage.text = "${this.entry.mileage ?: "-"}"
-                detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.entry.mileage == null)
+                    getOdometerRangeString(this.item.startOdometer, this.item.endOdometer)
+                detailsBinding.listItemEntryMileage.text = "${this.item.mileage ?: "-"}"
+                detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.mileage == null)
                 detailsBinding.listItemEntryNumDeliveries.text =
-                    "${this.entry.numDeliveries ?: "-"}"
-                detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.entry.numDeliveries == null)
+                    "${this.item.numDeliveries ?: "-"}"
+                detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.item.numDeliveries == null)
                 detailsBinding.listItemEntryHourly.text =
-                    getCurrencyString(this.entry.hourly)
+                    getCurrencyString(this.item.hourly)
                 detailsBinding.listItemEntryAvgDel.text =
-                    getCurrencyString(this.entry.avgDelivery)
+                    getCurrencyString(this.item.avgDelivery)
                 detailsBinding.listItemEntryHourlyDels.text =
-                    getFloatString(this.entry.hourlyDeliveries)
+                    getFloatString(this.item.hourlyDeliveries)
 
-                detailsTable.visibility = detailsTableVisibility
+                setPayloadVisibility(payloads)
             }
         }
     }
