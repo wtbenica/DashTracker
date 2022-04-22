@@ -32,7 +32,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.CompleteWeekly
+import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemBinding
@@ -48,7 +48,7 @@ import java.time.LocalDate
 @ExperimentalCoroutinesApi
 class WeeklyDialog : FullWidthDialogFragment() {
 
-    private var weekly: CompleteWeekly? = null
+    private var weekly: FullWeekly? = null
     private lateinit var binding: DialogFragWeeklyBinding
     private val viewModel: WeeklyViewModel by viewModels()
 

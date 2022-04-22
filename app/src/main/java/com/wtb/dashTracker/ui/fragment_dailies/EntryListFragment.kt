@@ -34,7 +34,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,6 +51,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
@@ -132,29 +132,13 @@ class EntryListFragment : Fragment() {
 
     interface EntryListFragmentCallback : DeductionCallback
 
-    inner class EntryAdapter :
-        PagingDataAdapter<DashEntry, EntryAdapter.EntryHolder>(DIFF_CALLBACK) {
-        override fun onBindViewHolder(
-            holder: EntryHolder,
-            position: Int,
-            payloads: MutableList<Any>
-        ) {
-            super.onBindViewHolder(holder, position, payloads)
-            getItem(position)?.let { holder.bind(it, payloads) }
-        }
-
-        override fun onBindViewHolder(holder: EntryHolder, position: Int) {
-            getItem(position)?.let { holder.bind(it) }
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntryHolder =
+    inner class EntryAdapter : BaseItemAdapter<DashEntry>(DIFF_CALLBACK) {
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<DashEntry> =
             EntryHolder(parent)
 
         inner class EntryHolder(parent: ViewGroup) : BaseItemHolder<DashEntry>(
             LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
         ) {
-//            private lateinit var entry: DashEntry
-
             private val binding = ListItemEntryBinding.bind(itemView)
             private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
 
@@ -181,7 +165,7 @@ class EntryListFragment : Fragment() {
                 }
             }
 
-            fun bind(item: DashEntry, payloads: MutableList<Any>? = null) {
+            override fun bind(item: DashEntry, payloads: MutableList<Any>?) {
                 fun showExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
@@ -196,7 +180,6 @@ class EntryListFragment : Fragment() {
                     detailsBinding.listItemEntryNetRow.visibility = GONE
                 }
 
-//                this.entry = item
                 this.item = item
 
                 CoroutineScope(Dispatchers.Default).launch {

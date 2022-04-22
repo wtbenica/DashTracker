@@ -88,7 +88,7 @@ class MainActivityViewModel : ViewModel() {
 
     companion object {
 
-        fun getHourlyFromWeeklies(list: List<CompleteWeekly>): Float {
+        fun getHourlyFromWeeklies(list: List<FullWeekly>): Float {
             return if (list.isNotEmpty()) {
                 val hours = list.map { w -> w.hours }.reduce { acc, fl -> acc + fl }
                 val pay = list.map { w -> w.pay }.reduce { acc, fl -> acc + fl }

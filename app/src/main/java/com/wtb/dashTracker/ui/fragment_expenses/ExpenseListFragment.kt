@@ -27,7 +27,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +43,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
+import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -116,27 +116,13 @@ class ExpenseListFragment : Fragment() {
 
     interface ExpenseListFragmentCallback
 
-    inner class ExpenseAdapter :
-        PagingDataAdapter<FullExpense, ExpenseAdapter.ExpenseHolder>(DIFF_CALLBACK) {
-
-        override fun onBindViewHolder(
-            holder: ExpenseHolder,
-            position: Int,
-            payloads: MutableList<Any>
-        ) {
-            super.onBindViewHolder(holder, position, payloads)
-            getItem(position)?.let { holder.bind(it, payloads) }
+    inner class ExpenseAdapter : BaseItemAdapter<FullExpense>(
+        DIFF_CALLBACK
+    ) {
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullExpense> = when (viewType) {
+            0 -> GasExpenseHolder(parent)
+            else -> OtherExpenseHolder(parent)
         }
-
-        override fun onBindViewHolder(holder: ExpenseHolder, position: Int) {
-            getItem(position)?.let { holder.bind(it) }
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseHolder =
-            when (viewType) {
-                0 -> GasExpenseHolder(parent)
-                else -> OtherExpenseHolder(parent)
-            }
 
         override fun getItemViewType(position: Int): Int =
             when (getItem(position)?.purpose?.purposeId) {
@@ -144,9 +130,7 @@ class ExpenseListFragment : Fragment() {
                 else -> 1
             }
 
-        abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView) {
-            abstract fun bind(item: FullExpense, payloads: MutableList<Any>? = null)
-        }
+        abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView)
 
         inner class GasExpenseHolder(parent: ViewGroup) : ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense, parent, false)

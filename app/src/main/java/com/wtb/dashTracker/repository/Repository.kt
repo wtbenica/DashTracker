@@ -100,11 +100,11 @@ class Repository private constructor(context: Context) {
     /**
      * Weekly
      */
-    val allWeeklies: Flow<List<CompleteWeekly>> = weeklyDao.getAllCompleteWeekly()
+    val allWeeklies: Flow<List<FullWeekly>> = weeklyDao.getAllCompleteWeekly()
 
     private suspend fun allWeeklies(): List<Weekly> = weeklyDao.getAllSuspend()
 
-    val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = Pager(
+    val allWeekliesPaged: Flow<PagingData<FullWeekly>> = Pager(
         config = PagingConfig(
             pageSize = 20,
             enablePlaceholders = true
@@ -114,7 +114,7 @@ class Repository private constructor(context: Context) {
         }
     ).flow
 
-    fun getWeeklyByDate(date: LocalDate): Flow<CompleteWeekly?> =
+    fun getWeeklyByDate(date: LocalDate): Flow<FullWeekly?> =
         weeklyDao.getWeeklyByDate(date)
 
     fun getBasePayAdjustFlowById(id: Int) = weeklyDao.getFlow(id)

@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.database.models
 
 import androidx.room.*
+import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
 import com.wtb.dashTracker.util.CSVConvertible
 import java.time.LocalDate
 
@@ -138,8 +139,8 @@ data class FullExpense(
 
     @Relation(parentColumn = "purpose", entityColumn = "purposeId")
     val purpose: ExpensePurpose
-) {
-    val id
+): ListItemType {
+    val id: Int
         get() = expense.expenseId
 }
 

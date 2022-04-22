@@ -20,7 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.wtb.dashTracker.database.models.CompleteWeekly
+import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.DeductionType
@@ -38,7 +38,7 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
     val date: StateFlow<LocalDate>
         get() = _date
 
-    val weekly: LiveData<CompleteWeekly?> = date.flatMapLatest {
+    val weekly: LiveData<FullWeekly?> = date.flatMapLatest {
         repository.getWeeklyByDate(it)
     }.stateIn(
         scope = viewModelScope,
@@ -50,10 +50,10 @@ class WeeklyViewModel : BaseViewModel<Weekly>() {
         _date.value = date
     }
 
-    val allWeekliesPaged: Flow<PagingData<CompleteWeekly>> = repository.allWeekliesPaged
+    val allWeekliesPaged: Flow<PagingData<FullWeekly>> = repository.allWeekliesPaged
 
     suspend fun getExpensesAndCostPerMile(
-        compWeekly: CompleteWeekly,
+        compWeekly: FullWeekly,
         deductionType: DeductionType
     ): Pair<Float, Float> =
         CoroutineScope(Dispatchers.Default).async {

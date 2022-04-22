@@ -19,6 +19,8 @@ package com.wtb.dashTracker.ui.fragment_base_list
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.collapse
@@ -29,12 +31,37 @@ class BaseListFragment : Fragment() {
 
 }
 
+interface ListItemType
+
+abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
+    PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback) {
+    override fun onBindViewHolder(
+        holder: BaseItemHolder<T>,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        super.onBindViewHolder(holder, position, payloads)
+        getItem(position)?.let { holder.bind(it, payloads) }
+    }
+
+    override fun onBindViewHolder(holder: BaseItemHolder<T>, position: Int) {
+        getItem(position)?.let { holder.bind(it) }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<T> =
+        getViewHolder(parent, viewType)
+
+    abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): BaseItemHolder<T>
+}
+
 @Suppress("LeakingThis")
-abstract class BaseItemHolder<T: Any>(itemView: View) :
+abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
     RecyclerView.ViewHolder(itemView), View.OnClickListener {
     protected lateinit var item: T
     abstract val collapseArea: ViewGroup
     abstract val backgroundArea: ViewGroup
+
+    abstract fun bind(item: T, payloads: MutableList<Any>? = null)
 
     init {
         itemView.setOnClickListener(this)

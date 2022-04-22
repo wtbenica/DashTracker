@@ -38,7 +38,7 @@ import com.wtb.dashTracker.DeductionCallback
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.CompleteWeekly
+import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
@@ -47,6 +47,7 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -88,7 +89,7 @@ class YearlyListFragment : Fragment() {
         var cashTips: Float = 0f,
         var adjust: Float = 0f,
         var hours: Float = 0f
-    ) {
+    ): ListItemType {
         val reportedPay: Float
             get() = pay + otherPay + adjust
 
@@ -119,19 +120,19 @@ class YearlyListFragment : Fragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.allWeeklies.collectLatest { cwList: List<CompleteWeekly> ->
+                viewModel.allWeeklies.collectLatest { cwList: List<FullWeekly> ->
                     // TODO: Something tells me this could be done better with sql
                     yearlies.clear()
                     var numChecked = 0
                     var year =
                         cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year + 1
                     while (numChecked < cwList.size) {
-                        val thisYears = cwList.mapNotNull { cw: CompleteWeekly ->
+                        val thisYears = cwList.mapNotNull { cw: FullWeekly ->
                             if (cw.weekly.date.year == year) cw else null
                         }
                         numChecked += thisYears.size
                         val res = Yearly(year)
-                        thisYears.forEach { cw: CompleteWeekly ->
+                        thisYears.forEach { cw: FullWeekly ->
                             res.adjust += cw.weekly.basePayAdjustment ?: 0f
                             res.pay += cw.entries.mapNotNull(DashEntry::pay)
                                 .reduceOrNull { acc, fl -> acc + fl } ?: 0f
@@ -185,7 +186,7 @@ class YearlyListFragment : Fragment() {
         override val backgroundArea: ViewGroup
             get() = binding.listItemWrapper
 
-        fun bind(item: Yearly, payloads: MutableList<Any>? = null) {
+        override fun bind(item: Yearly, payloads: MutableList<Any>?) {
             fun showExpenseFields() {
                 binding.listItemSubtitle2Label.visibility = VISIBLE
                 binding.listItemSubtitle2.visibility = VISIBLE

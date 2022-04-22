@@ -22,6 +22,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.wtb.dashTracker.database.models.Weekly.Companion.Columns.*
 import com.wtb.dashTracker.extensions.weekOfYear
+import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
 import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -70,13 +71,13 @@ data class Weekly(
 }
 
 @ExperimentalCoroutinesApi
-data class CompleteWeekly(
+data class FullWeekly(
     @Embedded
     val weekly: Weekly,
 
     @Relation(parentColumn = "date", entityColumn = "week")
     val entries: List<DashEntry>
-) {
+): ListItemType {
     val isEmpty: Boolean
         get() = entries.isEmpty() && weekly.isIncomplete && !weekly.isNew
 
