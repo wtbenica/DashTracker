@@ -20,77 +20,80 @@
     android:id="@+id/list_item_card"
     style="@style/CardViewStyle.ListItem">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/list_item_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_list_item"
-        android:orientation="vertical"
         tools:background="@drawable/bg_list_item_expanded">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/list_item_header"
-            android:layout_width="match_parent"
+        <GridLayout
+            android:id="@+id/top"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/margin_default"
-            android:paddingVertical="@dimen/margin_half"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_default"
+            android:columnCount="2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/list_item_title"
                 style="@style/ListItemHeaderTextView.Title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 tools:text="NOV 21, 2021" />
-
-            <TextView
-                android:id="@+id/list_item_subtitle"
-                style="@style/ListItemHeaderTextView.Subtitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_title"
-                tools:text="@string/lbl_gas" />
 
             <ImageView
                 android:id="@+id/list_item_recurring"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:contentDescription="@string/content_desc_recurring_expense"
                 android:src="@drawable/ic_recurring"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_title"
-                app:tint="?attr/colorListItemTitle" />
+                app:tint="?attr/colorListItemTitle"
+                tools:visibility="visible" />
 
             <TextView
-                android:id="@+id/list_item_title_2"
-                style="@style/ListItemHeaderTextView.Title"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:textAlignment="textEnd"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/list_item_title"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="$20.00" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:id="@+id/list_item_subtitle"
+                style="@style/ListItemHeaderTextView.Subtitle"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:gravity="bottom"
+                android:text="@string/lbl_other" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/margin_default"
+                android:layout_columnSpan="2" />
+        </GridLayout>
+
+        <TextView
+            android:id="@+id/list_item_title_2"
+            style="@style/ListItemHeaderTextView.Title"
+            android:layout_width="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:textAlignment="textEnd"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="$20.00" />
+
+        <LinearLayout
             android:id="@+id/list_item_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="0dp"
-            android:visibility="gone"
-            tools:visibility="visible">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/list_item_details_card"
                 android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_default"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_marginStart="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_default">
 
                 <TableLayout
                     style="@style/PayTable.Gas"
@@ -132,24 +135,24 @@
                 android:id="@+id/button_box"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_details_card">
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <ImageButton
                     android:id="@+id/list_item_btn_delete"
                     style="@style/ListItemButton"
                     android:contentDescription="@string/content_desc_remove"
-                    android:src="@drawable/ic_action_delete"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit" />
+                    android:elevation="1dp"
+                    android:src="@drawable/ic_action_delete" />
 
                 <ImageButton
                     android:id="@+id/list_item_btn_edit"
                     style="@style/ListItemButton"
                     android:contentDescription="@string/content_desc_edit_button"
                     android:src="@drawable/ic_action_edit" />
+
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

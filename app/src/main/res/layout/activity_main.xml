@@ -142,8 +142,8 @@
             app:elevation="1dp"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="scale"
-            app:fabCradleMargin="@dimen/margin_narrow"
-            app:fabCradleRoundedCornerRadius="@dimen/margin_narrow"
+            app:fabCradleMargin="1dp"
+            app:fabCradleRoundedCornerRadius="1dp"
             app:hideOnScroll="true"
             app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
 
