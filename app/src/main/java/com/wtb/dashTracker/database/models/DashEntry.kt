@@ -20,7 +20,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.wtb.dashTracker.database.models.DashEntry.Companion.Columns.*
 import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
 import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration
@@ -46,19 +48,19 @@ const val AUTO_ID = 0
 )
 data class DashEntry(
     @PrimaryKey(autoGenerate = true) val entryId: Int = AUTO_ID,
-    val date: LocalDate,
+    val date: LocalDate = LocalDate.now(),
     val endDate: LocalDate = date,
-    val startTime: LocalTime?,
-    val endTime: LocalTime?,
-    val startOdometer: Float?,
-    val endOdometer: Float?,
+    val startTime: LocalTime? = LocalTime.now(),
+    val endTime: LocalTime? = null,
+    val startOdometer: Float? = null,
+    val endOdometer: Float? = null,
     var totalMileage: Float? = null,
-    val pay: Float?,
-    val otherPay: Float?,
-    val cashTips: Float?,
-    val numDeliveries: Int?,
+    val pay: Float? = null,
+    val otherPay: Float? = null,
+    val cashTips: Float? = null,
+    val numDeliveries: Int? = null,
     var week: LocalDate? = date.endOfWeek
-) : DataModel() {
+) : DataModel(), ListItemType {
     override val id: Int
         get() = entryId
 
@@ -82,11 +84,12 @@ data class DashEntry(
         get() = startTime?.let {
             endTime?.let {
                 val startsDuringDay = startTime in nightSplitTime..daySplitTime
-                val endsDuringday = endTime in nightSplitTime..daySplitTime
+                val endsDuringDay = endTime in nightSplitTime..daySplitTime
                 val startsEarly = startTime < nightSplitTime
 
                 if (date == endDate) {
-                    if (startsDuringDay && endsDuringday) totalHours
+                    if (startTime == endTime) 0f
+                    else if (startsDuringDay && endsDuringDay) totalHours
                     else if (startTime >= daySplitTime) 0f
                     else Duration.between(startTime, daySplitTime).toMinutes() / 60f
                 } else {
@@ -125,30 +128,36 @@ data class DashEntry(
     val dayDels: Float?
         get() = dayHours?.let { dh ->
             totalHours?.let { th ->
-                numDeliveries?.let { nd -> nd * (dh / th) }
+                numDeliveries?.let { nd -> nd * (dh / (if (th != 0f) th else 1f)) }
             }
         }
 
     val nightDels: Float?
         get() = nightHours?.let { nh ->
             totalHours?.let { th ->
-                numDeliveries?.let { nd -> nd * (nh / th) }
+                numDeliveries?.let { nd -> nd * (nh / (if (th != 0f) th else 1f)) }
             }
         }
 
     val hourly: Float?
         get() = totalHours?.let { th ->
-            totalEarned?.let { te -> te / th }
+            totalEarned?.let { te -> if (th != 0f) te / th else 0f }
         }
 
     val avgDelivery: Float?
-        get() = numDeliveries?.let { nd -> totalEarned?.let { te -> te / nd } }
+        get() = numDeliveries?.let { nd ->
+            totalEarned?.let { te ->
+                if (nd > 0) {
+                    te / nd
+                } else {
+                    0f
+                }
+            }
+        }
 
     val hourlyDeliveries: Float?
         get() = totalHours?.let { th ->
-            numDeliveries?.let { nd ->
-                nd / th
-            }
+            numDeliveries?.let { nd -> if (th != 0f) nd / th else 0f }
         }
 
     val mileage: Float?
@@ -190,41 +199,68 @@ data class DashEntry(
 
     override fun toString(): String = "$date: $startTime - $endTime $$totalEarned"
 
+    fun getExpenses(costPerMile: Float): Float = (mileage ?: 0f) * costPerMile
+
+    fun getHourly(costPerMile: Float): Float? = totalHours?.let { th ->
+        totalEarned?.let { te ->
+            if (th != 0f) {
+                (te - getExpenses(costPerMile)) / th
+            } else {
+                0f
+            }
+        }
+    }
+
+    fun getAvgDelivery(costPerMile: Float): Float? = numDeliveries?.let { nd ->
+        totalEarned?.let { te ->
+            if (nd > 0) {
+                (te - getExpenses(costPerMile)) / nd
+            } else {
+                0f
+            }
+        }
+    }
+
+    fun getNet(costPerMile: Float): Float? =
+        totalEarned?.let { te -> te - getExpenses(costPerMile) }
+
     companion object : CSVConvertible<DashEntry> {
         private val daySplitTime = LocalTime.of(17, 0)
         private val nightSplitTime = daySplitTime.minusHours(12)
 
+        private enum class Columns(val headerName: String) {
+            START_DATE("Start Date"),
+            START_TIME("Start Time"),
+            END_DATE("End Date"),
+            END_TIME("End Time"),
+            START_ODO("Start Odometer"),
+            END_ODO("End Odometer"),
+            MILEAGE("Total Mileage"),
+            BASE_PAY("Base Pay"),
+            CASH_TIPS("Cash Tips"),
+            OTHER_PAY("Other Pay"),
+            NUM_DELIVERIES("Num Deliveries")
+        }
+
         override fun fromCSV(row: Map<String, String>): DashEntry = DashEntry(
-            date = LocalDate.parse(row["Start Date"]),
-            endDate = LocalDate.parse(row["End Date"]),
-            startTime = LocalTime.parse(row["Start Time"]),
-            endTime = row["End Time"]?.let {
-                if (it == "") null else LocalTime.parse(row["End Time"])
+            date = LocalDate.parse(row[START_DATE.headerName]),
+            endDate = LocalDate.parse(row[END_DATE.headerName]),
+            startTime = LocalTime.parse(row[START_TIME.headerName]),
+            endTime = row[END_TIME.headerName]?.let {
+                if (it == "") null else LocalTime.parse(row[END_TIME.headerName])
             },
-            startOdometer = row["Start Odometer"]?.toFloatOrNull(),
-            endOdometer = row["End Odometer"]?.toFloatOrNull(),
-            totalMileage = row["Total Mileage"]?.toFloatOrNull(),
-            pay = row["Base Pay"]?.toFloatOrNull(),
-            cashTips = row["Cash Tips"]?.toFloatOrNull(),
-            otherPay = row["Other Pay"]?.toFloatOrNull(),
-            numDeliveries = row["Num Deliveries"]?.toIntOrNull(),
-            week = LocalDate.parse(row["Start Date"]).endOfWeek
+            startOdometer = row[START_ODO.headerName]?.toFloatOrNull(),
+            endOdometer = row[END_ODO.headerName]?.toFloatOrNull(),
+            totalMileage = row[MILEAGE.headerName]?.toFloatOrNull(),
+            pay = row[BASE_PAY.headerName]?.toFloatOrNull(),
+            cashTips = row[CASH_TIPS.headerName]?.toFloatOrNull(),
+            otherPay = row[OTHER_PAY.headerName]?.toFloatOrNull(),
+            numDeliveries = row[NUM_DELIVERIES.headerName]?.toIntOrNull(),
+            week = LocalDate.parse(row[START_DATE.headerName]).endOfWeek
         )
 
         override val headerList: List<String>
-            get() = listOf(
-                "Start Date",
-                "Start Time",
-                "End Date",
-                "End Time",
-                "Start Odometer",
-                "End Odometer",
-                "Total Mileage",
-                "Base Pay",
-                "Cash Tips",
-                "Other Pay",
-                "Num Deliveries"
-            )
+            get() = Columns.values().map(Columns::headerName)
 
         override fun DashEntry.asList(): List<*> =
             listOf(

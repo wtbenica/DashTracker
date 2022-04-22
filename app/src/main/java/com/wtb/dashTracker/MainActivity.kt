@@ -40,7 +40,9 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -49,23 +51,30 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog
+import com.wtb.dashTracker.ui.DeductionTypeViewModel
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
-import com.wtb.dashTracker.ui.entry_list.EntryListFragment.EntryListFragmentCallback
-import com.wtb.dashTracker.ui.weekly_list.WeeklyListFragment.WeeklyListFragmentCallback
+import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
+import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.CSVUtils
 import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
-import com.wtb.dashTracker.views.getStringOrElse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -76,11 +85,19 @@ import java.time.format.DateTimeParseException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListFragmentCallback {
+class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback, IncomeFragment.IncomeFragmentCallback {
 
     private val viewModel: MainActivityViewModel by viewModels()
+    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
+
+    override val deductionType: StateFlow<DeductionType>
+        get() = deductionTypeViewModel.deductionType
+
+    override fun setDeductionType(dType: DeductionType) {
+        deductionTypeViewModel.setDeductionType(dType)
+    }
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
 
@@ -125,6 +142,11 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         fun initMobileAds() {
             MobileAds.initialize(this@MainActivity)
 
+            MobileAds.setRequestConfiguration(
+                RequestConfiguration.Builder()
+                    .setTestDeviceIds(listOf("B7667F22237B480FF03CE252659EAA82")).build()
+            )
+
             mAdView = binding.adView
             val adRequest = AdRequest.Builder().build()
             mAdView.loadAd(adRequest)
@@ -134,39 +156,38 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
             val navView: BottomNavigationView = binding.navView
             navView.background = null
 
-            val navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-            val navController = navHostFragment?.findNavController()
-
             val appBarConfiguration = AppBarConfiguration(
                 setOf(
-                    R.id.navigation_home,
-                    R.id.navigation_weekly,
-                    R.id.navigation_yearly,
-                    R.id.navigation_insights,
+                    R.id.navigation_income,
+                    R.id.navigation_expenses,
+                    R.id.navigation_insights
                 )
             )
 
+            val navHostFragment: Fragment? =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+            val navController: NavController? = navHostFragment?.findNavController()
+
             navController?.let {
-                setupActionBarWithNavController(navController, appBarConfiguration)
-                navView.setupWithNavController(navController)
+                setupActionBarWithNavController(it, appBarConfiguration)
+                navView.setupWithNavController(it)
             }
         }
 
         fun initObservers() {
             viewModel.hourly.observe(this) {
                 binding.actMainHourly.text =
-                    getStringOrElse(R.string.currency_unit, it)
+                    getCurrencyString(it)
             }
 
             viewModel.thisWeek.observe(this) {
                 binding.actMainThisWeek.text =
-                    getStringOrElse(R.string.currency_unit, it)
+                    getCurrencyString(it)
             }
 
             viewModel.lastWeek.observe(this) {
                 binding.actMainLastWeek.text =
-                    getStringOrElse(R.string.currency_unit, it)
+                    getCurrencyString(it)
             }
         }
 
@@ -273,19 +294,23 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         getContentLauncher(
             FILE_ZIP,
             ::extractZip,
-            ConfirmationDialog(
+            ConfirmationDialog.newInstance(
                 text = R.string.unzip_error,
-                requestKey ="confirmUnzipError",
+                requestKey = "confirmUnzipError",
                 message = "Error",
                 posButton = R.string.ok,
-                posAction = {},
+                posAction = LambdaWrapper {},
                 negButton = null
-            ))
+            )
+        )
 
     private fun extractZip(uri: Uri) {
         ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
             var entryModels: List<DashEntry> = emptyList()
             var weeklyModels: List<Weekly> = emptyList()
+            var expenseModels: List<Expense> = emptyList()
+            var purposeModels: List<ExpensePurpose> = emptyList()
+
             var nextEntry: ZipEntry? = zipIn.nextEntry
             while (nextEntry != null) {
                 val destFile = File(filesDir, nextEntry.name)
@@ -309,6 +334,16 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
                                 Weekly.fromCSV(it)
                             }?.let { weeklyModels = it }
                         }
+                        entryName.startsWith(CSVUtils.FILE_EXPENSES, false) -> {
+                            getModelsFromCsv(inputStream) {
+                                Expense.fromCSV(it)
+                            }?.let { expenseModels = it }
+                        }
+                        entryName.startsWith(CSVUtils.FILE_PURPOSES, false) -> {
+                            getModelsFromCsv(inputStream) {
+                                ExpensePurpose.fromCSV(it)
+                            }?.let { purposeModels = it }
+                        }
                     }
                 }
 
@@ -319,7 +354,9 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
             viewModel.importStream(
                 entries = entryModels.ifEmpty { null },
-                weeklies = weeklyModels.ifEmpty { null }
+                weeklies = weeklyModels.ifEmpty { null },
+                expenses = expenseModels.ifEmpty { null },
+                purposes = purposeModels.ifEmpty { null }
             )
         }
     }
@@ -357,31 +394,47 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
         }
 
 
+    private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
+        FabMenuButtonInfo(
+            "Add Entry",
+            R.drawable.ic_new_entry
+        ) {
+            CoroutineScope(Dispatchers.Default).launch {
+                val id = viewModel.upsertAsync(DashEntry())
+                EntryDialog.newInstance(id.toInt()).show(fm, "new_entry_dialog")
+            }
+        },
+        FabMenuButtonInfo(
+            "Add Adjustment",
+            R.drawable.ic_new_adjust
+        ) { WeeklyDialog.newInstance().show(fm, "new_adjust_dialog") },
+        FabMenuButtonInfo(
+            "Add Expense",
+            R.drawable.ic_nav_daily
+        ) {
+            CoroutineScope(Dispatchers.Default).launch {
+                val id = viewModel.upsertAsync(Expense())
+                ExpenseDialog.newInstance(id.toInt()).show(fm, "new_expense_dialog")
+            }
+        },
+        //        FabMenuButtonInfo(
+        //            "Add Payout",
+        //            R.drawable.chart
+        //        ) { PayoutDialog().show(fm, "new_payout_dialog") }
+    )
+
+
     companion object {
         const val APP = "GT_"
         private const val TAG = APP + "MainActivity"
         var isAuthenticated = false
 
-        private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
-            FabMenuButtonInfo(
-                "Add Entry",
-                R.drawable.ic_new_entry
-            ) { EntryDialog().show(fm, "new_entry_dialog") },
-            FabMenuButtonInfo(
-                "Add Adjustment",
-                R.drawable.ic_new_adjust
-            ) { WeeklyDialog().show(fm, "new_adjust_dialog") },
-//            FabMenuButtonInfo(
-//                "Add Payout",
-//                R.drawable.chart
-//            ) { PayoutDialog().show(fm, "new_payout_dialog") }
-        )
-
         @ColorInt
         fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)
 
         @ColorInt
-        fun getColorFabDisabled(context: Context) = getAttrColor(context, R.attr.colorFabDisabled)
+        fun getColorFabDisabled(context: Context) =
+            getAttrColor(context, R.attr.colorFabDisabled)
 
         @ColorInt
         fun getAttrColor(context: Context, @AttrRes id: Int): Int {
@@ -394,4 +447,7 @@ class MainActivity : AppCompatActivity(), WeeklyListFragmentCallback, EntryListF
 
     }
 }
+
+interface DeductionCallback
+
 

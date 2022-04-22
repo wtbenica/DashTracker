@@ -38,11 +38,11 @@ import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmResetDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmSaveDialog
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm_delete.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,11 +53,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
-class EntryDialog(
-    private var entry: DashEntry? = null
-) : FullWidthDialogFragment() {
+class EntryDialog : FullWidthDialogFragment() {
 
     private val viewModel: EntryViewModel by viewModels()
+    private var entry: DashEntry? = null
     private var saveOnExit = true
     private var startTimeChanged = false
     private var saveConfirmed = false
@@ -79,8 +78,7 @@ class EntryDialog(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val entryId = entry?.entryId
-
+        val entryId = arguments?.getInt(ARG_ENTRY_ID)
         viewModel.loadDataModel(entryId)
     }
 
@@ -127,13 +125,13 @@ class EntryDialog(
 
         deleteButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_delete).apply {
             setOnClickListener {
-                ConfirmDeleteDialog(null).show(parentFragmentManager, null)
+                ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
             }
         }
 
         cancelButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_cancel).apply {
             setOnClickListener {
-                ConfirmResetDialog().show(parentFragmentManager, null)
+                ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
             }
         }
 
@@ -182,11 +180,12 @@ class EntryDialog(
     private fun saveValues() {
 
         val currDate = dateTextView.text.toDateOrNull()
-        val totalMileage = if (startMileageEditText.text.isEmpty() && endMileageEditText.text.isEmpty()) {
-            totalMileageEditText.text.toFloatOrNull()
-        } else {
-            null
-        }
+        val totalMileage =
+            if (startMileageEditText.text.isEmpty() && endMileageEditText.text.isEmpty()) {
+                totalMileageEditText.text.toFloatOrNull()
+            } else {
+                null
+            }
         val e = DashEntry(
             entryId = entry?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
@@ -221,7 +220,7 @@ class EntryDialog(
         object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 if (isEmpty() && !saveConfirmed) {
-                    ConfirmSaveDialog(
+                    ConfirmSaveDialog.newInstance(
                         text = R.string.confirm_save_entry_incomplete
                     ).show(parentFragmentManager, null)
                 } else {
@@ -287,7 +286,14 @@ class EntryDialog(
                 numDeliveriesEditText.text.isBlank()
 
     companion object {
-
         private const val TAG = APP + "EntryDialog"
+        private const val ARG_ENTRY_ID = "entry_id"
+
+        fun newInstance(entryId: Int) =
+            EntryDialog().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_ENTRY_ID, entryId)
+                }
+            }
     }
 }

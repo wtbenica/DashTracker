@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2022 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item_card"
+    style="@style/CardViewStyle.ListItem">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/list_item_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_list_item"
+        tools:background="@drawable/bg_list_item_expanded">
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_half"
+            android:columnCount="2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/list_item_title"
+                style="@style/ListItemHeaderTextView.Title"
+                tools:text="NOV 21, 2021" />
+
+            <ImageView
+                android:id="@+id/list_item_recurring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/content_desc_recurring_expense"
+                android:src="@drawable/ic_recurring"
+                android:visibility="gone"
+                app:tint="?attr/colorListItemTitle"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/list_item_subtitle"
+                style="@style/ListItemHeaderTextView.Subtitle"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:gravity="bottom"
+                android:text="@string/lbl_other" />
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/margin_half"
+                android:layout_columnSpan="2" />
+        </GridLayout>
+
+        <TextView
+            android:id="@+id/list_item_title_2"
+            style="@style/ListItemHeaderTextView.Title"
+            android:layout_width="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:textAlignment="textEnd"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="$20.00" />
+
+
+        <LinearLayout
+            android:id="@+id/button_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/list_item_title_2"
+            tools:visibility="visible">
+
+            <ImageButton
+                android:id="@+id/list_item_btn_delete"
+                style="@style/ListItemButton"
+                android:contentDescription="@string/content_desc_remove"
+                android:elevation="1dp"
+                android:src="@drawable/ic_action_delete" />
+
+            <ImageButton
+                android:id="@+id/list_item_btn_edit"
+                style="@style/ListItemButton"
+                android:contentDescription="@string/content_desc_edit_button"
+                android:src="@drawable/ic_action_edit" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

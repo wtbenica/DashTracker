@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,6 +46,7 @@
                         android:text="@string/lbl_pay" />
 
                     <TextView
+                        android:id="@+id/label_base_pay_adjust"
                         style="@style/PayTableHeaderStyle"
                         android:text="@string/lbl_adjust" />
 
@@ -103,6 +103,50 @@
                     android:id="@+id/list_item_weekly_hours"
                     style="@style/ValueStyle"
                     tools:text="2.93h" />
+            </TableRow>
+
+            <TableRow style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
+                    android:layout_span="2"
+                    android:layout_weight="1"
+                    android:text="@string/header_mileage" />
+
+                <TextView
+                    android:id="@+id/list_item_weekly_miles"
+                    style="@style/ValueStyle"
+                    tools:text="380" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/list_item_weekly_cpm_row"
+                style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
+                    android:text="@string/lbl_cost_per_mile" />
+
+                <TextView
+                    android:id="@+id/list_item_weekly_cpm"
+                    style="@style/ValueStyle"
+                    android:layout_weight="1"
+                    tools:text="$0.18" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/list_item_weekly_net_row"
+                style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
+                    android:text="@string/lbl_net_earnings" />
+
+                <TextView
+                    android:id="@+id/list_item_weekly_net"
+                    style="@style/ValueStyle"
+                    android:layout_weight="1"
+                    tools:text="$56.18" />
             </TableRow>
 
             <TableRow style="@style/DetailsRow">

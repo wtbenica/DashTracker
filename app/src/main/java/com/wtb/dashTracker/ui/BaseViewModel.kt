@@ -16,20 +16,18 @@
 
 package com.wtb.dashTracker.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-abstract class BaseViewModel<T: DataModel>: ViewModel() {
+abstract class BaseViewModel<T : DataModel> : ViewModel() {
     protected val repository = Repository.get()
 
     private val _id = MutableStateFlow(AUTO_ID)
@@ -48,23 +46,36 @@ abstract class BaseViewModel<T: DataModel>: ViewModel() {
     abstract fun getItemFlowById(id: Int): Flow<T?>
 
     fun loadDataModel(id: Int?) {
+        Log.d(TAG, "loadDataModel: Loading $id")
         _id.value = id ?: AUTO_ID
     }
 
     fun insert(dataModel: DataModel) = repository.saveModel(dataModel)
 
-    fun upsert(dataModel: DataModel) {
+    fun upsert(dataModel: DataModel, loadItem: Boolean = true) {
         CoroutineScope(Dispatchers.Default).launch {
             val id = repository.upsertModel(dataModel)
-            if (id != -1L) {
+            if (id != -1L && loadItem) {
+                Log.d(TAG, "upsert: id: $id ${dataModel::class}")
                 _id.value = id.toInt()
             }
         }
     }
 
+    suspend fun upsertAsync(dataModel: DataModel, loadItem: Boolean = true): Long =
+        withContext(Dispatchers.Default) {
+            val id = repository.upsertModel(dataModel)
+            if (id != -1L && loadItem) {
+                Log.d(TAG, "upsertAsync: id: $id ${dataModel::class}")
+                _id.value = id.toInt()
+            }
+            id
+        }
+
     fun delete(dataModel: DataModel) = repository.deleteModel(dataModel)
 
     fun clearEntry() {
+        Log.d(TAG, "clearEntry")
         _id.value = AUTO_ID
     }
 

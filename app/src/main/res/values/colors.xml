@@ -18,8 +18,8 @@
 <resources>
     <color name="brick_dark">#567</color>
     <color name="brick">#789</color>
-    <color name="brick_light">#ABC</color>
-    <color name="brick_faded">#CDE</color>
+    <color name="brick_light">#E0F0FF</color>
+    <color name="brick_faded">#F0F8FF</color>
     <color name="on_brick">#FEFEFE</color>
     <color name="on_brick_light">#F0F0F0</color>
 
@@ -30,7 +30,7 @@
     <color name="light">#D0F8C0</color>
     <color name="faded">#F0FFE0</color>
     <color name="on_regular">#454549</color>
-    <color name="on_regular_light">#67676B</color>
+    <color name="on_regular_light">#585860</color>
 
     <color name="daytime_solid">#F8F890</color>
     <color name="daytime_light">#FFFFB8</color>

@@ -26,7 +26,7 @@
     </style>
 
     <!-- Licenses Activities Theme -->
-    <style name="LicensesActivitiesBase" parent="Theme.AppCompat.DayNight">
+    <style name="LicensesActivitiesBase" parent="Theme.Material3.DayNight">
         <item name="actionBarStyle">@style/ActionBarStyle</item>
         <item name="colorUi">@color/dark</item>
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
@@ -41,7 +41,7 @@
     </style>
 
     <!-- Base application theme. -->
-    <style name="Base" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="Base" parent="Theme.Material3.DayNight">
         <!-- Primary brand color. -->
         <item name="colorPrimaryDark">@color/dark</item>
         <item name="colorPrimary">@color/regular</item>
@@ -59,21 +59,24 @@
         <item name="colorOnSecondaryVariant">@color/on_brick_light</item>
 
         <item name="colorAccent">@color/accent</item>
+        <item name="colorAlert">@color/alert</item>
 
         <item name="defaultCornerRadius">@dimen/margin_half</item>
 
-        <!-- Text -->
-        <item name="android:fontFamily">@font/lalezar</item>
-        <item name="titleFontFamily">@font/lalezar</item>
-
+        <!-- View Styles -->
         <item name="android:actionBarWidgetTheme">@style/WidgetTheme</item>
         <item name="actionBarStyle">@style/ActionBarStyle</item>
         <item name="actionOverflowButtonStyle">@style/ActionBarOverflowButtonStyle</item>
         <item name="cardViewStyle">@style/CardViewStyle</item>
         <item name="actionOverflowMenuStyle">@style/ActionBarOverflowMenuStyle</item>
+        <item name="chipStyle">@style/ChipStyle</item>
 
         <item name="android:datePickerDialogTheme">@style/MyDatePickerStyle</item>
         <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
+
+        <!-- Text -->
+        <item name="android:fontFamily">@font/lalezar</item>
+        <item name="titleFontFamily">@font/lalezar</item>
 
         <!-- activity_main -->
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
@@ -90,6 +93,8 @@
         <item name="textSizeItemSecondaryValue">@dimen/text_size_med</item>
         <item name="listItemCornerRadius">?attr/defaultCornerRadius</item>
         <item name="listItemThinBorder">@dimen/margin_half</item>
+        <item name="dimenListItemMarginHorizontal">@dimen/margin_default</item>
+        <item name="dimenListItemMarginVertical">@dimen/margin_half</item>
 
         <!-- insights row -->
         <item name="insightsRowCornerRadius">?attr/defaultCornerRadius</item>
@@ -101,7 +106,7 @@
 
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorUIBackground">?attr/colorOnSecondaryVariant</item>
+        <item name="colorUIBackground">?attr/colorOnSecondary</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
@@ -123,22 +128,33 @@
         <item name="colorOnSurface">@color/primary_text_color</item>
 
         <!-- activity_main.xml -->
-        <item name="colorActionBarText">@color/primary_text_color</item>
+        <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorToolbar">?attr/colorPrimaryVariant</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorFab">?attr/colorAccent</item>
-        <item name="colorFabDisabled">?attr/colorSecondaryVariant</item>
+        <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
-        <item name="colorBottomNavItem">@color/bottom_nav_text_color</item>
+        <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
+        <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
         <item name="colorBottomNavEnabled">?attr/colorOnPrimary</item>
-        <item name="colorBottomNavDisabled">?attr/colorPrimary</item>
+        <item name="colorBottomNavTextEnabled">?attr/colorOnPrimary</item>
+        <item name="colorBottomNavDisabled">?attr/colorPrimaryVariant</item>
+        <item name="colorBottomNavTextDisabled">?attr/colorPrimaryVariant</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorPrimary</item>
         <item name="colorPopupBackground">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
+        <!-- fragment_income -->
+        <item name="colorTabIndicator">?attr/colorPrimary</item>
+        <item name="colorTabText">?attr/colorTextPrimary</item>
+        <item name="colorGroupButton">?attr/colorPrimaryVariant</item>
+        <item name="colorGroupButtonDisabled">?attr/colorOnSecondary</item>
+        <item name="colorGroupStroke">?attr/colorPrimaryDark</item>
+        <item name="colorOptionsMenu">?attr/colorPrimary</item>
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>
-        <item name="colorListItemExpanded">?attr/colorPrimary</item>
+        <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
@@ -163,8 +179,9 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryDark</item>
+        <item name="colorDialogSecondary">?attr/colorPrimary</item>
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
-        <item name="colorDialogText">?attr/colorTextPrimary</item>
+        <item name="colorDialogText">?android:attr/textColorPrimary</item>
         <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorDialogContentBg</item>

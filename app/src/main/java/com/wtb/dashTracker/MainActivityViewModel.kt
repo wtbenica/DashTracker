@@ -21,14 +21,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wtb.dashTracker.database.models.CompleteWeekly
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.Weekly
+import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.Repository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
@@ -71,13 +71,24 @@ class MainActivityViewModel : ViewModel() {
     fun export(ctx: Context) = repository.export(ctx)
 
     fun import(ctx: Context) = repository.import(ctx)
-    fun importStream(entries: List<DashEntry>? = null, weeklies: List<Weekly>? = null) {
-        repository.importStream(entries, weeklies)
+
+    fun importStream(
+        entries: List<DashEntry>? = null,
+        weeklies: List<Weekly>? = null,
+        expenses: List<Expense>? = null,
+        purposes: List<ExpensePurpose>? = null
+    ) {
+        repository.importStream(entries, weeklies, expenses, purposes)
     }
+
+    suspend fun upsertAsync(dataModel: DataModel): Long =
+        withContext(Dispatchers.Default) {
+            repository.upsertModel(dataModel)
+        }
 
     companion object {
 
-        fun getHourlyFromWeeklies(list: List<CompleteWeekly>): Float {
+        fun getHourlyFromWeeklies(list: List<FullWeekly>): Float {
             return if (list.isNotEmpty()) {
                 val hours = list.map { w -> w.hours }.reduce { acc, fl -> acc + fl }
                 val pay = list.map { w -> w.pay }.reduce { acc, fl -> acc + fl }

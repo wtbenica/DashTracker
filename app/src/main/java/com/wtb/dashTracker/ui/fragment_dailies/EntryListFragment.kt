@@ -1,0 +1,270 @@
+/*
+ * Copyright 2022 Wesley T. Benica
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.wtb.dashTracker.ui.fragment_dailies
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.wtb.dashTracker.DeductionCallback
+import com.wtb.dashTracker.MainActivity
+import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.databinding.ListItemEntryBinding
+import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
+import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
+import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
+import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
+
+@ExperimentalCoroutinesApi
+class EntryListFragment : Fragment() {
+
+    private val viewModel: EntryListViewModel by viewModels()
+
+    private var callback: IncomeFragment.IncomeFragmentCallback? = null
+
+    private lateinit var recyclerView: RecyclerView
+    private var deductionType: DeductionType = DeductionType.NONE
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = context as IncomeFragment.IncomeFragmentCallback
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val view = inflater.inflate(R.layout.frag_item_list, container, false)
+
+        recyclerView = view.findViewById(R.id.item_list_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        setDialogListeners()
+
+        return view
+    }
+
+    private fun setDialogListeners() {
+        setFragmentResultListener(
+            ConfirmType.DELETE.key
+        ) { _, bundle ->
+            val result = bundle.getBoolean(ARG_CONFIRM)
+            val id = bundle.getInt(ARG_EXTRA)
+            if (result) {
+                viewModel.deleteEntryById(id)
+            }
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val entryAdapter = EntryAdapter().apply {
+            registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    recyclerView.scrollToPosition(positionStart)
+                }
+            })
+        }
+        recyclerView.adapter = entryAdapter
+
+        callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
+            deductionType = it
+            entryAdapter.notifyDataSetChanged()
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.entryList.collectLatest {
+                    entryAdapter.submitData(it)
+                }
+            }
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callback = null
+    }
+
+    interface EntryListFragmentCallback : DeductionCallback
+
+    inner class EntryAdapter : BaseItemAdapter<DashEntry>(DIFF_CALLBACK) {
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<DashEntry> =
+            EntryHolder(parent)
+
+        inner class EntryHolder(parent: ViewGroup) : BaseItemHolder<DashEntry>(
+            LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
+        ) {
+            private val binding = ListItemEntryBinding.bind(itemView)
+            private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
+
+            override val collapseArea: ConstraintLayout
+                get() = binding.listItemDetails
+            override val backgroundArea: LinearLayout
+                get() = binding.listItemWrapper
+
+            init {
+                itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
+                    setOnClickListener {
+                        EntryDialog.newInstance(this@EntryHolder.item.entryId).show(
+                            parentFragmentManager,
+                            "edit_details"
+                        )
+                    }
+                }
+
+                itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
+                    setOnClickListener {
+                        ConfirmDeleteDialog.newInstance(confirmId = this@EntryHolder.item.entryId)
+                            .show(parentFragmentManager, null)
+                    }
+                }
+            }
+
+            override fun bind(item: DashEntry, payloads: MutableList<Any>?) {
+                fun showExpenseFields() {
+                    binding.listItemSubtitle2Label.visibility = VISIBLE
+                    binding.listItemSubtitle2.visibility = VISIBLE
+                    detailsBinding.listItemEntryCpmRow.visibility = VISIBLE
+                    detailsBinding.listItemEntryNetRow.visibility = VISIBLE
+                }
+
+                fun hideExpenseFields() {
+                    binding.listItemSubtitle2Label.visibility = GONE
+                    binding.listItemSubtitle2.visibility = GONE
+                    detailsBinding.listItemEntryCpmRow.visibility = GONE
+                    detailsBinding.listItemEntryNetRow.visibility = GONE
+                }
+
+                this.item = item
+
+                CoroutineScope(Dispatchers.Default).launch {
+                    withContext(Dispatchers.Default) {
+                        viewModel.getCostPerMile(item.date, deductionType)
+                    }.let { cpm: Float? ->
+                        val costPerMile = cpm ?: 0f
+                        (context as MainActivity).runOnUiThread {
+                            when (deductionType) {
+                                DeductionType.NONE -> hideExpenseFields()
+                                else -> {
+                                    showExpenseFields()
+
+                                    binding.listItemSubtitle2Label.text = deductionType.fullDesc
+
+                                    binding.listItemSubtitle2.text = getCurrencyString(
+                                        this@EntryHolder.item.getExpenses(costPerMile)
+                                    )
+
+                                    detailsBinding.listItemEntryCpm.text = getCpmString(costPerMile)
+
+                                    detailsBinding.listItemEntryNet.text =
+                                        getCurrencyString(this@EntryHolder.item.getNet(costPerMile))
+
+                                    detailsBinding.listItemEntryHourly.text = getCurrencyString(
+                                        this@EntryHolder.item.getHourly(costPerMile)
+                                    )
+
+                                    detailsBinding.listItemEntryAvgDel.text = getCurrencyString(
+                                        this@EntryHolder.item.getAvgDelivery(costPerMile)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                binding.listItemTitle.text = this.item.date.formatted.uppercase()
+                binding.listItemTitle2.text = getCurrencyString(this.item.totalEarned)
+                binding.listItemSubtitle.text =
+                    getHoursRangeString(this.item.startTime, this.item.endTime)
+                binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.item.isIncomplete)
+
+                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.pay)
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
+                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
+                detailsBinding.listItemAlertHours.setVisibleIfTrue(
+                    this.item.startTime == null || this.item.endTime == null
+                )
+                detailsBinding.listItemEntryHours.text =
+                    getStringOrElse(R.string.float_fmt, "-", this.item.totalHours)
+                detailsBinding.listItemEntryMileageRange.text =
+                    getOdometerRangeString(this.item.startOdometer, this.item.endOdometer)
+                detailsBinding.listItemEntryMileage.text = "${this.item.mileage ?: "-"}"
+                detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.mileage == null)
+                detailsBinding.listItemEntryNumDeliveries.text =
+                    "${this.item.numDeliveries ?: "-"}"
+                detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.item.numDeliveries == null)
+                detailsBinding.listItemEntryHourly.text =
+                    getCurrencyString(this.item.hourly)
+                detailsBinding.listItemEntryAvgDel.text =
+                    getCurrencyString(this.item.avgDelivery)
+                detailsBinding.listItemEntryHourlyDels.text =
+                    getFloatString(this.item.hourlyDeliveries)
+
+                setPayloadVisibility(payloads)
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG = APP + "EntryListFragment"
+
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
+            override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =
+                oldItem.entryId == newItem.entryId
+
+
+            override fun areContentsTheSame(
+                oldItem: DashEntry,
+                newItem: DashEntry
+            ): Boolean =
+                oldItem == newItem
+        }
+
+        fun toVisibleIfTrueElseGone(boolean: Boolean) = if (boolean) VISIBLE else GONE
+    }
+}

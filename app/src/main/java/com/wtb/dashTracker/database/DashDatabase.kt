@@ -17,28 +17,32 @@
 package com.wtb.dashTracker.database
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.wtb.dashTracker.database.daos.DashEntryDao
-import com.wtb.dashTracker.database.daos.WeeklyDao
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.Weekly
+import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.wtb.dashTracker.database.daos.*
+import com.wtb.dashTracker.database.models.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.Executors
 
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 1,
-    entities = [DashEntry::class, Weekly::class],
+    version = 3,
+    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class, StandardMileageDeduction::class],
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
+    ],
     exportSchema = true,
 )
 @TypeConverters(DbTypeConverters::class)
 abstract class DashDatabase : RoomDatabase() {
     abstract fun entryDao(): DashEntryDao
     abstract fun weeklyDao(): WeeklyDao
+    abstract fun expenseDao(): ExpenseDao
+    abstract fun expensePurposeDao(): ExpensePurposeDao
+    abstract fun standardMileageDeductionDao(): StandardMileageDeductionDao
+    abstract fun transactionDao(): TransactionDao
 
     companion object {
         @Volatile
@@ -54,10 +58,42 @@ abstract class DashDatabase : RoomDatabase() {
                     DashDatabase::class.java,
                     DATABASE_NAME
                 )
+                    .addMigrations()
+                    .addCallback(
+                        object : RoomDatabase.Callback() {
+                            override fun onCreate(db: SupportSQLiteDatabase) {
+                                super.onCreate(db)
+
+                                val purposes = Purpose.values().map { purpose ->
+                                    ExpensePurpose(purpose.id, purpose.purposeName)
+                                }
+
+                                val standardDeductions =
+                                    StandardMileageDeduction.STANDARD_DEDUCTIONS.map {
+                                        StandardMileageDeduction(it.key, it.value)
+                                    }
+
+                                Executors.newSingleThreadScheduledExecutor().execute {
+                                    getInstance(context).apply {
+                                        expensePurposeDao().upsertAll(purposes)
+                                        standardMileageDeductionDao().upsertAll(standardDeductions)
+                                    }
+
+                                }
+                            }
+                        }
+                    )
                     .build().also {
                         INSTANCE = it
                     }
             }
         }
+//
+//        @DeleteColumn(
+//            tableName = "GasExpense",
+//            columnName = "numGallons"
+//        )
+//        class AutoMigration_2_3 : AutoMigrationSpec
     }
 }
+

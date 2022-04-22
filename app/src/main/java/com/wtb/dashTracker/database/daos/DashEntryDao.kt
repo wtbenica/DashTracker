@@ -23,6 +23,7 @@ import androidx.room.RawQuery
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Expense
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -31,7 +32,7 @@ import java.time.LocalDate
 @Dao
 abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @Query(SQL_GET_ALL)
-    abstract fun getAll(): Flow<List<DashEntry>>
+    abstract override fun getAll(): Flow<List<DashEntry>>
 
     @Query(SQL_GET_ALL)
     abstract suspend fun getAllSuspend(): List<DashEntry>
@@ -69,15 +70,18 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
         endDate: LocalDate = LocalDate.MAX
     ): PagingSource<Int, DashEntry>
 
+    @RawQuery(observedEntities = [Expense::class, DashEntry::class])
+    abstract suspend fun getFloatByQuery(query: SupportSQLiteQuery): Float
+
     companion object {
         private const val SQL_GET_ALL =
-            """SELECT * FROM DashEntry 
-            ORDER BY date desc, startTime desc"""
+            """SELECT * FROM DashEntry
+                ORDER BY date desc, startTime desc"""
 
         private const val SQL_GET_BY_DATE =
-            """SELECT * FROM DashEntry 
-            WHERE date >= :startDate 
-            AND date <= :endDate 
-            ORDER BY date desc, startTime desc"""
+            """SELECT * FROM DashEntry
+                WHERE date >= :startDate
+                AND date <= :endDate
+                ORDER BY date desc, startTime desc"""
     }
 }

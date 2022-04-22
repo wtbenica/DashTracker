@@ -48,6 +48,10 @@
         <item name="android:paddingVertical">@dimen/margin_half</item>
     </style>
 
+    <style name="PayTable.Gas">
+        <item name="android:background">?attr/colorOnSecondary</item>
+    </style>
+
     <style name="PayTableHeaderStyle">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>

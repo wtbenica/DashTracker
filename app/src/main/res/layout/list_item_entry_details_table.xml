@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,6 +123,36 @@
                     tools:text="41mi" />
             </TableRow>
 
+            <TableRow
+                android:id="@+id/list_item_entry_cpm_row"
+                style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
+                    android:text="@string/lbl_cost_per_mile" />
+
+                <TextView
+                    android:id="@+id/list_item_entry_cpm"
+                    style="@style/ValueStyle"
+                    android:layout_weight="1"
+                    tools:text="$0.18" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/list_item_entry_net_row"
+                style="@style/DetailsRow">
+
+                <TextView
+                    style="@style/HeaderStyle"
+                    android:text="@string/lbl_net_earnings" />
+
+                <TextView
+                    android:id="@+id/list_item_entry_net"
+                    style="@style/ValueStyle"
+                    android:layout_weight="1"
+                    tools:text="$56.93" />
+            </TableRow>
+
             <TableRow style="@style/DetailsRow">
 
                 <TextView
@@ -166,7 +195,7 @@
                     android:text="@string/units_avg_delivery" />
 
                 <TextView
-                    android:id="@+id/list_item_entry_avd_del"
+                    android:id="@+id/list_item_entry_avg_del"
                     style="@style/ValueStyle"
                     tools:text="$9.25" />
             </TableRow>
