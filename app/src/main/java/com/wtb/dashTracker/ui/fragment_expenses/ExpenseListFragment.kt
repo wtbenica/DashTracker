@@ -119,10 +119,11 @@ class ExpenseListFragment : Fragment() {
     inner class ExpenseAdapter : BaseItemAdapter<FullExpense>(
         DIFF_CALLBACK
     ) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullExpense> = when (viewType) {
-            0 -> GasExpenseHolder(parent)
-            else -> OtherExpenseHolder(parent)
-        }
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullExpense> =
+            when (viewType) {
+                0 -> GasExpenseHolder(parent)
+                else -> OtherExpenseHolder(parent)
+            }
 
         override fun getItemViewType(position: Int): Int =
             when (getItem(position)?.purpose?.purposeId) {

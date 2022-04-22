@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_default"
-            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginTop="@dimen/margin_default"
             android:columnCount="2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -61,7 +61,7 @@
 
             <androidx.legacy.widget.Space
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/margin_half"
+                android:layout_height="@dimen/margin_default"
                 android:layout_columnSpan="2" />
         </GridLayout>
 
@@ -70,7 +70,7 @@
             style="@style/ListItemHeaderTextView.Title"
             android:layout_width="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginTop="@dimen/margin_default"
             android:layout_marginEnd="@dimen/margin_default"
             android:textAlignment="textEnd"
             app:layout_constraintEnd_toEndOf="parent"
@@ -83,6 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/list_item_title_2"
             tools:visibility="visible">
