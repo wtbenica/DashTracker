@@ -180,12 +180,11 @@ class EntryListFragment : Fragment() {
             override fun onClick(v: View?) {
                 if (detailsTable.visibility == VISIBLE) {
                     detailsTable.collapse()
-                    binding.listItemWrapper.setBackgroundResource(R.drawable.bg_list_item)
-                    bindingAdapter?.notifyItemChanged(bindingAdapterPosition, GONE)
+                    binding.listItemWrapper.transitionBackground(R.attr.colorListItemExpanded, R.attr.colorListItem)
+
                 } else {
                     detailsTable.expand()
-                    binding.listItemWrapper.setBackgroundResource(R.drawable.bg_list_item_expanded)
-                    bindingAdapter?.notifyItemChanged(bindingAdapterPosition, VISIBLE)
+                    binding.listItemWrapper.transitionBackground(R.attr.colorListItem, R.attr.colorListItemExpanded)
                 }
             }
 

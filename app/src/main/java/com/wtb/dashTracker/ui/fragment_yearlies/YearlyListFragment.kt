@@ -24,6 +24,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -42,8 +43,7 @@ import com.wtb.dashTracker.database.models.CompleteWeekly
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.getMileageString
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
@@ -175,25 +175,26 @@ class YearlyListFragment : Fragment() {
         LayoutInflater.from(parent.context).inflate(R.layout.list_item_yearly, parent, false)
     ),
         View.OnClickListener {
+        private lateinit var yearly: Yearly
+
         private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
         private val detailsBinding: ListItemYearlyDetailsTableBinding =
             ListItemYearlyDetailsTableBinding.bind(itemView)
-        private lateinit var yearly: Yearly
+        private val detailsTable: ConstraintLayout = binding.listItemDetails
 
         init {
             itemView.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {
-            val currentVisibility = binding.listItemDetails.visibility
-            binding.listItemDetails.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-            binding.listItemWrapper.setBackgroundResource(
-                if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded
-            )
-            bindingAdapter?.notifyItemChanged(
-                bindingAdapterPosition,
-                binding.listItemDetails.visibility
-            )
+            if (detailsTable.visibility == VISIBLE) {
+                detailsTable.collapse()
+                binding.listItemWrapper.transitionBackground(R.attr.colorListItemExpanded, R.attr.colorListItem)
+
+            } else {
+                detailsTable.expand()
+                binding.listItemWrapper.transitionBackground(R.attr.colorListItem, R.attr.colorListItemExpanded)
+            }
         }
 
         fun bind(item: Yearly, payloads: MutableList<Any>? = null) {
@@ -229,7 +230,7 @@ class YearlyListFragment : Fragment() {
                                 binding.listItemSubtitle2.text =
                                     getCurrencyString(yearly.getExpenses(costPerMile))
 
-                                detailsBinding.listItemYearlyCpm.text = getCurrencyString(costPerMile)
+                                detailsBinding.listItemYearlyCpm.text = getCpmString(costPerMile)
 
                                 detailsBinding.listItemYearlyNet.text =
                                     getCurrencyString(this@YearlyHolder.yearly.getNet(costPerMile))

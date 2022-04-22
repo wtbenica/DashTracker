@@ -24,33 +24,46 @@
         android:id="@+id/list_item_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
         android:background="@drawable/bg_list_item"
         tools:background="@drawable/bg_list_item_expanded">
 
-        <TextView
-            android:id="@+id/list_item_title"
-            style="@style/ListItemHeaderTextView.Title"
-            android:layout_marginStart="@dimen/margin_default"
-            android:layout_marginTop="@dimen/margin_half"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="NOV 21, 2021" />
-
-        <ImageView
-            android:id="@+id/list_item_recurring"
+        <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_half"
-            android:contentDescription="@string/content_desc_recurring_expense"
-            android:padding="@dimen/margin_narrow"
-            android:src="@drawable/ic_recurring"
-            android:visibility="gone"
-            tools:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@id/list_item_title"
-            app:layout_constraintStart_toEndOf="@id/list_item_title"
-            app:layout_constraintTop_toTopOf="@id/list_item_title"
-            app:tint="?attr/colorListItemTitle" />
+            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_half"
+            android:columnCount="2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/list_item_title"
+                style="@style/ListItemHeaderTextView.Title"
+                tools:text="NOV 21, 2021" />
+
+            <ImageView
+                android:id="@+id/list_item_recurring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/content_desc_recurring_expense"
+                android:src="@drawable/ic_recurring"
+                android:visibility="gone"
+                app:tint="?attr/colorListItemTitle"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/list_item_subtitle"
+                style="@style/ListItemHeaderTextView.Subtitle"
+                android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:gravity="bottom"
+                android:text="@string/lbl_other" />
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/margin_half"
+                android:layout_columnSpan="2" />
+        </GridLayout>
 
         <TextView
             android:id="@+id/list_item_title_2"
@@ -64,16 +77,6 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="$20.00" />
 
-        <TextView
-            android:id="@+id/list_item_subtitle"
-            style="@style/ListItemHeaderTextView.Subtitle"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_default"
-            android:layout_marginBottom="8dp"
-            android:gravity="bottom"
-            android:text="@string/lbl_other"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/list_item_title" />
 
         <LinearLayout
             android:id="@+id/button_box"

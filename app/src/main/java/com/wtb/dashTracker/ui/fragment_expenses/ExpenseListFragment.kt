@@ -20,7 +20,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -41,8 +40,7 @@ import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.ListItemExpenseBinding
 import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
-import com.wtb.dashTracker.extensions.formatted
-import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
@@ -180,37 +178,48 @@ class ExpenseListFragment : Fragment() {
             }
 
             override fun onClick(v: View?) {
-                val currentVisibility = detailsTable.visibility
-                detailsTable.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-                binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
-                bindingAdapter?.notifyItemChanged(bindingAdapterPosition, detailsTable.visibility)
+                if (detailsTable.visibility == VISIBLE) {
+                    detailsTable.collapse()
+                    binding.listItemWrapper.transitionBackground(
+                        R.attr.colorListItemExpanded,
+                        R.attr.colorListItem
+                    )
+
+                } else {
+                    detailsTable.expand()
+                    binding.listItemWrapper.transitionBackground(
+                        R.attr.colorListItem,
+                        R.attr.colorListItemExpanded
+                    )
+                }
             }
 
             override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
                 this.expense = item
 
-                val detailsTableIsVisibile = (payloads?.let {
-                    if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) it[0] else null
-                } ?: GONE) == VISIBLE
-
-                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
+//                val detailsTableIsVisibile = (payloads?.let {
+//                    if (it.size == 1 && it[0] in listOf(VISIBLE, GONE)) it[0] else null
+//                } ?: GONE) == VISIBLE
+//
+//                if (detailsTableIsVisibile && !detailsTable.isVisible) {
+//                    detailsTable.expand()
+//                    binding.listItemWrapper.transitionBackground(R.attr.colorListItem, R.attr.colorListItemExpanded)
+//                }
+//
+//                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
 
                 binding.listItemTitle.text = this.expense.expense.date.formatted.uppercase()
                 binding.listItemTitle2.text =
                     getStringOrElse(R.string.currency_unit, "-", this.expense.expense.amount)
                 binding.listItemSubtitle.text = this.expense.purpose.name
-                binding.listItemDetailsCard.visibility =
-                    if (expense.purpose.purposeId == GAS.id) VISIBLE else GONE
-                if (expense.purpose.purposeId == GAS.id) {
-                    binding.listItemPrice.text =
-                        getStringOrElse(
-                            R.string.currency_unit,
-                            "-",
-                            this.expense.expense.pricePerGal
-                        )
-                    binding.listItemGallons.text =
-                        getStringOrElse(R.string.float_fmt, "-", this.expense.expense.gallons)
-                }
+                binding.listItemPrice.text =
+                    getStringOrElse(
+                        R.string.currency_unit,
+                        "-",
+                        this.expense.expense.pricePerGal
+                    )
+                binding.listItemGallons.text =
+                    getStringOrElse(R.string.float_fmt, "-", this.expense.expense.gallons)
             }
         }
 
@@ -244,24 +253,37 @@ class ExpenseListFragment : Fragment() {
             }
 
             override fun onClick(v: View?) {
-                val currentVisibility = buttonBox.visibility
-                buttonBox.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-                binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
-                bindingAdapter?.notifyItemChanged(bindingAdapterPosition, buttonBox.visibility)
+                if (buttonBox.visibility == VISIBLE) {
+                    buttonBox.collapse()
+                    binding.listItemWrapper.transitionBackground(
+                        R.attr.colorListItemExpanded,
+                        R.attr.colorListItem
+                    )
+                } else {
+                    buttonBox.expand()
+                    binding.listItemWrapper.transitionBackground(
+                        R.attr.colorListItem,
+                        R.attr.colorListItemExpanded
+                    )
+                }
+//                val currentVisibility = buttonBox.visibility
+//                buttonBox.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
+//                binding.listItemWrapper.setBackgroundResource(if (currentVisibility == VISIBLE) R.drawable.bg_list_item else R.drawable.bg_list_item_expanded)
+//                bindingAdapter?.notifyItemChanged(bindingAdapterPosition, buttonBox.visibility)
             }
 
             override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
                 this.expense = item
 
-                val detailsTableIsVisibile = (payloads?.let {
-                    if (it.size == 1 && it[0] in listOf(
-                            VISIBLE,
-                            GONE
-                        )
-                    ) it[0] else null
-                } ?: GONE) == VISIBLE
-
-                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
+//                val detailsTableIsVisibile = (payloads?.let {
+//                    if (it.size == 1 && it[0] in listOf(
+//                            VISIBLE,
+//                            GONE
+//                        )
+//                    ) it[0] else null
+//                } ?: GONE) == VISIBLE
+//
+//                binding.listItemWrapper.setBackgroundResource(if (detailsTableIsVisibile) R.drawable.bg_list_item_expanded else R.drawable.bg_list_item)
 
                 binding.listItemTitle.text = this.expense.expense.date.formatted.uppercase()
                 binding.listItemTitle2.text =

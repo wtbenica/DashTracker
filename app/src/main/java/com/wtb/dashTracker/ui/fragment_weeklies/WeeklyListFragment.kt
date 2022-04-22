@@ -25,6 +25,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -133,10 +134,12 @@ class WeeklyListFragment : Fragment() {
     inner class WeeklyHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.list_item_weekly, parent, false)
     ), View.OnClickListener {
+        private lateinit var compWeekly: CompleteWeekly
+
         private val binding: ListItemWeeklyBinding = ListItemWeeklyBinding.bind(itemView)
         private val detailsBinding: ListItemWeeklyDetailsTableBinding =
             ListItemWeeklyDetailsTableBinding.bind(itemView)
-        private lateinit var compWeekly: CompleteWeekly
+        private val detailsTable: ConstraintLayout = binding.listItemDetails
 
         init {
             itemView.setOnClickListener(this)
@@ -150,19 +153,14 @@ class WeeklyListFragment : Fragment() {
         }
 
         override fun onClick(v: View?) {
-            val currentVisibility = binding.listItemDetails.visibility
-            binding.listItemDetails.visibility = if (currentVisibility == VISIBLE) GONE else VISIBLE
-            binding.listItemWrapper.setBackgroundResource(
-                if (currentVisibility == VISIBLE) {
-                    R.drawable.bg_list_item
-                } else {
-                    R.drawable.bg_list_item_expanded
-                }
-            )
-            bindingAdapter?.notifyItemChanged(
-                bindingAdapterPosition,
-                binding.listItemDetails.visibility
-            )
+            if (detailsTable.visibility == VISIBLE) {
+                detailsTable.collapse()
+                binding.listItemWrapper.transitionBackground(R.attr.colorListItemExpanded, R.attr.colorListItem)
+
+            } else {
+                detailsTable.expand()
+                binding.listItemWrapper.transitionBackground(R.attr.colorListItem, R.attr.colorListItemExpanded)
+            }
         }
 
         fun bind(item: CompleteWeekly, payloads: MutableList<Any>? = null) {

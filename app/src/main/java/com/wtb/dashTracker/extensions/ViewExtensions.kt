@@ -16,6 +16,9 @@
 
 package com.wtb.dashTracker.extensions
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
@@ -23,7 +26,10 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.animation.Animation
 import android.view.animation.Transformation
+import androidx.annotation.AttrRes
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.MaterialColors
+import com.wtb.dashTracker.MainActivity.Companion.APP
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     val x = ev?.x?.toInt()
@@ -41,7 +47,7 @@ fun View.setVisibleIfTrue(boolean: Boolean) {
     visibility = if (boolean) VISIBLE else GONE
 }
 
-fun View.expand() {
+fun View.expand(onComplete: (() -> Unit)? = null) {
     val matchParentMeasureSpec =
         View.MeasureSpec.makeMeasureSpec((parent as View).width, View.MeasureSpec.EXACTLY)
     val wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
@@ -56,6 +62,7 @@ fun View.expand() {
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             layoutParams.height = if (interpolatedTime >= 1f) {
+                onComplete?.invoke()
                 WRAP_CONTENT
             } else {
                 (targetHeight * interpolatedTime).toInt()
@@ -69,12 +76,13 @@ fun View.expand() {
     startAnimation(animation)
 }
 
-fun View.collapse() {
+fun View.collapse(onComplete: (() -> Unit)? = null) {
     val initHeight = measuredHeight
 
     val animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             layoutParams.height = if (interpolatedTime >= 1f) {
+                onComplete?.invoke()
                 visibility = GONE
                 0
             } else {
@@ -91,10 +99,29 @@ fun View.collapse() {
     startAnimation(animation)
 }
 
+fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
+    val initHeight = measuredHeight
+
+    val colorFrom = MaterialColors.getColor(this, from)
+    val colorTo = MaterialColors.getColor(this, to)
+    val colorAnimation: ValueAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+    colorAnimation.duration = (initHeight / context.resources.displayMetrics.density).toLong()
+
+    colorAnimation.addUpdateListener {
+        if (it.animatedValue is Int) {
+            val color = it.animatedValue as Int
+            Log.d(APP + "ViewExtensions", "Color: $color")
+            setBackgroundColor(color)
+        }
+    }
+
+    colorAnimation.start()
+}
+
 fun MaterialButton.rotateDown() {
     val initRotation = rotation
 
-    val animation = object: Animation() {
+    val animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             rotation = if (interpolatedTime == 1f) {
                 0f
@@ -112,7 +139,7 @@ fun MaterialButton.rotateDown() {
 fun MaterialButton.rotateUp() {
     val initRotation = rotation
 
-    val animation = object: Animation() {
+    val animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             rotation = if (interpolatedTime == 1f) {
                 180f
