@@ -39,7 +39,7 @@ data class Weekly(
         get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toInt()
 
     val isIncomplete: Boolean
-        get() = basePayAdjustment == null
+        get() = basePayAdjustment == null || basePayAdjustment == 0f
 
     companion object : CSVConvertible<Weekly> {
         private enum class Columns(val headerName: String) {
@@ -77,9 +77,9 @@ data class FullWeekly(
 
     @Relation(parentColumn = "date", entityColumn = "week")
     val entries: List<DashEntry>
-): ListItemType {
+) : ListItemType {
     val isEmpty: Boolean
-        get() = entries.isEmpty() && weekly.isIncomplete && !weekly.isNew
+        get() = entries.isEmpty() || (weekly.isIncomplete && !weekly.isNew)
 
     internal val hours: Float
         get() = getTotalForWeek(DashEntry::totalHours)

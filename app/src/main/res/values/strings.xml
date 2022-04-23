@@ -147,4 +147,6 @@
     <string name="expense_purpose_standard">IRS Rate</string>
     <string name="dummy_text_label">Lorem ipso</string>
     <string name="lbl_net_earnings">Net earnings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
