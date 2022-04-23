@@ -41,7 +41,7 @@ fun <T> List<T>.toStringList(): String {
 abstract class TransactionDao {
 
     @RawQuery(observedEntities = [Expense::class, DashEntry::class])
-    abstract suspend fun getFloatByQuery(query: SupportSQLiteQuery): Float
+    abstract suspend fun getFloatByQuery(query: SupportSQLiteQuery): Float?
 
     private suspend fun getCpm(
         startDate: LocalDate? = null,
@@ -65,8 +65,13 @@ abstract class TransactionDao {
                                 AND startOdometer != 0)"""
         )
 
-        return getFloatByQuery(query)
+        return getFloatByQuery(query) ?: 0f
     }
+
+    data class Cpm(
+        val date: LocalDate,
+        val cpm: Float
+    )
 
     suspend fun getCostPerMileByDate(
         date: LocalDate,

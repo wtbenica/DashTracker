@@ -156,7 +156,7 @@ class WeeklyListFragment : Fragment() {
                 this.item = item
 
                 if (this.item.isEmpty) {
-                    viewModel.delete(this.item.weekly)
+                    viewModel.delete(item.weekly)
                 }
 
                 CoroutineScope(Dispatchers.Default).launch {

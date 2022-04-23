@@ -15,6 +15,7 @@
         <entry key="app/src/main/res/drawable/ante_meridiem.xml" value="0.2415" />
         <entry key="app/src/main/res/drawable/background_edit_text.xml" value="0.175" />
         <entry key="app/src/main/res/drawable/background_image_button.xml" value="0.15625" />
+        <entry key="app/src/main/res/drawable/bad_to_good.xml" value="0.15" />
         <entry key="app/src/main/res/drawable/bg_dialog_frag_popup_menu.xml" value="0.1565" />
         <entry key="app/src/main/res/drawable/bg_edit_text.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/bg_end_button.xml" value="0.1565" />
@@ -142,8 +143,10 @@
         <entry key="app/src/main/res/layout/dropdown_single_item.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dropdown_single_item_popup.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fab_flyout_button.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/frag_charts.xml" value="0.2876068376068376" />
         <entry key="app/src/main/res/layout/frag_item_list.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/layout/fragment_authenticate.xml" value="0.178125" />
+        <entry key="app/src/main/res/layout/fragment_chart.xml" value="0.2729957805907173" />
         <entry key="app/src/main/res/layout/fragment_daily_stats.xml" value="0.35" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_entry.xml" value="0.35104166666666664" />

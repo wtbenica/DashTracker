@@ -114,6 +114,6 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
     }
 
     companion object {
-        const val TAG = APP + "ConfirmDialogAddPurpose"
+        private const val TAG = APP + "ConfirmDialogAddPurpose"
     }
 }
