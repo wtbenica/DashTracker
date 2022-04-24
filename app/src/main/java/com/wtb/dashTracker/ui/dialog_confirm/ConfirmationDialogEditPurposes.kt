@@ -28,7 +28,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.chip.Chip
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.FullExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmEditPurposesBinding
@@ -114,6 +113,6 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
     }
 
     companion object {
-        private const val TAG = APP + "ConfirmDialogAddPurpose"
+
     }
 }

@@ -24,6 +24,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragInsightsRowBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getFloatString
+import com.wtb.dashTracker.ui.fragment_trends.DailyStatsRow.Companion.safeDiv
 import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.*
@@ -160,4 +161,7 @@ data class DailyStats(
     val pmDels: Float? = null,
     val amNumShifts: Int? = null,
     val pmNumShifts: Int? = null
-)
+) {
+    val amHourly = safeDiv(amEarned, amHours)
+    val pmHourly = safeDiv(pmEarned, pmHours)
+}
