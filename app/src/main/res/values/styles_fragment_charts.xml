@@ -15,16 +15,19 @@
   -->
 
 <resources>
+
     <style name="Widget.ChartCard" parent="CardViewStyle.ListItem">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="cardBackgroundColor">?attr/colorPrimaryFaded</item>
+        <item name="cardCornerRadius">?attr/defaultCornerRadius</item>
     </style>
 
     <style name="ChartCardLayout">
         <item name="android:padding">@dimen/margin_default</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@drawable/bg_list_item</item>
     </style>
 
     <style name="ChartCardTitle" parent="ListItemHeaderTextView.Title">
@@ -32,6 +35,15 @@
     </style>
 
     <style name="ChartCard" parent="CardView">
+        <item name="cardBackgroundColor">?attr/colorListItemDetailsToolbar</item>
+        <item name="cardCornerRadius">?attr/defaultCornerRadius</item>
+    </style>
 
+    <style name="DashTrackerChart">
+        <item name="android:background">?attr/colorPrimaryDark</item>
+    </style>
+
+    <style name="HourlyTrendButton" parent="Widget.Material3.CardView.Elevated">
+        <item name="backgroundTint">@color/hourly_trend_button</item>
     </style>
 </resources>

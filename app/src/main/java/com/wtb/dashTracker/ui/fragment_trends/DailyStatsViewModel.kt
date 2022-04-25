@@ -33,6 +33,7 @@ val Any.TAG: String
 class DailyStatsViewModel : ViewModel() {
     companion object {
         const val MIN_NUM_WEEKS = 8
+        const val MIN_NUM_DAYS_HOURLY_TREND = 7
     }
 
     private val repository: Repository = Repository.get()

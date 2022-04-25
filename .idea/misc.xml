@@ -144,7 +144,8 @@
         <entry key="app/src/main/res/layout/dropdown_single_item.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dropdown_single_item_popup.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fab_flyout_button.xml" value="0.67" />
-        <entry key="app/src/main/res/layout/frag_charts.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/frag_charts.xml" value="0.3119266055045872" />
+        <entry key="app/src/main/res/layout/frag_charts_2.xml" value="0.28974358974358977" />
         <entry key="app/src/main/res/layout/frag_item_list.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/layout/fragment_authenticate.xml" value="0.178125" />
         <entry key="app/src/main/res/layout/fragment_chart.xml" value="0.2729957805907173" />
@@ -160,8 +161,13 @@
         <entry key="app/src/main/res/layout/grid_gas_expense.xml" value="0.5" />
         <entry key="app/src/main/res/layout/grid_other_expense.xml" value="0.7490636704119851" />
         <entry key="app/src/main/res/layout/layout_main_bottom_sheet.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/list_item_entry.xml" value="1.0" />
-        <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.7001897533206831" />
+        <entry key="app/src/main/res/layout/list_item_chart.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_chart_cpm.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_chart_daily_hourly.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.23464249748237664" />
+        <entry key="app/src/main/res/layout/list_item_entry_chart_cpm.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_entry_chart_daily_hourly.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.6643952299829642" />
         <entry key="app/src/main/res/layout/list_item_expense.xml" value="0.35639097744360904" />
         <entry key="app/src/main/res/layout/list_item_expense_2.xml" value="0.75" />
         <entry key="app/src/main/res/layout/list_item_expense_gas.xml" value="0.5" />

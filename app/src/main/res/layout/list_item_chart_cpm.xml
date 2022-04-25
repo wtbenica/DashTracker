@@ -33,54 +33,18 @@
             style="@style/ListItemHeader">
 
             <TextView
-                android:id="@+id/list_item_title"
+                android:id="@+id/chart_title_cpm"
                 style="@style/ListItemHeaderTextView.Title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="NOV 21, 2021" />
+                tools:text="@string/lbl_cost_per_mile" />
 
             <TextView
-                android:id="@+id/list_item_subtitle"
+                android:id="@+id/chart_subtitle_cpm"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_title"
-                tools:text="7:03p - 9:56p" />
-
-            <ImageView
-                android:id="@+id/list_item_alert"
-                style="@style/ListItemHeaderIncompleteIndicator"
-                android:layout_marginStart="@dimen/margin_half"
-                android:contentDescription="@string/content_desc_incomplete_entry"
-                app:layout_constraintBottom_toBottomOf="@id/list_item_title"
-                app:layout_constraintStart_toEndOf="@id/list_item_title"
-                app:layout_constraintTop_toTopOf="@id/list_item_title" />
-
-            <TextView
-                android:id="@+id/list_item_title_2"
-                style="@style/ListItemHeaderTextView.Title"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:textAlignment="textEnd"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/list_item_recurring"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="$81.25" />
-
-
-            <TextView
-                android:id="@+id/list_item_subtitle_2_label"
-                style="@style/ListItemHeaderTextView.Subtitle"
-                android:text="@string/list_item_label_net"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2" />
-
-            <TextView
-                android:id="@+id/list_item_subtitle_2"
-                style="@style/ListItemHeaderTextView.Subtitle"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/chart_title_cpm"
-                tools:text="$24.32" />
+                tools:text="@string/frag_title_expenses" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -91,26 +55,26 @@
             tools:visibility="visible">
 
             <include
-                layout="@layout/list_item_entry_details_table"
+                layout="@layout/list_item_entry_chart_cpm"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"
+                app:layout_constraintEnd_toStartOf="@id/list_item_btn_move_down"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/list_item_header" />
 
             <ImageButton
-                android:id="@+id/list_item_btn_delete"
+                android:id="@+id/list_item_btn_move_up"
                 style="@style/ListItemButton"
                 android:contentDescription="@string/content_desc_remove"
-                android:src="@drawable/ic_action_delete"
-                app:layout_constraintBottom_toTopOf="@id/list_item_btn_edit"
+                android:src="@drawable/ic_arrow_collapse"
+                app:layout_constraintBottom_toTopOf="@id/list_item_btn_move_down"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <ImageButton
-                android:id="@+id/list_item_btn_edit"
+                android:id="@+id/list_item_btn_move_down"
                 style="@style/ListItemButton"
                 android:contentDescription="@string/content_desc_edit_button"
-                android:src="@drawable/ic_action_edit"
+                android:src="@drawable/ic_arrow_expand"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

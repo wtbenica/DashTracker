@@ -16,6 +16,7 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:nestedScrollingEnabled="true"
@@ -27,132 +28,320 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView style="@style/Widget.ChartCard">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/hourly_trend_card"
+            style="@style/Widget.ChartCard">
 
-            <androidx.constraintlayout.widget.ConstraintLayout style="@style/ChartCardLayout">
+            <LinearLayout
+                android:id="@+id/hourly_trend_wrapper"
+                style="@style/ChartCardLayout"
+                android:orientation="vertical"
+                android:padding="0dp"
+                tools:background="@drawable/bg_list_item_expanded">
 
-                <TextView
-                    android:id="@+id/chart_cpm_label_tv"
-                    style="@style/ChartCardTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Cost Per Mile"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/list_item_header_hourly_trend"
+                    style="@style/ListItemHeader"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/chart_card"
-                    style="@style/ChartCard"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/chart_cpm_label_tv">
+                    <TextView
+                        android:id="@+id/chart_title_hourly_trend"
+                        style="@style/ListItemHeaderTextView.Title"
+                        android:text="Hourly Pay"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/chart_line_cpm"
-                        style="@style/DashTrackerChart"
-                        android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        android:layout_margin="@dimen/margin_default" />
-                </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:id="@+id/chart_subtitle_hourly_trend"
+                        style="@style/ListItemHeaderTextView.Subtitle"
+                        android:text="@string/frag_title_income"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/chart_title_hourly_trend" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/label_num_weeks_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:minWidth="@dimen/margin_wide"
-                    android:text="Num Weeks"
-                    android:textAlignment="center"
-                    app:layout_constraintBottom_toBottomOf="@id/seek_bar_card"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/seek_bar_card" />
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/seek_bar_card"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_default"
-                    android:layout_marginTop="@dimen/margin_default"
-                    app:cardBackgroundColor="?attr/colorPrimaryVariant"
-                    app:layout_constraintCircleRadius="@dimen/margin_default"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/label_num_weeks_tv"
-                    app:layout_constraintTop_toBottomOf="@id/chart_card">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/margin_narrow">
-
-                        <TextView
-                            android:id="@+id/num_weeks_tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:minWidth="@dimen/margin_wide"
-                            android:text="41"
-                            android:textAlignment="center"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="@id/seek_bar_card" />
-
-                        <SeekBar
-                            android:id="@+id/seek_bar_num_weeks"
-                            style="@style/Widget.AppCompat.SeekBar.Discrete"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:max="52"
-                            android:min="8"
-                            android:progress="41" />
-
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView style="@style/Widget.ChartCard">
-
-            <androidx.constraintlayout.widget.ConstraintLayout style="@style/ChartCardLayout">
-
-                <TextView
-                    android:id="@+id/chart_daily_hourly_label_tv"
-                    style="@style/ListItemHeaderTextView.Title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Daily Averages - Hourly"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/chart_card_2"
-                    style="@style/ChartCard"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/chart_daily_hourly_label_tv">
-
-                    <com.github.mikephil.charting.charts.HorizontalBarChart
-                        android:id="@+id/chart_bar_daily_hourly"
-                        style="@style/DashTrackerChart"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/margin_default"
-                        android:minHeight="500dp" />
-                </androidx.cardview.widget.CardView>
-
-                <TextView
-                    style="@style/ListItemHeaderTextView.Title"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/chart_hourly_trend"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_default"
-                    android:padding="0dp"
-                    android:text="It's something special here"
+                    android:padding="@dimen/margin_default"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/chart_card_daily_trend"
+                        style="@style/ChartCard"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/chart_line_hourly_trend"
+                            style="@style/DashTrackerChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="400dp"
+                            android:layout_margin="@dimen/margin_wide"
+                            android:background="@android:color/transparent"
+                            android:padding="@dimen/margin_wide" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/label_num_weeks_hourly_trends"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="@dimen/margin_wide"
+                        android:text="Num Days"
+                        android:textAlignment="center"
+                        app:layout_constraintBottom_toBottomOf="@id/seek_bar_card_hourly_trend"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/seek_bar_card_hourly_trend" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/seek_bar_card_hourly_trend"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/margin_default"
+                        app:cardBackgroundColor="?attr/colorPrimaryFaded"
+                        app:layout_constraintCircleRadius="@dimen/margin_default"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/label_num_weeks_hourly_trends"
+                        app:layout_constraintTop_toBottomOf="@id/chart_card_daily_trend">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/margin_narrow">
+
+                            <TextView
+                                android:id="@+id/num_weeks_hourly_trend"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/margin_wide"
+                                android:textAlignment="center"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/seek_bar_card_hourly_trend"
+                                tools:text="41" />
+
+                            <SeekBar
+                                android:id="@+id/seek_bar_num_weeks_hourly_trend"
+                                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:max="52"
+                                android:min="7"
+                                android:progress="41" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/hourly_trend_button_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_default"
+                        app:checkedButton="@id/hourly_trend_daily"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/seek_bar_card_hourly_trend"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/hourly_trend_daily"
+                            style="@style/HourlyTrendButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/frag_title_daily_list" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/hourly_trend_weekly"
+                            style="@style/HourlyTrendButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/frag_title_weekly_list" />
+
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cpm_card"
+            style="@style/Widget.ChartCard">
+
+            <LinearLayout
+                android:id="@+id/cpm_wrapper"
+                style="@style/ChartCardLayout"
+                android:orientation="vertical"
+                android:padding="0dp"
+                tools:background="@drawable/bg_list_item_expanded">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/list_item_header_cpm"
+                    style="@style/ListItemHeader"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/chart_card_2" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/chart_title_cpm"
+                        style="@style/ListItemHeaderTextView.Title"
+                        android:text="@string/lbl_cost_per_mile"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/chart_subtitle_cpm"
+                        style="@style/ListItemHeaderTextView.Subtitle"
+                        android:text="Expense"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/chart_title_cpm" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/chart_cpm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/margin_default"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/chart_card_cpm"
+                        style="@style/ChartCard"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/chart_line_cpm"
+                            style="@style/DashTrackerChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="400dp"
+                            android:layout_margin="@dimen/margin_wide"
+                            android:background="@android:color/transparent"
+                            android:padding="@dimen/margin_wide" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/label_num_weeks_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="@dimen/margin_wide"
+                        android:text="Num Weeks"
+                        android:textAlignment="center"
+                        app:layout_constraintBottom_toBottomOf="@id/seek_bar_card"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/seek_bar_card" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/seek_bar_card"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/margin_default"
+                        app:cardBackgroundColor="?attr/colorPrimaryFaded"
+                        app:layout_constraintCircleRadius="@dimen/margin_default"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/label_num_weeks_tv"
+                        app:layout_constraintTop_toBottomOf="@id/chart_card_cpm">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/margin_narrow">
+
+                            <TextView
+                                android:id="@+id/num_weeks_tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="@dimen/margin_wide"
+                                android:textAlignment="center"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/seek_bar_card"
+                                tools:text="41" />
+
+                            <SeekBar
+                                android:id="@+id/seek_bar_num_weeks"
+                                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:max="52"
+                                android:min="8"
+                                android:progress="41" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/daily_hourly_card"
+            style="@style/Widget.ChartCard">
+
+            <LinearLayout
+                android:id="@+id/daily_hourly_wrapper"
+                style="@style/ChartCardLayout"
+                android:orientation="vertical"
+                android:padding="0dp"
+                tools:background="@drawable/bg_list_item_expanded">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/list_item_header"
+                    style="@style/ListItemHeader">
+
+                    <TextView
+                        android:id="@+id/chart_title_daily_hours"
+                        style="@style/ListItemHeaderTextView.Title"
+                        android:text="Hourly by Day of Week"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/chart_subtitle_daily_hours"
+                        style="@style/ListItemHeaderTextView.Subtitle"
+                        android:text="@string/frag_title_income"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/chart_title_daily_hours" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/chart_daily_hourly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/margin_default"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/chart_card_2"
+                        style="@style/ChartCard"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.github.mikephil.charting.charts.HorizontalBarChart
+                            android:id="@+id/chart_bar_daily_hourly"
+                            style="@style/DashTrackerChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/margin_default"
+                            android:background="@android:color/transparent"
+                            android:minHeight="400dp" />
+                    </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 </ScrollView>

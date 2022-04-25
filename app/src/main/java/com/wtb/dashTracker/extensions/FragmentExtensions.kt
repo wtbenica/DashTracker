@@ -16,11 +16,11 @@
 
 package com.wtb.dashTracker.extensions
 
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.wtb.dashTracker.R
 import java.time.LocalTime
-
 
 fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?) =
     if (args.map { it != null }.reduce { acc, b -> acc && b })

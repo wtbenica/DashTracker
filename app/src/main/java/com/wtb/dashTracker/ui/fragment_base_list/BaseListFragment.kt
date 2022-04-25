@@ -33,6 +33,22 @@ class BaseListFragment : Fragment() {
 
 interface ListItemType
 
+fun toggleListItemVisibility(collapseArea: View, backgroundArea: View) {
+    if (collapseArea.visibility == View.VISIBLE) {
+        collapseArea.collapse()
+        backgroundArea.transitionBackground(
+            R.attr.colorListItemExpanded,
+            R.attr.colorListItem
+        )
+    } else {
+        collapseArea.expand()
+        backgroundArea.transitionBackground(
+            R.attr.colorListItem,
+            R.attr.colorListItemExpanded
+        )
+    }
+}
+
 abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
     PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback) {
     override fun onBindViewHolder(
@@ -68,20 +84,7 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
     }
 
     override fun onClick(v: View?) {
-        if (collapseArea.visibility == View.VISIBLE) {
-            collapseArea.collapse()
-            backgroundArea.transitionBackground(
-                R.attr.colorListItemExpanded,
-                R.attr.colorListItem
-            )
-
-        } else {
-            collapseArea.expand()
-            backgroundArea.transitionBackground(
-                R.attr.colorListItem,
-                R.attr.colorListItemExpanded
-            )
-        }
+        toggleListItemVisibility(collapseArea, backgroundArea)
     }
 
     protected fun setPayloadVisibility(payloads: MutableList<Any>?) {
