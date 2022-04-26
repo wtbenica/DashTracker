@@ -14,69 +14,58 @@
   ~ limitations under the License.
   -->
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list_item_card"
-    style="@style/CardViewStyle.ListItem">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
-        android:id="@+id/list_item_wrapper"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_list_item"
-        android:orientation="vertical"
-        tools:background="@drawable/bg_list_item_expanded">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/list_item_card"
+        style="@style/CardViewStyle.ListItem">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/list_item_header"
-            style="@style/ListItemHeader">
-
-            <TextView
-                android:id="@+id/chart_title_cpm"
-                style="@style/ListItemHeaderTextView.Title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/lbl_cost_per_mile" />
-
-            <TextView
-                android:id="@+id/chart_subtitle_cpm"
-                style="@style/ListItemHeaderTextView.Subtitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chart_title_cpm"
-                tools:text="@string/frag_title_expenses" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/list_item_details"
-            style="@style/listItemDetailsPane"
+        <LinearLayout
+            android:id="@+id/list_item_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:visibility="visible">
+            android:background="@drawable/bg_list_item"
+            android:orientation="vertical"
+            tools:background="@drawable/bg_list_item_expanded">
 
-            <include
-                layout="@layout/list_item_entry_chart_cpm"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/list_item_header"
+                style="@style/ListItemHeader">
+
+                <TextView
+                    android:id="@+id/chart_title_cpm"
+                    style="@style/ListItemHeaderTextView.Title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/lbl_cost_per_mile" />
+
+                <TextView
+                    android:id="@+id/chart_subtitle_cpm"
+                    style="@style/ListItemHeaderTextView.Subtitle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/chart_title_cpm"
+                    tools:text="@string/frag_title_expenses" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/list_item_details"
+                style="@style/listItemDetailsPane"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/list_item_btn_move_down"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_header" />
+                android:paddingHorizontal="@dimen/margin_half"
+                tools:visibility="visible">
 
-            <ImageButton
-                android:id="@+id/list_item_btn_move_up"
-                style="@style/ListItemButton"
-                android:contentDescription="@string/content_desc_remove"
-                android:src="@drawable/ic_arrow_collapse"
-                app:layout_constraintBottom_toTopOf="@id/list_item_btn_move_down"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <ImageButton
-                android:id="@+id/list_item_btn_move_down"
-                style="@style/ListItemButton"
-                android:contentDescription="@string/content_desc_edit_button"
-                android:src="@drawable/ic_arrow_expand"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+                <FrameLayout
+                    android:id="@+id/cpm_bottom"
+                    android:layout_width="0dp"
+                    tools:layout_height="400dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</merge>

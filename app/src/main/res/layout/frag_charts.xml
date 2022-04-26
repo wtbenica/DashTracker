@@ -24,6 +24,7 @@
     app:layout_dodgeInsetEdges="bottom">
 
     <LinearLayout
+        android:id="@+id/chart_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -46,7 +47,7 @@
                     <TextView
                         android:id="@+id/chart_title_daily_hours"
                         style="@style/ListItemHeaderTextView.Title"
-                        android:text="Hourly by Day of Week"
+                        android:text="@string/lbl_hourly_by_day_of_week"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -330,7 +331,7 @@
                                 tools:text="41" />
 
                             <SeekBar
-                                android:id="@+id/seek_bar_num_weeks"
+                                android:id="@+id/seek_bar_num_weeks_cpm"
                                 style="@style/Widget.AppCompat.SeekBar.Discrete"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

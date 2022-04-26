@@ -21,9 +21,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
 import androidx.annotation.AttrRes
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.ResourcesCompat.getColor
 import androidx.fragment.app.Fragment
@@ -31,12 +29,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.MainActivity.Companion.getAttrColor
@@ -45,26 +44,17 @@ import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.FragChartsBinding
-import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.repository.DeductionType.ALL_EXPENSES
 import com.wtb.dashTracker.ui.fragment_base_list.toggleListItemVisibility
-import com.wtb.dashTracker.ui.fragment_trends.DailyStats
-import com.wtb.dashTracker.ui.fragment_trends.DailyStatsRow.Companion.safeDiv
-import com.wtb.dashTracker.ui.fragment_trends.DailyStatsViewModel
-import com.wtb.dashTracker.ui.fragment_trends.DailyStatsViewModel.Companion.MIN_NUM_DAYS_HOURLY_TREND
-import com.wtb.dashTracker.ui.fragment_trends.DailyStatsViewModel.Companion.MIN_NUM_WEEKS
-import com.wtb.dashTracker.ui.fragment_trends.TAG
-import com.wtb.dashTracker.views.WeeklyBarChart
-import com.wtb.dashTracker.views.WeeklyLineChart
+import com.wtb.dashTracker.ui.fragment_trends.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.lang.Integer.max as max1
 
 @ExperimentalCoroutinesApi
 fun List<Cpm>.getByDate(date: LocalDate): Cpm? {
@@ -78,13 +68,11 @@ fun List<Cpm>.getByDate(date: LocalDate): Cpm? {
 }
 
 @ExperimentalCoroutinesApi
-class ChartFragment : Fragment() {
+class ChartFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
     private val viewModel: DailyStatsViewModel by viewModels()
     private lateinit var binding: FragChartsBinding
 
-    private lateinit var lineChartCpm: WeeklyLineChart
     private lateinit var barChartHourlyByDay: HorizontalBarChart
-    private lateinit var barChartGrossNetHourly: WeeklyBarChart
 
     private var cpmList = listOf<Cpm>()
     private var entries = listOf<DashEntry>()
@@ -121,12 +109,24 @@ class ChartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = com.wtb.dashTracker.databinding.FragChartsBinding.bind(view)
+        binding = FragChartsBinding.bind(view)
 
         setOnClickListeners()
-        initCpmChart()
+
+        val cpmChartHolder = DTChartHolder(requireContext()).apply {
+            initialize(this@ChartFragment, CpmChart(context).apply { init() })
+        }
+        val hourlyChartHolder = DTChartHolder(requireContext()).apply {
+            initialize(this@ChartFragment, HourlyBarChart(context).apply { init() })
+        }
+
+        binding.chartList.apply {
+            removeAllViews()
+            addView(cpmChartHolder)
+            addView(hourlyChartHolder)
+        }
+
         initDailyHourlyChart()
-        initHourlyTrendChart()
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -134,23 +134,17 @@ class ChartFragment : Fragment() {
                     entries = it
                     binding.seekBarNumWeeksHourlyTrend.max = entries.size
 
-                    if (entries.isNotEmpty()) {
-                        updateDailyHourlyChart()
-                        updateHourlyTrendChart()
-                    }
+                    hourlyChartHolder.updateLists(cpmList = cpmList, entries = entries, weeklies = weeklies)
                 }
             }
         }
 
+
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.weeklyList.collectLatest {
+                    Log.d(TAG, "collectLatest weeklyList")
                     weeklies = it
-
-                    if (weeklies.isNotEmpty()) {
-                        updateHourlyTrendChart()
-                    }
-                    binding.seekBarNumWeeks.max = it.size
 
                     cpmList = it.map { w ->
                         Cpm(
@@ -159,142 +153,10 @@ class ChartFragment : Fragment() {
                         )
                     }.reversed()
 
-                    if (cpmList.isNotEmpty()) {
-                        updateCpmChart()
-                        if (entries.isNotEmpty()) {
-                            updateHourlyTrendChart()
-                        }
-                    }
+                    cpmChartHolder.updateLists(cpmList)
+                    hourlyChartHolder.updateLists(cpmList = cpmList, entries = entries, weeklies = weeklies)
                 }
             }
-        }
-    }
-
-    private fun initCpmChart() {
-        fun SeekBar.initialize() {
-            min = MIN_NUM_WEEKS
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    binding.numWeeksTv.text = progress.toString()
-                    if (cpmList.isNotEmpty())
-                        updateCpmChart()
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    // Do nothing
-                }
-
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    // Do nothing
-                }
-            })
-            progress = MIN_NUM_WEEKS
-        }
-
-        fun WeeklyLineChart.style() {
-            fun XAxis.style() {
-                typeface = ResourcesCompat.getFont(requireContext(), R.font.lalezar)
-                textColor = getAttrColor(context, R.attr.colorTextPrimary)
-                textSize = getDimen(R.dimen.text_size_sm)
-                position = XAxis.XAxisPosition.BOTTOM_INSIDE
-                labelRotationAngle = 90f
-                labelCount = 8
-                setDrawBorders(true)
-                setDrawGridLines(false)
-                setCenterAxisLabels(false)
-                valueFormatter = object : ValueFormatter() {
-                    override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                        val date = LocalDate.ofEpochDay(value.toLong())
-                        return if (date.dayOfWeek == DayOfWeek.SUNDAY)
-                            getString(
-                                R.string.date_range,
-                                date.minusDays(6).format(dtfMini),
-                                date.format(dtfMini)
-                            )
-                        else
-                            ""
-                    }
-                }
-            }
-
-            fun YAxis.style() {
-                setCenterAxisLabels(true)
-                typeface = ResourcesCompat.getFont(requireContext(), R.font.lalezar)
-                textColor = getAttrColor(context, R.attr.colorTextPrimary)
-                textSize = getDimen(R.dimen.text_size_sm)
-                this.axisMinimum = 0f
-                setDrawBorders(true)
-                valueFormatter = object : ValueFormatter() {
-                    override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                        return getString(R.string.cpm_unit, value)
-                    }
-                }
-            }
-
-            isWeekly = true
-            setTouchEnabled(false)
-            setBackgroundColor(getColor(resources, android.R.color.transparent, null))
-            description.isEnabled = false
-            isDragEnabled = false
-            setScaleEnabled(false)
-            setPinchZoom(false)
-            legend.isEnabled = false
-            xAxis.style()
-            axisLeft.style()
-            axisRight.isEnabled = false
-        }
-
-        lineChartCpm = binding.chartLineCpm.apply { style() }
-        binding.seekBarNumWeeks.initialize()
-    }
-
-    private fun updateCpmChart() {
-        fun LineDataSet.style() {
-            valueTypeface = ResourcesCompat.getFont(requireContext(), R.font.lalezar)
-            valueTextSize = getDimen(R.dimen.text_size_sm)
-            valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return getCurrencyString(value)
-                }
-            }
-            mode = LineDataSet.Mode.CUBIC_BEZIER
-            setDrawCircles(false)
-            setDrawIcons(false)
-            setDrawCircleHole(false)
-            setDrawFilled(true)
-            fillDrawable =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bad_to_good)
-            fillAlpha = 85
-            cubicIntensity = 0.2f
-            valueTextSize = getDimen(R.dimen.text_size_sm)
-        }
-
-        fun getEntryList(): LineDataSet =
-            cpmList.mapNotNull { cpm ->
-                if (cpm.cpm !in listOf(Float.NaN, 0f))
-                    Entry(cpm.date.toEpochDay().toFloat(), cpm.cpm)
-                else
-                    null
-            }.let {
-                LineDataSet(
-                    it.subList(max1(it.size - binding.seekBarNumWeeks.progress, 1), it.size),
-                    "CPM"
-                ).apply { style() }
-            }
-
-        val dataSet = getEntryList()
-
-        lineChartCpm.xAxis.axisMinimum = dataSet.xMin - 1
-        lineChartCpm.xAxis.axisMaximum = dataSet.xMax + 1
-
-        lineChartCpm.data = LineData(dataSet)
-
-        (context as MainActivity).runOnUiThread {
-            lineChartCpm.animateY(1000)
         }
     }
 
@@ -347,7 +209,7 @@ class ChartFragment : Fragment() {
 
         val dataSetAm: BarDataSet =
             dailyStats.getBarDataSet(label = "AM", barColor = R.attr.colorDayHeader) { ds ->
-                safeDiv(ds.amEarned, ds.amHours)?.let { hourly ->
+                DailyStatsRow.safeDiv(ds.amEarned, ds.amHours)?.let { hourly ->
                     ds.day?.value?.toFloat()
                         ?.let { day -> BarEntry(8 - day - amPmBarOffset, hourly) }
                 }
@@ -355,7 +217,7 @@ class ChartFragment : Fragment() {
 
         val dataSetPm: BarDataSet =
             dailyStats.getBarDataSet(label = "PM", barColor = R.attr.colorNightHeader) { ds ->
-                safeDiv(ds.pmEarned, ds.pmHours)?.let { hourly ->
+                DailyStatsRow.safeDiv(ds.pmEarned, ds.pmHours)?.let { hourly ->
                     ds.day?.value?.toFloat()
                         ?.let { day -> BarEntry(8 - day + amPmBarOffset, hourly) }
                 }
@@ -365,203 +227,6 @@ class ChartFragment : Fragment() {
 
         (context as MainActivity).runOnUiThread {
             barChartHourlyByDay.animateY(1000)
-        }
-    }
-
-    private fun initHourlyTrendChart() {
-        fun SeekBar.initialize() {
-            min = MIN_NUM_DAYS_HOURLY_TREND
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    binding.numWeeksHourlyTrend.text = progress.toString()
-                    if (entries.isNotEmpty())
-                        updateHourlyTrendChart()
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    // Do nothing
-                }
-
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    // Do nothing
-                }
-            })
-            progress = MIN_NUM_DAYS_HOURLY_TREND
-        }
-
-        fun BarChart.style() {
-            fun XAxis.style() {
-                typeface = ResourcesCompat.getFont(requireContext(), R.font.lalezar)
-                textColor = getAttrColor(context, R.attr.colorTextPrimary)
-                textSize = getDimen(R.dimen.text_size_sm)
-                position = XAxis.XAxisPosition.BOTTOM_INSIDE
-                labelRotationAngle = 90f
-                setDrawBorders(true)
-                setDrawGridLines(false)
-
-                valueFormatter = object : ValueFormatter() {
-                    override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                        val date = LocalDate.ofEpochDay(value.toLong())
-                        return if (isDailySelected)
-                            date.format(dtfMini)
-                        else {
-                            getString(
-                                R.string.date_range,
-                                date.minusDays(6).format(dtfMini),
-                                date.format(dtfMini)
-                            )
-                        }
-                    }
-                }
-            }
-
-            fun YAxis.style() {
-                typeface = ResourcesCompat.getFont(requireContext(), R.font.lalezar)
-                textColor = getAttrColor(context, R.attr.colorTextPrimary)
-                textSize = getDimen(R.dimen.text_size_sm)
-                setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
-                this.axisMinimum = 0f
-                labelCount = 4
-                setDrawBorders(true)
-                valueFormatter = object : ValueFormatter() {
-                    override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                        return getString(R.string.currency_unit, value)
-                    }
-                }
-            }
-
-            setBackgroundColor(getColor(resources, android.R.color.transparent, null))
-            description.isEnabled = false
-            legend.isEnabled = false
-            legend.typeface = ResourcesCompat.getFont(requireContext(), R.font.lalezar)
-            isHighlightPerTapEnabled = false
-            isHighlightFullBarEnabled = false
-            isHighlightPerDragEnabled = false
-            xAxis.style()
-            axisLeft.style()
-            axisRight.isEnabled = false
-        }
-
-        binding.hourlyTrendButtonGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) {
-                updateHourlyTrendChart()
-                when (checkedId) {
-                    R.id.hourly_trend_daily -> {
-                        barChartGrossNetHourly.isWeekly = false
-                        binding.labelNumWeeksHourlyTrends.text = "Num Days"
-                        binding.seekBarNumWeeksHourlyTrend.apply {
-                            min = MIN_NUM_DAYS_HOURLY_TREND
-                            max = max1(MIN_NUM_DAYS_HOURLY_TREND, entries.size)
-                            progress = min
-                        }
-                    }
-                    R.id.hourly_trend_weekly -> {
-                        barChartGrossNetHourly.isWeekly = true
-                        binding.labelNumWeeksHourlyTrends.text = "Num Weeks"
-                        binding.seekBarNumWeeksHourlyTrend.apply {
-                            min = MIN_NUM_WEEKS
-                            max = max1(MIN_NUM_WEEKS, weeklies.size)
-                            progress = min
-                        }
-                    }
-                }
-            }
-        }
-
-        barChartGrossNetHourly = binding.chartLineHourlyTrend.apply { style() }
-        binding.seekBarNumWeeksHourlyTrend.initialize()
-    }
-
-    private fun updateHourlyTrendChart() {
-        val regBarSize = .8f
-        val dailyBarWidth = regBarSize / 2
-        val weeklyBarWidth = regBarSize * 7
-        val grossNetBarOffset = dailyBarWidth / 2
-
-        fun BarDataSet.style() {
-            valueTypeface = ResourcesCompat.getFont(requireContext(), R.font.lalezar)
-            valueTextSize = getDimen(R.dimen.text_size_sm)
-            valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return getCurrencyString(value)
-                }
-            }
-            setDrawIcons(false)
-            valueTextSize = getDimen(R.dimen.text_size_sm)
-        }
-
-        fun getEntryList(): Pair<BarDataSet, BarDataSet> =
-            entries.mapNotNull {
-                val hourly = it.hourly
-                if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
-                    val cpm =
-                        if (cpmList.isNotEmpty()) cpmList.getByDate(it.date)?.cpm ?: 0f else 0f
-                    val expense: Float = safeDiv((it.mileage ?: 0f) * cpm, it.totalHours) ?: 0f
-                    val toFloat = it.date.toEpochDay().toFloat()
-                    Pair(
-                        BarEntry(toFloat - grossNetBarOffset, hourly),
-                        BarEntry(toFloat + grossNetBarOffset, hourly - expense)
-                    )
-                } else {
-                    null
-                }
-            }.let {
-                val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
-                val subListGross =
-                    it.map { it1 -> it1.first }.reversed().subList(max1(startIndex, 0), it.size)
-                val subListNet =
-                    it.map { it1 -> it1.second }.reversed().subList(max1(startIndex, 0), it.size)
-                Pair(BarDataSet(subListGross, "Gross").apply { style() },
-                    BarDataSet(subListNet, "Net").apply { style() })
-            }
-
-        fun getWeeklyList(): BarDataSet = weeklies.mapNotNull {
-            val hourly = it.hourly
-            if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
-                BarEntry(it.weekly.date.toEpochDay().toFloat(), hourly)
-            } else {
-                null
-            }
-        }.let {
-            val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
-            val subList = it.reversed().subList(max1(startIndex, 0), it.size)
-            BarDataSet(subList, "Hourly by Week").apply { style() }
-        }
-
-        val dataSet: BarData = if (isDailySelected) {
-            val gross = getEntryList().first.apply {
-                color = getAttrColor(requireContext(), R.attr.colorPrimaryDark)
-            }
-            val net = getEntryList().second.apply {
-                color = getAttrColor(requireContext(), R.attr.colorPrimary)
-            }
-            BarData(gross, net).also {
-                barChartGrossNetHourly.legend.isEnabled = true
-            }
-        } else {
-            BarData(getWeeklyList()).also {
-                barChartGrossNetHourly.legend.isEnabled = false
-            }
-        }
-
-        val xAxisOffset = if (isDailySelected) 1 else 6
-        barChartGrossNetHourly.xAxis.axisMinimum = dataSet.xMin - xAxisOffset
-        barChartGrossNetHourly.xAxis.axisMaximum = dataSet.xMax + xAxisOffset
-
-        barChartGrossNetHourly.apply {
-            data =
-                dataSet.apply {
-                    this.barWidth = if (isDailySelected) dailyBarWidth else weeklyBarWidth
-                }
-            setVisibleXRangeMinimum(if (isDailySelected) 7f else 56f)
-        }
-
-        (context as MainActivity).runOnUiThread {
-            barChartGrossNetHourly.animateY(500)
         }
     }
 
@@ -607,4 +272,6 @@ class ChartFragment : Fragment() {
             }
         }
     }
+
+    private val charts = mutableListOf<Int>(1, 2, 3, 4, 5, 6, 56, 4, 63, 6, 3456, 45, 63, 4653)
 }
