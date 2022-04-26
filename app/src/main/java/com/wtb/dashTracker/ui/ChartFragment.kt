@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.wtb.dashTracker.ui
 
 import android.os.Bundle
@@ -25,7 +23,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.annotation.AttrRes
-import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.ResourcesCompat.getColor
@@ -36,7 +33,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.HorizontalBarChart
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -52,6 +48,7 @@ import com.wtb.dashTracker.databinding.FragChartsBinding
 import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.repository.DeductionType.ALL_EXPENSES
 import com.wtb.dashTracker.ui.fragment_base_list.toggleListItemVisibility
 import com.wtb.dashTracker.ui.fragment_trends.DailyStats
@@ -60,13 +57,16 @@ import com.wtb.dashTracker.ui.fragment_trends.DailyStatsViewModel
 import com.wtb.dashTracker.ui.fragment_trends.DailyStatsViewModel.Companion.MIN_NUM_DAYS_HOURLY_TREND
 import com.wtb.dashTracker.ui.fragment_trends.DailyStatsViewModel.Companion.MIN_NUM_WEEKS
 import com.wtb.dashTracker.ui.fragment_trends.TAG
+import com.wtb.dashTracker.views.WeeklyBarChart
+import com.wtb.dashTracker.views.WeeklyLineChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.lang.Integer.max
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.lang.Integer.max as max1
 
+@ExperimentalCoroutinesApi
 fun List<Cpm>.getByDate(date: LocalDate): Cpm? {
     val index = binarySearch { cpm: Cpm ->
         cpm.date.compareTo(date.endOfWeek)
@@ -77,19 +77,14 @@ fun List<Cpm>.getByDate(date: LocalDate): Cpm? {
         null
 }
 
-
-fun Fragment.getDimen(@DimenRes res: Int) =
-    resources.getDimension(res) / resources.displayMetrics.density
-
-
 @ExperimentalCoroutinesApi
 class ChartFragment : Fragment() {
     private val viewModel: DailyStatsViewModel by viewModels()
     private lateinit var binding: FragChartsBinding
 
-    private lateinit var chartOne: LineChart
-    private lateinit var chartTwo: HorizontalBarChart
-    private lateinit var chartThree: BarChart
+    private lateinit var lineChartCpm: WeeklyLineChart
+    private lateinit var barChartHourlyByDay: HorizontalBarChart
+    private lateinit var barChartGrossNetHourly: WeeklyBarChart
 
     private var cpmList = listOf<Cpm>()
     private var entries = listOf<DashEntry>()
@@ -126,7 +121,7 @@ class ChartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragChartsBinding.bind(view)
+        binding = com.wtb.dashTracker.databinding.FragChartsBinding.bind(view)
 
         setOnClickListeners()
         initCpmChart()
@@ -200,7 +195,7 @@ class ChartFragment : Fragment() {
             progress = MIN_NUM_WEEKS
         }
 
-        fun LineChart.style() {
+        fun WeeklyLineChart.style() {
             fun XAxis.style() {
                 typeface = ResourcesCompat.getFont(requireContext(), R.font.lalezar)
                 textColor = getAttrColor(context, R.attr.colorTextPrimary)
@@ -240,6 +235,7 @@ class ChartFragment : Fragment() {
                 }
             }
 
+            isWeekly = true
             setTouchEnabled(false)
             setBackgroundColor(getColor(resources, android.R.color.transparent, null))
             description.isEnabled = false
@@ -252,7 +248,7 @@ class ChartFragment : Fragment() {
             axisRight.isEnabled = false
         }
 
-        chartOne = binding.chartLineCpm.apply { style() }
+        lineChartCpm = binding.chartLineCpm.apply { style() }
         binding.seekBarNumWeeks.initialize()
     }
 
@@ -285,20 +281,20 @@ class ChartFragment : Fragment() {
                     null
             }.let {
                 LineDataSet(
-                    it.subList(max(it.size - binding.seekBarNumWeeks.progress, 1), it.size),
+                    it.subList(max1(it.size - binding.seekBarNumWeeks.progress, 1), it.size),
                     "CPM"
                 ).apply { style() }
             }
 
         val dataSet = getEntryList()
 
-        chartOne.xAxis.axisMinimum = dataSet.xMin - 1
-        chartOne.xAxis.axisMaximum = dataSet.xMax + 1
+        lineChartCpm.xAxis.axisMinimum = dataSet.xMin - 1
+        lineChartCpm.xAxis.axisMaximum = dataSet.xMax + 1
 
-        chartOne.data = LineData(dataSet)
+        lineChartCpm.data = LineData(dataSet)
 
         (context as MainActivity).runOnUiThread {
-            chartOne.animateY(1000)
+            lineChartCpm.animateY(1000)
         }
     }
 
@@ -342,7 +338,7 @@ class ChartFragment : Fragment() {
             setDrawValueAboveBar(false)
         }
 
-        chartTwo = binding.chartBarDailyHourly.apply { style() }
+        barChartHourlyByDay = binding.chartBarDailyHourly.apply { style() }
     }
 
     private fun updateDailyHourlyChart() {
@@ -365,10 +361,10 @@ class ChartFragment : Fragment() {
                 }
             }
 
-        chartTwo.data = BarData(dataSetPm, dataSetAm).apply { this.barWidth = barSize }
+        barChartHourlyByDay.data = BarData(dataSetPm, dataSetAm).apply { this.barWidth = barSize }
 
         (context as MainActivity).runOnUiThread {
-            chartTwo.animateY(1000)
+            barChartHourlyByDay.animateY(1000)
         }
     }
 
@@ -406,20 +402,18 @@ class ChartFragment : Fragment() {
                 labelRotationAngle = 90f
                 setDrawBorders(true)
                 setDrawGridLines(false)
+
                 valueFormatter = object : ValueFormatter() {
                     override fun getAxisLabel(value: Float, axis: AxisBase?): String {
                         val date = LocalDate.ofEpochDay(value.toLong())
                         return if (isDailySelected)
                             date.format(dtfMini)
                         else {
-                            if (date.dayOfWeek == DayOfWeek.SUNDAY)
-                                getString(
-                                    R.string.date_range,
-                                    date.minusDays(6).format(dtfMini),
-                                    date.format(dtfMini)
-                                ) else {
-                                ""
-                            }
+                            getString(
+                                R.string.date_range,
+                                date.minusDays(6).format(dtfMini),
+                                date.format(dtfMini)
+                            )
                         }
                     }
                 }
@@ -457,18 +451,20 @@ class ChartFragment : Fragment() {
                 updateHourlyTrendChart()
                 when (checkedId) {
                     R.id.hourly_trend_daily -> {
+                        barChartGrossNetHourly.isWeekly = false
                         binding.labelNumWeeksHourlyTrends.text = "Num Days"
                         binding.seekBarNumWeeksHourlyTrend.apply {
                             min = MIN_NUM_DAYS_HOURLY_TREND
-                            max = max(MIN_NUM_DAYS_HOURLY_TREND, entries.size)
+                            max = max1(MIN_NUM_DAYS_HOURLY_TREND, entries.size)
                             progress = min
                         }
                     }
                     R.id.hourly_trend_weekly -> {
+                        barChartGrossNetHourly.isWeekly = true
                         binding.labelNumWeeksHourlyTrends.text = "Num Weeks"
                         binding.seekBarNumWeeksHourlyTrend.apply {
                             min = MIN_NUM_WEEKS
-                            max = max(MIN_NUM_WEEKS, weeklies.size)
+                            max = max1(MIN_NUM_WEEKS, weeklies.size)
                             progress = min
                         }
                     }
@@ -476,7 +472,7 @@ class ChartFragment : Fragment() {
             }
         }
 
-        chartThree = binding.chartLineHourlyTrend.apply { style() }
+        barChartGrossNetHourly = binding.chartLineHourlyTrend.apply { style() }
         binding.seekBarNumWeeksHourlyTrend.initialize()
     }
 
@@ -516,9 +512,9 @@ class ChartFragment : Fragment() {
             }.let {
                 val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
                 val subListGross =
-                    it.map { it1 -> it1.first }.reversed().subList(max(startIndex, 0), it.size)
+                    it.map { it1 -> it1.first }.reversed().subList(max1(startIndex, 0), it.size)
                 val subListNet =
-                    it.map { it1 -> it1.second }.reversed().subList(max(startIndex, 0), it.size)
+                    it.map { it1 -> it1.second }.reversed().subList(max1(startIndex, 0), it.size)
                 Pair(BarDataSet(subListGross, "Gross").apply { style() },
                     BarDataSet(subListNet, "Net").apply { style() })
             }
@@ -532,7 +528,7 @@ class ChartFragment : Fragment() {
             }
         }.let {
             val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
-            val subList = it.reversed().subList(max(startIndex, 0), it.size)
+            val subList = it.reversed().subList(max1(startIndex, 0), it.size)
             BarDataSet(subList, "Hourly by Week").apply { style() }
         }
 
@@ -544,19 +540,19 @@ class ChartFragment : Fragment() {
                 color = getAttrColor(requireContext(), R.attr.colorPrimary)
             }
             BarData(gross, net).also {
-                chartThree.legend.isEnabled = true
+                barChartGrossNetHourly.legend.isEnabled = true
             }
         } else {
             BarData(getWeeklyList()).also {
-                chartThree.legend.isEnabled = false
+                barChartGrossNetHourly.legend.isEnabled = false
             }
         }
 
         val xAxisOffset = if (isDailySelected) 1 else 6
-        chartThree.xAxis.axisMinimum = dataSet.xMin - xAxisOffset
-        chartThree.xAxis.axisMaximum = dataSet.xMax + xAxisOffset
+        barChartGrossNetHourly.xAxis.axisMinimum = dataSet.xMin - xAxisOffset
+        barChartGrossNetHourly.xAxis.axisMaximum = dataSet.xMax + xAxisOffset
 
-        chartThree.apply {
+        barChartGrossNetHourly.apply {
             data =
                 dataSet.apply {
                     this.barWidth = if (isDailySelected) dailyBarWidth else weeklyBarWidth
@@ -564,9 +560,8 @@ class ChartFragment : Fragment() {
             setVisibleXRangeMinimum(if (isDailySelected) 7f else 56f)
         }
 
-
         (context as MainActivity).runOnUiThread {
-            chartThree.animateY(500)
+            barChartGrossNetHourly.animateY(500)
         }
     }
 
