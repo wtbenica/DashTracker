@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("RedundantNullableReturnType", "RedundantNullableReturnType")
+
 package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
 
 import android.graphics.Color

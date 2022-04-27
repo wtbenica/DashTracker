@@ -32,13 +32,11 @@ import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.FragChartsBinding
-import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.DeductionType.ALL_EXPENSES
 import com.wtb.dashTracker.ui.fragment_trends.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 class ChartFragment : Fragment(), DTChartHolder.DTChartHolderCallback {

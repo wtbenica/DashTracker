@@ -30,10 +30,11 @@ import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.ui.fragment_trends.TAG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.lang.Float.max
-import java.lang.Math.abs
-import java.lang.Math.ceil
 import java.time.DateTimeException
 import java.time.LocalDate
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
 
 @ExperimentalCoroutinesApi
 class WeeklyBarChart @JvmOverloads constructor(
@@ -109,7 +110,7 @@ class WeeklyXAxisRenderer(
                 newMax = 0f
             }
 
-            val range = abs(newMax - newMin).toDouble()
+            val range = kotlin.math.abs(newMax - newMin).toDouble()
             val labelCount = (range / 7f).toInt()
 
             if (labelCount == 0 || range <= 0 || java.lang.Double.isInfinite(range)) {
@@ -135,11 +136,11 @@ class WeeklyXAxisRenderer(
 
             // Normalize interval
             val intervalMagnitude =
-                Utils.roundToNextSignificant(Math.pow(10.0, Math.log10(interval))).toDouble()
+                Utils.roundToNextSignificant(10.0.pow(log10(interval))).toDouble()
             val intervalSigDigit = (interval / intervalMagnitude).toInt()
             if (intervalSigDigit > 5) {
                 // Use one order of magnitude higher, to avoid intervals like 0.9 or 90
-                interval = Math.floor(10 * intervalMagnitude)
+                interval = floor(10 * intervalMagnitude)
             }
 
             var n = if (mAxis.isCenterAxisLabelsEnabled) 1 else 0
@@ -152,7 +153,7 @@ class WeeklyXAxisRenderer(
                     // Ensure stops contains at least numStops elements.
                     mAxis.mEntries = FloatArray(labelCount)
                 }
-                var v = newMin.toFloat()
+                var v = newMin
                 for (i in 0 until labelCount) {
                     mAxis.mEntries[i] = v
                     v += interval.toFloat()
@@ -162,15 +163,14 @@ class WeeklyXAxisRenderer(
                 // no forced count
             } else {
                 var first: Double =
-                    if (interval == 0.0) 0.0 else (ceil(newMin / interval) * interval).adjustToEOW()
+                    if (interval == 0.0) 0.0 else (kotlin.math.ceil(newMin / interval) * interval).adjustToEOW()
                 if (mAxis.isCenterAxisLabelsEnabled) {
                     first -= interval
                 }
                 val last: Double =
-                    if (interval == 0.0) 0.0 else (Utils.nextUp(Math.floor(newMax / interval) * interval)
+                    if (interval == 0.0) 0.0 else (Utils.nextUp(floor(newMax / interval) * interval)
                         .adjustToEOW())
                 var f: Double
-                var i: Int
                 if (interval != 0.0) {
                     f = first
                     while (f <= last) {
@@ -184,7 +184,7 @@ class WeeklyXAxisRenderer(
                     mAxis.mEntries = FloatArray(n)
                 }
                 f = first
-                i = 0
+                var i = 0
                 while (i < n) {
                     if (f == 0.0) // Fix for negative zero case (Where value == -0.0, and 0.0 == -0.0)
                         f = 0.0
@@ -198,7 +198,7 @@ class WeeklyXAxisRenderer(
 
             // set decimals
             if (interval < 1) {
-                mAxis.mDecimals = Math.ceil(-Math.log10(interval)).toInt()
+                mAxis.mDecimals = kotlin.math.ceil(-log10(interval)).toInt()
             } else {
                 mAxis.mDecimals = 0
             }

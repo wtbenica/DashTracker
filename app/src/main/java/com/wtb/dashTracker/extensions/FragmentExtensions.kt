@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.extensions
 
-import android.content.Context
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment

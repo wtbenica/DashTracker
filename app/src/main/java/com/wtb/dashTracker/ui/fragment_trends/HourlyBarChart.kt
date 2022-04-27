@@ -298,7 +298,7 @@ class HourlyBarChart(
         }
     }
 
-    fun List<TransactionDao.Cpm>.getByDate(date: LocalDate): TransactionDao.Cpm? {
+    private fun List<TransactionDao.Cpm>.getByDate(date: LocalDate): TransactionDao.Cpm? {
         val index = binarySearch { cpm: TransactionDao.Cpm ->
             cpm.date.compareTo(date.endOfWeek)
         }

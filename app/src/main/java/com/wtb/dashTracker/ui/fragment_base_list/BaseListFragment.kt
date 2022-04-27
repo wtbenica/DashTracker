@@ -27,9 +27,7 @@ import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.extensions.transitionBackground
 
-class BaseListFragment : Fragment() {
-
-}
+class BaseListFragment : Fragment()
 
 interface ListItemType
 

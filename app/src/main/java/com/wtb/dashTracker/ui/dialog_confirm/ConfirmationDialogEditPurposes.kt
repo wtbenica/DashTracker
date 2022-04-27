@@ -112,7 +112,5 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
         }
     }
 
-    companion object {
-
-    }
+    companion object
 }
