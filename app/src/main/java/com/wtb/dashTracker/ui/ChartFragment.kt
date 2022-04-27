@@ -68,7 +68,7 @@ class ChartFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
             initialize(this@ChartFragment, HourlyBarChart(context).apply { init() })
         }
         val hourlyByDayChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartFragment, HourlyByDayBarChart(context).apply { init() })
+            initialize(this@ChartFragment, ByDayOfWeekBarChart(context).apply { init() })
         }
 
         binding.chartList.apply {

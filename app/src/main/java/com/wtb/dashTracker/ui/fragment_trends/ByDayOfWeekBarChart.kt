@@ -21,6 +21,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.annotation.AttrRes
+import androidx.annotation.IdRes
 import androidx.core.content.res.ResourcesCompat
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.components.AxisBase
@@ -38,11 +39,12 @@ import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHourlyByDayBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.extensions.getFloatString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 
 @ExperimentalCoroutinesApi
-class HourlyByDayBarChart(
+class ByDayOfWeekBarChart(
     context: Context,
     attrSet: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -61,6 +63,18 @@ class HourlyByDayBarChart(
 
     private val dailyStats: List<DailyStats>
         get() = collectDailyStats()
+
+    @IdRes
+    private var selectedGraph: Int = binding.graphSelector.checkedButtonId
+
+    init {
+        binding.graphSelector.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (isChecked) {
+                selectedGraph = checkedId
+                update(mCpmList, mEntries, mWeeklies)
+            }
+        }
+    }
 
     fun HorizontalBarChart.style() {
         fun XAxis.style() {
@@ -121,9 +135,24 @@ class HourlyByDayBarChart(
         val barSize = .4f
         val amPmBarOffset = barSize / 2
 
+        val amLambda = when (selectedGraph) {
+            R.id.btn_chart_per_delivery -> { ds: DailyStats -> safeDiv(ds.amEarned, ds.amDels) }
+            R.id.btn_chart_del_per_hr -> { ds: DailyStats -> safeDiv(ds.amDels, ds.amHours) }
+            else -> { ds: DailyStats -> safeDiv(ds.amEarned, ds.amHours) }
+        }
+
+        val pmLambda = when (selectedGraph) {
+            R.id.btn_chart_per_delivery -> { ds: DailyStats -> safeDiv(ds.pmEarned, ds.pmDels) }
+            R.id.btn_chart_del_per_hr -> { ds: DailyStats -> safeDiv(ds.pmDels, ds.pmHours) }
+            else -> { ds: DailyStats -> safeDiv(ds.pmEarned, ds.pmHours) }
+        }
+
         val dataSetAm: BarDataSet =
-            dailyStats.getBarDataSet(label = "AM", barColor = R.attr.colorDayHeader) { ds ->
-                DailyStatsRow.safeDiv(ds.amEarned, ds.amHours)?.let { hourly ->
+            dailyStats.getBarDataSet(
+                label = "AM",
+                barColor = R.attr.colorDayHeader
+            ) { ds: DailyStats ->
+                amLambda(ds)?.let { hourly ->
                     ds.day?.value?.toFloat()
                         ?.let { day -> BarEntry(8 - day - amPmBarOffset, hourly) }
                 }
@@ -131,7 +160,7 @@ class HourlyByDayBarChart(
 
         val dataSetPm: BarDataSet =
             dailyStats.getBarDataSet(label = "PM", barColor = R.attr.colorNightHeader) { ds ->
-                DailyStatsRow.safeDiv(ds.pmEarned, ds.pmHours)?.let { hourly ->
+                pmLambda(ds)?.let { hourly ->
                     ds.day?.value?.toFloat()
                         ?.let { day -> BarEntry(8 - day + amPmBarOffset, hourly) }
                 }
@@ -182,8 +211,35 @@ class HourlyByDayBarChart(
         valueTextSize = context.getDimen(R.dimen.text_size_sm)
         valueFormatter = object : ValueFormatter() {
             override fun getBarLabel(barEntry: BarEntry?): String {
-                return context.getCurrencyString(barEntry?.y)
+                return when (selectedGraph) {
+                    R.id.btn_chart_del_per_hr -> context.getFloatString(barEntry?.y)
+                    else -> context.getCurrencyString(barEntry?.y)
+                }
             }
         }
     }
+
+    companion object {
+        fun safeDiv(a: Float?, b: Float?): Float? =
+            a?.let { _a -> b?.let { _b ->
+                    if (_b == 0f) { null } else { _a / _b }
+                }
+            }
+    }
+}
+
+
+data class DailyStats(
+    val day: DayOfWeek? = null,
+    val amHours: Float? = null,
+    val pmHours: Float? = null,
+    val amEarned: Float? = null,
+    val pmEarned: Float? = null,
+    val amDels: Float? = null,
+    val pmDels: Float? = null,
+    val amNumShifts: Int? = null,
+    val pmNumShifts: Int? = null
+) {
+    val amHourly = DailyStatsRow.safeDiv(amEarned, amHours)
+    val pmHourly = DailyStatsRow.safeDiv(pmEarned, pmHours)
 }

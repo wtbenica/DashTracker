@@ -286,10 +286,13 @@ class HourlyBarChart(
         barChartGrossNetHourly.xAxis.axisMaximum = dataSet.xMax + xAxisOffset
 
         barChartGrossNetHourly.apply {
-            data =
-                dataSet.apply {
-                    this.barWidth = if (isDailySelected) dailyBarWidth else weeklyBarWidth
-                }
+            data = dataSet.apply {
+                this.barWidth =
+                    if (isDailySelected)
+                        dailyBarWidth
+                    else
+                        weeklyBarWidth
+            }
             setVisibleXRangeMinimum(if (isDailySelected) 7f else 56f)
         }
 

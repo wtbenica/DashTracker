@@ -22,9 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/ChartCardLayout"
-            android:padding="@dimen/margin_default">
+        <androidx.constraintlayout.widget.ConstraintLayout style="@style/ChartCardLayout">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cpm_chart_card"
@@ -39,9 +37,8 @@
                     android:id="@+id/cpm_chart_line_cpm"
                     style="@style/DashTrackerChart"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
-                    android:layout_margin="@dimen/margin_default"
-                    android:padding="@dimen/margin_default" />
+                    android:layout_height="wrap_content"
+                    android:minHeight="400dp" />
             </androidx.cardview.widget.CardView>
 
             <TextView

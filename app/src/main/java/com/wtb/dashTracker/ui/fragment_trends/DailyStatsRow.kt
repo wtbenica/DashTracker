@@ -33,7 +33,7 @@ import java.util.*
 class DailyStatsRow @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    stats: DailyStats? = null
+    stats: DailyStats2? = null
 ) : GridLayout(context, attrs) {
     private var binding: FragInsightsRowBinding
 
@@ -151,7 +151,7 @@ fun View.setGridLayoutRow(row: Int, span: Int = 1) {
     layoutParams = lp
 }
 
-data class DailyStats(
+data class DailyStats2(
     val day: DayOfWeek? = null,
     val amHours: Float? = null,
     val pmHours: Float? = null,

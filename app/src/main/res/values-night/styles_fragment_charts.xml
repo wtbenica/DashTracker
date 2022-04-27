@@ -23,9 +23,10 @@
     </style>
 
     <style name="ChartCardLayout">
-        <item name="android:padding">@dimen/margin_default</item>
+        <item name="android:padding">@dimen/margin_narrow</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@drawable/bg_list_item</item>
     </style>
 
     <style name="ChartCardTitle" parent="ListItemHeaderTextView.Title">

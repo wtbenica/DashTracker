@@ -202,7 +202,10 @@ class CpmChart(
         lineChartCpm.xAxis?.axisMinimum = dataSet.xMin - 2
         lineChartCpm.xAxis?.axisMaximum = dataSet.xMax + 2
 
-        lineChartCpm.data = LineData(dataSet)
+        lineChartCpm.apply {
+            data = LineData(dataSet)
+            setVisibleXRangeMinimum(56f)
+        }
 
         (context as MainActivity).runOnUiThread {
             lineChartCpm.animateY(1000)

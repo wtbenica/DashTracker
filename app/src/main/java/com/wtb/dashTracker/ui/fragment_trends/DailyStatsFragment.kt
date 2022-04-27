@@ -80,10 +80,10 @@ class DailyStatsFragment : Fragment() {
             binding.dailyStatsFragmentTable.addView(binding.dailyStatsFragmentLabelNumShifts)
 
             DayOfWeek.values().forEach { day ->
-                val stats: DailyStats = entries.filter { entry: DashEntry ->
+                val stats: DailyStats2 = entries.filter { entry: DashEntry ->
                     entry.startDateTime?.dayOfWeek == day
-                }.fold(DailyStats(day = day)) { a: DailyStats, d: DashEntry ->
-                    DailyStats(
+                }.fold(DailyStats2(day = day)) { a: DailyStats2, d: DashEntry ->
+                    DailyStats2(
                         day = a.day,
                         amHours = (a.amHours ?: 0f) + (d.dayHours ?: 0f),
                         pmHours = (a.pmHours ?: 0f) + (d.nightHours ?: 0f),
