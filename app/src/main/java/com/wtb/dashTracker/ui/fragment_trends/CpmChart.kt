@@ -35,7 +35,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
-import com.wtb.dashTracker.databinding.ListItemEntryChartCpmBinding
+import com.wtb.dashTracker.databinding.ChartCpmBinding
 import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
@@ -56,7 +56,7 @@ class CpmChart(
     R.string.lbl_cost_per_mile,
     R.string.frag_title_expenses
 ) {
-    val binding = ListItemEntryChartCpmBinding.inflate(LayoutInflater.from(context), this)
+    val binding = ChartCpmBinding.inflate(LayoutInflater.from(context), this)
     private var lineChartCpm: WeeklyLineChart = binding.cpmChartLineCpm.apply { style() }
 
     fun WeeklyLineChart.style() {

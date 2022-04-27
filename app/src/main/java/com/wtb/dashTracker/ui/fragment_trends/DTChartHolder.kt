@@ -25,7 +25,7 @@ import androidx.annotation.StringRes
 import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
-import com.wtb.dashTracker.databinding.ListItemChartCpmBinding
+import com.wtb.dashTracker.databinding.ChartHolderBinding
 import com.wtb.dashTracker.ui.fragment_base_list.toggleListItemVisibility
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -37,7 +37,7 @@ class DTChartHolder @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrSet, defStyleAttr) {
     private var mCallback: DTChartHolderCallback? = null
-    val binding = ListItemChartCpmBinding.inflate(LayoutInflater.from(context), this)
+    val binding = ChartHolderBinding.inflate(LayoutInflater.from(context), this)
 
     private var mCpmList = listOf<Cpm>()
     private var mEntries = listOf<DashEntry>()
@@ -47,7 +47,7 @@ class DTChartHolder @JvmOverloads constructor(
     interface DTChartHolderCallback
 
     init {
-        binding.listItemCard.setOnClickListener {
+        binding.listItemHeader.setOnClickListener {
             toggleListItemVisibility(binding.listItemDetails, binding.listItemWrapper)
         }
     }

@@ -35,11 +35,11 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
-import com.wtb.dashTracker.databinding.ListItemChartHourlyBinding
+import com.wtb.dashTracker.databinding.ChartHourlyGrossNetBinding
 import com.wtb.dashTracker.extensions.dtfMini
+import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
-import com.wtb.dashTracker.ui.getByDate
 import com.wtb.dashTracker.views.WeeklyBarChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -53,11 +53,11 @@ class HourlyBarChart(
     context,
     attrSet,
     defStyleAttr,
-    R.string.lbl_hourly_by_day_of_week,
+    R.string.lbl_hourly_gross_net,
     R.string.frag_title_income
 ) {
     val binding =
-        ListItemChartHourlyBinding.inflate(LayoutInflater.from(context), this)
+        ChartHourlyGrossNetBinding.inflate(LayoutInflater.from(context), this)
     private var barChartGrossNetHourly: WeeklyBarChart =
         binding.chartLineHourlyTrend.apply { style() }
 
@@ -298,4 +298,13 @@ class HourlyBarChart(
         }
     }
 
+    fun List<TransactionDao.Cpm>.getByDate(date: LocalDate): TransactionDao.Cpm? {
+        val index = binarySearch { cpm: TransactionDao.Cpm ->
+            cpm.date.compareTo(date.endOfWeek)
+        }
+        return if (index >= 0)
+            get(index)
+        else
+            null
+    }
 }
