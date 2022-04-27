@@ -39,8 +39,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-class ChartFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
-    private val viewModel: DailyStatsViewModel by viewModels()
+class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
+    private val viewModel: ChartsViewModel by viewModels()
     private lateinit var binding: FragChartsBinding
 
     private lateinit var barChartHourlyByDay: HorizontalBarChart
@@ -62,13 +62,13 @@ class ChartFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
         binding = FragChartsBinding.bind(view)
 
         val cpmChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartFragment, CpmChart(context).apply { init() })
+            initialize(this@ChartsFragment, CpmChart(context).apply { init() })
         }
         val hourlyGrossNetChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartFragment, HourlyBarChart(context).apply { init() })
+            initialize(this@ChartsFragment, HourlyBarChart(context).apply { init() })
         }
         val hourlyByDayChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartFragment, ByDayOfWeekBarChart(context).apply { init() })
+            initialize(this@ChartsFragment, ByDayOfWeekBarChart(context).apply { init() })
         }
 
         binding.chartList.apply {

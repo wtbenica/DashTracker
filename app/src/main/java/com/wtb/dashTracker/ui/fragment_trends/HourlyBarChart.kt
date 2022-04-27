@@ -40,6 +40,7 @@ import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
 import com.wtb.dashTracker.views.WeeklyBarChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -125,7 +126,7 @@ class HourlyBarChart(
 
     override fun init() {
         fun SeekBar.initialize() {
-            min = DailyStatsViewModel.MIN_NUM_DAYS_HOURLY_TREND
+            min = ChartsViewModel.MIN_NUM_DAYS_HOURLY_TREND
             max = if (isDailySelected) {
                 mEntries.size
             } else {
@@ -152,7 +153,7 @@ class HourlyBarChart(
                     // Do nothing
                 }
             })
-            progress = DailyStatsViewModel.MIN_NUM_DAYS_HOURLY_TREND
+            progress = ChartsViewModel.MIN_NUM_DAYS_HOURLY_TREND
         }
 
         binding.hourlyTrendButtonGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
@@ -164,9 +165,9 @@ class HourlyBarChart(
                         binding.labelNumWeeksHourlyTrends.text =
                             context.getString(R.string.lbl_num_days)
                         binding.seekBarNumWeeksHourlyTrend.apply {
-                            min = DailyStatsViewModel.MIN_NUM_DAYS_HOURLY_TREND
+                            min = ChartsViewModel.MIN_NUM_DAYS_HOURLY_TREND
                             max = Integer.max(
-                                DailyStatsViewModel.MIN_NUM_DAYS_HOURLY_TREND,
+                                ChartsViewModel.MIN_NUM_DAYS_HOURLY_TREND,
                                 mEntries.size
                             )
                             progress = min
@@ -177,8 +178,8 @@ class HourlyBarChart(
                         binding.labelNumWeeksHourlyTrends.text =
                             context.getString(R.string.lbl_num_weeks)
                         binding.seekBarNumWeeksHourlyTrend.apply {
-                            min = DailyStatsViewModel.MIN_NUM_WEEKS
-                            max = Integer.max(DailyStatsViewModel.MIN_NUM_WEEKS, mWeeklies.size)
+                            min = ChartsViewModel.MIN_NUM_WEEKS
+                            max = Integer.max(ChartsViewModel.MIN_NUM_WEEKS, mWeeklies.size)
                             progress = min
                         }
                     }
@@ -221,7 +222,7 @@ class HourlyBarChart(
                 if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
                     val cpm =
                         if (mCpmList.isNotEmpty()) mCpmList.getByDate(it.date)?.cpm ?: 0f else 0f
-                    val expense: Float = DailyStatsRow.safeDiv(
+                    val expense: Float = safeDiv(
                         (it.mileage ?: 0f) * cpm,
                         it.totalHours
                     ) ?: 0f

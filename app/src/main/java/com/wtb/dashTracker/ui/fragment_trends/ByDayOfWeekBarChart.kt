@@ -40,6 +40,7 @@ import com.wtb.dashTracker.databinding.ChartHourlyByDayBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.extensions.getFloatString
+import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 
@@ -136,15 +137,15 @@ class ByDayOfWeekBarChart(
         val amPmBarOffset = barSize / 2
 
         val amLambda = when (selectedGraph) {
-            R.id.btn_chart_per_delivery -> { ds: DailyStats -> safeDiv(ds.amEarned, ds.amDels) }
-            R.id.btn_chart_del_per_hr -> { ds: DailyStats -> safeDiv(ds.amDels, ds.amHours) }
-            else -> { ds: DailyStats -> safeDiv(ds.amEarned, ds.amHours) }
+            R.id.btn_chart_per_delivery -> DailyStats::amAvgDel
+            R.id.btn_chart_del_per_hr -> DailyStats::amDelHr
+            else -> DailyStats::amHourly
         }
 
         val pmLambda = when (selectedGraph) {
-            R.id.btn_chart_per_delivery -> { ds: DailyStats -> safeDiv(ds.pmEarned, ds.pmDels) }
-            R.id.btn_chart_del_per_hr -> { ds: DailyStats -> safeDiv(ds.pmDels, ds.pmHours) }
-            else -> { ds: DailyStats -> safeDiv(ds.pmEarned, ds.pmHours) }
+            R.id.btn_chart_per_delivery -> DailyStats::pmAvgDel
+            R.id.btn_chart_del_per_hr -> DailyStats::pmDelHr
+            else -> DailyStats::pmHourly
         }
 
         val dataSetAm: BarDataSet =
@@ -221,8 +222,13 @@ class ByDayOfWeekBarChart(
 
     companion object {
         fun safeDiv(a: Float?, b: Float?): Float? =
-            a?.let { _a -> b?.let { _b ->
-                    if (_b == 0f) { null } else { _a / _b }
+            a?.let { _a ->
+                b?.let { _b ->
+                    if (_b == 0f) {
+                        null
+                    } else {
+                        _a / _b
+                    }
                 }
             }
     }
@@ -240,6 +246,10 @@ data class DailyStats(
     val amNumShifts: Int? = null,
     val pmNumShifts: Int? = null
 ) {
-    val amHourly = DailyStatsRow.safeDiv(amEarned, amHours)
-    val pmHourly = DailyStatsRow.safeDiv(pmEarned, pmHours)
+    val amHourly = safeDiv(amEarned, amHours)
+    val pmHourly = safeDiv(pmEarned, pmHours)
+    val amAvgDel = safeDiv(amEarned, amDels)
+    val pmAvgDel = safeDiv(pmEarned, pmDels)
+    val amDelHr = safeDiv(amDels, amHours)
+    val pmDelHr = safeDiv(pmDels, pmHours)
 }

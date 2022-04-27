@@ -30,7 +30,7 @@ val Any.TAG: String
     get() = APP + this::class.simpleName
 
 @ExperimentalCoroutinesApi
-class DailyStatsViewModel : ViewModel() {
+class ChartsViewModel : ViewModel() {
     companion object {
         const val MIN_NUM_WEEKS = 8
         const val MIN_NUM_DAYS_HOURLY_TREND = 7

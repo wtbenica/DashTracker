@@ -120,7 +120,7 @@ class CpmChart(
 
     override fun init() {
         fun SeekBar.initialize() {
-            min = DailyStatsViewModel.MIN_NUM_WEEKS
+            min = ChartsViewModel.MIN_NUM_WEEKS
             max = mCpmList.size
 
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -142,7 +142,7 @@ class CpmChart(
                     // Do nothing
                 }
             })
-            progress = DailyStatsViewModel.MIN_NUM_WEEKS
+            progress = ChartsViewModel.MIN_NUM_WEEKS
         }
 
         lineChartCpm = binding.cpmChartLineCpm.apply { style() }
