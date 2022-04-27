@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.extensions
 
 import android.content.Context
+import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import com.wtb.dashTracker.R
 
@@ -37,3 +38,6 @@ fun Context.getFloatString(value: Float?): String =
         getString(R.string.blank_float)
     else
         getStringOrElse(R.string.float_fmt, "-", value)
+
+fun Context.getDimen(@DimenRes res: Int) =
+    resources.getDimension(res) / resources.displayMetrics.density

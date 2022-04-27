@@ -55,6 +55,10 @@ abstract class WeeklyDao : BaseDao<Weekly>("weekly", "date") {
     @Query("SELECT * FROM Weekly WHERE date = :date LIMIT 1")
     abstract fun getWeeklyByDate(date: LocalDate): Flow<FullWeekly?>
 
+    @Transaction
+    @Query("SELECT * FROM Weekly WHERE date = :date LIMIT 1")
+    abstract suspend fun getWeeklyByDateSus(date: LocalDate): FullWeekly?
+
     companion object {
         private const val SQL_GET_ALL = "SELECT * FROM Weekly ORDER BY date DESC"
     }

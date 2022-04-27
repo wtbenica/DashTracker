@@ -14,43 +14,32 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_weekly
+package com.wtb.dashTracker.ui.fragment_trends
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
+import androidx.lifecycle.ViewModel
+import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
-import com.wtb.dashTracker.database.models.Weekly
-import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.ui.BaseViewModel
+import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import java.time.LocalDate
+import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class WeeklyViewModel : BaseViewModel<Weekly>() {
-    override fun getItemFlowById(id: Int): Flow<Weekly?> =
-        repository.getBasePayAdjustFlowById(id)
+val Any.TAG: String
+    get() = APP + this::class.simpleName
 
-    private val _date = MutableStateFlow(LocalDate.now().endOfWeek.minusDays(7))
-    val date: StateFlow<LocalDate>
-        get() = _date
-
-    val weekly: LiveData<FullWeekly?> = date.flatMapLatest {
-        repository.getWeeklyByDate(it)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = null
-    ).asLiveData()
-
-    fun loadDate(date: LocalDate) {
-        _date.value = date
+@ExperimentalCoroutinesApi
+class ChartsViewModel : ViewModel() {
+    companion object {
+        const val MIN_NUM_WEEKS = 8
+        const val MIN_NUM_DAYS_HOURLY_TREND = 7
     }
 
-    val allWeekliesPaged: Flow<PagingData<FullWeekly>> = repository.allWeekliesPaged
+    private val repository: Repository = Repository.get()
+
+    internal val entryList: Flow<List<DashEntry>> = repository.allEntries
+    internal val weeklyList: Flow<List<FullWeekly>> = repository.allWeeklies
 
     suspend fun getExpensesAndCostPerMile(
         compWeekly: FullWeekly,

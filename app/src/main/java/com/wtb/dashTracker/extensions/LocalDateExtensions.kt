@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter
 val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd, yyyy")
 val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd")
 val dtfShortDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
+val dtfMini: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
 val dtfShortDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
 val dtfTime: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 

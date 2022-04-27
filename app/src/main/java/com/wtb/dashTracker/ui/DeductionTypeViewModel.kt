@@ -18,7 +18,6 @@ package com.wtb.dashTracker.ui
 
 import androidx.lifecycle.ViewModel
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

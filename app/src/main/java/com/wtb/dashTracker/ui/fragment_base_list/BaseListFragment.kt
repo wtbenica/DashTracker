@@ -27,11 +27,25 @@ import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.extensions.transitionBackground
 
-class BaseListFragment : Fragment() {
-
-}
+class BaseListFragment : Fragment()
 
 interface ListItemType
+
+fun toggleListItemVisibility(collapseArea: View, backgroundArea: View) {
+    if (collapseArea.visibility == View.VISIBLE) {
+        collapseArea.collapse()
+        backgroundArea.transitionBackground(
+            R.attr.colorListItemExpanded,
+            R.attr.colorListItem
+        )
+    } else {
+        collapseArea.expand()
+        backgroundArea.transitionBackground(
+            R.attr.colorListItem,
+            R.attr.colorListItemExpanded
+        )
+    }
+}
 
 abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
     PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback) {
@@ -68,20 +82,7 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
     }
 
     override fun onClick(v: View?) {
-        if (collapseArea.visibility == View.VISIBLE) {
-            collapseArea.collapse()
-            backgroundArea.transitionBackground(
-                R.attr.colorListItemExpanded,
-                R.attr.colorListItem
-            )
-
-        } else {
-            collapseArea.expand()
-            backgroundArea.transitionBackground(
-                R.attr.colorListItem,
-                R.attr.colorListItemExpanded
-            )
-        }
+        toggleListItemVisibility(collapseArea, backgroundArea)
     }
 
     protected fun setPayloadVisibility(payloads: MutableList<Any>?) {

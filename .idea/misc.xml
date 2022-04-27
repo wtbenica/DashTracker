@@ -15,6 +15,7 @@
         <entry key="app/src/main/res/drawable/ante_meridiem.xml" value="0.2415" />
         <entry key="app/src/main/res/drawable/background_edit_text.xml" value="0.175" />
         <entry key="app/src/main/res/drawable/background_image_button.xml" value="0.15625" />
+        <entry key="app/src/main/res/drawable/bad_to_good.xml" value="0.15" />
         <entry key="app/src/main/res/drawable/bg_dialog_frag_popup_menu.xml" value="0.1565" />
         <entry key="app/src/main/res/drawable/bg_edit_text.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/bg_end_button.xml" value="0.1565" />
@@ -103,6 +104,7 @@
         <entry key="app/src/main/res/drawable/top_right_corner.xml" value="0.18645833333333334" />
         <entry key="app/src/main/res/font/anton.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/font/coda.xml" value="0.225" />
+        <entry key="app/src/main/res/font/lalezar.xml" value="0.1" />
         <entry key="app/src/main/res/font/neucha.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/font/nunito_extralight.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/font/tauri.xml" value="0.1368106028217187" />
@@ -113,6 +115,10 @@
         <entry key="app/src/main/res/layout/bottom_sheet_content_expense.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/layout/bottom_sheet_content_income.xml" value="0.67" />
         <entry key="app/src/main/res/layout/bottom_sheet_content_trends.xml" value="0.2877297990594271" />
+        <entry key="app/src/main/res/layout/chart_cpm.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/chart_holder.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/chart_hourly_by_day.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/chart_hourly_gross_net.xml" value="0.11290322580645161" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.40929535232383807" />
         <entry key="app/src/main/res/layout/daily_stats_row.xml" value="0.5324367088607594" />
         <entry key="app/src/main/res/layout/datetime_pickers.xml" value="0.39565217391304347" />
@@ -142,8 +148,12 @@
         <entry key="app/src/main/res/layout/dropdown_single_item.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dropdown_single_item_popup.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fab_flyout_button.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/frag_charts.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/frag_charts_2.xml" value="0.28974358974358977" />
         <entry key="app/src/main/res/layout/frag_item_list.xml" value="0.2877297990594271" />
+        <entry key="app/src/main/res/layout/frag_trends.xml" value="0.2876068376068376" />
         <entry key="app/src/main/res/layout/fragment_authenticate.xml" value="0.178125" />
+        <entry key="app/src/main/res/layout/fragment_chart.xml" value="0.2729957805907173" />
         <entry key="app/src/main/res/layout/fragment_daily_stats.xml" value="0.35" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_entry.xml" value="0.35104166666666664" />
@@ -156,8 +166,15 @@
         <entry key="app/src/main/res/layout/grid_gas_expense.xml" value="0.5" />
         <entry key="app/src/main/res/layout/grid_other_expense.xml" value="0.7490636704119851" />
         <entry key="app/src/main/res/layout/layout_main_bottom_sheet.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/list_item_entry.xml" value="1.0" />
-        <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.7001897533206831" />
+        <entry key="app/src/main/res/layout/list_item_chart.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_chart_cpm.xml" value="0.20384615384615384" />
+        <entry key="app/src/main/res/layout/list_item_chart_daily_hourly.xml" value="0.13168724279835392" />
+        <entry key="app/src/main/res/layout/list_item_chart_hourly.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_entry.xml" value="0.23464249748237664" />
+        <entry key="app/src/main/res/layout/list_item_entry_chart_cpm.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_entry_chart_daily_hourly.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_entry_chart_hourly_net_gross.xml" value="0.2901709401709402" />
+        <entry key="app/src/main/res/layout/list_item_entry_details_table.xml" value="0.6643952299829642" />
         <entry key="app/src/main/res/layout/list_item_expense.xml" value="0.35639097744360904" />
         <entry key="app/src/main/res/layout/list_item_expense_2.xml" value="0.75" />
         <entry key="app/src/main/res/layout/list_item_expense_gas.xml" value="0.5" />
@@ -174,6 +191,7 @@
         <entry key="app/src/main/res/layout/list_item_yearly_details_table.xml" value="0.3141025641025641" />
         <entry key="app/src/main/res/layout/main_fragment.xml" value="0.28730226592560926" />
         <entry key="app/src/main/res/layout/practice.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/sample_chart_card.xml" value="0.5" />
         <entry key="app/src/main/res/layout/sample_daily_stats_row.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/screenshot_daily.xml" value="0.22" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.25" />

@@ -45,9 +45,9 @@
 
     <fragment
         android:id="@+id/navigation_insights"
-        android:name="com.wtb.dashTracker.ui.fragment_trends.DailyStatsFragment"
+        android:name="com.wtb.dashTracker.ui.ChartsFragment"
         android:label="@string/frag_title_trends"
-        tools:layout="@layout/frag_trends">
+        tools:layout="@layout/frag_charts">
 
         <action
             android:id="@+id/action_insights_to_income"

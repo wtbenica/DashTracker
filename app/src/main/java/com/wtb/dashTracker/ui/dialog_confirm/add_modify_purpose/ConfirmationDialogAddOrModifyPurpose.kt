@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("RedundantNullableReturnType", "RedundantNullableReturnType")
+
 package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
 
 import android.graphics.Color
@@ -26,7 +28,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
@@ -129,7 +130,6 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
     }
 
     companion object {
-        const val TAG = APP + "ConfirmDialogAddPurpose"
         const val ARG_PURPOSE_NAME = "arg_purpose_name"
         const val ARG_PURPOSE_ID = "arg_purpose_id"
         private const val ARG_PREV_PURPOSE = "arg_prev_purpose"
