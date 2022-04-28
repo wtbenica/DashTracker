@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +15,22 @@
   -->
 
 <resources>
+
     <style name="MyDatePickerStyle" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Calender Number color arrow color (< >) -->
+        <item name="android:textColorPrimary">@color/on_brick</item>
+
+        <!-- calendar days of week -->
+        <item name="android:textColorSecondary">@color/faded</item>
+
+        <!--title bar day , month / selected day-->
+        <item name="android:textColorPrimaryInverse">@color/on_brick</item>
+
+        <!-- Title bar year -->
+        <item name="android:textColorSecondaryInverse">@color/faded</item>
+
         <!-- Title bar background -->
         <item name="colorAccent">@color/dark</item>
-
-        <!-- title bar text -->
-        <item name="android:headerMonthTextAppearance">@style/PickerTitleTextAppearance</item>
-
-        <!-- background -->
-        <item name="android:windowBackground">@color/brick_dark</item>
-        <item name="android:timePickerStyle">@style/MyTimePicker</item>
-
-        <!-- arrow background -->
-        <item name="android:selectableItemBackgroundBorderless">@color/brick</item>
 
         <!-- selector -->
         <item name="colorControlActivated">@color/regular</item>
@@ -36,19 +38,29 @@
         <!-- selected year highlight -->
         <item name="colorControlHighlight">@color/faded</item>
 
-        <!-- calendar text -->
-        <item name="android:textColorPrimary">@color/on_brick</item>
+        <!-- background -->
+        <item name="android:windowBackground">@color/brick_dark</item>
+        <item name="android:timePickerStyle">@style/MyTimePicker</item>
 
-        <!-- days of week -->
-        <item name="android:textColorSecondary">@color/faded</item>
+        <!-- arrow background -->
+        <item name="android:selectableItemBackgroundBorderless">@android:color/transparent</item>
 
-        <!-- selected date -->
-        <item name="android:textColorPrimaryInverse">@color/faded</item>
+        <item name="android:buttonBarPositiveButtonStyle">
+            @style/MyDatePickerButtonStyle
+        </item>
 
-        <!-- button text -->
-        <item name="android:textColor">@color/light</item>
+        <item name="android:buttonBarNegativeButtonStyle">
+            @style/MyDatePickerButtonStyle
+        </item>
     </style>
 
+    <style name="MyDatePickerButtonStyle">
+        <item name="android:textColor">@color/faded</item>\
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
+
+    <!-- This isn't needed for the date picker, but is required for time picker.
+    you might think you want to delete it, but you don't -->
     <style name="PickerTitleTextAppearance" parent="TextAppearance.AppCompat.Display1">
         <item name="android:textColor">@color/on_brick</item>
     </style>

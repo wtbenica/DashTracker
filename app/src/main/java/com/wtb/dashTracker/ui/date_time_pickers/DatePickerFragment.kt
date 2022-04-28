@@ -26,6 +26,8 @@ import com.wtb.dashTracker.extensions.dtfDate
 import java.time.LocalDate
 import java.util.*
 
+// TODO: This needs a parameterless constructor and needs to be set up to work with bundles so the
+//  fragment can be recreated on orientation/theme change
 class DatePickerFragment(private val dateTextView: TextView) : DialogFragment(),
     DatePickerDialog.OnDateSetListener {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

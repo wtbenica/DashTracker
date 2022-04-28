@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +16,26 @@
 
 <resources>
     <style name="MyDatePickerStyle" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Calender Number color arrow color (< >) -->
+        <item name="android:textColorPrimary">@color/on_regular</item>
+
+        <!-- calendar days of week -->
+        <item name="android:textColorSecondary">@color/dark</item>
+
+        <!--title bar day , month / selected day-->
+        <item name="android:textColorPrimaryInverse">@color/on_brick</item>
+
+        <!-- Title bar year -->
+        <item name="android:textColorSecondaryInverse">@color/light</item>
+
         <!-- Title bar background -->
         <item name="colorAccent">@color/dark</item>
 
-        <!-- Title bar text -->
-        <item name="android:headerMonthTextAppearance">@style/PickerTitleTextAppearance</item>
+        <!-- selector -->
+        <item name="colorControlActivated">@color/regular</item>
+
+        <!-- selected year highlight -->
+        <item name="colorControlHighlight">@color/on_regular</item>
 
         <!-- background -->
         <item name="android:windowBackground">@color/on_brick</item>
@@ -30,31 +44,28 @@
         <!-- arrow background -->
         <item name="android:selectableItemBackgroundBorderless">@android:color/transparent</item>
 
-        <!-- selector -->
-        <item name="colorControlActivated">@color/dark</item>
+        <item name="android:buttonBarPositiveButtonStyle">
+            @style/MyDatePickerButtonStyle
+        </item>
 
-        <!-- selected year highlight -->
-        <item name="colorControlHighlight">@color/light</item>
-
-        <!-- calendar text -->
-        <item name="android:textColorPrimary">@color/on_regular_light</item>
-
-        <!-- days of week -->
-        <item name="android:textColorSecondary">@color/dark</item>
-
-        <!-- selected date -->
-        <item name="android:textColorPrimaryInverse">@color/on_regular</item>
-
-        <!-- button text -->
-        <item name="android:textColor">@color/dark</item>
+        <item name="android:buttonBarNegativeButtonStyle">
+            @style/MyDatePickerButtonStyle
+        </item>
     </style>
 
+    <style name="MyDatePickerButtonStyle">
+        <item name="android:textColor">@color/dark</item>\
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
+
+    <!-- This isn't needed for the date picker, but is required for time picker.
+    you might think you want to delete it, but you don't -->
     <style name="PickerTitleTextAppearance" parent="TextAppearance.AppCompat.Display1">
         <item name="android:textColor">@color/on_brick</item>
     </style>
 
     <style name="MyTimePicker" parent="Widget.MaterialComponents.TimePicker">
-        <item name="android:headerBackground">@color/dark</item>
+        <item name="android:headerBackground">@color/regular</item>
         <item name="android:headerTimeTextAppearance">@style/PickerTitleTextAppearance</item>
         <item name="android:headerAmPmTextAppearance">@style/PickerTitleTextAppearance</item>
         <item name="android:numbersBackgroundColor">@color/faded</item>

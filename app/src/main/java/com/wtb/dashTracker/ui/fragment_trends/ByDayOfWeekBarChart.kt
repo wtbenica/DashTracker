@@ -235,6 +235,7 @@ class ByDayOfWeekBarChart(
 }
 
 
+@ExperimentalCoroutinesApi
 data class DailyStats(
     val day: DayOfWeek? = null,
     val amHours: Float? = null,
