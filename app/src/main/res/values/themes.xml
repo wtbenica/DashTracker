@@ -136,11 +136,11 @@
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorOnPrimary</item>
-        <item name="colorBottomNavTextEnabled">?attr/colorOnPrimary</item>
-        <item name="colorBottomNavDisabled">?attr/colorPrimaryVariant</item>
-        <item name="colorBottomNavTextDisabled">?attr/colorPrimaryVariant</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorPrimary</item>
+        <item name="colorBottomNavEnabled">?attr/colorPrimaryDark</item>
+        <item name="colorBottomNavDisabled">?attr/colorPrimary</item>
+        <item name="colorBottomNavTextEnabled">?attr/colorPrimaryVariant</item>
+        <item name="colorBottomNavTextDisabled">?attr/colorPrimary</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorPrimaryVariant</item>
         <item name="colorPopupBackground">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
@@ -151,7 +151,7 @@
         <item name="colorGroupButton">?attr/colorSecondary</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
         <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
-        <item name="colorOptionsMenu">?attr/colorPrimary</item>
+        <item name="colorOptionsMenu">?attr/colorPrimaryFaded</item>
 
 <!--        <item name="colorGroupButtonText">@color/button_group_button_text</item>-->
 <!--        <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>-->
