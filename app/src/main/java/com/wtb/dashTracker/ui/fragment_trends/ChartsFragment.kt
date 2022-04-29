@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui
+package com.wtb.dashTracker.ui.fragment_trends
 
 import android.os.Bundle
 import android.util.Log
@@ -33,7 +33,6 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.FragChartsBinding
 import com.wtb.dashTracker.repository.DeductionType.ALL_EXPENSES
-import com.wtb.dashTracker.ui.fragment_trends.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

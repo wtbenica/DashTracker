@@ -20,6 +20,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,7 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
+import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
@@ -96,7 +98,13 @@ class EntryDialog : FullWidthDialogFragment() {
 
         dateTextView = view.findViewById<TextView>(R.id.frag_entry_date).apply {
             setOnClickListener {
-                DatePickerFragment(this).show(childFragmentManager, "date_picker")
+                DatePickerFragment.newInstance(
+                    R.id.frag_entry_date,
+                    this.text.toString(),
+                    REQUEST_KEY_DATE
+                )
+                    .show(childFragmentManager, "date_picker")
+//                DatePickerFragment(this).show(childFragmentManager, "date_picker")
             }
         }
 
@@ -174,6 +182,23 @@ class EntryDialog : FullWidthDialogFragment() {
                 saveConfirmed = true
             }
             dismiss()
+        }
+
+        childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_DATE,
+            this
+        ) { _, bundle ->
+            val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
+            val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
+            val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
+            val int = bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)
+            Log.d(TAG, "$int ${R.id.frag_entry_date} $year, $month, $dayOfMonth")
+            when (int) {
+                R.id.frag_entry_date -> {
+                    dateTextView.text =
+                        LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
+                }
+            }
         }
     }
 

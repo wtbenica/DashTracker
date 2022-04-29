@@ -47,6 +47,7 @@ import com.wtb.dashTracker.databinding.DialogFragExpenseBinding
 import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownFooterBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
+import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.dialog_confirm.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
@@ -95,7 +96,8 @@ class ExpenseDialog : FullWidthDialogFragment() {
          */
         binding.fragExpenseDate.apply {
             setOnClickListener {
-                DatePickerFragment(this).show(childFragmentManager, "date_picker")
+                DatePickerFragment.newInstance(R.id.frag_entry_date, this.text.toString(), REQUEST_KEY_DATE)
+//                DatePickerFragment(this).show(childFragmentManager, "date_picker")
             }
             doOnTextChanged { text, _, _, _ ->
                 updateExpense(date = text?.toDateOrNull() ?: LocalDate.now())

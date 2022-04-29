@@ -20,27 +20,79 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.widget.DatePicker
-import android.widget.TextView
+import androidx.annotation.IdRes
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.wtb.dashTracker.extensions.dtfDate
 import java.time.LocalDate
-import java.util.*
 
 // TODO: This needs a parameterless constructor and needs to be set up to work with bundles so the
 //  fragment can be recreated on orientation/theme change
-class DatePickerFragment(private val dateTextView: TextView) : DialogFragment(),
+class DatePickerFragment : DialogFragment(),
     DatePickerDialog.OnDateSetListener {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        LocalDate.parse(dateTextView.text, dtfDate)
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
 
-        return DatePickerDialog(requireContext(), this, year, month, day)
+    @IdRes
+    private var textViewId: Int? = null
+    private var currentText: String? = null
+    private var requestKey: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            textViewId = it.getInt(ARG_DATE_TEXTVIEW)
+            currentText = it.getString(ARG_CURRENT_TEXT)
+            requestKey = it.getString(ARG_REQUEST_KEY)
+        }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val date = LocalDate.parse(currentText, dtfDate)
+//        val c = Calendar.getInstance()
+//        val year = c.get(Calendar.YEAR)
+//        val month = c.get(Calendar.MONTH)
+//        val day = c.get(Calendar.DAY_OF_MONTH)
+
+        return DatePickerDialog(
+            requireContext(),
+            this,
+            date.year,
+            date.month.value - 1,
+            date.dayOfMonth
+        )
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        dateTextView.text = LocalDate.of(year, month + 1, dayOfMonth).format(dtfDate).toString()
+        parentFragmentManager.setFragmentResult(
+            REQUEST_KEY_DATE,
+            bundleOf(
+                ARG_NEW_YEAR to year,
+                ARG_NEW_MONTH to month + 1,
+                ARG_NEW_DAY to dayOfMonth,
+                ARG_DATE_TEXTVIEW to textViewId
+            )
+        )
+//        dateTextView.text = LocalDate.of(year, month + 1, dayOfMonth).format(dtfDate).toString()
+    }
+
+    companion object {
+        const val ARG_DATE_TEXTVIEW = "param1"
+        private const val ARG_CURRENT_TEXT = "param2"
+        private const val ARG_REQUEST_KEY = "param3"
+
+        const val REQUEST_KEY_DATE = "requestDatePicker"
+        const val ARG_NEW_YEAR = "year"
+        const val ARG_NEW_MONTH = "month"
+        const val ARG_NEW_DAY = "dayOfMonth"
+
+        @JvmStatic
+        fun newInstance(@IdRes textView: Int, currentText: String, requestKey: String) =
+            DatePickerFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_DATE_TEXTVIEW, textView)
+                    putString(ARG_CURRENT_TEXT, currentText)
+                    putString(ARG_REQUEST_KEY, requestKey)
+                    textViewId?.let { putInt(ARG_DATE_TEXTVIEW, it) }
+                }
+            }
     }
 }

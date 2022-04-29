@@ -36,7 +36,7 @@ import kotlinx.parcelize.Parcelize
 
 
 open class ConfirmationDialog : FullWidthDialogFragment() {
-
+    // TODO: Some of these need better names-- what is confirmId?
     @StringRes
     var text: Int? = null
     private lateinit var requestKey: String

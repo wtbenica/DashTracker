@@ -151,4 +151,6 @@
     <string name="lbl_hourly_by_day_of_week">Hourly by Day of Week</string>
     <string name="lbl_num_days">Num Days</string>
     <string name="lbl_num_weeks">Num Weeks</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
