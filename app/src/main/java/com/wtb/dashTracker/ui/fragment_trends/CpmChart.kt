@@ -87,6 +87,7 @@ class CpmChart(
 
         fun YAxis.style() {
             setCenterAxisLabels(true)
+            setDrawTopYLabelEntry(false)
             typeface = ResourcesCompat.getFont(context, R.font.lalezar)
             textColor = MainActivity.getAttrColor(context, R.attr.colorTextPrimary)
             textSize = context.getDimen(R.dimen.text_size_sm)
@@ -108,6 +109,7 @@ class CpmChart(
             )
         )
 
+        setDrawGridBackground(true)
         description.isEnabled = false
         legend.isEnabled = false
         legend.typeface = ResourcesCompat.getFont(context, R.font.lalezar)

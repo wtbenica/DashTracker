@@ -66,7 +66,7 @@
         <item name="colorTabIndicator">?attr/colorPrimaryFaded</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorGroupButton">?attr/colorPrimaryFaded</item>
-        <item name="colorGroupButtonDisabled">?attr/colorOnPrimary</item>
+        <item name="colorGroupButtonDisabled">?attr/colorPrimaryDark</item>
         <item name="colorGroupStroke">?attr/colorPrimaryDark</item>
         <item name="colorOptionsMenu">?attr/colorPrimaryFaded</item>
 

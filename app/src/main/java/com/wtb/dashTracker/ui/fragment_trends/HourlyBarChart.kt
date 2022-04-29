@@ -122,6 +122,7 @@ class HourlyBarChart(
         xAxis.style()
         axisLeft.style()
         axisRight.isEnabled = false
+        setDrawGridBackground(true)
     }
 
     override fun init() {

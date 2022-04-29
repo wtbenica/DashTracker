@@ -66,6 +66,10 @@
     <attr name="colorGroupButtonDisabled" format="reference" />
     <attr name="colorGroupStroke" format="reference" />
     <attr name="colorOptionsMenu" format="reference" />
+    <attr name="colorGroupButtonText" format="reference" />
+    <attr name="colorGroupButtonTextDefault" format="reference|color" />
+    <attr name="colorGroupButtonTextChecked" format="reference|color" />
+
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />

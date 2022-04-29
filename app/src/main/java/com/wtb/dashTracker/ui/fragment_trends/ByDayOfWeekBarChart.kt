@@ -36,7 +36,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
-import com.wtb.dashTracker.databinding.ChartHourlyByDayBinding
+import com.wtb.dashTracker.databinding.ChartByDayOfWeekBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.extensions.getFloatString
@@ -57,7 +57,7 @@ class ByDayOfWeekBarChart(
     R.string.frag_title_income
 ) {
     val binding =
-        ChartHourlyByDayBinding.inflate(LayoutInflater.from(context), this)
+        ChartByDayOfWeekBinding.inflate(LayoutInflater.from(context), this)
 
     private var barChartHourlyByDay: HorizontalBarChart =
         binding.chartBarDailyHourly.apply { style() }
@@ -120,6 +120,7 @@ class ByDayOfWeekBarChart(
         axisLeft.style()
         axisRight.isEnabled = false
         setDrawValueAboveBar(false)
+        setDrawGridBackground(true)
     }
 
     override fun init() {

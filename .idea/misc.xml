@@ -21,10 +21,12 @@
         <entry key="app/src/main/res/drawable/bg_end_button.xml" value="0.1565" />
         <entry key="app/src/main/res/drawable/bg_end_button_2.xml" value="0.1565" />
         <entry key="app/src/main/res/drawable/bg_fab_menu_item_lbl.xml" value="0.157" />
+        <entry key="app/src/main/res/drawable/bg_list_item.xml" value="0.322" />
         <entry key="app/src/main/res/drawable/bg_list_item_expanded.xml" value="0.336" />
         <entry key="app/src/main/res/drawable/bg_list_item_subtable.xml" value="0.3265" />
         <entry key="app/src/main/res/drawable/bg_popup_menu.xml" value="0.33" />
         <entry key="app/src/main/res/drawable/bg_popup_menu_2.xml" value="0.33" />
+        <entry key="app/src/main/res/drawable/bg_slider.xml" value="0.209" />
         <entry key="app/src/main/res/drawable/bottom_border_bg.xml" value="0.9" />
         <entry key="app/src/main/res/drawable/bottom_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/bottom_nav_item.xml" value="0.2898148148148148" />
@@ -100,6 +102,7 @@
         <entry key="app/src/main/res/drawable/rounded_corner_bg.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/drawable/save.xml" value="0.3525" />
         <entry key="app/src/main/res/drawable/shape_bottom_sheet.xml" value="0.338" />
+        <entry key="app/src/main/res/drawable/tom_thumb.xml" value="0.1945" />
         <entry key="app/src/main/res/drawable/top_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/top_right_corner.xml" value="0.18645833333333334" />
         <entry key="app/src/main/res/font/anton.xml" value="0.1368106028217187" />
@@ -115,10 +118,11 @@
         <entry key="app/src/main/res/layout/bottom_sheet_content_expense.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/layout/bottom_sheet_content_income.xml" value="0.67" />
         <entry key="app/src/main/res/layout/bottom_sheet_content_trends.xml" value="0.2877297990594271" />
-        <entry key="app/src/main/res/layout/chart_cpm.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/chart_by_day_of_week.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/chart_cpm.xml" value="0.1" />
         <entry key="app/src/main/res/layout/chart_holder.xml" value="0.33" />
         <entry key="app/src/main/res/layout/chart_hourly_by_day.xml" value="0.49780058651026393" />
-        <entry key="app/src/main/res/layout/chart_hourly_gross_net.xml" value="0.2876068376068376" />
+        <entry key="app/src/main/res/layout/chart_hourly_gross_net.xml" value="0.1" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.40929535232383807" />
         <entry key="app/src/main/res/layout/daily_stats_row.xml" value="0.5324367088607594" />
         <entry key="app/src/main/res/layout/datetime_pickers.xml" value="0.39565217391304347" />

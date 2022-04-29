@@ -24,6 +24,7 @@
     </style>
 
     <style name="ChartCardDetailsLayout">
+        <item name="android:background">?attr/colorOnSecondary</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
     </style>
@@ -33,12 +34,11 @@
     </style>
 
     <style name="ChartCard" parent="CardView">
-        <item name="cardBackgroundColor">?attr/colorTextSecondary</item>
         <item name="cardCornerRadius">0dp</item>
     </style>
 
     <style name="DashTrackerChart">
-        <item name="android:background">@drawable/bg_list_item_subtable</item>
+        <item name="android:background">?attr/colorPrimaryFaded</item>
         <item name="android:padding">@dimen/margin_default</item>
     </style>
 
