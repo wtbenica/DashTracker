@@ -15,14 +15,13 @@
   -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout style="@style/ChartCardLayout">
+        <androidx.constraintlayout.widget.ConstraintLayout style="@style/ChartCardDetailsLayout">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/chart_card_2"
@@ -33,20 +32,26 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.github.mikephil.charting.charts.HorizontalBarChart
-                    android:id="@+id/chart_bar_daily_hourly"
+                <LinearLayout
                     style="@style/DashTrackerChart"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="400dp" />
+                    android:layout_height="wrap_content">
+
+                    <com.github.mikephil.charting.charts.HorizontalBarChart
+                        android:id="@+id/chart_bar_daily_hourly"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="400dp" />
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/graph_selector"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_default"
+                android:layout_margin="@dimen/margin_default"
                 app:checkedButton="@id/btn_chart_hourly_by_day"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/chart_card_2"
@@ -55,7 +60,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_chart_hourly_by_day"
-                    style="@style/HourlyTrendButton"
+                    style="@style/materialToggleButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -63,7 +68,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_chart_per_delivery"
-                    style="@style/HourlyTrendButton"
+                    style="@style/materialToggleButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -71,7 +76,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_chart_del_per_hr"
-                    style="@style/HourlyTrendButton"
+                    style="@style/materialToggleButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

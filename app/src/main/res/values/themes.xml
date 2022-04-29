@@ -93,8 +93,8 @@
         <item name="textSizeItemSecondaryValue">@dimen/text_size_med</item>
         <item name="listItemCornerRadius">?attr/defaultCornerRadius</item>
         <item name="listItemThinBorder">@dimen/margin_half</item>
-        <item name="dimenListItemMarginHorizontal">@dimen/margin_default</item>
-        <item name="dimenListItemMarginVertical">@dimen/margin_half</item>
+        <item name="dimenListItemMarginHorizontal">@dimen/margin_half</item>
+        <item name="dimenListItemMarginVertical">@dimen/margin_narrow</item>
 
         <!-- insights row -->
         <item name="insightsRowCornerRadius">?attr/defaultCornerRadius</item>

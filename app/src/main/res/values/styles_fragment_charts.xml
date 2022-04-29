@@ -23,11 +23,9 @@
         <item name="cardCornerRadius">?attr/defaultCornerRadius</item>
     </style>
 
-    <style name="ChartCardLayout">
-        <item name="android:padding">@dimen/margin_narrow</item>
+    <style name="ChartCardDetailsLayout">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:background">@drawable/bg_list_item</item>
     </style>
 
     <style name="ChartCardTitle" parent="ListItemHeaderTextView.Title">
@@ -35,12 +33,13 @@
     </style>
 
     <style name="ChartCard" parent="CardView">
-        <item name="cardBackgroundColor">?attr/colorListItemDetailsToolbar</item>
-        <item name="cardCornerRadius">?attr/defaultCornerRadius</item>
+        <item name="cardBackgroundColor">?attr/colorTextSecondary</item>
+        <item name="cardCornerRadius">0dp</item>
     </style>
 
     <style name="DashTrackerChart">
-        <item name="android:background">?attr/colorPrimaryDark</item>
+        <item name="android:background">@drawable/bg_list_item_subtable</item>
+        <item name="android:padding">@dimen/margin_default</item>
     </style>
 
     <style name="HourlyTrendButton" parent="Widget.Material3.CardView.Elevated">
