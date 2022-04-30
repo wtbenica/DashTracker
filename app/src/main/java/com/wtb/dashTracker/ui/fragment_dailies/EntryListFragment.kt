@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.fragment_dailies
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -96,6 +97,7 @@ class EntryListFragment : Fragment() {
                 viewModel.deleteEntryById(id)
             }
         }
+
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -133,8 +135,35 @@ class EntryListFragment : Fragment() {
     interface EntryListFragmentCallback : DeductionCallback
 
     inner class EntryAdapter : BaseItemAdapter<DashEntry>(DIFF_CALLBACK) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<DashEntry> =
+        override fun getViewHolder(
+            parent: ViewGroup,
+            viewType: Int?
+        ): BaseItemHolder<DashEntry> =
             EntryHolder(parent)
+
+        fun removeItem(id: Int) {
+            Log.d(TAG, "Removing item $id")
+            notifyItemRemoved(getPositionById(id))
+        }
+
+        fun updateItem(id: Int) {
+            Log.d(TAG, "Changing item $id")
+            notifyItemChanged(getPositionById(id))
+        }
+
+        private fun getPositionById(id: Int): Int {
+            var result = -1
+            Log.d(TAG, "Getting position for $id")
+            this.snapshot().forEachIndexed { i, e ->
+                e?.let { entry ->
+                    if (entry.entryId == id) {
+                        result = i - 1
+                    }
+                }
+            }
+            Log.d(TAG, "Found item $id at position $result")
+            return result
+        }
 
         inner class EntryHolder(parent: ViewGroup) : BaseItemHolder<DashEntry>(
             LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
@@ -199,10 +228,15 @@ class EntryListFragment : Fragment() {
                                         this@EntryHolder.item.getExpenses(costPerMile)
                                     )
 
-                                    detailsBinding.listItemEntryCpm.text = getCpmString(costPerMile)
+                                    detailsBinding.listItemEntryCpm.text =
+                                        getCpmString(costPerMile)
 
                                     detailsBinding.listItemEntryNet.text =
-                                        getCurrencyString(this@EntryHolder.item.getNet(costPerMile))
+                                        getCurrencyString(
+                                            this@EntryHolder.item.getNet(
+                                                costPerMile
+                                            )
+                                        )
 
                                     detailsBinding.listItemEntryHourly.text = getCurrencyString(
                                         this@EntryHolder.item.getHourly(costPerMile)
@@ -221,7 +255,8 @@ class EntryListFragment : Fragment() {
                 binding.listItemTitle2.text = getCurrencyString(this.item.totalEarned)
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.item.startTime, this.item.endTime)
-                binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.item.isIncomplete)
+                binding.listItemAlert.visibility =
+                    toVisibleIfTrueElseGone(this.item.isIncomplete)
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.pay)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)

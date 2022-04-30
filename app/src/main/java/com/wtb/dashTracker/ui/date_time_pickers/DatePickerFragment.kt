@@ -78,13 +78,12 @@ class DatePickerFragment : DialogFragment(),
         const val ARG_NEW_DAY = "dayOfMonth"
 
         @JvmStatic
-        fun newInstance(@IdRes textView: Int, currentText: String, requestKey: String) =
+        fun newInstance(@IdRes textViewId: Int, currentText: String, requestKey: String) =
             DatePickerFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_DATE_TEXTVIEW, textView)
+                    putInt(ARG_DATE_TEXTVIEW, textViewId)
                     putString(ARG_CURRENT_TEXT, currentText)
                     putString(ARG_REQUEST_KEY, requestKey)
-                    textViewId?.let { putInt(ARG_DATE_TEXTVIEW, it) }
                 }
             }
     }

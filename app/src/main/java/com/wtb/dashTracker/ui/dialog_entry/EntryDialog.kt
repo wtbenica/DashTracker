@@ -20,9 +20,11 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity
@@ -35,6 +37,7 @@ import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
+import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
@@ -48,6 +51,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @ExperimentalCoroutinesApi
 class EntryDialog : FullWidthDialogFragment() {
@@ -94,20 +98,35 @@ class EntryDialog : FullWidthDialogFragment() {
 
             fragEntryStartTime.apply {
                 setOnClickListener {
-                    TimePickerFragment(this).show(childFragmentManager, "time_picker_start")
+                    TimePickerFragment.newInstance(
+                        R.id.frag_entry_start_time,
+                        this.text.toString(),
+                        REQUEST_KEY_TIME
+                    ).show(childFragmentManager, "time_picker_start")
                     startTimeChanged = true
                 }
             }
 
             fragEntryEndTime.apply {
                 setOnClickListener {
-                    TimePickerFragment(this).show(parentFragmentManager, "time_picker_end")
+                    TimePickerFragment.newInstance(
+                        R.id.frag_entry_end_time,
+                        this.text.toString(),
+                        REQUEST_KEY_TIME
+                    ).show(childFragmentManager, "time_picker_start")
                 }
             }
 
             fragEntryBtnDelete.apply {
                 setOnClickListener {
-                    ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
+                    if (isNotEmpty()) {
+                        Log.d(TAG, "have to ask")
+                        ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
+                    } else {
+                        saveOnExit = false
+                        dismiss()
+                        entry?.let { viewModel.delete(it) }
+                    }
                 }
             }
 
@@ -119,6 +138,12 @@ class EntryDialog : FullWidthDialogFragment() {
 
             fragEntryBtnSave.setOnClickListener {
                 saveConfirmed = true
+                parentFragmentManager.setFragmentResult(
+                    REQUEST_KEY_ENTRY_DIALOG,
+                    bundleOf(
+                        ARG_MODIFICATION_STATE to ModificationState.MODIFIED.ordinal
+                    )
+                )
                 dismiss()
             }
         }
@@ -129,8 +154,9 @@ class EntryDialog : FullWidthDialogFragment() {
     }
 
     private fun setDialogListeners() {
-        setFragmentResultListener(
+        childFragmentManager.setFragmentResultListener(
             ConfirmType.DELETE.key,
+            this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
             if (result) {
@@ -155,29 +181,50 @@ class EntryDialog : FullWidthDialogFragment() {
             val result = bundle.getBoolean(ARG_CONFIRM)
             if (result) {
                 saveConfirmed = true
+                dismiss()
+            } else {
+                saveOnExit = false
+                dismiss()
+                entry?.let { e -> viewModel.delete(e) }
             }
-            dismiss()
         }
 
-        childFragmentManager.setFragmentResultListener(
-            REQUEST_KEY_DATE,
-            this
+        setFragmentResultListener(
+            REQUEST_KEY_DATE
         ) { _, bundle ->
             val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
             val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
             val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
-            val int = bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)
-            when (int) {
+            val textViewId = bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)
+            when (textViewId) {
                 R.id.frag_entry_date -> {
                     binding.fragEntryDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
                 }
             }
         }
+
+        childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_TIME,
+            this
+        ) { _, bundle ->
+            val hour = bundle.getInt(TimePickerFragment.ARG_NEW_HOUR)
+            val minute = bundle.getInt(TimePickerFragment.ARG_NEW_MINUTE)
+            val textViewId = bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)
+            when (textViewId) {
+                R.id.frag_entry_start_time -> {
+                    binding.fragEntryStartTime.text =
+                        LocalTime.of(hour, minute).format(dtfTime).toString()
+                }
+                R.id.frag_entry_end_time -> {
+                    binding.fragEntryEndTime.text =
+                        LocalTime.of(hour, minute).format(dtfTime).toString()
+                }
+            }
+        }
     }
 
     private fun saveValues() {
-
         val currDate = binding.fragEntryDate.text.toDateOrNull()
         val totalMileage =
             if (binding.fragEntryStartMileage.text.isEmpty() && binding.fragEntryEndMileage.text.isEmpty()) {
@@ -288,9 +335,14 @@ class EntryDialog : FullWidthDialogFragment() {
                 binding.fragEntryNumDeliveries.text.isBlank()
     }
 
+    private fun isNotEmpty() = !isEmpty()
+
     companion object {
+        const val REQUEST_KEY_ENTRY_DIALOG = "result: modification state"
+        const val ARG_MODIFICATION_STATE = "arg modification state"
+
         private const val TAG = APP + "EntryDialog"
-        private const val ARG_ENTRY_ID = "entry_id"
+        const val ARG_ENTRY_ID = "entry_id"
 
         fun newInstance(entryId: Int) =
             EntryDialog().apply {
@@ -298,5 +350,11 @@ class EntryDialog : FullWidthDialogFragment() {
                     putInt(ARG_ENTRY_ID, entryId)
                 }
             }
+
+    }
+
+    enum class ModificationState(val key: String) {
+        DELETED("deleted"),
+        MODIFIED("modified")
     }
 }
