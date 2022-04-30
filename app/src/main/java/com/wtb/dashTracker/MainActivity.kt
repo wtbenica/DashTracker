@@ -86,7 +86,8 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback, IncomeFragment.IncomeFragmentCallback {
+class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
+    IncomeFragment.IncomeFragmentCallback {
 
     private val viewModel: MainActivityViewModel by viewModels()
     private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()

@@ -212,6 +212,14 @@ class Repository private constructor(context: Context) {
      * Generic<DataModel> functions
      */
     fun upsertModel(model: DataModel): Long {
+        when (model) {
+            is DashEntry -> 1
+            is Expense -> 2
+            is ExpensePurpose -> 3
+            is StandardMileageDeduction -> 4
+            is Weekly -> 5
+        }
+
         return when (model) {
             is DashEntry -> {
                 var res: Long = -1L
@@ -219,7 +227,7 @@ class Repository private constructor(context: Context) {
                     weeklyDao.insert(Weekly(model.date.endOfWeek))
                     res = entryDao.upsert(model)
                 }
-                return res
+                res
             }
             is Weekly -> weeklyDao.upsert(model)
             is Expense -> expenseDao.upsert(model)
