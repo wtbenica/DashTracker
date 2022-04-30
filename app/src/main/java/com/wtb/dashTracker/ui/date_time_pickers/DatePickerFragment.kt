@@ -26,8 +26,6 @@ import androidx.fragment.app.DialogFragment
 import com.wtb.dashTracker.extensions.dtfDate
 import java.time.LocalDate
 
-// TODO: This needs a parameterless constructor and needs to be set up to work with bundles so the
-//  fragment can be recreated on orientation/theme change
 class DatePickerFragment : DialogFragment(),
     DatePickerDialog.OnDateSetListener {
 
@@ -47,10 +45,6 @@ class DatePickerFragment : DialogFragment(),
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val date = LocalDate.parse(currentText, dtfDate)
-//        val c = Calendar.getInstance()
-//        val year = c.get(Calendar.YEAR)
-//        val month = c.get(Calendar.MONTH)
-//        val day = c.get(Calendar.DAY_OF_MONTH)
 
         return DatePickerDialog(
             requireContext(),
@@ -71,7 +65,6 @@ class DatePickerFragment : DialogFragment(),
                 ARG_DATE_TEXTVIEW to textViewId
             )
         )
-//        dateTextView.text = LocalDate.of(year, month + 1, dayOfMonth).format(dtfDate).toString()
     }
 
     companion object {
