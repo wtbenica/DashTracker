@@ -19,13 +19,11 @@ package com.wtb.dashTracker.ui.fragment_dailies
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -40,9 +38,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.DeductionCallback
 import com.wtb.dashTracker.MainActivity
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
@@ -62,11 +60,11 @@ import kotlinx.coroutines.flow.collectLatest
 class EntryListFragment : Fragment() {
 
     private val viewModel: EntryListViewModel by viewModels()
-
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
-    private lateinit var recyclerView: RecyclerView
     private var deductionType: DeductionType = DeductionType.NONE
+
+    private lateinit var binding: FragItemListBinding
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -77,14 +75,12 @@ class EntryListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.frag_item_list, container, false)
-
-        recyclerView = view.findViewById(R.id.item_list_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        binding = FragItemListBinding.inflate(inflater)
+        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
 
         setDialogListeners()
 
-        return view
+        return binding.root
     }
 
     private fun setDialogListeners() {
@@ -107,11 +103,11 @@ class EntryListFragment : Fragment() {
         val entryAdapter = EntryAdapter().apply {
             registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                    recyclerView.scrollToPosition(positionStart)
+                    binding.itemListRecyclerView.scrollToPosition(positionStart)
                 }
             })
         }
-        recyclerView.adapter = entryAdapter
+        binding.itemListRecyclerView.adapter = entryAdapter
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
             deductionType = it
@@ -135,35 +131,8 @@ class EntryListFragment : Fragment() {
     interface EntryListFragmentCallback : DeductionCallback
 
     inner class EntryAdapter : BaseItemAdapter<DashEntry>(DIFF_CALLBACK) {
-        override fun getViewHolder(
-            parent: ViewGroup,
-            viewType: Int?
-        ): BaseItemHolder<DashEntry> =
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<DashEntry> =
             EntryHolder(parent)
-
-        fun removeItem(id: Int) {
-            Log.d(TAG, "Removing item $id")
-            notifyItemRemoved(getPositionById(id))
-        }
-
-        fun updateItem(id: Int) {
-            Log.d(TAG, "Changing item $id")
-            notifyItemChanged(getPositionById(id))
-        }
-
-        private fun getPositionById(id: Int): Int {
-            var result = -1
-            Log.d(TAG, "Getting position for $id")
-            this.snapshot().forEachIndexed { i, e ->
-                e?.let { entry ->
-                    if (entry.entryId == id) {
-                        result = i - 1
-                    }
-                }
-            }
-            Log.d(TAG, "Found item $id at position $result")
-            return result
-        }
 
         inner class EntryHolder(parent: ViewGroup) : BaseItemHolder<DashEntry>(
             LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
@@ -177,19 +146,17 @@ class EntryListFragment : Fragment() {
                 get() = binding.listItemWrapper
 
             init {
-                itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
+                binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        EntryDialog.newInstance(this@EntryHolder.item.entryId).show(
-                            parentFragmentManager,
-                            "edit_details"
-                        )
+                        EntryDialog.newInstance(this@EntryHolder.item.entryId)
+                            .show(parentFragmentManager, "edit_entry_details")
                     }
                 }
 
-                itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
+                binding.listItemBtnDelete.apply {
                     setOnClickListener {
                         ConfirmDeleteDialog.newInstance(confirmId = this@EntryHolder.item.entryId)
-                            .show(parentFragmentManager, null)
+                            .show(parentFragmentManager, "delete_entry")
                     }
                 }
             }
@@ -286,8 +253,6 @@ class EntryListFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = APP + "EntryListFragment"
-
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
             override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =
                 oldItem.entryId == newItem.entryId
