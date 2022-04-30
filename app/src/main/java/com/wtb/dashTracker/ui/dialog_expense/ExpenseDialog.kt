@@ -68,10 +68,10 @@ class ExpenseDialog : FullWidthDialogFragment() {
     private var expense: Expense? = null
     private val viewModel: ExpenseViewModel by viewModels()
 
-    private val explicitDismiss
-        get() = deleteBtnPressed || saveBtnPressed
-    private var deleteBtnPressed = false
-    private var saveBtnPressed = false
+    // if save button is pressed or is confirmed by save dialog, gets assigned true
+    private var saveConfirmed = false
+    // if delete button is pressed, gets assigned false
+    private var saveOnExit = true
 
     private lateinit var binding: DialogFragExpenseBinding
 
@@ -91,77 +91,79 @@ class ExpenseDialog : FullWidthDialogFragment() {
 
         binding = DialogFragExpenseBinding.inflate(layoutInflater)
 
-        /**
-         * Gas Expense Grid
-         */
-        binding.fragExpenseDate.apply {
-            setOnClickListener {
-                DatePickerFragment.newInstance(R.id.frag_entry_date, this.text.toString(), REQUEST_KEY_DATE)
-//                DatePickerFragment(this).show(childFragmentManager, "date_picker")
-            }
-            doOnTextChanged { text, _, _, _ ->
-                updateExpense(date = text?.toDateOrNull() ?: LocalDate.now())
-            }
-        }
-
-        binding.fragExpenseAmount.apply {
-            doOnTextChanged { _, _, _, _ ->
-                updateSaveButtonIsEnabled()
-            }
-            setOnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus) {
-                    updateExpense(amount = this.text.toFloatOrNull())
+        binding.apply {
+            fragExpenseDate.apply {
+                setOnClickListener {
+                    DatePickerFragment.newInstance(
+                        R.id.frag_expense_date,
+                        this.text.toString(),
+                        REQUEST_KEY_DATE
+                    ).show(parentFragmentManager, null)
+                }
+                doOnTextChanged { text, _, _, _ ->
+                    updateExpense(date = text?.toDateOrNull() ?: LocalDate.now())
                 }
             }
-        }
-        binding.fragExpensePrice.apply {
-            doOnTextChanged { _, _, _, _ ->
-                updateSaveButtonIsEnabled()
-            }
-            setOnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus) {
-                    updateExpense(pricePerGal = this.text.toFloatOrNull())
-                }
-            }
-        }
 
-        binding.fragExpensePurpose.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    val purpose = parent?.getItemAtPosition(position) as ExpensePurpose?
-                    purpose?.purposeId?.let { updateExpense(purpose = it) }
-                    if (purpose?.purposeId == GAS.id) {
-                        binding.fragExpensePrice.visibility = VISIBLE
-                        binding.fragExpensePriceLbl.visibility = VISIBLE
-                    } else {
-                        binding.fragExpensePrice.text.clear()
-                        binding.fragExpensePrice.visibility = GONE
-                        binding.fragExpensePriceLbl.visibility = GONE
+            fragExpenseAmount.apply {
+                doOnTextChanged { _, _, _, _ ->
+                    updateSaveButtonIsEnabled()
+                }
+                setOnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        updateExpense(amount = this.text.toFloatOrNull())
                     }
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // Do nothing
+            }
+            fragExpensePrice.apply {
+                doOnTextChanged { _, _, _, _ ->
+                    updateSaveButtonIsEnabled()
                 }
-
+                setOnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        updateExpense(pricePerGal = this.text.toFloatOrNull())
+                    }
+                }
             }
 
-        binding.fragExpenseBtnSave.setOnClickListener {
-            saveBtnPressed = true
-            dismiss()
-        }
+            fragExpensePurpose.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        val purpose = parent?.getItemAtPosition(position) as ExpensePurpose?
+                        purpose?.purposeId?.let { updateExpense(purpose = it) }
+                        if (purpose?.purposeId == GAS.id) {
+                            fragExpensePrice.visibility = VISIBLE
+                            fragExpensePriceLbl.visibility = VISIBLE
+                        } else {
+                            fragExpensePrice.text.clear()
+                            fragExpensePrice.visibility = GONE
+                            fragExpensePriceLbl.visibility = GONE
+                        }
+                    }
 
-        binding.fragExpenseBtnDelete.setOnClickListener {
-            ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
-        }
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        // Do nothing
+                    }
 
-        binding.fragExpenseBtnReset.setOnClickListener {
-            ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
+                }
+
+            fragExpenseBtnSave.setOnClickListener {
+                saveConfirmed = true
+                dismiss()
+            }
+
+            fragExpenseBtnDelete.setOnClickListener {
+                ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
+            }
+
+            fragExpenseBtnReset.setOnClickListener {
+                ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
+            }
         }
 
         updateUI()
@@ -195,7 +197,7 @@ class ExpenseDialog : FullWidthDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
-                if (isNotEmpty() && !saveBtnPressed) {
+                if (isEmpty() && !saveConfirmed) {
                     ConfirmSaveDialog.newInstance(
                         text = R.string.confirm_save_entry_incomplete
                     ).show(parentFragmentManager, null)
@@ -206,7 +208,7 @@ class ExpenseDialog : FullWidthDialogFragment() {
         }
 
     override fun onDestroy() {
-        if (!explicitDismiss || !deleteBtnPressed && (isNotEmpty() || saveBtnPressed)) {
+        if (saveOnExit && (!isEmpty() || saveConfirmed)) {
             saveValues()
         }
 
@@ -246,10 +248,10 @@ class ExpenseDialog : FullWidthDialogFragment() {
     }
 
     private fun saveValues() {
-        updateExpense(date = binding.fragExpenseDate.text.toDateOrNull() ?: LocalDate.now())
-        updateExpense(amount = binding.fragExpenseAmount.text.toFloatOrNull())
-        updateExpense(purpose = (binding.fragExpensePurpose.selectedItem as ExpensePurpose).purposeId)
         updateExpense(
+            date = binding.fragExpenseDate.text.toDateOrNull() ?: LocalDate.now(),
+            amount = binding.fragExpenseAmount.text.toFloatOrNull(),
+            purpose = (binding.fragExpensePurpose.selectedItem as ExpensePurpose).purposeId,
             pricePerGal = if (expense?.purpose == GAS.id)
                 binding.fragExpensePrice.text.toString().toFloatOrNull()
             else null
@@ -290,7 +292,7 @@ class ExpenseDialog : FullWidthDialogFragment() {
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
             if (result) {
-                deleteBtnPressed = true
+                saveOnExit = false
                 dismiss()
                 expense?.let { e -> viewModel.delete(e) }
             }
@@ -310,7 +312,7 @@ class ExpenseDialog : FullWidthDialogFragment() {
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
             if (result) {
-                saveBtnPressed = true
+                saveConfirmed = true
             }
             dismiss()
         }
@@ -330,6 +332,22 @@ class ExpenseDialog : FullWidthDialogFragment() {
                 binding.fragExpensePurpose.hideDropdown()
             }
         }
+
+        childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_DATE,
+            this,
+        ) { _, bundle ->
+            val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
+            val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
+            val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
+            val int = bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)
+            when (int) {
+                R.id.frag_expense_date -> {
+                    binding.fragExpenseDate.text =
+                        LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
+                }
+            }
+        }
     }
 
     private fun isEmpty(): Boolean {
@@ -338,7 +356,7 @@ class ExpenseDialog : FullWidthDialogFragment() {
         val isGasExpense =
             binding.fragExpensePurpose.let { it.adapter.getItem(it.selectedItemPosition) } == GAS.id
         val priceIsBlank = binding.fragExpensePrice.text.isNullOrBlank()
-        return isTodaysDate && amountIsBlank && !isGasExpense && priceIsBlank
+        return isTodaysDate && amountIsBlank && isGasExpense && priceIsBlank
     }
 
     private fun updateSaveButtonIsEnabled() {

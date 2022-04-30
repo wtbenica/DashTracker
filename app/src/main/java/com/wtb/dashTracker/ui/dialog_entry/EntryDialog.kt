@@ -20,14 +20,9 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.MainActivity
@@ -57,31 +52,22 @@ import java.time.LocalDateTime
 @ExperimentalCoroutinesApi
 class EntryDialog : FullWidthDialogFragment() {
 
-    private val viewModel: EntryViewModel by viewModels()
     private var entry: DashEntry? = null
-    private var saveOnExit = true
+    private val viewModel: EntryViewModel by viewModels()
+
     private var startTimeChanged = false
+
+    // if save button is pressed or is confirmed by save dialog, gets assigned true
     private var saveConfirmed = false
 
-    private lateinit var dateTextView: TextView
-    private lateinit var startTimeTextView: TextView
-    private lateinit var endTimeTextView: TextView
-    private lateinit var endsNextDayCheckBox: CheckBox
+    // if delete button is pressed, gets assigned false
+    private var saveOnExit = true
 
-    private lateinit var startMileageEditText: EditText
-    private lateinit var endMileageEditText: EditText
-    private lateinit var totalMileageEditText: EditText
-    private lateinit var payEditText: EditText
-    private lateinit var otherPayEditText: EditText
-    private lateinit var cashTipsEditText: EditText
-    private lateinit var numDeliveriesEditText: EditText
-    private lateinit var deleteButton: ImageButton
-    private lateinit var cancelButton: ImageButton
+    private lateinit var binding: DialogFragEntryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val entryId = arguments?.getInt(ARG_ENTRY_ID)
-        viewModel.loadDataModel(entryId)
+        viewModel.loadDataModel(arguments?.getInt(ARG_ENTRY_ID))
     }
 
     override fun onCreateView(
@@ -89,68 +75,57 @@ class EntryDialog : FullWidthDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         setDialogListeners()
-
-        val view = inflater.inflate(R.layout.dialog_frag_entry, container, false)
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        dateTextView = view.findViewById<TextView>(R.id.frag_entry_date).apply {
-            setOnClickListener {
-                DatePickerFragment.newInstance(
-                    R.id.frag_entry_date,
-                    this.text.toString(),
-                    REQUEST_KEY_DATE
-                )
-                    .show(childFragmentManager, "date_picker")
-//                DatePickerFragment(this).show(childFragmentManager, "date_picker")
+        binding = DialogFragEntryBinding.inflate(layoutInflater)
+
+        binding.apply {
+            fragEntryDate.apply {
+                setOnClickListener {
+                    DatePickerFragment.newInstance(
+                        R.id.frag_entry_date,
+                        this.text.toString(),
+                        REQUEST_KEY_DATE
+                    ).show(childFragmentManager, "date_picker")
+                }
             }
-        }
 
-        startTimeTextView = view.findViewById<TextView>(R.id.frag_entry_start_time).apply {
-            setOnClickListener {
-                TimePickerFragment(this).show(childFragmentManager, "time_picker_start")
-                startTimeChanged = true
+            fragEntryStartTime.apply {
+                setOnClickListener {
+                    TimePickerFragment(this).show(childFragmentManager, "time_picker_start")
+                    startTimeChanged = true
+                }
             }
-        }
 
-        endTimeTextView = view.findViewById<TextView>(R.id.frag_entry_end_time).apply {
-            setOnClickListener {
-                TimePickerFragment(this).show(parentFragmentManager, "time_picker_end")
+            fragEntryEndTime.apply {
+                setOnClickListener {
+                    TimePickerFragment(this).show(parentFragmentManager, "time_picker_end")
+                }
             }
-        }
 
-        endsNextDayCheckBox = view.findViewById(R.id.frag_entry_check_ends_next_day)
-
-        startMileageEditText = view.findViewById(R.id.frag_entry_start_mileage)
-        endMileageEditText = view.findViewById(R.id.frag_entry_end_mileage)
-        totalMileageEditText = view.findViewById(R.id.frag_entry_total_mileage)
-        payEditText = view.findViewById(R.id.frag_entry_pay)
-        otherPayEditText = view.findViewById(R.id.frag_entry_pay_other)
-        cashTipsEditText = view.findViewById(R.id.frag_entry_cash_tips)
-        numDeliveriesEditText = view.findViewById(R.id.frag_entry_num_deliveries)
-
-        deleteButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_delete).apply {
-            setOnClickListener {
-                ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
+            fragEntryBtnDelete.apply {
+                setOnClickListener {
+                    ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
+                }
             }
-        }
 
-        cancelButton = view.findViewById<ImageButton>(R.id.frag_entry_btn_cancel).apply {
-            setOnClickListener {
-                ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
+            fragEntryBtnCancel.apply {
+                setOnClickListener {
+                    ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
+                }
             }
-        }
 
-        DialogFragEntryBinding.bind(view).fragEntryBtnSave.setOnClickListener {
-            saveConfirmed = true
-            dismiss()
+            fragEntryBtnSave.setOnClickListener {
+                saveConfirmed = true
+                dismiss()
+            }
         }
 
         updateUI()
 
-        return view
+        return binding.root
     }
 
     private fun setDialogListeners() {
@@ -192,10 +167,9 @@ class EntryDialog : FullWidthDialogFragment() {
             val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
             val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
             val int = bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)
-            Log.d(TAG, "$int ${R.id.frag_entry_date} $year, $month, $dayOfMonth")
             when (int) {
                 R.id.frag_entry_date -> {
-                    dateTextView.text =
+                    binding.fragEntryDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
                 }
             }
@@ -204,27 +178,27 @@ class EntryDialog : FullWidthDialogFragment() {
 
     private fun saveValues() {
 
-        val currDate = dateTextView.text.toDateOrNull()
+        val currDate = binding.fragEntryDate.text.toDateOrNull()
         val totalMileage =
-            if (startMileageEditText.text.isEmpty() && endMileageEditText.text.isEmpty()) {
-                totalMileageEditText.text.toFloatOrNull()
+            if (binding.fragEntryStartMileage.text.isEmpty() && binding.fragEntryEndMileage.text.isEmpty()) {
+                binding.fragEntryTotalMileage.text.toFloatOrNull()
             } else {
                 null
             }
         val e = DashEntry(
             entryId = entry?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
-            endDate = (if (endsNextDayCheckBox.isChecked) currDate?.plusDays(1) else currDate)
+            endDate = (if (binding.fragEntryCheckEndsNextDay.isChecked) currDate?.plusDays(1) else currDate)
                 ?: LocalDate.now(),
-            startTime = startTimeTextView.text.toTimeOrNull(),
-            endTime = endTimeTextView.text.toTimeOrNull(),
-            startOdometer = startMileageEditText.text.toFloatOrNull(),
-            endOdometer = endMileageEditText.text.toFloatOrNull(),
+            startTime = binding.fragEntryStartTime.text.toTimeOrNull(),
+            endTime = binding.fragEntryEndTime.text.toTimeOrNull(),
+            startOdometer = binding.fragEntryStartMileage.text.toFloatOrNull(),
+            endOdometer = binding.fragEntryEndMileage.text.toFloatOrNull(),
             totalMileage = totalMileage,
-            pay = payEditText.text.toFloatOrNull(),
-            otherPay = otherPayEditText.text.toFloatOrNull(),
-            cashTips = cashTipsEditText.text.toFloatOrNull(),
-            numDeliveries = numDeliveriesEditText.text.toIntOrNull(),
+            pay = binding.fragEntryPay.text.toFloatOrNull(),
+            otherPay = binding.fragEntryPayOther.text.toFloatOrNull(),
+            cashTips = binding.fragEntryCashTips.text.toFloatOrNull(),
+            numDeliveries = binding.fragEntryNumDeliveries.text.toIntOrNull(),
         )
 
         viewModel.upsert(e)
@@ -266,20 +240,20 @@ class EntryDialog : FullWidthDialogFragment() {
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = entry
             if (tempEntry != null) {
-                dateTextView.text = tempEntry.date.format(dtfDate)
+                binding.fragEntryDate.text = tempEntry.date.format(dtfDate)
                 tempEntry.startTime?.let { st ->
-                    startTimeTextView.text = st.format(dtfTime)
+                    binding.fragEntryStartTime.text = st.format(dtfTime)
                 }
-                tempEntry.endTime?.let { et -> endTimeTextView.text = et.format(dtfTime) }
-                endsNextDayCheckBox.isChecked =
+                tempEntry.endTime?.let { et -> binding.fragEntryEndTime.text = et.format(dtfTime) }
+                binding.fragEntryCheckEndsNextDay.isChecked =
                     tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
-                tempEntry.startOdometer?.let { so -> startMileageEditText.setText(so.toString()) }
-                tempEntry.endOdometer?.let { eo -> endMileageEditText.setText(eo.toString()) }
-                tempEntry.mileage?.let { m -> totalMileageEditText.setText(m.toString()) }
-                tempEntry.pay?.let { p -> payEditText.setText(p.toString()) }
-                tempEntry.otherPay?.let { op -> otherPayEditText.setText(op.toString()) }
-                tempEntry.cashTips?.let { ct -> cashTipsEditText.setText(ct.toString()) }
-                tempEntry.numDeliveries?.let { nd -> numDeliveriesEditText.setText(nd.toString()) }
+                tempEntry.startOdometer?.let { so -> binding.fragEntryStartMileage.setText(so.toString()) }
+                tempEntry.endOdometer?.let { eo -> binding.fragEntryEndMileage.setText(eo.toString()) }
+                tempEntry.mileage?.let { m -> binding.fragEntryTotalMileage.setText(m.toString()) }
+                tempEntry.pay?.let { p -> binding.fragEntryPay.setText(p.toString()) }
+                tempEntry.otherPay?.let { op -> binding.fragEntryPayOther.setText(op.toString()) }
+                tempEntry.cashTips?.let { ct -> binding.fragEntryCashTips.setText(ct.toString()) }
+                tempEntry.numDeliveries?.let { nd -> binding.fragEntryNumDeliveries.setText(nd.toString()) }
             } else {
                 clearFields()
             }
@@ -287,28 +261,32 @@ class EntryDialog : FullWidthDialogFragment() {
     }
 
     private fun clearFields() {
-        dateTextView.text = LocalDate.now().format(dtfDate)
-        startTimeTextView.text = LocalDateTime.now().format(dtfTime)
-        endTimeTextView.text = ""
-        startMileageEditText.text.clear()
-        endMileageEditText.text.clear()
-        totalMileageEditText.text.clear()
-        payEditText.text.clear()
-        otherPayEditText.text.clear()
-        cashTipsEditText.text.clear()
-        numDeliveriesEditText.text.clear()
+        binding.apply {
+            fragEntryDate.text = LocalDate.now().format(dtfDate)
+            fragEntryStartTime.text = LocalDateTime.now().format(dtfTime)
+            fragEntryEndTime.text = ""
+            fragEntryStartMileage.text.clear()
+            fragEntryEndMileage.text.clear()
+            fragEntryTotalMileage.text.clear()
+            fragEntryPay.text.clear()
+            fragEntryPayOther.text.clear()
+            fragEntryCashTips.text.clear()
+            fragEntryNumDeliveries.text.clear()
+        }
     }
 
-    private fun isEmpty() =
-        dateTextView.text == LocalDate.now().format(dtfDate) &&
+    private fun isEmpty(): Boolean {
+        val isTodaysDate = binding.fragEntryDate.text == LocalDate.now().format(dtfDate)
+        return isTodaysDate &&
                 !startTimeChanged &&
-                endTimeTextView.text.isBlank() &&
-                startMileageEditText.text.isBlank() &&
-                endMileageEditText.text.isBlank() &&
-                payEditText.text.isBlank() &&
-                otherPayEditText.text.isBlank() &&
-                cashTipsEditText.text.isBlank() &&
-                numDeliveriesEditText.text.isBlank()
+                binding.fragEntryEndTime.text.isBlank() &&
+                binding.fragEntryStartMileage.text.isBlank() &&
+                binding.fragEntryEndMileage.text.isBlank() &&
+                binding.fragEntryPay.text.isBlank() &&
+                binding.fragEntryPayOther.text.isBlank() &&
+                binding.fragEntryCashTips.text.isBlank() &&
+                binding.fragEntryNumDeliveries.text.isBlank()
+    }
 
     companion object {
         private const val TAG = APP + "EntryDialog"
