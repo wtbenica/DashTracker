@@ -17,8 +17,6 @@
 package com.wtb.dashTracker.ui.dialog_weekly
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +28,6 @@ import androidx.annotation.LayoutRes
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import com.wtb.dashTracker.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
@@ -38,89 +35,96 @@ import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemBinding
 import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemSingleLineBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
-import com.wtb.dashTracker.views.FullWidthDialogFragment
+import com.wtb.dashTracker.ui.dialog_list_item.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class WeeklyDialog : FullWidthDialogFragment() {
+class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
-    private var weekly: FullWeekly? = null
-    private lateinit var binding: DialogFragWeeklyBinding
-    private val viewModel: WeeklyViewModel by viewModels()
+    override var item: Weekly? = null
+    private var fullWeekly: FullWeekly? = null
+    override val viewModel: WeeklyViewModel by viewModels()
+    override lateinit var binding: DialogFragWeeklyBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val date: LocalDate =
-            arguments?.getSerializable(ARG_DATE) as LocalDate? ?: LocalDate.now().endOfWeek
+            arguments?.getSerializable(ARG_DATE_ID) as LocalDate? ?: LocalDate.now().endOfWeek
         // it is an insert here instead of upsert bc don't want to replace one if it already exists
         viewModel.insert(Weekly(date))
         viewModel.loadDate(date)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        setDialogListeners()
+    override fun getViewBinding(inflater: LayoutInflater) =
+        DialogFragWeeklyBinding.inflate(layoutInflater).apply {
 
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-        binding = DialogFragWeeklyBinding.inflate(layoutInflater)
-
-        val adapter = WeekSpinnerAdapter(
-            requireContext(),
-            R.layout.dialog_frag_weekly_spinner_item_single_line,
-            getListOfWeeks()
-        ).apply {
-            setDropDownViewResource(R.layout.dialog_frag_weekly_spinner_item)
-        }
-
-        binding.fragAdjustDate.adapter = adapter
-
-        binding.fragAdjustDate.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    saveValues()
-                    val selectedDate = binding.fragAdjustDate.adapter.getItem(position) as LocalDate
-                    viewModel.insert(Weekly(date = selectedDate, isNew = true))
-                    viewModel.loadDate(selectedDate)
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // Do Nothing
-                }
+            val adapter = WeekSpinnerAdapter(
+                requireContext(),
+                R.layout.dialog_frag_weekly_spinner_item_single_line,
+                getListOfWeeks()
+            ).apply {
+                setDropDownViewResource(R.layout.dialog_frag_weekly_spinner_item)
             }
 
-        binding.fragAdjustAmount.doOnTextChanged { text, start, before, count ->
-            updateSaveButtonIsEnabled(text)
+            fragAdjustDate.adapter = adapter
+
+            fragAdjustDate.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        val selectedDate =
+                            binding.fragAdjustDate.adapter.getItem(position) as LocalDate
+                        // inserts if new, otherwise no effect
+                        viewModel.insert(Weekly(date = selectedDate, isNew = true))
+                        viewModel.loadDate(selectedDate)
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        // Do Nothing
+                    }
+                }
+
+            fragAdjustAmount.doOnTextChanged { text, start, before, count ->
+                updateSaveButtonIsEnabled(text)
+            }
+
+
+            fragAdjustBtnCancel.apply {
+                setOnResetPressed()
+            }
+
+            fragAdjustBtnSave.apply {
+                setOnSavePressed()
+            }
         }
 
+    override fun updateUI() {
+        val tempWeekly = fullWeekly
+        if (tempWeekly != null) {
+            binding.fragAdjustDate.apply {
+                getSpinnerIndex(tempWeekly.weekly.date)?.let { setSelection(it) }
+            }
 
-        binding.fragAdjustBtnCancel.setOnClickListener {
-            ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
+            val text = getStringOrElse(
+                R.string.float_fmt,
+                "",
+                tempWeekly.weekly.basePayAdjustment
+            )
+            binding.fragAdjustAmount.setText(text)
+
+            binding.fragAdjustTotal.text = getString(R.string.float_fmt, tempWeekly.totalPay)
         }
-
-        binding.fragAdjustBtnSave.setOnClickListener {
-            saveValues()
-            dismiss()
-        }
-
-        weekly?.let { updateUI() }
-
-        return binding.root
     }
 
-    private fun setDialogListeners() {
+    override fun setDialogListeners() {
         setFragmentResultListener(
             ConfirmType.RESET.key,
         ) { _, bundle ->
@@ -129,7 +133,6 @@ class WeeklyDialog : FullWidthDialogFragment() {
                 updateUI()
             }
         }
-
     }
 
     private fun updateSaveButtonIsEnabled(text: CharSequence?) {
@@ -146,7 +149,7 @@ class WeeklyDialog : FullWidthDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.weekly.observe(viewLifecycleOwner) { w ->
-            weekly = w
+            fullWeekly = w
             updateUI()
         }
     }
@@ -154,25 +157,6 @@ class WeeklyDialog : FullWidthDialogFragment() {
     override fun onDestroy() {
         saveValues()
         super.onDestroy()
-    }
-
-    private fun updateUI() {
-        val tempWeekly = weekly
-        if (tempWeekly != null) {
-            binding.fragAdjustDate.apply {
-                getSpinnerIndex(tempWeekly.weekly.date)?.let { setSelection(it) }
-            }
-
-            val text = getStringOrElse(
-                R.string.float_fmt,
-                "",
-                tempWeekly.weekly.basePayAdjustment
-            )
-            binding.fragAdjustAmount.setText(text)
-            updateSaveButtonIsEnabled(text)
-
-            binding.fragAdjustTotal.text = getString(R.string.float_fmt, tempWeekly.totalPay)
-        }
     }
 
     private fun getSpinnerIndex(date: LocalDate): Int? {
@@ -184,12 +168,15 @@ class WeeklyDialog : FullWidthDialogFragment() {
         return null
     }
 
-    private fun saveValues() {
-        weekly?.weekly?.apply {
+    override fun saveValues() {
+        val selectedDate =
+            binding.fragAdjustDate.selectedItem as LocalDate
+        val tempWeekly = fullWeekly?.weekly ?: Weekly(selectedDate)
+        tempWeekly.apply {
             basePayAdjustment = binding.fragAdjustAmount.text.toFloatOrNull()
             isNew = false
         }
-        weekly?.let { viewModel.upsert(it.weekly) }
+        viewModel.upsert(tempWeekly)
     }
 
     inner class WeekSpinnerAdapter(
@@ -252,14 +239,13 @@ class WeeklyDialog : FullWidthDialogFragment() {
     )
 
     companion object {
-        private const val TAG = APP + "BasePayAdjustDialog"
-        private const val ARG_DATE = "date"
+        private const val ARG_DATE_ID = "date"
 
         fun newInstance(
             date: LocalDate = LocalDate.now().endOfWeek.minusDays(7)
         ) = WeeklyDialog().apply {
             arguments = Bundle().apply {
-                putSerializable(ARG_DATE, date)
+                putSerializable(ARG_DATE_ID, date)
             }
         }
 
@@ -272,5 +258,17 @@ class WeeklyDialog : FullWidthDialogFragment() {
             }
             return res.toTypedArray()
         }
+    }
+
+    override fun clearFields() {
+        binding.apply {
+            fragAdjustAmount.text.clear()
+            fragAdjustDate.setSelection(0)
+        }
+    }
+
+    override fun isEmpty(): Boolean {
+        return binding.fragAdjustDate.selectedItemPosition == 0 &&
+                binding.fragAdjustAmount.text.isNullOrBlank()
     }
 }

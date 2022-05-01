@@ -394,7 +394,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
         }
 
-
     private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
         FabMenuButtonInfo(
             "Add Entry",
@@ -423,7 +422,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         //            R.drawable.chart
         //        ) { PayoutDialog().show(fm, "new_payout_dialog") }
     )
-
 
     companion object {
         const val APP = "GT_"

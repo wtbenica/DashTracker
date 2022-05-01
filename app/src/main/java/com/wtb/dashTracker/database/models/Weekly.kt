@@ -79,7 +79,7 @@ data class FullWeekly(
     val entries: List<DashEntry>
 ) : ListItemType {
     val isEmpty: Boolean
-        get() = entries.isEmpty() && weekly.isIncomplete
+        get() = entries.isEmpty() && (weekly.isIncomplete || weekly.basePayAdjustment == 0f)
 
     internal val hours: Float
         get() = getTotalForWeek(DashEntry::totalHours)

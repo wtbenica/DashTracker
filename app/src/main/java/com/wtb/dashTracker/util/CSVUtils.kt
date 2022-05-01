@@ -192,6 +192,8 @@ class CSVUtils {
     }
 }
 
+// CSVConvertible contains the field and functions necessary to import/export a datamodel from/to
+// CSV. It isn't a parameter type anywhere; it is just a guide
 interface CSVConvertible<T : DataModel> {
     val headerList: List<String>
 

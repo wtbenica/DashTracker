@@ -30,14 +30,14 @@ import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
-import com.wtb.dashTracker.ui.dialog_list_item.DataModelListItemDialog
+import com.wtb.dashTracker.ui.dialog_list_item.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
 @ExperimentalCoroutinesApi
-class EntryDialog : DataModelListItemDialog<DashEntry, DialogFragEntryBinding>() {
+class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
     override var item: DashEntry? = null
     override val viewModel: EntryViewModel by viewModels()
@@ -46,13 +46,14 @@ class EntryDialog : DataModelListItemDialog<DashEntry, DialogFragEntryBinding>()
 
     override fun getViewBinding(inflater: LayoutInflater): DialogFragEntryBinding =
         DialogFragEntryBinding.inflate(layoutInflater).apply {
+
             fragEntryDate.apply {
                 setOnClickListener {
                     DatePickerFragment.newInstance(
                         R.id.frag_entry_date,
                         this.text.toString(),
                         REQUEST_KEY_DATE
-                    ).show(childFragmentManager, "date_picker")
+                    ).show(parentFragmentManager, "date_picker")
                 }
             }
 
@@ -208,8 +209,6 @@ class EntryDialog : DataModelListItemDialog<DashEntry, DialogFragEntryBinding>()
     }
 
     companion object {
-        const val REQUEST_KEY_ENTRY_DIALOG = "result: modification state"
-        const val ARG_MODIFICATION_STATE = "arg modification state"
 
         fun newInstance(entryId: Int) =
             EntryDialog().apply {

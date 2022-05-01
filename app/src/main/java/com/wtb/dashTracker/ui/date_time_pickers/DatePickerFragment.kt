@@ -23,6 +23,7 @@ import android.widget.DatePicker
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import com.wtb.dashTracker.extensions.dtfDate
 import java.time.LocalDate
 
@@ -56,8 +57,8 @@ class DatePickerFragment : DialogFragment(),
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        parentFragmentManager.setFragmentResult(
-            REQUEST_KEY_DATE,
+        setFragmentResult(
+            requestKey ?: REQUEST_KEY_DATE,
             bundleOf(
                 ARG_NEW_YEAR to year,
                 ARG_NEW_MONTH to month + 1,

@@ -35,34 +35,37 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.ui.BaseViewModel
 import com.wtb.dashTracker.ui.dialog_confirm.*
-import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-abstract class DataModelListItemDialog<M : DataModel, B: ViewBinding> : FullWidthDialogFragment() {
-    abstract var item: M?
-    abstract var binding: B
+abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDialogFragment() {
+    protected abstract var item: M?
+    protected abstract var binding: B
+    protected abstract val viewModel: BaseViewModel<M>
 
     // if save button is pressed or is confirmed by save dialog, gets assigned true
     protected var saveConfirmed = false
 
     // if delete button is pressed, gets assigned false
-    protected var saveOnExit = true
-    protected abstract val viewModel: BaseViewModel<M>
+    private var saveOnExit = true
 
-    abstract fun getViewBinding(inflater: LayoutInflater): B
-    abstract fun updateUI()
-    abstract fun saveValues()
-    abstract fun clearFields()
-    abstract fun isEmpty(): Boolean
-    fun isNotEmpty(): Boolean = !isEmpty()
+    protected abstract fun getViewBinding(inflater: LayoutInflater): B
+    protected abstract fun updateUI()
+    protected abstract fun saveValues()
+    protected abstract fun clearFields()
+    protected abstract fun isEmpty(): Boolean
+    private fun isNotEmpty(): Boolean = !isEmpty()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.loadDataModel(arguments?.getInt(ARG_ITEM_ID))
+        arguments?.getInt(ARG_ITEM_ID, -1)?.let {
+            if (it != -1) {
+                viewModel.loadDataModel(it)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -108,7 +111,7 @@ abstract class DataModelListItemDialog<M : DataModel, B: ViewBinding> : FullWidt
         }
 
     override fun onDestroy() {
-        if (saveOnExit && (!isEmpty() || saveConfirmed)) {
+        if (saveOnExit && (isNotEmpty() || saveConfirmed)) {
             saveValues()
         }
 
@@ -122,6 +125,12 @@ abstract class DataModelListItemDialog<M : DataModel, B: ViewBinding> : FullWidt
             val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
             if (result) {
                 saveOnExit = false
+                setFragmentResult(
+                    REQUEST_KEY_ENTRY_DIALOG,
+                    bundleOf(
+                        ARG_MODIFICATION_STATE to ModificationState.DELETED.ordinal
+                    )
+                )
                 dismiss()
                 item?.let { e -> viewModel.delete(e) }
             }
@@ -155,9 +164,9 @@ abstract class DataModelListItemDialog<M : DataModel, B: ViewBinding> : FullWidt
         setOnClickListener {
             saveConfirmed = true
             setFragmentResult(
-                EntryDialog.REQUEST_KEY_ENTRY_DIALOG,
+                REQUEST_KEY_ENTRY_DIALOG,
                 bundleOf(
-                    EntryDialog.ARG_MODIFICATION_STATE to ModificationState.MODIFIED.ordinal
+                    ARG_MODIFICATION_STATE to ModificationState.MODIFIED.ordinal
                 )
             )
             dismiss()
@@ -189,5 +198,7 @@ abstract class DataModelListItemDialog<M : DataModel, B: ViewBinding> : FullWidt
 
     companion object {
         const val ARG_ITEM_ID = "item_id"
+        const val REQUEST_KEY_ENTRY_DIALOG = "result: modification state"
+        const val ARG_MODIFICATION_STATE = "arg modification state"
     }
 }

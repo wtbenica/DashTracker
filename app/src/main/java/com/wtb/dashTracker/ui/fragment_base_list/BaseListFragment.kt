@@ -47,6 +47,7 @@ fun toggleListItemVisibility(collapseArea: View, backgroundArea: View) {
     }
 }
 
+// Just contains boilerplate--nothing special
 abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
     PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback) {
     override fun onBindViewHolder(
@@ -68,6 +69,9 @@ abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCall
     abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): BaseItemHolder<T>
 }
 
+/**
+ * Implements collapsing-details-area for list items
+ */
 @Suppress("LeakingThis")
 abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
     RecyclerView.ViewHolder(itemView), View.OnClickListener {

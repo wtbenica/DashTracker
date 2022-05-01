@@ -42,15 +42,13 @@ import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownFooterBin
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogEditPurposes
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_ID
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
-import com.wtb.dashTracker.ui.dialog_list_item.DataModelListItemDialog
+import com.wtb.dashTracker.ui.dialog_list_item.EditDataModelDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,7 +56,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class ExpenseDialog : DataModelListItemDialog<Expense, DialogFragExpenseBinding>() {
+class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
     override var item: Expense? = null
     override val viewModel: ExpenseViewModel by viewModels()
@@ -67,6 +65,7 @@ class ExpenseDialog : DataModelListItemDialog<Expense, DialogFragExpenseBinding>
 
     override fun getViewBinding(inflater: LayoutInflater): DialogFragExpenseBinding =
         DialogFragExpenseBinding.inflate(inflater).apply {
+
             fragExpenseDate.apply {
                 setOnClickListener {
                     DatePickerFragment.newInstance(
@@ -128,17 +127,16 @@ class ExpenseDialog : DataModelListItemDialog<Expense, DialogFragExpenseBinding>
 
                 }
 
-            fragExpenseBtnSave.setOnClickListener {
-                saveConfirmed = true
-                dismiss()
+            fragExpenseBtnSave.apply {
+                setOnSavePressed()
             }
 
-            fragExpenseBtnDelete.setOnClickListener {
-                ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
+            fragExpenseBtnDelete.apply {
+                setOnDeletePressed()
             }
 
-            fragExpenseBtnReset.setOnClickListener {
-                ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
+            fragExpenseBtnReset.apply {
+                setOnResetPressed()
             }
         }
 
@@ -226,15 +224,13 @@ class ExpenseDialog : DataModelListItemDialog<Expense, DialogFragExpenseBinding>
             }
         }
 
-        childFragmentManager.setFragmentResultListener(
+        setFragmentResultListener(
             REQUEST_KEY_DATE,
-            this,
         ) { _, bundle ->
             val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
             val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
             val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
-            val int = bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)
-            when (int) {
+            when (bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)) {
                 R.id.frag_expense_date -> {
                     binding.fragExpenseDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()

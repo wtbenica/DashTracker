@@ -34,7 +34,7 @@ abstract class BaseViewModel<T : DataModel> : ViewModel() {
     protected val id: StateFlow<Int>
         get() = _id
 
-    internal val item: StateFlow<T?> = id.flatMapLatest { id ->
+    internal open val item: StateFlow<T?> = id.flatMapLatest { id ->
         val itemFlow = getItemFlowById(id)
         itemFlow
     }.stateIn(
