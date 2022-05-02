@@ -217,17 +217,32 @@ class HourlyBarChart(
             valueTextSize = context.getDimen(R.dimen.text_size_sm)
         }
 
+        data class DashEntryCollector(
+            var totalHours: Float,
+            var numDeliveries: Int,
+            var totalEarned: Float,
+            var mileage: Float,
+        )
+
         fun getEntryList(): Pair<BarDataSet, BarDataSet> =
-            mEntries.mapNotNull {
-                val hourly = it.hourly
+            mEntries.fold(mutableMapOf<LocalDate, DashEntryCollector>()) { map, de ->
+                val dec = map[de.date] ?: DashEntryCollector(0f, 0, 0f, 0f)
+                dec.totalHours += de.totalHours ?: 0f
+                dec.numDeliveries += de.numDeliveries ?: 0
+                dec.totalEarned += de.totalEarned ?: 0f
+                dec.mileage += de.mileage ?: 0f
+                map[de.date] = dec
+                map
+            }.mapNotNull {
+                val hourly = safeDiv(it.value.totalEarned, it.value.totalHours)
                 if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
                     val cpm =
-                        if (mCpmList.isNotEmpty()) mCpmList.getByDate(it.date)?.cpm ?: 0f else 0f
+                        if (mCpmList.isNotEmpty()) mCpmList.getByDate(it.key)?.cpm ?: 0f else 0f
                     val expense: Float = safeDiv(
-                        (it.mileage ?: 0f) * cpm,
-                        it.totalHours
+                        it.value.mileage * cpm,
+                        it.value.totalHours
                     ) ?: 0f
-                    val toFloat = it.date.toEpochDay().toFloat()
+                    val toFloat = it.key.toEpochDay().toFloat()
                     Pair(
                         BarEntry(toFloat - grossNetBarOffset, hourly),
                         BarEntry(toFloat + grossNetBarOffset, hourly - expense)
