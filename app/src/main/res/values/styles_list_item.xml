@@ -61,8 +61,8 @@
     <style name="ListItemButton">
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:tint">?attr/colorListItemTitle</item>
+        <item name="android:background">@drawable/bg_button</item>
+        <item name="android:tint">?attr/colorOnSecondary</item>
     </style>
 
     <style name="listItemDetailsPane">

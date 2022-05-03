@@ -90,10 +90,11 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/list_item_details_card"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_default">
+                android:layout_marginEnd="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_default"
+                android:layout_weight="1">
 
                 <TableLayout
                     style="@style/PayTable.Gas"
@@ -135,6 +136,8 @@
                 android:id="@+id/button_box"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_half"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -142,6 +145,7 @@
                 <ImageButton
                     android:id="@+id/list_item_btn_delete"
                     style="@style/ListItemButton"
+                    android:layout_marginBottom="@dimen/margin_half"
                     android:contentDescription="@string/content_desc_remove"
                     android:elevation="1dp"
                     android:src="@drawable/ic_action_delete" />

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -198,7 +197,8 @@
                         android:background="@drawable/bg_edit_text_disabled"
                         android:enabled="false"
                         android:importantForAutofill="no"
-                        android:inputType="numberDecimal" />
+                        android:inputType="numberDecimal"
+                        tools:text="54.0" />
 
                     <!--    Row 7   -->
                     <TextView

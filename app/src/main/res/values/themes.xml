@@ -120,9 +120,9 @@
         <item name="android:textColorSecondary">@color/secondary_text_color</item>
 
         <item name="colorTextPrimary">?attr/colorOnPrimary</item>
-        <item name="colorTextPrimaryDisabled">?attr/colorSecondary</item>
+        <item name="colorTextPrimaryDisabled">?attr/colorOnPrimaryVariant</item>
         <item name="colorTextSecondary">?attr/colorOnSecondary</item>
-        <item name="colorTextSecondaryDisabled">?attr/colorSecondaryFaded</item>
+        <item name="colorTextSecondaryDisabled">?attr/colorOnSecondaryVariant</item>
 
         <item name="colorSurface">@color/secondary_text_color</item>
         <item name="colorOnSurface">@color/primary_text_color</item>
