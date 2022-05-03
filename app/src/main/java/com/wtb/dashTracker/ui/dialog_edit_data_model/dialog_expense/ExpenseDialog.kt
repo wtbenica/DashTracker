@@ -180,6 +180,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             purpose = (binding.fragExpensePurpose.selectedItem as ExpensePurpose).purposeId
             pricePerGal =
                 if (item?.purpose == GAS.id) binding.fragExpensePrice.text.toFloatOrNull() else null
+            isNew = false
             viewModel.upsert(this)
         }
     }
@@ -356,7 +357,6 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             }
             return pos
         }
-
 
         fun getPositionByName(expenseName: String): Int {
             var pos = -1

@@ -40,6 +40,8 @@ data class Expense(
     var amount: Float? = null,
     var purpose: Int = Purpose.GAS.id,
     var pricePerGal: Float? = null,
+    @ColumnInfo(defaultValue = "0")
+    var isNew: Boolean = false
 ) : DataModel() {
     override val id: Int
         get() = expenseId
@@ -52,7 +54,8 @@ data class Expense(
             DATE("Date"),
             AMOUNT("Amount"),
             PURPOSE("Purpose"),
-            PRICE_PER_GAL("Price Per Gallon")
+            PRICE_PER_GAL("Price Per Gallon"),
+            IS_NEW("isNew")
         }
 
         override val headerList: List<String>
@@ -63,7 +66,8 @@ data class Expense(
                 date = LocalDate.parse(row[Columns.DATE.headerName]),
                 amount = row[Columns.AMOUNT.headerName]?.toFloatOrNull(),
                 purpose = row[Columns.PURPOSE.headerName]?.toInt() ?: Purpose.GAS.id,
-                pricePerGal = row[Columns.PRICE_PER_GAL.headerName]?.toFloatOrNull()
+                pricePerGal = row[Columns.PRICE_PER_GAL.headerName]?.toFloatOrNull(),
+                isNew = row[Columns.IS_NEW.headerName]?.toBoolean() ?: false
             )
 
         override fun Expense.asList(): List<*> =
@@ -71,7 +75,8 @@ data class Expense(
                 date,
                 amount,
                 purpose,
-                pricePerGal
+                pricePerGal,
+                isNew
             )
     }
 }
@@ -90,7 +95,7 @@ data class ExpensePurpose(
 
     override fun toString(): String = name ?: ""
 
-    companion object: CSVConvertible<ExpensePurpose> {
+    companion object : CSVConvertible<ExpensePurpose> {
         private enum class Columns(val headerName: String) {
             ID("Purpose Id"),
             NAME("Name")
@@ -124,7 +129,7 @@ enum class Purpose(val id: Int, val purposeName: String) {
 data class StandardMileageDeduction(
     @PrimaryKey val year: Int,
     var amount: Float
-): DataModel() {
+) : DataModel() {
     override val id: Int
         get() = year
 
@@ -139,9 +144,17 @@ data class FullExpense(
 
     @Relation(parentColumn = "purpose", entityColumn = "purposeId")
     val purpose: ExpensePurpose
-): ListItemType {
+) : ListItemType {
     val id: Int
         get() = expense.expenseId
+
+    val isEmpty: Boolean
+        get() {
+            val amountIsEmpty = expense.amount == null || expense.amount == 0f
+            val isGasExpense = purpose.purposeId == Purpose.GAS.id
+            val priceIsEmpty = expense.pricePerGal == null || expense.pricePerGal == 0f
+            return amountIsEmpty && (!isGasExpense || priceIsEmpty) && !expense.isNew
+        }
 }
 
 data class FullExpensePurpose(
