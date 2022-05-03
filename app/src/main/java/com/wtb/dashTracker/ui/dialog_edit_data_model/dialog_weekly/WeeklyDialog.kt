@@ -141,6 +141,8 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             binding.fragAdjustAmount.setText(text)
 
             binding.fragAdjustTotal.text = getString(R.string.float_fmt, tempWeekly.totalPay)
+        } else {
+            clearFields()
         }
     }
 
@@ -160,6 +162,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
                 binding.fragAdjustAmount.text.isNullOrBlank()
     }
 
+    // Weeklies don't have delete
     override fun setDialogListeners() {
         setFragmentResultListener(
             ConfirmType.RESET.key,

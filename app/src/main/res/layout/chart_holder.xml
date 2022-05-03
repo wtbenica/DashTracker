@@ -20,8 +20,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/list_item_card"
-        style="@style/CardViewStyle.ListItem"
-        android:layout_marginHorizontal="@dimen/margin_narrow">
+        style="@style/CardViewStyle.ListItem">
 
         <LinearLayout
             android:id="@+id/list_item_wrapper"

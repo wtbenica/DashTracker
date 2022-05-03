@@ -64,8 +64,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         arguments?.getInt(ARG_ITEM_ID, -1)?.let {
             if (it != -1) {
                 viewModel.loadDataModel(it)
-            } else {
-                throw IllegalArgumentException("DataModel id required")
             }
         }
     }

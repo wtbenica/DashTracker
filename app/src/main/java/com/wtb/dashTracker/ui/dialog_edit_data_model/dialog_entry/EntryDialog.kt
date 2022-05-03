@@ -167,6 +167,21 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
         viewModel.upsert(e)
     }
 
+    override fun clearFields() {
+        binding.apply {
+            fragEntryDate.text = LocalDate.now().format(dtfDate)
+            fragEntryStartTime.text = LocalDateTime.now().format(dtfTime)
+            fragEntryEndTime.text = ""
+            fragEntryStartMileage.text.clear()
+            fragEntryEndMileage.text.clear()
+            fragEntryTotalMileage.text.clear()
+            fragEntryPay.text.clear()
+            fragEntryPayOther.text.clear()
+            fragEntryCashTips.text.clear()
+            fragEntryNumDeliveries.text.clear()
+        }
+    }
+
     override fun isEmpty(): Boolean {
         val isTodaysDate = binding.fragEntryDate.text == LocalDate.now().format(dtfDate)
         return isTodaysDate &&
@@ -215,21 +230,6 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                         LocalTime.of(hour, minute).format(dtfTime).toString()
                 }
             }
-        }
-    }
-
-    override fun clearFields() {
-        binding.apply {
-            fragEntryDate.text = LocalDate.now().format(dtfDate)
-            fragEntryStartTime.text = LocalDateTime.now().format(dtfTime)
-            fragEntryEndTime.text = ""
-            fragEntryStartMileage.text.clear()
-            fragEntryEndMileage.text.clear()
-            fragEntryTotalMileage.text.clear()
-            fragEntryPay.text.clear()
-            fragEntryPayOther.text.clear()
-            fragEntryCashTips.text.clear()
-            fragEntryNumDeliveries.text.clear()
         }
     }
 
