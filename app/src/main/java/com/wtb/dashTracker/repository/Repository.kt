@@ -22,7 +22,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
-import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.daos.TransactionDao.Cpm

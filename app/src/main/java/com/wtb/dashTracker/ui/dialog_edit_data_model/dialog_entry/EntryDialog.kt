@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_entry
+package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.EditText
+import android.widget.TextView
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
-import com.wtb.dashTracker.ui.dialog_list_item.EditDataModelDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -42,6 +45,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
     override var item: DashEntry? = null
     override val viewModel: EntryViewModel by viewModels()
     override lateinit var binding: DialogFragEntryBinding
+
     private var startTimeChanged = false
 
     override fun getViewBinding(inflater: LayoutInflater): DialogFragEntryBinding =
@@ -53,7 +57,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                         R.id.frag_entry_date,
                         this.text.toString(),
                         REQUEST_KEY_DATE
-                    ).show(parentFragmentManager, "date_picker")
+                    ).show(parentFragmentManager, "entry_date_picker")
                 }
             }
 
@@ -75,6 +79,27 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                         this.text.toString(),
                         REQUEST_KEY_TIME
                     ).show(childFragmentManager, "time_picker_start")
+                }
+            }
+
+            fragEntryStartMileage.apply {
+                doOnTextChanged { text, start, before, count ->
+                    val endMileage = fragEntryEndMileage.text?.toFloatOrNull() ?: 0f
+                    this.onTextChangeUpdateTotal(fragEntryTotalMileage, endMileage) { other, self ->
+                        other - self
+                    }
+                }
+            }
+
+            fragEntryEndMileage.apply {
+                doOnTextChanged { text, start, before, count ->
+                    val startMileage = fragEntryStartMileage.text?.toFloatOrNull() ?: 0f
+                    this.onTextChangeUpdateTotal(
+                        fragEntryTotalMileage,
+                        startMileage
+                    ) { other, self ->
+                        self - other
+                    }
                 }
             }
 
@@ -217,5 +242,19 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                 }
             }
 
+    }
+}
+
+fun EditText.onTextChangeUpdateTotal(
+    otherView: TextView,
+    baseValue: Float?,
+    funny: (Float, Float) -> Float
+) {
+    val adjustAmount: Float = text?.toFloatOrNull() ?: 0f
+    val newTotal = funny(baseValue ?: 0f, adjustAmount)
+    otherView.text = if (newTotal == 0f) {
+        null
+    } else {
+        context.getFloatString(newTotal).dropLast(1)
     }
 }

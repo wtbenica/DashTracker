@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_list_item
+package com.wtb.dashTracker.ui.dialog_edit_data_model
 
 import android.app.Dialog
 import android.graphics.Color
@@ -33,8 +33,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.ui.BaseViewModel
 import com.wtb.dashTracker.ui.dialog_confirm.*
+import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -64,6 +64,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         arguments?.getInt(ARG_ITEM_ID, -1)?.let {
             if (it != -1) {
                 viewModel.loadDataModel(it)
+            } else {
+                throw IllegalArgumentException("DataModel id required")
             }
         }
     }

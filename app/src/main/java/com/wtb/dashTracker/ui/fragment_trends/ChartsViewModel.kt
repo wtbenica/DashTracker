@@ -17,7 +17,7 @@
 package com.wtb.dashTracker.ui.fragment_trends
 
 import androidx.lifecycle.ViewModel
-import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.repository.DeductionType

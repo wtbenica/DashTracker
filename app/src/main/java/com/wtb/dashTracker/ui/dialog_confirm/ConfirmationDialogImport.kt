@@ -24,7 +24,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import com.wtb.dashTracker.MainActivity
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmImportBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue

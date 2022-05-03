@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_weekly
+package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
@@ -24,7 +24,7 @@ import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.ui.BaseViewModel
+import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate

@@ -30,7 +30,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.wtb.dashTracker.MainActivity
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry

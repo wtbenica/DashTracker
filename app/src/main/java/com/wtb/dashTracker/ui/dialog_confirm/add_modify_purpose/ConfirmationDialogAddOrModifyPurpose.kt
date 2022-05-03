@@ -21,17 +21,19 @@ package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import com.wtb.dashTracker.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.fragment_trends.TAG
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -79,6 +81,7 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
         }
 
         binding.noButton.setOnClickListener {
+            Log.d(TAG, "Cancelling, reverting to old purposeId: $prevPurpose")
             deleteButtonPressed = true
             setFragmentResult(RK_ADD_PURPOSE, Bundle().apply {
                 putBoolean(ARG_CONFIRM, true)
@@ -120,6 +123,8 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
                 ep.name = name.toString().replaceFirstChar { it.uppercase() }
                 viewModel.upsert(ep)
             }
+        } else {
+            expensePurpose?.let { viewModel.delete(it) }
         }
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker
+package com.wtb.dashTracker.ui.activity_main
 
 import android.content.Context
 import android.content.Intent
@@ -54,17 +54,17 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
-import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.dialog_expense.ExpenseDialog
-import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.CSVUtils
@@ -425,7 +425,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     companion object {
         const val APP = "GT_"
-        private const val TAG = APP + "MainActivity"
         var isAuthenticated = false
 
         @ColorInt

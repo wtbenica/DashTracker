@@ -22,7 +22,7 @@ import android.content.Intent.EXTRA_STREAM
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
-import com.wtb.dashTracker.MainActivity
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.database.models.DashEntry.Companion.asList

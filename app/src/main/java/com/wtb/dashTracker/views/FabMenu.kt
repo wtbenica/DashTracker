@@ -32,8 +32,8 @@ import androidx.annotation.IdRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.wtb.dashTracker.MainActivity
-import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.isTouchTarget
 import kotlinx.coroutines.ExperimentalCoroutinesApi

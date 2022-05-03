@@ -35,8 +35,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.DeductionCallback
-import com.wtb.dashTracker.MainActivity
+import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.FragItemListBinding
@@ -44,8 +44,8 @@ import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
-import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
