@@ -17,7 +17,7 @@
 package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
 
 import com.wtb.dashTracker.database.models.ExpensePurpose
-import com.wtb.dashTracker.ui.BaseViewModel
+import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 

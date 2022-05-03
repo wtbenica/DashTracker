@@ -22,7 +22,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
-import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
@@ -211,22 +211,21 @@ class Repository private constructor(context: Context) {
     /**
      * Generic<DataModel> functions
      */
-    fun upsertModel(model: DataModel): Long {
-        return when (model) {
+    fun upsertModel(model: DataModel): Long =
+        when (model) {
             is DashEntry -> {
                 var res: Long = -1L
                 db.runInTransaction {
                     weeklyDao.insert(Weekly(model.date.endOfWeek))
                     res = entryDao.upsert(model)
                 }
-                return res
+                res
             }
             is Weekly -> weeklyDao.upsert(model)
             is Expense -> expenseDao.upsert(model)
             is ExpensePurpose -> expensePurposeDao.upsert(model)
             is StandardMileageDeduction -> standardMileageDeductionDao.upsert(model)
         }
-    }
 
     fun saveModel(model: DataModel) {
         executor.execute {

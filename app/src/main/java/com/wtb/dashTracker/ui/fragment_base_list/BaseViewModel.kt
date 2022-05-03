@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui
+package com.wtb.dashTracker.ui.fragment_base_list
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
@@ -34,7 +34,7 @@ abstract class BaseViewModel<T : DataModel> : ViewModel() {
     protected val id: StateFlow<Int>
         get() = _id
 
-    internal val item: StateFlow<T?> = id.flatMapLatest { id ->
+    internal open val item: StateFlow<T?> = id.flatMapLatest { id ->
         val itemFlow = getItemFlowById(id)
         itemFlow
     }.stateIn(

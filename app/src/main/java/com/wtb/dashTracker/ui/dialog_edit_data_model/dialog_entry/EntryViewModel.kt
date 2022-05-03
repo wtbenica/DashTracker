@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui
+package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
-import androidx.lifecycle.ViewModel
-import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class DeductionTypeViewModel : ViewModel() {
-
-    private val _deductionType: MutableStateFlow<DeductionType> =
-        MutableStateFlow(DeductionType.NONE)
-
-    val deductionType: StateFlow<DeductionType>
-        get() = _deductionType
-
-    fun setDeductionType(type: DeductionType) {
-        _deductionType.value = type
-    }
+class EntryViewModel : BaseViewModel<DashEntry>() {
+    override fun getItemFlowById(id: Int): Flow<DashEntry?> =
+        repository.getEntryFlowById(id)
 }

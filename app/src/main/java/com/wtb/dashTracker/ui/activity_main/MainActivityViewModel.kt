@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker
+package com.wtb.dashTracker.ui.activity_main
 
 import android.content.Context
 import androidx.lifecycle.LiveData

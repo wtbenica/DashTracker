@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.dialog_expense
+package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense
 
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.FullExpensePurpose
-import com.wtb.dashTracker.ui.BaseViewModel
+import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 

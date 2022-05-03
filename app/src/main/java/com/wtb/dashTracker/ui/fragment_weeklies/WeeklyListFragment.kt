@@ -24,7 +24,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -36,16 +35,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.DeductionCallback
-import com.wtb.dashTracker.MainActivity
+import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
+import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.ui.dialog_weekly.WeeklyDialog
-import com.wtb.dashTracker.ui.dialog_weekly.WeeklyViewModel
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
@@ -55,11 +55,10 @@ import kotlinx.coroutines.flow.collectLatest
 
 @ExperimentalCoroutinesApi
 class WeeklyListFragment : Fragment() {
-
     private val viewModel: WeeklyViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: FragItemListBinding
     private var deductionType: DeductionType = DeductionType.NONE
 
     override fun onAttach(context: Context) {
@@ -71,12 +70,10 @@ class WeeklyListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.frag_item_list, container, false)
+        binding = FragItemListBinding.inflate(inflater)
+        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        recyclerView = view.findViewById(R.id.item_list_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        return view
+        return binding.root
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -86,11 +83,11 @@ class WeeklyListFragment : Fragment() {
         val entryAdapter = EntryAdapter().apply {
             registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                    recyclerView.scrollToPosition(positionStart)
+                    binding.itemListRecyclerView.scrollToPosition(positionStart)
                 }
             })
         }
-        recyclerView.adapter = entryAdapter
+        binding.itemListRecyclerView.adapter = entryAdapter
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
             deductionType = it
@@ -130,10 +127,10 @@ class WeeklyListFragment : Fragment() {
                 get() = binding.listItemWrapper
 
             init {
-                itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
+                binding.listItemBtnEdit.apply {
                     setOnClickListener {
                         WeeklyDialog.newInstance(this@WeeklyHolder.item.weekly.date)
-                            .show(parentFragmentManager, "edit_details")
+                            .show(parentFragmentManager, "edit_weekly_details")
                     }
                 }
             }

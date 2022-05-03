@@ -24,7 +24,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -37,11 +36,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.DeductionCallback
-import com.wtb.dashTracker.MainActivity
-import com.wtb.dashTracker.MainActivity.Companion.APP
+import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
@@ -50,7 +49,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
-import com.wtb.dashTracker.ui.dialog_entry.EntryDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
@@ -61,11 +60,11 @@ import kotlinx.coroutines.flow.collectLatest
 class EntryListFragment : Fragment() {
 
     private val viewModel: EntryListViewModel by viewModels()
-
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
-    private lateinit var recyclerView: RecyclerView
     private var deductionType: DeductionType = DeductionType.NONE
+
+    private lateinit var binding: FragItemListBinding
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -76,14 +75,12 @@ class EntryListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.frag_item_list, container, false)
-
-        recyclerView = view.findViewById(R.id.item_list_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        binding = FragItemListBinding.inflate(inflater)
+        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
 
         setDialogListeners()
 
-        return view
+        return binding.root
     }
 
     private fun setDialogListeners() {
@@ -96,6 +93,7 @@ class EntryListFragment : Fragment() {
                 viewModel.deleteEntryById(id)
             }
         }
+
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -105,11 +103,11 @@ class EntryListFragment : Fragment() {
         val entryAdapter = EntryAdapter().apply {
             registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                    recyclerView.scrollToPosition(positionStart)
+                    binding.itemListRecyclerView.scrollToPosition(positionStart)
                 }
             })
         }
-        recyclerView.adapter = entryAdapter
+        binding.itemListRecyclerView.adapter = entryAdapter
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
             deductionType = it
@@ -148,19 +146,17 @@ class EntryListFragment : Fragment() {
                 get() = binding.listItemWrapper
 
             init {
-                itemView.findViewById<ImageButton>(R.id.list_item_btn_edit).apply {
+                binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        EntryDialog.newInstance(this@EntryHolder.item.entryId).show(
-                            parentFragmentManager,
-                            "edit_details"
-                        )
+                        EntryDialog.newInstance(this@EntryHolder.item.entryId)
+                            .show(parentFragmentManager, "edit_entry_details")
                     }
                 }
 
-                itemView.findViewById<ImageButton>(R.id.list_item_btn_delete).apply {
+                binding.listItemBtnDelete.apply {
                     setOnClickListener {
                         ConfirmDeleteDialog.newInstance(confirmId = this@EntryHolder.item.entryId)
-                            .show(parentFragmentManager, null)
+                            .show(parentFragmentManager, "delete_entry")
                     }
                 }
             }
@@ -199,10 +195,15 @@ class EntryListFragment : Fragment() {
                                         this@EntryHolder.item.getExpenses(costPerMile)
                                     )
 
-                                    detailsBinding.listItemEntryCpm.text = getCpmString(costPerMile)
+                                    detailsBinding.listItemEntryCpm.text =
+                                        getCpmString(costPerMile)
 
                                     detailsBinding.listItemEntryNet.text =
-                                        getCurrencyString(this@EntryHolder.item.getNet(costPerMile))
+                                        getCurrencyString(
+                                            this@EntryHolder.item.getNet(
+                                                costPerMile
+                                            )
+                                        )
 
                                     detailsBinding.listItemEntryHourly.text = getCurrencyString(
                                         this@EntryHolder.item.getHourly(costPerMile)
@@ -221,7 +222,8 @@ class EntryListFragment : Fragment() {
                 binding.listItemTitle2.text = getCurrencyString(this.item.totalEarned)
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.item.startTime, this.item.endTime)
-                binding.listItemAlert.visibility = toVisibleIfTrueElseGone(this.item.isIncomplete)
+                binding.listItemAlert.visibility =
+                    toVisibleIfTrueElseGone(this.item.isIncomplete)
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.pay)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
@@ -251,8 +253,6 @@ class EntryListFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = APP + "EntryListFragment"
-
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
             override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =
                 oldItem.entryId == newItem.entryId

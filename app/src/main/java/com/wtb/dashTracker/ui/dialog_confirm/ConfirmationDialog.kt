@@ -25,7 +25,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirm2ButtonBinding
@@ -36,7 +35,7 @@ import kotlinx.parcelize.Parcelize
 
 
 open class ConfirmationDialog : FullWidthDialogFragment() {
-
+    // TODO: Some of these need better names-- what is confirmId?
     @StringRes
     var text: Int? = null
     private lateinit var requestKey: String
@@ -100,7 +99,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             if (negButton != null) {
                 val mNegAction = negAction ?: {
-                    setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
+                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
                 }
 
                 binding.noButton.apply {
@@ -120,9 +119,9 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
                 bundlePairs.putBoolean(ARG_CONFIRM, true)
                 confirmId?.let { bundlePairs.putInt(ARG_EXTRA, it) }
                 if (confirmId == null) {
-                    setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
                 } else {
-                    setFragmentResult(
+                    parentFragmentManager.setFragmentResult(
                         requestKey,
                         bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId)
                     )
@@ -148,7 +147,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             if (negButton != null) {
                 val mNegAction = negAction ?: {
-                    setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
+                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
                 }
 
                 binding.noButton.apply {
@@ -165,9 +164,9 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             val mPosAction = posAction ?: {
                 if (confirmId == null) {
-                    setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
                 } else {
-                    setFragmentResult(
+                    parentFragmentManager.setFragmentResult(
                         requestKey,
                         bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId)
                     )
@@ -192,9 +191,9 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
                         it()
 
                         if (confirmId == null) {
-                            setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                            parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
                         } else {
-                            setFragmentResult(
+                            parentFragmentManager.setFragmentResult(
                                 requestKey,
                                 bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId)
                             )
