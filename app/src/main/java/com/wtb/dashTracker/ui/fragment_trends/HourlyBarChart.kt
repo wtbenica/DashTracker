@@ -30,7 +30,6 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry
@@ -40,6 +39,8 @@ import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
 import com.wtb.dashTracker.views.WeeklyBarChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -68,7 +69,7 @@ class HourlyBarChart(
     fun BarChart.style() {
         fun XAxis.style() {
             typeface = ResourcesCompat.getFont(context, R.font.lalezar)
-            textColor = MainActivity.getAttrColor(context, R.attr.colorTextPrimary)
+            textColor = getAttrColor(context, R.attr.colorTextPrimary)
             textSize = context.getDimen(R.dimen.text_size_sm)
             position = XAxis.XAxisPosition.BOTTOM_INSIDE
             labelRotationAngle = 90f
@@ -93,7 +94,7 @@ class HourlyBarChart(
 
         fun YAxis.style() {
             typeface = ResourcesCompat.getFont(context, R.font.lalezar)
-            textColor = MainActivity.getAttrColor(context, R.attr.colorTextPrimary)
+            textColor = getAttrColor(context, R.attr.colorTextPrimary)
             textSize = context.getDimen(R.dimen.text_size_sm)
             setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
             this.axisMinimum = 0f
@@ -123,6 +124,7 @@ class HourlyBarChart(
         axisLeft.style()
         axisRight.isEnabled = false
         setDrawGridBackground(true)
+        setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
     }
 
     override fun init() {
@@ -215,6 +217,7 @@ class HourlyBarChart(
             }
             setDrawIcons(false)
             valueTextSize = context.getDimen(R.dimen.text_size_sm)
+            valueTextColor = getAttrColor(context, R.attr.colorTextPrimary)
         }
 
         data class DashEntryCollector(
@@ -278,13 +281,16 @@ class HourlyBarChart(
 
         val dataSet: BarData = if (isDailySelected) {
             val gross = getEntryList().first.apply {
-                color = MainActivity.getAttrColor(context, R.attr.colorPrimaryDark)
+                color = getAttrColor(context, R.attr.colorChartGrossIncome)
             }
             val net = getEntryList().second.apply {
-                color = MainActivity.getAttrColor(context, R.attr.colorPrimary)
+                color = getAttrColor(context, R.attr.colorChartNetIncome)
             }
             BarData(gross, net).also {
                 barChartGrossNetHourly.legend.isEnabled = true
+                barChartGrossNetHourly.legend.textColor =
+                    getAttrColor(context, R.attr.colorTextPrimary)
+
             }
         } else {
             BarData(getWeeklyList()).also {

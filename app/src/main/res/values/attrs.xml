@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,7 +68,7 @@
     <attr name="colorGroupButtonText" format="reference" />
     <attr name="colorGroupButtonTextDefault" format="reference|color" />
     <attr name="colorGroupButtonTextChecked" format="reference|color" />
-
+    <attr name="colorTabLayoutBg" format="reference|color" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
@@ -77,10 +76,13 @@
     <attr name="colorListItemExpanded" format="reference" />
     <attr name="colorListItemTitle" format="reference" />
     <attr name="colorListItemSubtitle" format="reference" />
+    <attr name="colorListItemButtonIcon" format="reference|color" />
+    <attr name="colorListItemButtonBg" format="reference|color" />
     <attr name="textSizeListItemTitle" format="reference" />
     <attr name="textSizeListItemSubtitle" format="reference" />
     <attr name="listItemCornerRadius" format="reference" />
     <attr name="listItemThinBorder" format="reference" />
+    <attr name="dimenListItemButtonRadius" format="reference|dimension" />
     <attr name="dimenListItemMarginVertical" format="reference|dimension" />
     <attr name="dimenListItemMarginHorizontal" format="reference|dimension" />
 
@@ -96,7 +98,10 @@
     <attr name="textSizeItemValue" format="reference" />
     <attr name="textSizeItemSecondaryValue" format="reference" />
 
+    <!-- charts -->
     <!-- daily stats row -->
+    <attr name="colorChartGrossIncome" format="reference|color" />
+    <attr name="colorChartNetIncome" format="reference|color" />
     <attr name="colorDailyStatsRowHeaderText" format="reference" />
     <attr name="colorDailyStatsRowValueText" format="reference" />
     <attr name="colorDailyStatsRowDayText" format="reference" />
@@ -116,6 +121,8 @@
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
+    <attr name="colorDialogButtonIcon" format="reference|color" />
+    <attr name="colorDialogButtonBg" format="reference|color" />
     <attr name="dialogFragCornerRadius" format="reference" />
 
     <!-- datetime picker -->

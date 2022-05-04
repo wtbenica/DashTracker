@@ -27,11 +27,12 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 3,
+    version = 4,
     entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class, StandardMileageDeduction::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4)
     ],
     exportSchema = true,
 )

@@ -413,7 +413,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             R.drawable.ic_nav_daily
         ) {
             CoroutineScope(Dispatchers.Default).launch {
-                val id = viewModel.upsertAsync(Expense())
+                val id = viewModel.upsertAsync(Expense(isNew = true))
                 ExpenseDialog.newInstance(id.toInt()).show(fm, "new_expense_dialog")
             }
         },
