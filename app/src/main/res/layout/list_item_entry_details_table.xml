@@ -132,9 +132,13 @@
                     android:text="@string/lbl_cost_per_mile" />
 
                 <TextView
+                    android:id="@+id/list_item_deduction_type"
+                    style="@style/SecondaryValueStyle"
+                    tools:text="Gas Only" />
+
+                <TextView
                     android:id="@+id/list_item_entry_cpm"
                     style="@style/ValueStyle"
-                    android:layout_weight="1"
                     tools:text="$0.18" />
             </TableRow>
 
@@ -144,7 +148,7 @@
 
                 <TextView
                     style="@style/HeaderStyle"
-                    android:text="@string/lbl_net_earnings" />
+                    android:text="@string/lbl_net_expenses" />
 
                 <TextView
                     android:id="@+id/list_item_entry_net"

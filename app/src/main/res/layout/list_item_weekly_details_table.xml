@@ -140,7 +140,7 @@
 
                 <TextView
                     style="@style/HeaderStyle"
-                    android:text="@string/lbl_net_earnings" />
+                    android:text="@string/lbl_net_expenses" />
 
                 <TextView
                     android:id="@+id/list_item_weekly_net"

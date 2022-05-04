@@ -36,8 +36,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.ui.activity_main.DeductionCallback
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.FragItemListBinding
@@ -45,6 +43,8 @@ import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
@@ -189,16 +189,18 @@ class EntryListFragment : Fragment() {
                                 else -> {
                                     showExpenseFields()
 
-                                    binding.listItemSubtitle2Label.text = deductionType.fullDesc
+                                    detailsBinding.listItemDeductionType.text = deductionType.fullDesc
 
-                                    binding.listItemSubtitle2.text = getCurrencyString(
+                                    detailsBinding.listItemEntryNet.text = getCurrencyString(
                                         this@EntryHolder.item.getExpenses(costPerMile)
                                     )
 
                                     detailsBinding.listItemEntryCpm.text =
                                         getCpmString(costPerMile)
 
-                                    detailsBinding.listItemEntryNet.text =
+                                    binding.listItemSubtitle2Label.setText(R.string.list_item_label_net)
+
+                                    binding.listItemSubtitle2.text =
                                         getCurrencyString(
                                             this@EntryHolder.item.getNet(
                                                 costPerMile
