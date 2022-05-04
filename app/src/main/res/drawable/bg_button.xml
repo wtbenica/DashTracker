@@ -15,6 +15,6 @@
   -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="@dimen/margin_wide" />
-    <solid android:color="?attr/colorSecondaryDark" />
+    <corners android:radius="?attr/dimenListItemButtonRadius" />
+    <solid android:color="?attr/colorListItemButtonBg" />
 </shape>

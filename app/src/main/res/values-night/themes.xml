@@ -71,11 +71,13 @@
         <item name="colorOptionsMenu">?attr/colorPrimaryFaded</item>
 
         <!-- list_item -->
-        <item name="colorListItem">?attr/colorSecondaryDark</item>
+        <item name="colorListItem">?attr/colorOnPrimary</item>
         <item name="colorListItemExpanded">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
+        <item name="colorListItemButtonBg">@android:color/transparent</item>
+        <item name="colorListItemButtonIcon">?attr/colorSecondary</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
@@ -101,9 +103,11 @@
         <item name="colorDialogTitle">?attr/colorOnSecondary</item>
         <item name="colorDialogText">?attr/colorOnSurface</item>
         <item name="colorDialogItemOutline">?attr/colorPrimaryFaded</item>
-        <item name="colorDialogContentBg">?attr/colorSecondaryDark</item>
-        <item name="colorDialogItem">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogContentBg">?attr/colorOnPrimary</item>
+        <item name="colorDialogItem">?attr/colorOnPrimaryVariant</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimary</item>
+        <item name="colorDialogButtonIcon">?attr/colorSecondary</item>
+        <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>

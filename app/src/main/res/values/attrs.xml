@@ -77,10 +77,13 @@
     <attr name="colorListItemExpanded" format="reference" />
     <attr name="colorListItemTitle" format="reference" />
     <attr name="colorListItemSubtitle" format="reference" />
+    <attr name="colorListItemButtonIcon" format="reference|color" />
+    <attr name="colorListItemButtonBg" format="reference|color" />
     <attr name="textSizeListItemTitle" format="reference" />
     <attr name="textSizeListItemSubtitle" format="reference" />
     <attr name="listItemCornerRadius" format="reference" />
     <attr name="listItemThinBorder" format="reference" />
+    <attr name="dimenListItemButtonRadius" format="reference|dimension" />
     <attr name="dimenListItemMarginVertical" format="reference|dimension" />
     <attr name="dimenListItemMarginHorizontal" format="reference|dimension" />
 
@@ -116,6 +119,8 @@
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
+    <attr name="colorDialogButtonIcon" format="reference|color" />
+    <attr name="colorDialogButtonBg" format="reference|color" />
     <attr name="dialogFragCornerRadius" format="reference" />
 
     <!-- datetime picker -->

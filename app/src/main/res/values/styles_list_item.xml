@@ -62,7 +62,7 @@
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>
         <item name="android:background">@drawable/bg_button</item>
-        <item name="android:tint">?attr/colorOnSecondary</item>
+        <item name="android:tint">?attr/colorListItemButtonIcon</item>
     </style>
 
     <style name="listItemDetailsPane">

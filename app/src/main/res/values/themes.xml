@@ -95,6 +95,7 @@
         <item name="listItemThinBorder">@dimen/margin_half</item>
         <item name="dimenListItemMarginHorizontal">@dimen/margin_narrow</item>
         <item name="dimenListItemMarginVertical">2dp</item>
+        <item name="dimenListItemButtonRadius">@dimen/margin_half</item>
 
         <!-- insights row -->
         <item name="insightsRowCornerRadius">?attr/defaultCornerRadius</item>
@@ -153,16 +154,14 @@
         <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
         <item name="colorOptionsMenu">?attr/colorPrimaryFaded</item>
 
-<!--        <item name="colorGroupButtonText">@color/button_group_button_text</item>-->
-<!--        <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>-->
-<!--        <item name="colorGroupButtonTextChecked">?attr/colorTextSecondary</item>-->
-
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
+        <item name="colorListItemButtonBg">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemButtonIcon">?attr/colorSecondaryDark</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
@@ -183,14 +182,16 @@
         <item name="colorNightValue">@color/nighttime_light</item>
 
         <!-- dialog fragment -->
-        <item name="colorDialog">?attr/colorPrimaryDark</item>
+        <item name="colorDialog">?attr/colorPrimaryVariant</item>
         <item name="colorDialogSecondary">?attr/colorPrimary</item>
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?android:attr/textColorPrimary</item>
         <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorDialogContentBg</item>
-        <item name="colorDialogItemDisabled">?attr/colorPrimary</item>
+        <item name="colorDialogItemDisabled">?attr/colorPrimaryVariant</item>
+        <item name="colorDialogButtonIcon">?attr/colorSecondaryDark</item>
+        <item name="colorDialogButtonBg">?attr/colorPrimaryVariant</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>
