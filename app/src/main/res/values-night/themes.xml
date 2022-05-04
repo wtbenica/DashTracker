@@ -69,7 +69,7 @@
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
         <item name="colorGroupStroke">?attr/colorSecondary</item>
         <item name="colorOptionsMenu">?attr/colorSecondary</item>
-        <item name="colorTabLayoutBg">?attr/colorListItem</item>
+        <item name="colorTabLayoutBg">?attr/colorPrimaryVariant</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnPrimary</item>
@@ -78,7 +78,7 @@
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">@android:color/transparent</item>
-        <item name="colorListItemButtonIcon">?attr/colorSecondaryDark</item>
+        <item name="colorListItemButtonIcon">?attr/colorSecondaryFaded</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
@@ -90,6 +90,8 @@
         <item name="colorRowValueSecondaryText">?attr/colorOnSurface</item>
 
         <!-- daily stats row -->
+        <item name="colorChartGrossIncome">#848</item>
+        <item name="colorChartNetIncome">#488</item>
         <item name="colorDailyStatsRowHeaderText">?attr/colorTextSecondary</item>
         <item name="colorDailyStatsRowValueText">?attr/colorTextSecondary</item>
         <item name="colorDailyStatsRowDayText">?attr/colorOnSurface</item>
@@ -107,7 +109,7 @@
         <item name="colorDialogContentBg">?attr/colorOnPrimary</item>
         <item name="colorDialogItem">?attr/colorOnPrimaryVariant</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimary</item>
-        <item name="colorDialogButtonIcon">?attr/colorSecondaryDark</item>
+        <item name="colorDialogButtonIcon">?attr/colorSecondaryFaded</item>
         <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
 
         <!-- datetime picker -->

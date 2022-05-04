@@ -31,7 +31,6 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry
@@ -40,6 +39,8 @@ import com.wtb.dashTracker.databinding.ChartByDayOfWeekBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.extensions.getFloatString
+import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
@@ -115,12 +116,14 @@ class ByDayOfWeekBarChart(
         isDragEnabled = false
         setScaleEnabled(false)
         setPinchZoom(false)
-        legend.isEnabled = false
+        legend.isEnabled = true
+        legend.textColor = getAttrColor(context, R.attr.colorTextPrimary)
         xAxis.style()
         axisLeft.style()
         axisRight.isEnabled = false
         setDrawValueAboveBar(false)
         setDrawGridBackground(true)
+        setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
     }
 
     override fun init() {

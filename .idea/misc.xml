@@ -28,6 +28,7 @@
         <entry key="app/src/main/res/drawable/bg_popup_menu.xml" value="0.33" />
         <entry key="app/src/main/res/drawable/bg_popup_menu_2.xml" value="0.33" />
         <entry key="app/src/main/res/drawable/bg_slider.xml" value="0.209" />
+        <entry key="app/src/main/res/drawable/bg_tab_layout.xml" value="0.17" />
         <entry key="app/src/main/res/drawable/bottom_border_bg.xml" value="0.9" />
         <entry key="app/src/main/res/drawable/bottom_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/bottom_nav_item.xml" value="0.2898148148148148" />
@@ -119,7 +120,7 @@
         <entry key="app/src/main/res/layout/bottom_sheet_content_expense.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/layout/bottom_sheet_content_income.xml" value="0.67" />
         <entry key="app/src/main/res/layout/bottom_sheet_content_trends.xml" value="0.2877297990594271" />
-        <entry key="app/src/main/res/layout/chart_by_day_of_week.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/chart_by_day_of_week.xml" value="0.19751381215469613" />
         <entry key="app/src/main/res/layout/chart_cpm.xml" value="0.1" />
         <entry key="app/src/main/res/layout/chart_holder.xml" value="0.1" />
         <entry key="app/src/main/res/layout/chart_hourly_by_day.xml" value="0.49780058651026393" />
@@ -165,7 +166,7 @@
         <entry key="app/src/main/res/layout/fragment_entry.xml" value="0.35104166666666664" />
         <entry key="app/src/main/res/layout/fragment_entry_list.xml" value="0.11296296296296296" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.35104166666666664" />
-        <entry key="app/src/main/res/layout/fragment_income.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/fragment_income.xml" value="0.75" />
         <entry key="app/src/main/res/layout/fragment_insights.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />

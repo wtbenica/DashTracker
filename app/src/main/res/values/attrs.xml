@@ -98,7 +98,10 @@
     <attr name="textSizeItemValue" format="reference" />
     <attr name="textSizeItemSecondaryValue" format="reference" />
 
+    <!-- charts -->
     <!-- daily stats row -->
+    <attr name="colorChartGrossIncome" format="reference|color" />
+    <attr name="colorChartNetIncome" format="reference|color" />
     <attr name="colorDailyStatsRowHeaderText" format="reference" />
     <attr name="colorDailyStatsRowValueText" format="reference" />
     <attr name="colorDailyStatsRowDayText" format="reference" />
