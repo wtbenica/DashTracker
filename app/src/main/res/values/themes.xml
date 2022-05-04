@@ -141,8 +141,8 @@
         <item name="colorBottomNavTextEnabled">?attr/colorSecondaryDark</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryDark</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorSecondaryFaded</item>
-        <item name="colorPopupBackground">?attr/colorOnSecondary</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorSecondaryVariant</item>
+        <item name="colorPopupBackground">?attr/colorSecondaryFaded</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
@@ -173,9 +173,10 @@
         <item name="colorRowValueText">?attr/colorOnSurface</item>
         <item name="colorRowValueSecondaryText">?attr/colorOnPrimaryVariant</item>
 
+        <!-- charts -->
         <!-- daily stats row -->
-        <item name="colorChartGrossIncome">#f9f</item>
-        <item name="colorChartNetIncome">#9ff</item>
+        <item name="colorChartGrossIncome">#8fc</item>
+        <item name="colorChartNetIncome">#cf8</item>
         <item name="colorDailyStatsRowHeaderText">?attr/colorTextPrimary</item>
         <item name="colorDailyStatsRowValueText">?attr/colorTextPrimary</item>
         <item name="colorDailyStatsRowDayText">?attr/colorOnSurface</item>

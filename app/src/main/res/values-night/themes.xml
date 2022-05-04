@@ -53,11 +53,11 @@
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorSecondaryDark</item>
+        <item name="colorBottomNavEnabled">?attr/colorSecondaryFaded</item>
         <item name="colorBottomNavTextEnabled">?attr/colorSecondaryFaded</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorSecondaryFaded</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorSecondary</item>
         <item name="colorPopupBackground">?attr/colorSecondaryVariant</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>

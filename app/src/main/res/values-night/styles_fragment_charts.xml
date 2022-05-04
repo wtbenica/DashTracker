@@ -40,5 +40,6 @@
 
     <style name="DashTrackerChart">
         <item name="android:background">?attr/colorPrimaryDark</item>
+        <item name="android:padding">@dimen/margin_default</item>
     </style>
 </resources>

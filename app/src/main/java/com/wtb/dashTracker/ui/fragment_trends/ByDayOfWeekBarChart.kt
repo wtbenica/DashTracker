@@ -113,11 +113,16 @@ class ByDayOfWeekBarChart(
             )
         )
         description.isEnabled = false
+
+        legend.isEnabled = true
+        legend.typeface = ResourcesCompat.getFont(context, R.font.lalezar)
+        legend.textColor = getAttrColor(context, R.attr.colorTextPrimary)
+        legend.textSize = 14f
+
         isDragEnabled = false
         setScaleEnabled(false)
         setPinchZoom(false)
-        legend.isEnabled = true
-        legend.textColor = getAttrColor(context, R.attr.colorTextPrimary)
+
         xAxis.style()
         axisLeft.style()
         axisRight.isEnabled = false

@@ -124,7 +124,7 @@
         <entry key="app/src/main/res/layout/chart_cpm.xml" value="0.1" />
         <entry key="app/src/main/res/layout/chart_holder.xml" value="0.1" />
         <entry key="app/src/main/res/layout/chart_hourly_by_day.xml" value="0.49780058651026393" />
-        <entry key="app/src/main/res/layout/chart_hourly_gross_net.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/chart_hourly_gross_net.xml" value="0.33" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.40929535232383807" />
         <entry key="app/src/main/res/layout/daily_stats_row.xml" value="0.5324367088607594" />
         <entry key="app/src/main/res/layout/datetime_pickers.xml" value="0.39565217391304347" />

@@ -115,8 +115,12 @@ class HourlyBarChart(
             )
         )
         description.isEnabled = false
+
         legend.isEnabled = false
         legend.typeface = ResourcesCompat.getFont(context, R.font.lalezar)
+        legend.textColor = getAttrColor(context, R.attr.colorTextPrimary)
+        legend.textSize = 14f
+
         isHighlightPerTapEnabled = false
         isHighlightFullBarEnabled = false
         isHighlightPerDragEnabled = false
@@ -288,9 +292,6 @@ class HourlyBarChart(
             }
             BarData(gross, net).also {
                 barChartGrossNetHourly.legend.isEnabled = true
-                barChartGrossNetHourly.legend.textColor =
-                    getAttrColor(context, R.attr.colorTextPrimary)
-
             }
         } else {
             BarData(getWeeklyList()).also {
