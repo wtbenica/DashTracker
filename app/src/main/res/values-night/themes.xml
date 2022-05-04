@@ -23,7 +23,7 @@
 
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorUIBackground">?attr/colorSecondaryVariant</item>
+        <item name="colorUIBackground">?attr/colorOnPrimaryVariant</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
@@ -77,7 +77,7 @@
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">@android:color/transparent</item>
-        <item name="colorListItemButtonIcon">?attr/colorSecondary</item>
+        <item name="colorListItemButtonIcon">?attr/colorSecondaryDark</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
@@ -106,7 +106,7 @@
         <item name="colorDialogContentBg">?attr/colorOnPrimary</item>
         <item name="colorDialogItem">?attr/colorOnPrimaryVariant</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimary</item>
-        <item name="colorDialogButtonIcon">?attr/colorSecondary</item>
+        <item name="colorDialogButtonIcon">?attr/colorSecondaryDark</item>
         <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
 
         <!-- datetime picker -->

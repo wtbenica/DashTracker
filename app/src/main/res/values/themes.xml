@@ -106,7 +106,7 @@
     </style>
 
     <style name="Base.DasherCompanion">
-        <item name="colorUi">?attr/colorPrimaryDark</item>
+        <item name="colorUi">?attr/colorPrimary</item>
         <item name="colorUIBackground">?attr/colorOnSecondary</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
@@ -137,22 +137,22 @@
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorPrimaryDark</item>
-        <item name="colorBottomNavDisabled">?attr/colorPrimary</item>
-        <item name="colorBottomNavTextEnabled">?attr/colorPrimaryVariant</item>
-        <item name="colorBottomNavTextDisabled">?attr/colorPrimary</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorPrimaryVariant</item>
+        <item name="colorBottomNavEnabled">?attr/colorSecondaryDark</item>
+        <item name="colorBottomNavDisabled">?attr/colorSecondaryDark</item>
+        <item name="colorBottomNavTextEnabled">?attr/colorSecondaryDark</item>
+        <item name="colorBottomNavTextDisabled">?attr/colorSecondaryDark</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorPopupBackground">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorPrimary</item>
+        <item name="colorTabIndicator">?attr/colorSecondary</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
-        <item name="colorGroupButton">?attr/colorSecondary</item>
+        <item name="colorGroupButton">?attr/colorSecondaryVariant</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
-        <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
-        <item name="colorOptionsMenu">?attr/colorPrimaryFaded</item>
+        <item name="colorGroupStroke">?attr/colorSecondary</item>
+        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>

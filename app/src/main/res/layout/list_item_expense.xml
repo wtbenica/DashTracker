@@ -147,7 +147,6 @@
                     style="@style/ListItemButton"
                     android:layout_marginBottom="@dimen/margin_half"
                     android:contentDescription="@string/content_desc_remove"
-                    android:elevation="1dp"
                     android:src="@drawable/ic_action_delete" />
 
                 <ImageButton
