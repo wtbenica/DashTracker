@@ -27,6 +27,7 @@
         style="@style/FragIncomeTabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="?attr/colorTabLayoutBg"
         app:layout_constraintEnd_toStartOf="@id/filter_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -56,10 +57,11 @@
         android:insetBottom="0dp"
         android:minWidth="@dimen/min_touch_target"
         android:text="@string/lbl_cpm"
+        android:textColor="?attr/colorTextPrimary"
         app:backgroundTint="?attr/colorOptionsMenu"
         app:cornerRadius="0dp"
         app:icon="@drawable/ic_arrow_expand"
-        app:iconTint="?attr/colorOnPrimary"
+        app:iconTint="?attr/colorTextPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="?attr/colorTextPrimary" />

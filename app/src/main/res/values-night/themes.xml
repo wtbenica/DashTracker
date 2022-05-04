@@ -53,22 +53,23 @@
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorOnSecondary</item>
-        <item name="colorBottomNavTextEnabled">?attr/colorOnSecondary</item>
+        <item name="colorBottomNavEnabled">?attr/colorSecondaryDark</item>
+        <item name="colorBottomNavTextEnabled">?attr/colorSecondaryFaded</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorPrimaryVariant</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorPopupBackground">?attr/colorSecondaryVariant</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorPrimaryFaded</item>
+        <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
-        <item name="colorGroupButton">?attr/colorPrimaryFaded</item>
-        <item name="colorGroupButtonDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorGroupStroke">?attr/colorPrimaryDark</item>
-        <item name="colorOptionsMenu">?attr/colorPrimaryFaded</item>
+        <item name="colorGroupButton">?attr/colorSecondaryVariant</item>
+        <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
+        <item name="colorGroupStroke">?attr/colorSecondary</item>
+        <item name="colorOptionsMenu">?attr/colorSecondary</item>
+        <item name="colorTabLayoutBg">?attr/colorListItem</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnPrimary</item>

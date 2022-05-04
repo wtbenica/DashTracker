@@ -138,9 +138,9 @@
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
         <item name="colorBottomNavEnabled">?attr/colorSecondaryDark</item>
-        <item name="colorBottomNavDisabled">?attr/colorSecondaryDark</item>
         <item name="colorBottomNavTextEnabled">?attr/colorSecondaryDark</item>
-        <item name="colorBottomNavTextDisabled">?attr/colorSecondaryDark</item>
+        <item name="colorBottomNavDisabled">?attr/colorPrimaryDark</item>
+        <item name="colorBottomNavTextDisabled">?attr/colorPrimaryDark</item>
         <item name="colorBottomNavItemIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorPopupBackground">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
@@ -152,7 +152,8 @@
         <item name="colorGroupButton">?attr/colorSecondaryVariant</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
         <item name="colorGroupStroke">?attr/colorSecondary</item>
-        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
+        <item name="colorOptionsMenu">?attr/colorSecondary</item>
+        <item name="colorTabLayoutBg">?attr/colorListItem</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>

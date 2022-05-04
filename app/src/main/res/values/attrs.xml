@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,7 +68,7 @@
     <attr name="colorGroupButtonText" format="reference" />
     <attr name="colorGroupButtonTextDefault" format="reference|color" />
     <attr name="colorGroupButtonTextChecked" format="reference|color" />
-
+    <attr name="colorTabLayoutBg" format="reference|color" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
