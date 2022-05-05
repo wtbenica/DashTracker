@@ -39,7 +39,8 @@ class DTChartHolder @JvmOverloads constructor(
     private var mCallback: DTChartHolderCallback? = null
     val binding = ChartHolderBinding.inflate(LayoutInflater.from(context), this)
 
-    private var mCpmList = listOf<Cpm>()
+    private var mCpmListDaily = listOf<Cpm>()
+    private var mCpmListWeekly = listOf<Cpm>()
     private var mEntries = listOf<DashEntry>()
     private var mWeeklies = listOf<FullWeekly>()
     private var mChart: DTChart? = null
@@ -61,13 +62,17 @@ class DTChartHolder @JvmOverloads constructor(
     }
 
     fun updateLists(
-        cpmList: List<Cpm>? = null,
+        cpmListDaily: List<Cpm>? = null,
+        cpmListWeekly: List<Cpm>? = null,
         entries: List<DashEntry>? = null,
         weeklies: List<FullWeekly>? = null
     ) {
         Log.d(TAG, "updateLists")
-        if (cpmList?.isNotEmpty() == true) {
-            mCpmList = cpmList
+        if (cpmListDaily?.isNotEmpty() == true) {
+            mCpmListDaily = cpmListDaily
+        }
+        if (cpmListWeekly?.isNotEmpty() == true) {
+            mCpmListWeekly = cpmListWeekly
         }
         if (entries?.isNotEmpty() == true) {
             mEntries = entries
@@ -75,7 +80,7 @@ class DTChartHolder @JvmOverloads constructor(
         if (weeklies?.isNotEmpty() == true) {
             mWeeklies = weeklies
         }
-        mChart?.update(mCpmList, mEntries, mWeeklies)
+        mChart?.update(mCpmListDaily, mCpmListWeekly, mEntries, mWeeklies)
     }
 }
 
@@ -89,16 +94,19 @@ abstract class DTChart @JvmOverloads constructor(
 ) : LinearLayout(context, attrSet, defStyleAttr) {
     abstract fun init()
     open fun update(
-        cpmList: List<Cpm>? = null,
+        cpmListDaily: List<Cpm>? = null,
+        cpmListWeekly: List<Cpm>? = null,
         entries: List<DashEntry>? = null,
         weeklies: List<FullWeekly>? = null
     ) {
-        cpmList?.let { if (it.isNotEmpty()) mCpmList = it }
+        cpmListDaily?.let { if (it.isNotEmpty()) mCpmListDaily = it }
+        cpmListWeekly?.let { if (it.isNotEmpty()) mCpmListWeekly = it }
         entries?.let { if (it.isNotEmpty()) mEntries = it }
         weeklies?.let { if (it.isNotEmpty()) mWeeklies = it }
     }
 
-    internal var mCpmList = listOf<Cpm>()
+    internal var mCpmListDaily = listOf<Cpm>()
+    internal var mCpmListWeekly = listOf<Cpm>()
     internal var mEntries = listOf<DashEntry>()
     internal var mWeeklies = listOf<FullWeekly>()
 }

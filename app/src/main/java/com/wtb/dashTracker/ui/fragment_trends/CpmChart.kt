@@ -124,7 +124,7 @@ class CpmChart(
     override fun init() {
         fun SeekBar.initialize() {
             min = ChartsViewModel.MIN_NUM_WEEKS
-            max = mCpmList.size
+            max = mCpmListWeekly.size
 
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
@@ -133,8 +133,8 @@ class CpmChart(
                     fromUser: Boolean
                 ) {
                     binding.cpmNumWeeksTv.text = progress.toString()
-                    if (mCpmList.isNotEmpty())
-                        update(cpmList = mCpmList)
+                    if (mCpmListWeekly.isNotEmpty())
+                        update(cpmListDaily = null, cpmListWeekly = mCpmListWeekly)
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -153,11 +153,12 @@ class CpmChart(
     }
 
     override fun update(
-        cpmList: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<TransactionDao.Cpm>?,
+        cpmListWeekly: List<TransactionDao.Cpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
-        super.update(cpmList, entries, weeklies)
+        super.update(null, cpmListWeekly, entries, weeklies)
 
         fun LineDataSet.style() {
             valueTypeface = ResourcesCompat.getFont(context, R.font.lalezar)
@@ -181,7 +182,7 @@ class CpmChart(
         }
 
         fun getEntryList(): LineDataSet =
-            mCpmList.mapNotNull { cpm ->
+            mCpmListWeekly.mapNotNull { cpm ->
                 if (cpm.cpm !in listOf(Float.NaN, 0f)) {
                     Entry(cpm.date.toEpochDay().toFloat(), cpm.cpm)
                 } else {
@@ -201,7 +202,7 @@ class CpmChart(
 
         val dataSet = getEntryList()
 
-        binding.cpmSeekBarNumWeeks.max = mCpmList.size
+        binding.cpmSeekBarNumWeeks.max = mCpmListWeekly.size
 
         lineChartCpm.xAxis?.axisMinimum = dataSet.xMin - 2
         lineChartCpm.xAxis?.axisMaximum = dataSet.xMax + 2

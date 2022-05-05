@@ -73,7 +73,7 @@ class ByDayOfWeekBarChart(
         binding.graphSelector.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) {
                 selectedGraph = checkedId
-                update(mCpmList, mEntries, mWeeklies)
+                update(null, mCpmListWeekly, mEntries, mWeeklies)
             }
         }
     }
@@ -136,11 +136,12 @@ class ByDayOfWeekBarChart(
     }
 
     override fun update(
-        cpmList: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<TransactionDao.Cpm>?,
+        cpmListWeekly: List<TransactionDao.Cpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
-        super.update(cpmList, entries, weeklies)
+        super.update(null, cpmListWeekly, entries, weeklies)
 
         val barSize = .4f
         val amPmBarOffset = barSize / 2

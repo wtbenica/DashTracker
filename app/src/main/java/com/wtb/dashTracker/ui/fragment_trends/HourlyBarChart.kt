@@ -36,7 +36,6 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHourlyGrossNetBinding
 import com.wtb.dashTracker.extensions.dtfMini
-import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.ui.activity_main.MainActivity
@@ -146,10 +145,7 @@ class HourlyBarChart(
                     fromUser: Boolean
                 ) {
                     binding.numWeeksHourlyTrend.text = progress.toString()
-                    if (mEntries.isNotEmpty())
-                        update(entries = mEntries)
-                    if (mCpmList.isNotEmpty())
-                        update(cpmList = mCpmList)
+                    update()
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -165,7 +161,7 @@ class HourlyBarChart(
 
         binding.hourlyTrendButtonGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
-                update(mCpmList, mEntries, mWeeklies)
+                update(mCpmListDaily, mCpmListWeekly, mEntries, mWeeklies)
                 when (checkedId) {
                     R.id.hourly_trend_daily -> {
                         barChartGrossNetHourly.isWeekly = false
@@ -199,17 +195,18 @@ class HourlyBarChart(
     }
 
     override fun update(
-        cpmList: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<TransactionDao.Cpm>?,
+        cpmListWeekly: List<TransactionDao.Cpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
-        super.update(cpmList, entries, weeklies)
+        super.update(cpmListDaily, cpmListWeekly, entries, weeklies)
 
-        Log.d(TAG, "${mCpmList.size} ${mEntries.size} ${mWeeklies.size}")
         val regBarSize = .8f
         val dailyBarWidth = regBarSize / 2
-        val weeklyBarWidth = regBarSize * 7
         val grossNetBarOffset = dailyBarWidth / 2
+        val weeklyBarWidth = regBarSize * 7 / 2
+        val weeklyGrossNetBarOffset = weeklyBarWidth / 2
 
         fun BarDataSet.style() {
             valueTypeface = ResourcesCompat.getFont(context, R.font.lalezar)
@@ -244,15 +241,16 @@ class HourlyBarChart(
                 val hourly = safeDiv(it.value.totalEarned, it.value.totalHours)
                 if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
                     val cpm =
-                        if (mCpmList.isNotEmpty()) mCpmList.getByDate(it.key)?.cpm ?: 0f else 0f
-                    val expense: Float = safeDiv(
-                        it.value.mileage * cpm,
-                        it.value.totalHours
-                    ) ?: 0f
-                    val toFloat = it.key.toEpochDay().toFloat()
+                        if (mCpmListDaily.isNotEmpty()) mCpmListDaily.getByDate(it.key)?.cpm
+                            ?: 0f else 0f
+                    Log.d(TAG, "${it.key} $cpm")
+                    val a = it.value.mileage * cpm
+                    val expense: Float = safeDiv(a, it.value.totalHours) ?: 0f
+                    Log.d(TAG, "${it.key} cpm: $cpm expense: $a")
+                    val date = it.key.toEpochDay().toFloat()
                     Pair(
-                        BarEntry(toFloat - grossNetBarOffset, hourly),
-                        BarEntry(toFloat + grossNetBarOffset, hourly - expense)
+                        BarEntry(date - grossNetBarOffset, hourly),
+                        BarEntry(date + grossNetBarOffset, hourly - expense)
                     )
                 } else {
                     null
@@ -269,19 +267,44 @@ class HourlyBarChart(
                     BarDataSet(subListGross, "Gross").apply { style() },
                     BarDataSet(subListNet, "Net").apply { style() })
             }
+//
+//        fun getWeeklyList(): BarDataSet =
+//            mWeeklies.mapNotNull {
+//                val hourly = it.hourly
+//                if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
+//                    BarEntry(it.weekly.date.toEpochDay().toFloat(), hourly)
+//                } else {
+//                    null
+//                }
+//            }.let {
+//                val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
+//                val subList = it.reversed().subList(Integer.max(startIndex, 0), it.size)
+//                BarDataSet(subList, "Hourly by Week").apply { style() }
+//            }
 
-        fun getWeeklyList(): BarDataSet = mWeeklies.mapNotNull {
-            val hourly = it.hourly
-            if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
-                BarEntry(it.weekly.date.toEpochDay().toFloat(), hourly)
-            } else {
-                null
+        fun getWeeklyList(): Pair<BarDataSet, BarDataSet> =
+            mWeeklies.mapNotNull {
+                val hourly = it.hourly
+                if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
+                    val cpm = mCpmListWeekly.getByDate(it.weekly.date)?.cpm ?: 0f
+                    val mileageCost = cpm * it.miles
+                    val hourlyCost = safeDiv(mileageCost, it.hours) ?: 0f
+                    val date = it.weekly.date.toEpochDay().toFloat()
+                    Pair(
+                        BarEntry(date - weeklyGrossNetBarOffset, hourly),
+                        BarEntry(date + weeklyGrossNetBarOffset, hourly - hourlyCost)
+                    )
+                } else {
+                    null
+                }
+            }.let {
+                val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
+                val subList = it.reversed().subList(Integer.max(startIndex, 0), it.size)
+                Pair(
+                    BarDataSet(subList.map { p -> p.first }, "Hourly by Week").apply { style() },
+                    BarDataSet(subList.map { p -> p.second }, "Hourly by Weekl").apply { style() }
+                )
             }
-        }.let {
-            val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
-            val subList = it.reversed().subList(Integer.max(startIndex, 0), it.size)
-            BarDataSet(subList, "Hourly by Week").apply { style() }
-        }
 
         val dataSet: BarData = if (isDailySelected) {
             val gross = getEntryList().first.apply {
@@ -294,8 +317,14 @@ class HourlyBarChart(
                 barChartGrossNetHourly.legend.isEnabled = true
             }
         } else {
-            BarData(getWeeklyList()).also {
-                barChartGrossNetHourly.legend.isEnabled = false
+            val gross = getWeeklyList().first.apply {
+                color = getAttrColor(context, R.attr.colorChartGrossIncome)
+            }
+            val net = getWeeklyList().second.apply {
+                color = getAttrColor(context, R.attr.colorChartNetIncome)
+            }
+            BarData(gross, net).also {
+                barChartGrossNetHourly.legend.isEnabled = true
             }
         }
 
@@ -327,7 +356,7 @@ class HourlyBarChart(
 
     private fun List<TransactionDao.Cpm>.getByDate(date: LocalDate): TransactionDao.Cpm? {
         val index = binarySearch { cpm: TransactionDao.Cpm ->
-            cpm.date.compareTo(date.endOfWeek)
+            cpm.date.compareTo(date)
         }
         return if (index >= 0)
             get(index)
