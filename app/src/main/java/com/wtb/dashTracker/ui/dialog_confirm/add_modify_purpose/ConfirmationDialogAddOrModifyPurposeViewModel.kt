@@ -17,12 +17,12 @@
 package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
 
 import com.wtb.dashTracker.database.models.ExpensePurpose
-import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class ConfirmationDialogAddOrModifyPurposeViewModel: BaseViewModel<ExpensePurpose>() {
+class ConfirmationDialogAddOrModifyPurposeViewModel: ListItemViewModel<ExpensePurpose>() {
     override fun getItemFlowById(id: Int): Flow<ExpensePurpose?> = repository.getExpensePurposeFlowById(id)
 
 }

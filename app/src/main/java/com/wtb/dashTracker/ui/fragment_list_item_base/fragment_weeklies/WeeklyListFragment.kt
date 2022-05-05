@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_weeklies
+package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -26,7 +26,6 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
@@ -46,15 +45,16 @@ import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
 @ExperimentalCoroutinesApi
-class WeeklyListFragment : Fragment() {
+class WeeklyListFragment : ListItemFragment() {
     private val viewModel: WeeklyViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 

@@ -26,7 +26,7 @@ import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHolderBinding
-import com.wtb.dashTracker.ui.fragment_base_list.toggleListItemVisibility
+import com.wtb.dashTracker.ui.fragment_list_item_base.toggleListItemVisibility
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 

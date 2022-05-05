@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_dailies
+package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -26,7 +26,6 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -50,14 +49,15 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
 @ExperimentalCoroutinesApi
-class EntryListFragment : Fragment() {
+class EntryListFragment : ListItemFragment() {
 
     private val viewModel: EntryListViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null

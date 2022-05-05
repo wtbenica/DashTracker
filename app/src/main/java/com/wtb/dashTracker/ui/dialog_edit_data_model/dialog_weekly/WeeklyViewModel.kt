@@ -24,13 +24,13 @@ import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class WeeklyViewModel : BaseViewModel<Weekly>() {
+class WeeklyViewModel : ListItemViewModel<Weekly>() {
     override fun getItemFlowById(id: Int): Flow<Weekly?> =
         repository.getBasePayAdjustFlowById(id)
 

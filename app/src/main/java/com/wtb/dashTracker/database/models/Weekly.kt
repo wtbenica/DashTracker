@@ -16,15 +16,13 @@
 
 package com.wtb.dashTracker.database.models
 
-import android.util.Log
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.wtb.dashTracker.database.models.Weekly.Companion.Columns.*
 import com.wtb.dashTracker.extensions.weekOfYear
-import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
-import com.wtb.dashTracker.ui.fragment_trends.TAG
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -41,12 +39,8 @@ data class Weekly(
         get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toInt()
 
     val isIncomplete: Boolean
-        get() {
-            val bpaIsNull = basePayAdjustment == null
-            val bpaIsZero = basePayAdjustment == 0f
-            Log.d(TAG, "$date old? ${!isNew} null? $bpaIsNull zero? $bpaIsZero")
-            return (bpaIsNull || bpaIsZero) && !isNew
-        }
+        get() = (basePayAdjustment == null || basePayAdjustment == 0f) && !isNew
+
     companion object : CSVConvertible<Weekly> {
         private enum class Columns(val headerName: String) {
             DATE("Start of Week"),
@@ -85,12 +79,8 @@ data class FullWeekly(
     val entries: List<DashEntry>
 ) : ListItemType {
     val isEmpty: Boolean
-        get() {
-            val empty = entries.isEmpty()
-            val incomplete = weekly.isIncomplete
-            Log.d(TAG, "${weekly.date} entries? ${!empty} incomplete? $incomplete bpa? ${weekly.basePayAdjustment}")
-            return empty && incomplete
-        }
+        get() = entries.isEmpty() && weekly.isIncomplete
+
     internal val hours: Float
         get() = getTotalForWeek(DashEntry::totalHours)
 

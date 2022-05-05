@@ -21,7 +21,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -43,14 +42,15 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-class ExpenseListFragment : Fragment() {
+class ExpenseListFragment : ListItemFragment() {
 
     private val viewModel: ExpenseListViewModel by viewModels()
     private var callback: ExpenseListFragmentCallback? = null

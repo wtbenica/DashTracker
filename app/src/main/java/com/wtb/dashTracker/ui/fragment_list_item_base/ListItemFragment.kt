@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_base_list
+package com.wtb.dashTracker.ui.fragment_list_item_base
 
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +27,7 @@ import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.extensions.transitionBackground
 
-class BaseListFragment : Fragment()
+abstract class ListItemFragment : Fragment()
 
 interface ListItemType
 

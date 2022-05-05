@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_base_list
+package com.wtb.dashTracker.ui.fragment_list_item_base
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
-abstract class BaseViewModel<T : DataModel> : ViewModel() {
+abstract class ListItemViewModel<T : DataModel> : ViewModel() {
     protected val repository = Repository.get()
 
     private val _id = MutableStateFlow(AUTO_ID)
@@ -46,7 +45,6 @@ abstract class BaseViewModel<T : DataModel> : ViewModel() {
     abstract fun getItemFlowById(id: Int): Flow<T?>
 
     fun loadDataModel(id: Int?) {
-        Log.d(TAG, "loadDataModel: Loading $id")
         _id.value = id ?: AUTO_ID
     }
 
@@ -56,7 +54,6 @@ abstract class BaseViewModel<T : DataModel> : ViewModel() {
         CoroutineScope(Dispatchers.Default).launch {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {
-                Log.d(TAG, "upsert: id: $id ${dataModel::class}")
                 _id.value = id.toInt()
             }
         }
@@ -66,7 +63,6 @@ abstract class BaseViewModel<T : DataModel> : ViewModel() {
         withContext(Dispatchers.Default) {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {
-                Log.d(TAG, "upsertAsync: id: $id ${dataModel::class}")
                 _id.value = id.toInt()
             }
             id
@@ -75,7 +71,6 @@ abstract class BaseViewModel<T : DataModel> : ViewModel() {
     fun delete(dataModel: DataModel) = repository.deleteModel(dataModel)
 
     fun clearEntry() {
-        Log.d(TAG, "clearEntry")
         _id.value = AUTO_ID
     }
 

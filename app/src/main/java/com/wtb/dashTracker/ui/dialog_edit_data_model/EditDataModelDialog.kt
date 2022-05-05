@@ -20,7 +20,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,8 +34,7 @@ import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.ui.dialog_confirm.*
-import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
-import com.wtb.dashTracker.ui.fragment_trends.TAG
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -46,7 +44,7 @@ import kotlinx.coroutines.launch
 abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDialogFragment() {
     protected abstract var item: M?
     protected abstract var binding: B
-    protected abstract val viewModel: BaseViewModel<M>
+    protected abstract val viewModel: ListItemViewModel<M>
 
     // if save button is pressed or is confirmed by save dialog, gets assigned true
     protected var saveConfirmed = false
@@ -113,9 +111,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy soe? $saveOnExit empty? ${!isNotEmpty()} confirm? $saveConfirmed")
         if (saveOnExit && (isNotEmpty() || saveConfirmed)) {
-            Log.d(TAG, "saving values")
             saveValues()
         }
 

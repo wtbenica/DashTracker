@@ -19,12 +19,12 @@ package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.FullExpensePurpose
-import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class ExpenseViewModel : BaseViewModel<Expense>() {
+class ExpenseViewModel : ListItemViewModel<Expense>() {
     override fun getItemFlowById(id: Int): Flow<Expense?> =
         repository.getExpenseFlowById(id)
 

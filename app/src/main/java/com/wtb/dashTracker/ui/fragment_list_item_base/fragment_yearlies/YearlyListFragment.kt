@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_yearlies
+package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -24,7 +24,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
@@ -46,15 +45,16 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-class YearlyListFragment : Fragment() {
+class YearlyListFragment : ListItemFragment() {
 
     private val viewModel: YearlyListViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null

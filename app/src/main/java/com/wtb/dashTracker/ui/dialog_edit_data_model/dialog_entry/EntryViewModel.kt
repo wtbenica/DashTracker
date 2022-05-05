@@ -17,12 +17,12 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.ui.fragment_base_list.BaseViewModel
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class EntryViewModel : BaseViewModel<DashEntry>() {
+class EntryViewModel : ListItemViewModel<DashEntry>() {
     override fun getItemFlowById(id: Int): Flow<DashEntry?> =
         repository.getEntryFlowById(id)
 }
