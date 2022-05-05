@@ -35,8 +35,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.ui.activity_main.DeductionCallback
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.FragItemListBinding
@@ -44,6 +42,8 @@ import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
@@ -140,14 +140,14 @@ class WeeklyListFragment : Fragment() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
                     detailsBinding.listItemWeeklyCpmRow.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyNetRow.visibility = VISIBLE
+                    detailsBinding.listItemWeeklyExpensesRow.visibility = VISIBLE
                 }
 
                 fun hideExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = GONE
                     binding.listItemSubtitle2.visibility = GONE
                     detailsBinding.listItemWeeklyCpmRow.visibility = GONE
-                    detailsBinding.listItemWeeklyNetRow.visibility = GONE
+                    detailsBinding.listItemWeeklyExpensesRow.visibility = GONE
                 }
 
                 this.item = item
@@ -169,13 +169,15 @@ class WeeklyListFragment : Fragment() {
                                 else -> {
                                     showExpenseFields()
 
-                                    binding.listItemSubtitle2Label.text = deductionType.fullDesc
+                                    detailsBinding.listItemDeductionType.text =
+                                        deductionType.fullDesc
 
-                                    binding.listItemSubtitle2.text = getCurrencyString(expenses)
+                                    detailsBinding.listItemWeeklyExpenses.text =
+                                        getCurrencyString(expenses)
 
                                     detailsBinding.listItemWeeklyCpm.text = getCpmString(cpm)
 
-                                    detailsBinding.listItemWeeklyNet.text =
+                                    binding.listItemSubtitle2.text =
                                         getCurrencyString(this@WeeklyHolder.item.getNet(cpm))
 
                                     detailsBinding.listItemWeeklyHourly.text = getCurrencyString(

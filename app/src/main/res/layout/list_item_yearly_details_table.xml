@@ -97,14 +97,18 @@
                     android:text="@string/lbl_cost_per_mile" />
 
                 <TextView
+                    android:id="@+id/list_item_deduction_type"
+                    style="@style/SecondaryValueStyle"
+                    tools:text="Gas Only" />
+
+                <TextView
                     android:id="@+id/list_item_yearly_cpm"
                     style="@style/ValueStyle"
-                    android:layout_weight="1"
                     tools:text="$0.18" />
             </TableRow>
 
             <TableRow
-                android:id="@+id/list_item_yearly_net_row"
+                android:id="@+id/list_item_yearly_expenses_row"
                 style="@style/DetailsRow">
 
                 <TextView
@@ -112,7 +116,7 @@
                     android:text="@string/lbl_net_expenses" />
 
                 <TextView
-                    android:id="@+id/list_item_yearly_net"
+                    android:id="@+id/list_item_yearly_expenses"
                     style="@style/ValueStyle"
                     android:layout_weight="1"
                     tools:text="$56.18" />

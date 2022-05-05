@@ -34,18 +34,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.ui.activity_main.DeductionCallback
-import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
@@ -89,7 +89,7 @@ class YearlyListFragment : Fragment() {
         var cashTips: Float = 0f,
         var adjust: Float = 0f,
         var hours: Float = 0f
-    ): ListItemType {
+    ) : ListItemType {
         val reportedPay: Float
             get() = pay + otherPay + adjust
 
@@ -191,14 +191,14 @@ class YearlyListFragment : Fragment() {
                 binding.listItemSubtitle2Label.visibility = VISIBLE
                 binding.listItemSubtitle2.visibility = VISIBLE
                 detailsBinding.listItemYearlyCpmRow.visibility = VISIBLE
-                detailsBinding.listItemYearlyNetRow.visibility = VISIBLE
+                detailsBinding.listItemYearlyExpensesRow.visibility = VISIBLE
             }
 
             fun hideExpenseFields() {
                 binding.listItemSubtitle2Label.visibility = GONE
                 binding.listItemSubtitle2.visibility = GONE
                 detailsBinding.listItemYearlyCpmRow.visibility = GONE
-                detailsBinding.listItemYearlyNetRow.visibility = GONE
+                detailsBinding.listItemYearlyExpensesRow.visibility = GONE
             }
 
             this.item = item
@@ -214,14 +214,14 @@ class YearlyListFragment : Fragment() {
                             else -> {
                                 showExpenseFields()
 
-                                binding.listItemSubtitle2Label.text = deductionType.fullDesc
+                                detailsBinding.listItemDeductionType.text = deductionType.fullDesc
 
-                                binding.listItemSubtitle2.text =
+                                detailsBinding.listItemYearlyExpenses.text =
                                     getCurrencyString(this@YearlyHolder.item.getExpenses(costPerMile))
 
                                 detailsBinding.listItemYearlyCpm.text = getCpmString(costPerMile)
 
-                                detailsBinding.listItemYearlyNet.text =
+                                binding.listItemSubtitle2.text =
                                     getCurrencyString(this@YearlyHolder.item.getNet(costPerMile))
 
                                 detailsBinding.listItemYearlyHourly.text = getCurrencyString(

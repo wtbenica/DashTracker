@@ -166,14 +166,14 @@ class EntryListFragment : Fragment() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
                     detailsBinding.listItemEntryCpmRow.visibility = VISIBLE
-                    detailsBinding.listItemEntryNetRow.visibility = VISIBLE
+                    detailsBinding.listItemEntryExpensesRow.visibility = VISIBLE
                 }
 
                 fun hideExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = GONE
                     binding.listItemSubtitle2.visibility = GONE
                     detailsBinding.listItemEntryCpmRow.visibility = GONE
-                    detailsBinding.listItemEntryNetRow.visibility = GONE
+                    detailsBinding.listItemEntryExpensesRow.visibility = GONE
                 }
 
                 this.item = item
@@ -191,7 +191,7 @@ class EntryListFragment : Fragment() {
 
                                     detailsBinding.listItemDeductionType.text = deductionType.fullDesc
 
-                                    detailsBinding.listItemEntryNet.text = getCurrencyString(
+                                    detailsBinding.listItemEntryExpenses.text = getCurrencyString(
                                         this@EntryHolder.item.getExpenses(costPerMile)
                                     )
 
