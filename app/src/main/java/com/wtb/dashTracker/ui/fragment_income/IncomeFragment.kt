@@ -33,9 +33,9 @@ import com.wtb.dashTracker.databinding.FragmentIncomeBinding
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.repository.DeductionType
-import com.wtb.dashTracker.ui.fragment_dailies.EntryListFragment
-import com.wtb.dashTracker.ui.fragment_weeklies.WeeklyListFragment
-import com.wtb.dashTracker.ui.fragment_yearlies.YearlyListFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies.WeeklyListFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.YearlyListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest

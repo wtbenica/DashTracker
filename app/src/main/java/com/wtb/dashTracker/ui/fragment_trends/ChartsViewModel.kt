@@ -17,13 +17,14 @@
 package com.wtb.dashTracker.ui.fragment_trends
 
 import androidx.lifecycle.ViewModel
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 val Any.TAG: String
@@ -59,4 +60,8 @@ class ChartsViewModel : ViewModel() {
                 }
             }
         }.await()
+
+
+    suspend fun getCostPerMile(date: LocalDate, deductionType: DeductionType): Float =
+        repository.getCostPerMile(date, deductionType)
 }

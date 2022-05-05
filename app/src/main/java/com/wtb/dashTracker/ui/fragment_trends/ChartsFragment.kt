@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.fragment_trends
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +43,8 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
 
     private lateinit var barChartHourlyByDay: HorizontalBarChart
 
-    private var cpmList = listOf<Cpm>()
+    private var cpmListDaily = listOf<Cpm>()
+    private var cpmListWeekly = listOf<Cpm>()
     private var entries = listOf<DashEntry>()
     private var weeklies = listOf<FullWeekly>()
 
@@ -81,8 +81,25 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
                 viewModel.entryList.collectLatest {
                     entries = it
 
-                    hourlyGrossNetChartHolder.updateLists(cpmList, entries, weeklies)
-                    hourlyByDayChartHolder.updateLists(cpmList, entries, weeklies)
+                    cpmListDaily = it.map { e -> 
+                        Cpm(
+                            e.date,
+                            viewModel.getCostPerMile(e.date, ALL_EXPENSES)
+                        )
+                    }.reversed()
+
+                    hourlyGrossNetChartHolder.updateLists(
+                        cpmListDaily = cpmListDaily,
+                        cpmListWeekly = cpmListWeekly,
+                        entries = entries,
+                        weeklies = weeklies
+                    )
+                    hourlyByDayChartHolder.updateLists(
+                        cpmListDaily = cpmListDaily,
+                        cpmListWeekly = cpmListWeekly,
+                        entries = entries,
+                        weeklies = weeklies
+                    )
                 }
             }
         }
@@ -91,19 +108,19 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.weeklyList.collectLatest {
-                    Log.d(TAG, "collectLatest weeklyList")
                     weeklies = it
 
-                    cpmList = it.map { w ->
+                    cpmListWeekly = it.map { w ->
                         Cpm(
                             w.weekly.date,
                             viewModel.getExpensesAndCostPerMile(w, ALL_EXPENSES).second
                         )
                     }.reversed()
 
-                    cpmChartHolder.updateLists(cpmList)
+                    cpmChartHolder.updateLists(cpmListWeekly =  cpmListWeekly)
                     hourlyGrossNetChartHolder.updateLists(
-                        cpmList = cpmList,
+                        cpmListDaily = null,
+                        cpmListWeekly = cpmListWeekly,
                         entries = entries,
                         weeklies = weeklies
                     )

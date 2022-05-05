@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_weeklies
+package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -26,7 +26,6 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
@@ -35,8 +34,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.ui.activity_main.DeductionCallback
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.FragItemListBinding
@@ -44,17 +41,20 @@ import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
 @ExperimentalCoroutinesApi
-class WeeklyListFragment : Fragment() {
+class WeeklyListFragment : ListItemFragment() {
     private val viewModel: WeeklyViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
@@ -140,14 +140,14 @@ class WeeklyListFragment : Fragment() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
                     detailsBinding.listItemWeeklyCpmRow.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyNetRow.visibility = VISIBLE
+                    detailsBinding.listItemWeeklyExpensesRow.visibility = VISIBLE
                 }
 
                 fun hideExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = GONE
                     binding.listItemSubtitle2.visibility = GONE
                     detailsBinding.listItemWeeklyCpmRow.visibility = GONE
-                    detailsBinding.listItemWeeklyNetRow.visibility = GONE
+                    detailsBinding.listItemWeeklyExpensesRow.visibility = GONE
                 }
 
                 this.item = item
@@ -169,13 +169,15 @@ class WeeklyListFragment : Fragment() {
                                 else -> {
                                     showExpenseFields()
 
-                                    binding.listItemSubtitle2Label.text = deductionType.fullDesc
+                                    detailsBinding.listItemDeductionType.text =
+                                        deductionType.fullDesc
 
-                                    binding.listItemSubtitle2.text = getCurrencyString(expenses)
+                                    detailsBinding.listItemWeeklyExpenses.text =
+                                        getCurrencyString(expenses)
 
                                     detailsBinding.listItemWeeklyCpm.text = getCpmString(cpm)
 
-                                    detailsBinding.listItemWeeklyNet.text =
+                                    binding.listItemSubtitle2.text =
                                         getCurrencyString(this@WeeklyHolder.item.getNet(cpm))
 
                                     detailsBinding.listItemWeeklyHourly.text = getCurrencyString(

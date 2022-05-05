@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_dailies
+package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -26,7 +26,6 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -36,8 +35,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wtb.dashTracker.ui.activity_main.DeductionCallback
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.FragItemListBinding
@@ -45,19 +42,22 @@ import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemAdapter
-import com.wtb.dashTracker.ui.fragment_base_list.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
 @ExperimentalCoroutinesApi
-class EntryListFragment : Fragment() {
+class EntryListFragment : ListItemFragment() {
 
     private val viewModel: EntryListViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
@@ -166,14 +166,14 @@ class EntryListFragment : Fragment() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
                     detailsBinding.listItemEntryCpmRow.visibility = VISIBLE
-                    detailsBinding.listItemEntryNetRow.visibility = VISIBLE
+                    detailsBinding.listItemEntryExpensesRow.visibility = VISIBLE
                 }
 
                 fun hideExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = GONE
                     binding.listItemSubtitle2.visibility = GONE
                     detailsBinding.listItemEntryCpmRow.visibility = GONE
-                    detailsBinding.listItemEntryNetRow.visibility = GONE
+                    detailsBinding.listItemEntryExpensesRow.visibility = GONE
                 }
 
                 this.item = item
@@ -189,16 +189,18 @@ class EntryListFragment : Fragment() {
                                 else -> {
                                     showExpenseFields()
 
-                                    binding.listItemSubtitle2Label.text = deductionType.fullDesc
+                                    detailsBinding.listItemDeductionType.text = deductionType.fullDesc
 
-                                    binding.listItemSubtitle2.text = getCurrencyString(
+                                    detailsBinding.listItemEntryExpenses.text = getCurrencyString(
                                         this@EntryHolder.item.getExpenses(costPerMile)
                                     )
 
                                     detailsBinding.listItemEntryCpm.text =
                                         getCpmString(costPerMile)
 
-                                    detailsBinding.listItemEntryNet.text =
+                                    binding.listItemSubtitle2Label.setText(R.string.list_item_label_net)
+
+                                    binding.listItemSubtitle2.text =
                                         getCurrencyString(
                                             this@EntryHolder.item.getNet(
                                                 costPerMile

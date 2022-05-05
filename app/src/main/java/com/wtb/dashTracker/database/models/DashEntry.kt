@@ -22,7 +22,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.wtb.dashTracker.database.models.DashEntry.Companion.Columns.*
 import com.wtb.dashTracker.extensions.endOfWeek
-import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration

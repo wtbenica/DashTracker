@@ -22,7 +22,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.wtb.dashTracker.database.models.Weekly.Companion.Columns.*
 import com.wtb.dashTracker.extensions.weekOfYear
-import com.wtb.dashTracker.ui.fragment_base_list.ListItemType
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -39,7 +39,7 @@ data class Weekly(
         get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toInt()
 
     val isIncomplete: Boolean
-        get() = basePayAdjustment == null && !isNew
+        get() = (basePayAdjustment == null || basePayAdjustment == 0f) && !isNew
 
     companion object : CSVConvertible<Weekly> {
         private enum class Columns(val headerName: String) {
@@ -79,7 +79,7 @@ data class FullWeekly(
     val entries: List<DashEntry>
 ) : ListItemType {
     val isEmpty: Boolean
-        get() = entries.isEmpty() && (weekly.isIncomplete || weekly.basePayAdjustment == 0f)
+        get() = entries.isEmpty() && weekly.isIncomplete
 
     internal val hours: Float
         get() = getTotalForWeek(DashEntry::totalHours)

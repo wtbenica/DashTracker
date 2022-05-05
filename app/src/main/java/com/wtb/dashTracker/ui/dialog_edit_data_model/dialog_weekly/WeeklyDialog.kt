@@ -160,6 +160,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
     override fun isEmpty(): Boolean {
         return binding.fragAdjustDate.selectedItemPosition == 0 &&
                 binding.fragAdjustAmount.text.isNullOrBlank()
+                && fullWeekly?.weekly?.isNew == false
     }
 
     // Weeklies don't have delete
