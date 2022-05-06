@@ -145,7 +145,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
             MobileAds.setRequestConfiguration(
                 RequestConfiguration.Builder()
-                    .setTestDeviceIds(listOf("B7667F22237B480FF03CE252659EAA82")).build()
+                    .setTestDeviceIds(
+                        listOf(
+                            "B7667F22237B480FF03CE252659EAA82",
+                            "04CE17DF0350024007F75AE926597C03"
+                        )
+                    ).build()
             )
 
             mAdView = binding.adView
