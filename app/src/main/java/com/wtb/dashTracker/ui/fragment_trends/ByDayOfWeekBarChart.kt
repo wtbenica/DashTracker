@@ -76,6 +76,8 @@ class ByDayOfWeekBarChart(
                 update(null, mCpmListWeekly, mEntries, mWeeklies)
             }
         }
+
+        barChartHourlyByDay = binding.chartBarDailyHourly.apply { style() }
     }
 
     fun HorizontalBarChart.style() {
@@ -129,10 +131,6 @@ class ByDayOfWeekBarChart(
         setDrawValueAboveBar(false)
         setDrawGridBackground(true)
         setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
-    }
-
-    override fun init() {
-        barChartHourlyByDay = binding.chartBarDailyHourly.apply { style() }
     }
 
     override fun update(

@@ -92,7 +92,7 @@ abstract class DTChart @JvmOverloads constructor(
     @StringRes val title: Int? = null,
     @StringRes val subtitle: Int? = null
 ) : LinearLayout(context, attrSet, defStyleAttr) {
-    abstract fun init()
+
     open fun update(
         cpmListDaily: List<Cpm>? = null,
         cpmListWeekly: List<Cpm>? = null,
@@ -110,4 +110,3 @@ abstract class DTChart @JvmOverloads constructor(
     internal var mEntries = listOf<DashEntry>()
     internal var mWeeklies = listOf<FullWeekly>()
 }
-

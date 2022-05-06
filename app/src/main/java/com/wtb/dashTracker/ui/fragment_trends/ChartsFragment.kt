@@ -61,13 +61,13 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
         binding = FragChartsBinding.bind(view)
 
         val cpmChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartsFragment, CpmChart(context).apply { init() })
+            initialize(this@ChartsFragment, CpmChart(context))
         }
         val hourlyGrossNetChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartsFragment, HourlyBarChart(context).apply { init() })
+            initialize(this@ChartsFragment, HourlyBarChart(context))
         }
         val hourlyByDayChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartsFragment, ByDayOfWeekBarChart(context).apply { init() })
+            initialize(this@ChartsFragment, ByDayOfWeekBarChart(context))
         }
 
         binding.chartList.apply {
@@ -81,7 +81,7 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
                 viewModel.entryList.collectLatest {
                     entries = it
 
-                    cpmListDaily = it.map { e -> 
+                    cpmListDaily = it.map { e ->
                         Cpm(
                             e.date,
                             viewModel.getCostPerMile(e.date, ALL_EXPENSES)

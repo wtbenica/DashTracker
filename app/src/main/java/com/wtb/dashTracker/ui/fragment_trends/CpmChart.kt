@@ -121,7 +121,7 @@ class CpmChart(
         axisRight.isEnabled = false
     }
 
-    override fun init() {
+    init {
         fun SeekBar.initialize() {
             min = ChartsViewModel.MIN_NUM_WEEKS
             max = mCpmListWeekly.size

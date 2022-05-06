@@ -31,7 +31,7 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.daos.TransactionDao
+import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHourlyGrossNetBinding
@@ -130,7 +130,7 @@ class HourlyBarChart(
         setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
     }
 
-    override fun init() {
+    init {
         fun SeekBar.initialize() {
             min = ChartsViewModel.MIN_NUM_DAYS_HOURLY_TREND
             max = if (isDailySelected) {
@@ -195,8 +195,8 @@ class HourlyBarChart(
     }
 
     override fun update(
-        cpmListDaily: List<TransactionDao.Cpm>?,
-        cpmListWeekly: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<Cpm>?,
+        cpmListWeekly: List<Cpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
@@ -267,20 +267,6 @@ class HourlyBarChart(
                     BarDataSet(subListGross, "Gross").apply { style() },
                     BarDataSet(subListNet, "Net").apply { style() })
             }
-//
-//        fun getWeeklyList(): BarDataSet =
-//            mWeeklies.mapNotNull {
-//                val hourly = it.hourly
-//                if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
-//                    BarEntry(it.weekly.date.toEpochDay().toFloat(), hourly)
-//                } else {
-//                    null
-//                }
-//            }.let {
-//                val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
-//                val subList = it.reversed().subList(Integer.max(startIndex, 0), it.size)
-//                BarDataSet(subList, "Hourly by Week").apply { style() }
-//            }
 
         fun getWeeklyList(): Pair<BarDataSet, BarDataSet> =
             mWeeklies.mapNotNull {
@@ -301,8 +287,8 @@ class HourlyBarChart(
                 val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
                 val subList = it.reversed().subList(Integer.max(startIndex, 0), it.size)
                 Pair(
-                    BarDataSet(subList.map { p -> p.first }, "Hourly by Week").apply { style() },
-                    BarDataSet(subList.map { p -> p.second }, "Hourly by Weekl").apply { style() }
+                    BarDataSet(subList.map { p -> p.first }, "Gross").apply { style() },
+                    BarDataSet(subList.map { p -> p.second }, "Net").apply { style() }
                 )
             }
 
@@ -354,8 +340,8 @@ class HourlyBarChart(
         }
     }
 
-    private fun List<TransactionDao.Cpm>.getByDate(date: LocalDate): TransactionDao.Cpm? {
-        val index = binarySearch { cpm: TransactionDao.Cpm ->
+    private fun List<Cpm>.getByDate(date: LocalDate): Cpm? {
+        val index = binarySearch { cpm: Cpm ->
             cpm.date.compareTo(date)
         }
         return if (index >= 0)
