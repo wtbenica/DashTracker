@@ -84,7 +84,7 @@ class ByDayOfWeekBarChart(
         fun XAxis.style() {
             setDrawBorders(true)
             typeface = ResourcesCompat.getFont(context, R.font.lalezar)
-            textColor = MainActivity.getAttrColor(context, R.attr.colorTextPrimary)
+            textColor = getAttrColor(context, R.attr.colorTextPrimary)
             textSize = context.getDimen(R.dimen.text_size_sm)
             position = XAxis.XAxisPosition.BOTTOM
             setDrawBorders(true)
@@ -216,7 +216,7 @@ class ByDayOfWeekBarChart(
 
     private fun BarDataSet.style(@AttrRes barColor: Int = R.attr.colorSecondary) {
         valueTypeface = ResourcesCompat.getFont(context, R.font.lalezar)
-        color = MainActivity.getAttrColor(context, barColor)
+        color = getAttrColor(context, barColor)
         valueTextSize = context.getDimen(R.dimen.text_size_sm)
         valueFormatter = object : ValueFormatter() {
             override fun getBarLabel(barEntry: BarEntry?): String {

@@ -44,7 +44,6 @@ import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
@@ -246,7 +245,6 @@ class YearlyListFragment : ListItemFragment() {
     }
 
     companion object {
-        private const val TAG = APP + "MainFragment"
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Yearly>() {
             override fun areItemsTheSame(oldItem: Yearly, newItem: Yearly): Boolean =

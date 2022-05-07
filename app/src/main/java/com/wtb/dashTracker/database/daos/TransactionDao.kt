@@ -69,11 +69,6 @@ abstract class TransactionDao {
         return getFloatByQuery(query) ?: 0f
     }
 
-    data class Cpm(
-        val date: LocalDate,
-        val cpm: Float
-    )
-
     data class NewCpm(
         val date: LocalDate,
         val gasOnlyCpm: Float,

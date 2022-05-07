@@ -41,8 +41,6 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
     private val viewModel: ChartsViewModel by viewModels()
     private lateinit var binding: FragChartsBinding
 
-    private lateinit var barChartHourlyByDay: HorizontalBarChart
-
     private var newCpmListDaily = listOf<NewCpm>()
     private var newCpmListWeekly = listOf<NewCpm>()
     private var entries = listOf<DashEntry>()

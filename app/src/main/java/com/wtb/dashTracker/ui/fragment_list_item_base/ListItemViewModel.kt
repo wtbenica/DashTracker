@@ -75,6 +75,5 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
     }
 
     companion object {
-        private const val TAG = APP + "BaseViewModel"
     }
 }

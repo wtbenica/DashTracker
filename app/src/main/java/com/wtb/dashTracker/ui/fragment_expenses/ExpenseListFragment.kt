@@ -228,7 +228,6 @@ class ExpenseListFragment : ListItemFragment() {
     }
 
     companion object {
-        private const val TAG = APP + "ExpenseListFragment"
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FullExpense>() {
             override fun areItemsTheSame(oldItem: FullExpense, newItem: FullExpense): Boolean =

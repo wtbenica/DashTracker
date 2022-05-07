@@ -191,7 +191,6 @@ class FabMenu @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TAG = APP + "FabMenu"
         private const val ANIM_LENGTH = 100L
         private const val ANIM_DELAY = 50L
     }
