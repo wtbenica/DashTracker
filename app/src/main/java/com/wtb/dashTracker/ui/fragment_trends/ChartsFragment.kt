@@ -27,11 +27,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
+import com.wtb.dashTracker.database.daos.TransactionDao.NewCpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.FragChartsBinding
-import com.wtb.dashTracker.repository.DeductionType.ALL_EXPENSES
+import com.wtb.dashTracker.repository.DeductionType.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -43,8 +43,8 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
 
     private lateinit var barChartHourlyByDay: HorizontalBarChart
 
-    private var cpmListDaily = listOf<Cpm>()
-    private var cpmListWeekly = listOf<Cpm>()
+    private var newCpmListDaily = listOf<NewCpm>()
+    private var newCpmListWeekly = listOf<NewCpm>()
     private var entries = listOf<DashEntry>()
     private var weeklies = listOf<FullWeekly>()
 
@@ -81,22 +81,24 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
                 viewModel.entryList.collectLatest {
                     entries = it
 
-                    cpmListDaily = it.map { e ->
-                        Cpm(
-                            e.date,
-                            viewModel.getCostPerMile(e.date, ALL_EXPENSES)
+                    newCpmListDaily = it.map { e ->
+                        NewCpm(
+                            date = e.date,
+                            gasOnlyCpm = viewModel.getCostPerMile(e.date, GAS_ONLY),
+                            actualCpm = viewModel.getCostPerMile(e.date, ALL_EXPENSES),
+                            irsStdCpm = viewModel.getCostPerMile(e.date, IRS_STD)
                         )
                     }.reversed()
 
                     hourlyGrossNetChartHolder.updateLists(
-                        cpmListDaily = cpmListDaily,
-                        cpmListWeekly = cpmListWeekly,
+                        cpmListDaily = newCpmListDaily,
+                        cpmListWeekly = newCpmListWeekly,
                         entries = entries,
                         weeklies = weeklies
                     )
                     hourlyByDayChartHolder.updateLists(
-                        cpmListDaily = cpmListDaily,
-                        cpmListWeekly = cpmListWeekly,
+                        cpmListDaily = newCpmListDaily,
+                        cpmListWeekly = newCpmListWeekly,
                         entries = entries,
                         weeklies = weeklies
                     )
@@ -110,17 +112,20 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
                 viewModel.weeklyList.collectLatest {
                     weeklies = it
 
-                    cpmListWeekly = it.map { w ->
-                        Cpm(
-                            w.weekly.date,
-                            viewModel.getExpensesAndCostPerMile(w, ALL_EXPENSES).second
+                    newCpmListWeekly = it.map { w ->
+                        NewCpm(
+                            date = w.weekly.date,
+                            gasOnlyCpm = viewModel.getExpensesAndCostPerMile(w, GAS_ONLY).second,
+                            actualCpm = viewModel.getExpensesAndCostPerMile(w, ALL_EXPENSES).second,
+                            irsStdCpm = viewModel.getExpensesAndCostPerMile(w, IRS_STD).second,
                         )
                     }.reversed()
 
-                    cpmChartHolder.updateLists(cpmListWeekly =  cpmListWeekly)
+                    cpmChartHolder.updateLists(cpmListWeekly = newCpmListWeekly)
+
                     hourlyGrossNetChartHolder.updateLists(
-                        cpmListDaily = null,
-                        cpmListWeekly = cpmListWeekly,
+                        cpmListDaily = newCpmListDaily,
+                        cpmListWeekly = newCpmListWeekly,
                         entries = entries,
                         weeklies = weeklies
                     )

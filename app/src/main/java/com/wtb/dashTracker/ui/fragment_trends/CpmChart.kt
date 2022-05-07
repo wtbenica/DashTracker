@@ -38,6 +38,7 @@ import com.wtb.dashTracker.databinding.ChartCpmBinding
 import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.views.WeeklyLineChart
@@ -59,6 +60,13 @@ class CpmChart(
 ) {
     val binding = ChartCpmBinding.inflate(LayoutInflater.from(context), this)
     private var lineChartCpm: WeeklyLineChart = binding.cpmChartLineCpm.apply { style() }
+    private val selectedDeductionType: DeductionType
+        get() = when (binding.buttonGroupDeductionType.checkedButtonId) {
+            R.id.gas_button -> DeductionType.GAS_ONLY
+            R.id.actual_button -> DeductionType.ALL_EXPENSES
+            R.id.standard_button -> DeductionType.IRS_STD
+            else -> DeductionType.NONE
+        }
 
     fun WeeklyLineChart.style() {
         fun XAxis.style() {
@@ -150,11 +158,15 @@ class CpmChart(
 
         lineChartCpm = binding.cpmChartLineCpm.apply { style() }
         binding.cpmSeekBarNumWeeks.initialize()
+
+        binding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            update()
+        }
     }
 
     override fun update(
-        cpmListDaily: List<TransactionDao.Cpm>?,
-        cpmListWeekly: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<TransactionDao.NewCpm>?,
+        cpmListWeekly: List<TransactionDao.NewCpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
@@ -183,8 +195,8 @@ class CpmChart(
 
         fun getEntryList(): LineDataSet =
             mCpmListWeekly.mapNotNull { cpm ->
-                if (cpm.cpm !in listOf(Float.NaN, 0f)) {
-                    Entry(cpm.date.toEpochDay().toFloat(), cpm.cpm)
+                if (cpm.getCpm(selectedDeductionType) !in listOf(Float.NaN, 0f)) {
+                    Entry(cpm.date.toEpochDay().toFloat(), cpm.getCpm(selectedDeductionType))
                 } else {
                     null
                 }

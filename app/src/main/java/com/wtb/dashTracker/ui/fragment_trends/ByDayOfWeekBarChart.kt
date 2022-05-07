@@ -134,8 +134,8 @@ class ByDayOfWeekBarChart(
     }
 
     override fun update(
-        cpmListDaily: List<TransactionDao.Cpm>?,
-        cpmListWeekly: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<TransactionDao.NewCpm>?,
+        cpmListWeekly: List<TransactionDao.NewCpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {

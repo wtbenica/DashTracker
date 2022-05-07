@@ -126,7 +126,7 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
                         callback.setDeductionType(DeductionType.ALL_EXPENSES)
                     }
                     R.id.standard_button -> {
-                        callback.setDeductionType(DeductionType.STD_DEDUCTION)
+                        callback.setDeductionType(DeductionType.IRS_STD)
                     }
                 }
             } else {

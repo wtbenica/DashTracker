@@ -23,6 +23,7 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.Purpose
+import com.wtb.dashTracker.repository.DeductionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 
@@ -72,6 +73,21 @@ abstract class TransactionDao {
         val date: LocalDate,
         val cpm: Float
     )
+
+    data class NewCpm(
+        val date: LocalDate,
+        val gasOnlyCpm: Float,
+        val actualCpm: Float,
+        val irsStdCpm: Float
+    ) {
+        fun getCpm(deductionType: DeductionType): Float =
+            when (deductionType) {
+                DeductionType.NONE -> 0f
+                DeductionType.GAS_ONLY -> gasOnlyCpm
+                DeductionType.ALL_EXPENSES -> actualCpm
+                DeductionType.IRS_STD -> irsStdCpm
+            }
+    }
 
     suspend fun getCostPerMileByDate(
         date: LocalDate,

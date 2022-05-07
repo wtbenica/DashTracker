@@ -22,7 +22,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
-import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
+import com.wtb.dashTracker.database.daos.TransactionDao.NewCpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHolderBinding
@@ -39,8 +39,8 @@ class DTChartHolder @JvmOverloads constructor(
     private var mCallback: DTChartHolderCallback? = null
     val binding = ChartHolderBinding.inflate(LayoutInflater.from(context), this)
 
-    private var mCpmListDaily = listOf<Cpm>()
-    private var mCpmListWeekly = listOf<Cpm>()
+    private var mCpmListDaily = listOf<NewCpm>()
+    private var mCpmListWeekly = listOf<NewCpm>()
     private var mEntries = listOf<DashEntry>()
     private var mWeeklies = listOf<FullWeekly>()
     private var mChart: DTChart? = null
@@ -62,8 +62,8 @@ class DTChartHolder @JvmOverloads constructor(
     }
 
     fun updateLists(
-        cpmListDaily: List<Cpm>? = null,
-        cpmListWeekly: List<Cpm>? = null,
+        cpmListDaily: List<NewCpm>? = null,
+        cpmListWeekly: List<NewCpm>? = null,
         entries: List<DashEntry>? = null,
         weeklies: List<FullWeekly>? = null
     ) {
@@ -94,8 +94,8 @@ abstract class DTChart @JvmOverloads constructor(
 ) : LinearLayout(context, attrSet, defStyleAttr) {
 
     open fun update(
-        cpmListDaily: List<Cpm>? = null,
-        cpmListWeekly: List<Cpm>? = null,
+        cpmListDaily: List<NewCpm>? = null,
+        cpmListWeekly: List<NewCpm>? = null,
         entries: List<DashEntry>? = null,
         weeklies: List<FullWeekly>? = null
     ) {
@@ -105,8 +105,8 @@ abstract class DTChart @JvmOverloads constructor(
         weeklies?.let { if (it.isNotEmpty()) mWeeklies = it }
     }
 
-    internal var mCpmListDaily = listOf<Cpm>()
-    internal var mCpmListWeekly = listOf<Cpm>()
+    internal var mCpmListDaily = listOf<NewCpm>()
+    internal var mCpmListWeekly = listOf<NewCpm>()
     internal var mEntries = listOf<DashEntry>()
     internal var mWeeklies = listOf<FullWeekly>()
 }

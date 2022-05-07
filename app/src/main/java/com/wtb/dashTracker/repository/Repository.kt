@@ -22,12 +22,12 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.util.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -97,7 +97,7 @@ class Repository private constructor(context: Context) {
             DeductionType.NONE -> 0f
             DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDate(date, Purpose.GAS)
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
-            DeductionType.STD_DEDUCTION -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
+            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
         }
 
 
@@ -157,7 +157,7 @@ class Repository private constructor(context: Context) {
             DeductionType.ALL_EXPENSES -> {
                 transactionDao.getCostPerMileAnnual(year)
             }
-            DeductionType.STD_DEDUCTION -> {
+            DeductionType.IRS_STD -> {
                 standardMileageDeductionDao.get(year)?.amount ?: 0f
             }
         }
@@ -310,6 +310,6 @@ enum class DeductionType(val text: String, val fullDesc: String? = null) {
     NONE("None"),
     GAS_ONLY("Gas", "Gas Cost"),
     ALL_EXPENSES("All", "All Costs"),
-    STD_DEDUCTION("IRS Rate", "IRS Std.")
+    IRS_STD("IRS Rate", "IRS Std.")
 }
 

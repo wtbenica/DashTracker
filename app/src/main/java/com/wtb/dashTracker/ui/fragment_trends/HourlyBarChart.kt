@@ -31,13 +31,14 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
+import com.wtb.dashTracker.database.daos.TransactionDao.NewCpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHourlyGrossNetBinding
 import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
@@ -64,6 +65,13 @@ class HourlyBarChart(
 
     private val isDailySelected: Boolean
         get() = binding.hourlyTrendButtonGroup.checkedButtonId == R.id.hourly_trend_daily
+    private val selectedDeductionType: DeductionType
+        get() = when (binding.buttonGroupDeductionType.checkedButtonId) {
+            R.id.gas_button -> DeductionType.GAS_ONLY
+            R.id.actual_button -> DeductionType.ALL_EXPENSES
+            R.id.standard_button -> DeductionType.IRS_STD
+            else -> DeductionType.NONE
+        }
 
     fun BarChart.style() {
         fun XAxis.style() {
@@ -192,11 +200,15 @@ class HourlyBarChart(
 
         barChartGrossNetHourly = binding.chartLineHourlyTrend.apply { style() }
         binding.seekBarNumWeeksHourlyTrend.initialize()
+
+        binding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            update()
+        }
     }
 
     override fun update(
-        cpmListDaily: List<Cpm>?,
-        cpmListWeekly: List<Cpm>?,
+        cpmListDaily: List<NewCpm>?,
+        cpmListWeekly: List<NewCpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
@@ -241,9 +253,11 @@ class HourlyBarChart(
                 val hourly = safeDiv(it.value.totalEarned, it.value.totalHours)
                 if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
                     val cpm =
-                        if (mCpmListDaily.isNotEmpty()) mCpmListDaily.getByDate(it.key)?.cpm
+                        if (mCpmListDaily.isNotEmpty()) mCpmListDaily.getByDate(
+                            it.key,
+                            selectedDeductionType
+                        )
                             ?: 0f else 0f
-                    Log.d(TAG, "${it.key} $cpm")
                     val a = it.value.mileage * cpm
                     val expense: Float = safeDiv(a, it.value.totalHours) ?: 0f
                     Log.d(TAG, "${it.key} cpm: $cpm expense: $a")
@@ -272,7 +286,7 @@ class HourlyBarChart(
             mWeeklies.mapNotNull {
                 val hourly = it.hourly
                 if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
-                    val cpm = mCpmListWeekly.getByDate(it.weekly.date)?.cpm ?: 0f
+                    val cpm = mCpmListWeekly.getByDate(it.weekly.date, selectedDeductionType) ?: 0f
                     val mileageCost = cpm * it.miles
                     val hourlyCost = safeDiv(mileageCost, it.hours) ?: 0f
                     val date = it.weekly.date.toEpochDay().toFloat()
@@ -340,12 +354,12 @@ class HourlyBarChart(
         }
     }
 
-    private fun List<Cpm>.getByDate(date: LocalDate): Cpm? {
-        val index = binarySearch { cpm: Cpm ->
+    private fun List<NewCpm>.getByDate(date: LocalDate, deductionType: DeductionType): Float? {
+        val index = binarySearch { cpm: NewCpm ->
             cpm.date.compareTo(date)
         }
         return if (index >= 0)
-            get(index)
+            get(index).getCpm(deductionType)
         else
             null
     }
