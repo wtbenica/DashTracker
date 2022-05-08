@@ -120,11 +120,11 @@
         <entry key="app/src/main/res/layout/bottom_sheet_content_expense.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/layout/bottom_sheet_content_income.xml" value="0.67" />
         <entry key="app/src/main/res/layout/bottom_sheet_content_trends.xml" value="0.2877297990594271" />
-        <entry key="app/src/main/res/layout/chart_by_day_of_week.xml" value="0.19751381215469613" />
+        <entry key="app/src/main/res/layout/chart_by_day_of_week.xml" value="0.67" />
         <entry key="app/src/main/res/layout/chart_cpm.xml" value="0.2901709401709402" />
-        <entry key="app/src/main/res/layout/chart_holder.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/chart_holder.xml" value="0.2901709401709402" />
         <entry key="app/src/main/res/layout/chart_hourly_by_day.xml" value="0.49780058651026393" />
-        <entry key="app/src/main/res/layout/chart_hourly_gross_net.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/chart_hourly_gross_net.xml" value="0.3143518518518518" />
         <entry key="app/src/main/res/layout/daily_stats_fragment.xml" value="0.40929535232383807" />
         <entry key="app/src/main/res/layout/daily_stats_row.xml" value="0.5324367088607594" />
         <entry key="app/src/main/res/layout/datetime_pickers.xml" value="0.39565217391304347" />

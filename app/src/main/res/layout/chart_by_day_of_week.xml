@@ -15,18 +15,21 @@
   -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout style="@style/ChartCardDetailsLayout">
+        <LinearLayout
+            style="@style/ChartCardDetailsLayout"
+            android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/chart_card_2"
                 style="@style/ChartCard"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -45,44 +48,63 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/graph_selector"
-                android:layout_width="0dp"
+            <TableLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_default"
-                app:checkedButton="@id/btn_chart_hourly_by_day"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chart_card_2"
-                app:selectionRequired="true"
-                app:singleSelection="true">
+                android:padding="@dimen/margin_default">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_chart_hourly_by_day"
-                    style="@style/materialToggleButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Avg Hourly" />
+                <TableRow tools:ignore="UselessParent">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_chart_per_delivery"
-                    style="@style/materialToggleButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Avg Delivery" />
+                    <TextView
+                        android:layout_width="75dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|start"
+                        android:layout_marginEnd="@dimen/margin_half"
+                        android:lineHeight="@dimen/text_size_med"
+                        android:text="Show"
+                        android:textAlignment="gravity" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_chart_del_per_hr"
-                    style="@style/materialToggleButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Delivs per Hour" />
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/graph_selector"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:checkedButton="@id/btn_chart_hourly_by_day"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/chart_card_2"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
 
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_chart_hourly_by_day"
+                            style="@style/materialToggleButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="$/hr" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_chart_per_delivery"
+                            style="@style/materialToggleButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="$/del" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_chart_del_per_hr"
+                            style="@style/materialToggleButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="dels/hr" />
+
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </TableRow>
+
+            </TableLayout>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </merge>

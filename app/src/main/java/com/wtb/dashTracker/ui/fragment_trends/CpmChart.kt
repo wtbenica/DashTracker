@@ -43,6 +43,7 @@ import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.views.WeeklyLineChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.lang.Integer.min
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -159,9 +160,7 @@ class CpmChart(
         lineChartCpm = binding.cpmChartLineCpm.apply { style() }
         binding.cpmSeekBarNumWeeks.initialize()
 
-        binding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
-            update()
-        }
+        binding.buttonGroupDeductionType.addOnButtonCheckedListener { _, _, _ -> update() }
     }
 
     override fun update(
@@ -202,14 +201,9 @@ class CpmChart(
                 }
             }.let {
                 Log.d(TAG, "getEntryList: $it")
-                LineDataSet(
-                    it.subList(
-                        Integer.max(
-                            it.size - binding.cpmSeekBarNumWeeks.progress,
-                            1
-                        ), it.size
-                    ), "CPM"
-                ).apply { style() }
+                val fromIndex =
+                    Integer.max(it.size - binding.cpmSeekBarNumWeeks.progress, min(it.size, 1))
+                LineDataSet(it.subList(fromIndex, it.size), "CPM").apply { style() }
             }
 
         val dataSet = getEntryList()

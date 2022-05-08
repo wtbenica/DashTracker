@@ -22,16 +22,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout style="@style/ChartCardDetailsLayout">
+        <LinearLayout
+            style="@style/ChartCardDetailsLayout"
+            android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/chart_card_daily_trend"
                 style="@style/ChartCard"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     style="@style/DashTrackerChart"
@@ -46,117 +45,135 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/label_num_weeks_hourly_trends"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_default"
-                android:minWidth="@dimen/margin_wide"
-                android:text="@string/lbl_num_days"
-                android:textAlignment="center"
-                app:layout_constraintBottom_toBottomOf="@id/seek_bar_card_hourly_trend"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/seek_bar_card_hourly_trend" />
-
-            <LinearLayout
-                android:id="@+id/seek_bar_card_hourly_trend"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_default"
-                android:layout_marginTop="@dimen/margin_default"
-                android:background="@drawable/bg_slider"
-                android:gravity="center_vertical"
-                android:paddingVertical="@dimen/margin_narrow"
-                android:paddingStart="@dimen/margin_half"
-                android:paddingEnd="0dp"
-                app:layout_constraintCircleRadius="@dimen/margin_default"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/label_num_weeks_hourly_trends"
-                app:layout_constraintTop_toBottomOf="@id/chart_card_daily_trend">
-
-                <TextView
-                    android:id="@+id/num_weeks_hourly_trend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:minWidth="@dimen/margin_wide"
-                    android:textAlignment="center"
-                    tools:text="41" />
-
-                <SeekBar
-                    android:id="@+id/seek_bar_num_weeks_hourly_trend"
-                    style="@style/Widget.AppCompat.SeekBar.Discrete"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:max="52"
-                    android:min="7"
-                    android:progress="41"
-                    android:progressBackgroundTint="?attr/colorSecondary"
-                    android:progressBackgroundTintMode="screen"
-                    android:progressTint="?attr/colorSecondaryDark"
-                    android:thumb="@drawable/ic_circle"
-                    android:thumbTint="?attr/colorSecondaryDark"
-                    app:tickMarkTint="@android:color/transparent" />
-            </LinearLayout>
-
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/hourly_trend_button_group"
+            <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_default"
-                app:checkedButton="@id/hourly_trend_daily"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/seek_bar_card_hourly_trend"
-                app:selectionRequired="true"
-                app:singleSelection="true">
+                android:columnCount="2"
+                android:padding="@dimen/margin_default">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/hourly_trend_daily"
-                    style="@style/materialToggleButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/frag_title_daily_list" />
+                <TableRow android:layout_marginBottom="@dimen/margin_default">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/hourly_trend_weekly"
-                    style="@style/materialToggleButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/frag_title_weekly_list" />
+                    <TextView
+                        android:id="@+id/label_num_weeks_hourly_trends"
+                        android:layout_width="75dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|start"
+                        android:layout_marginEnd="@dimen/margin_half"
+                        android:text="@string/lbl_num_days"
+                        android:textAlignment="gravity" />
 
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+                    <LinearLayout
+                        android:id="@+id/seek_bar_card_hourly_trend"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_slider"
+                        android:gravity="center_vertical"
+                        android:minHeight="42dp"
+                        android:padding="@dimen/margin_half">
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/button_group_deduction_type"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_default"
-                app:checkedButton="@id/gas_button"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/hourly_trend_button_group"
-                app:selectionRequired="true"
-                app:singleSelection="true">
+                        <TextView
+                            android:id="@+id/num_weeks_hourly_trend"
+                            android:layout_width="@dimen/margin_wide"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:textAlignment="center"
+                            tools:text="41" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/gas_button"
-                    style="@style/materialToggleButton"
-                    android:text="@string/expense_purpose_gas" />
+                        <SeekBar
+                            android:id="@+id/seek_bar_num_weeks_hourly_trend"
+                            style="@style/Widget.AppCompat.SeekBar.Discrete"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="52"
+                            android:min="7"
+                            android:padding="0dp"
+                            android:progress="41"
+                            android:progressBackgroundTint="?attr/colorSecondary"
+                            android:progressBackgroundTintMode="screen"
+                            android:progressTint="?attr/colorSecondaryDark"
+                            android:thumb="@drawable/ic_circle"
+                            android:thumbTint="?attr/colorSecondaryDark"
+                            app:tickMarkTint="@android:color/transparent" />
+                    </LinearLayout>
+                </TableRow>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/actual_button"
-                    style="@style/materialToggleButton"
-                    android:text="@string/expense_purpose_all" />
+                <TableRow android:layout_marginBottom="@dimen/margin_default">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/standard_button"
-                    style="@style/materialToggleButton"
-                    android:text="@string/expense_purpose_standard" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:layout_width="75dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|start"
+                        android:layout_marginEnd="@dimen/margin_half"
+                        android:text="Grouping"
+                        android:textAlignment="gravity" />
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/hourly_trend_button_group"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:checkedButton="@id/hourly_trend_daily"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/hourly_trend_daily"
+                            style="@style/materialToggleButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/frag_title_daily_list" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/hourly_trend_weekly"
+                            style="@style/materialToggleButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/frag_title_weekly_list" />
+
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="75dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|start"
+                        android:layout_marginEnd="@dimen/margin_half"
+                        android:text="Expenses"
+                        android:textAlignment="gravity" />
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/button_group_deduction_type"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:checkedButton="@id/gas_button"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/gas_button"
+                            style="@style/materialToggleButton"
+                            android:text="@string/expense_purpose_gas" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/actual_button"
+                            style="@style/materialToggleButton"
+                            android:text="@string/expense_purpose_all" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/standard_button"
+                            style="@style/materialToggleButton"
+                            android:text="@string/expense_purpose_standard" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </merge>
 
