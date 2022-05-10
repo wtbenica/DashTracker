@@ -18,7 +18,6 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
@@ -28,7 +27,6 @@ import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.wtb.dashTracker.extensions.endOfWeek
-import com.wtb.dashTracker.ui.fragment_trends.TAG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.lang.Float.max
 import java.time.DateTimeException
@@ -117,17 +115,13 @@ class WeeklyXAxisRenderer(
                 newMin =
                     LocalDate.ofEpochDay(max(min, 7f).toLong()).minusDays(7L).endOfWeek.toEpochDay()
                         .toFloat()
-                Log.d(TAG, "MIN $min $max")
             } catch (e: DateTimeException) {
-                Log.d(TAG, "EXCEPTION MIN $min $max")
                 newMin = 0f
             }
             var newMax: Float
             try {
                 newMax = LocalDate.ofEpochDay(max.toLong()).endOfWeek.toEpochDay().toFloat()
-                Log.d(TAG, "MAX $min $max")
             } catch (e: DateTimeException) {
-                Log.d(TAG, "EXCEPTION MAX $min $max")
                 newMax = 0f
             }
 
@@ -140,7 +134,6 @@ class WeeklyXAxisRenderer(
                 mAxis.mEntryCount = 0
                 return
             }
-            Log.d(TAG, "Min: $newMin Max: $newMax Range: $range Labels: $labelCount")
             // Find out how much spacing (in y value space) between axis values
 
             // Find out how much spacing (in y value space) between axis values

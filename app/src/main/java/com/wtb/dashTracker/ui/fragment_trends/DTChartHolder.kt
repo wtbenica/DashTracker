@@ -99,7 +99,6 @@ class DTChartHolder @JvmOverloads constructor(
         entries: List<DashEntry>? = null,
         weeklies: List<FullWeekly>? = null
     ) {
-        Log.d(TAG, "updateLists")
         if (cpmListDaily?.isNotEmpty() == true) {
             mCpmListDaily = cpmListDaily
         }

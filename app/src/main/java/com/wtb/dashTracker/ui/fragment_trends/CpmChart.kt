@@ -204,7 +204,6 @@ class CpmChart(
                     null
                 }
             }.let {
-                Log.d(TAG, "getEntryList: $it")
                 val fromIndex =
                     Integer.max(it.size - binding.cpmSeekBarNumWeeks.progress, min(it.size, 1))
                 LineDataSet(it.subList(fromIndex, it.size), "CPM").apply { style() }

@@ -93,7 +93,6 @@ class ByDayOfWeekBarChart(
             setCenterAxisLabels(false)
             valueFormatter = object : ValueFormatter() {
                 override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                    Log.d(TAG, "Axis $value")
                     return if (value in 1f..7f)
                         DayOfWeek.of(8 - value.toInt()).name.slice(0..2)
                     else ""

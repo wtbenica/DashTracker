@@ -272,7 +272,6 @@ class HourlyBarChart(
                             ?: 0f else 0f
                     val a = it.value.mileage * cpm
                     val expense: Float = safeDiv(a, it.value.totalHours) ?: 0f
-                    Log.d(TAG, "${it.key} cpm: $cpm expense: $a")
                     val date = it.key.toEpochDay().toFloat()
                     Pair(
                         BarEntry(date - grossNetBarOffset, hourly),
