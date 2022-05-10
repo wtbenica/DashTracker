@@ -111,18 +111,17 @@ class WeeklyXAxisRenderer(
             super.computeAxisValues(min, max)
         } else {
             var newMin: Float
-            try {
-                newMin =
-                    LocalDate.ofEpochDay(max(min, 7f).toLong()).minusDays(7L).endOfWeek.toEpochDay()
-                        .toFloat()
+            newMin = try {
+                LocalDate.ofEpochDay(max(min, 7f).toLong()).minusDays(7L).endOfWeek.toEpochDay()
+                    .toFloat()
             } catch (e: DateTimeException) {
-                newMin = 0f
+                0f
             }
             var newMax: Float
-            try {
-                newMax = LocalDate.ofEpochDay(max.toLong()).endOfWeek.toEpochDay().toFloat()
+            newMax = try {
+                LocalDate.ofEpochDay(max.toLong()).endOfWeek.toEpochDay().toFloat()
             } catch (e: DateTimeException) {
-                newMax = 0f
+                0f
             }
 
             val range = kotlin.math.abs(newMax - newMin).toDouble()

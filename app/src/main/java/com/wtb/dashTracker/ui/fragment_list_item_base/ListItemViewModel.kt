@@ -21,7 +21,6 @@ import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -74,6 +73,5 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         _id.value = AUTO_ID
     }
 
-    companion object {
-    }
+    companion object
 }

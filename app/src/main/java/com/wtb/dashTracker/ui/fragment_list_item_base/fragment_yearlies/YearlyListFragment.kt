@@ -124,7 +124,7 @@ class YearlyListFragment : ListItemFragment() {
                     yearlies.clear()
                     var numChecked = 0
                     var year =
-                        cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year + 1
+                        (cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year) + 1
                     while (numChecked < cwList.size) {
                         val thisYears = cwList.mapNotNull { cw: FullWeekly ->
                             if (cw.weekly.date.year == year) cw else null
