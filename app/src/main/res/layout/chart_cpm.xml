@@ -20,126 +20,133 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        app:cardElevation="0dp">
 
-        <LinearLayout
+        <FrameLayout
             style="@style/ChartCardDetailsLayout"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cpm_chart_card"
                 style="@style/ChartCard"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="match_parent"
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     style="@style/DashTrackerChart"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
                     <com.wtb.dashTracker.views.WeeklyLineChart
                         android:id="@+id/cpm_chart_line_cpm"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="400dp" />
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <TableLayout
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_filter_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/margin_default">
+                android:layout_gravity="bottom"
+                app:cardElevation="4dp">
 
-                <TableRow android:layout_marginBottom="@dimen/margin_default">
+                <TableLayout
+                    android:id="@+id/table_filters"
+                    style="@style/chartTunerTable"
+                    tools:visibility="visible">
 
-                    <TextView
-                        android:id="@+id/cpm_label_num_weeks_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|start"
-                        android:layout_marginEnd="@dimen/margin_half"
-                        android:minWidth="75dp"
-                        android:text="@string/lbl_num_weeks"
-                        android:textAlignment="gravity" />
-
-
-                    <LinearLayout
-                        android:id="@+id/cpm_seek_bar_card"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_slider"
-                        android:gravity="center_vertical"
-                        android:minHeight="42dp"
-                        android:padding="@dimen/margin_half">
+                    <TableRow android:layout_marginBottom="@dimen/margin_default">
 
                         <TextView
-                            android:id="@+id/cpm_num_weeks_tv"
+                            android:id="@+id/cpm_label_num_weeks_tv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:minWidth="@dimen/margin_wide"
-                            android:textAlignment="center"
-                            tools:text="41" />
+                            android:layout_gravity="center_vertical|start"
+                            android:layout_marginEnd="@dimen/margin_half"
+                            android:minWidth="75dp"
+                            android:text="@string/lbl_num_weeks"
+                            android:textAlignment="gravity" />
 
-                        <SeekBar
-                            android:id="@+id/cpm_seek_bar_num_weeks"
-                            style="@style/Widget.AppCompat.SeekBar.Discrete"
+                        <LinearLayout
+                            android:id="@+id/cpm_seek_bar_card"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:max="52"
-                            android:min="7"
-                            android:padding="0dp"
-                            android:progress="41"
-                            android:progressBackgroundTint="?attr/colorSecondary"
-                            android:progressBackgroundTintMode="screen"
-                            android:progressTint="?attr/colorSecondaryDark"
-                            android:thumb="@drawable/ic_circle"
-                            android:thumbTint="?attr/colorSecondaryDark"
-                            app:tickMarkTint="@android:color/transparent" />
-                    </LinearLayout>
-                </TableRow>
+                            android:background="@drawable/bg_slider"
+                            android:gravity="center_vertical"
+                            android:minHeight="42dp"
+                            android:padding="@dimen/margin_half">
 
-                <TableRow>
+                            <TextView
+                                android:id="@+id/cpm_num_weeks_tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:minWidth="@dimen/margin_wide"
+                                android:textAlignment="center"
+                                tools:text="41" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|start"
-                        android:layout_marginEnd="@dimen/margin_half"
-                        android:text="Expense Type"
-                        android:textAlignment="gravity" />
+                            <SeekBar
+                                android:id="@+id/cpm_seek_bar_num_weeks"
+                                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:max="52"
+                                android:min="7"
+                                android:padding="0dp"
+                                android:progress="41"
+                                android:progressBackgroundTint="?attr/colorSecondary"
+                                android:progressBackgroundTintMode="screen"
+                                android:progressTint="?attr/colorSecondaryDark"
+                                android:thumb="@drawable/ic_circle"
+                                android:thumbTint="?attr/colorSecondaryDark"
+                                app:tickMarkTint="@android:color/transparent" />
+                        </LinearLayout>
+                    </TableRow>
 
-                    <com.google.android.material.button.MaterialButtonToggleGroup
-                        android:id="@+id/button_group_deduction_type"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:checkedButton="@id/gas_button"
-                        app:selectionRequired="true"
-                        app:singleSelection="true">
+                    <TableRow>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/gas_button"
-                            style="@style/materialToggleButton"
-                            android:text="@string/expense_purpose_gas" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|start"
+                            android:layout_marginEnd="@dimen/margin_half"
+                            android:text="Expense Type"
+                            android:textAlignment="gravity" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/actual_button"
-                            style="@style/materialToggleButton"
-                            android:text="@string/expense_purpose_all" />
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/button_group_deduction_type"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            app:checkedButton="@id/gas_button"
+                            app:selectionRequired="true"
+                            app:singleSelection="true">
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/standard_button"
-                            style="@style/materialToggleButton"
-                            android:text="@string/expense_purpose_standard" />
-                    </com.google.android.material.button.MaterialButtonToggleGroup>
-                </TableRow>
-            </TableLayout>
-        </LinearLayout>
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/gas_button"
+                                style="@style/materialToggleButton"
+                                android:text="@string/expense_purpose_gas" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/actual_button"
+                                style="@style/materialToggleButton"
+                                android:text="@string/expense_purpose_all" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/standard_button"
+                                style="@style/materialToggleButton"
+                                android:text="@string/expense_purpose_standard" />
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+                    </TableRow>
+                </TableLayout>
+            </androidx.cardview.widget.CardView>
+        </FrameLayout>
     </androidx.cardview.widget.CardView>
 </merge>

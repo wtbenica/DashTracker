@@ -28,6 +28,7 @@ import android.view.animation.Transformation
 import androidx.annotation.AttrRes
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
+import java.lang.Integer.max
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     val x = ev?.x?.toInt()
@@ -52,7 +53,7 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
     measure(matchParentMeasureSpec, wrapContentMeasureSpec)
     val targetHeight = measuredHeight
 
-    layoutParams.height = 1
+    layoutParams.height = max(1, layoutParams.height)
     visibility = VISIBLE
 
     val animation = object : Animation() {

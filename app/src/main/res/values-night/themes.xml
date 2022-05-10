@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Licenses Activities Theme -->
     <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
         <item name="android:windowLightStatusBar">false</item>
@@ -29,7 +29,7 @@
 
         <!-- Status bar color. -->
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorUi</item>
+        <item name="android:statusBarColor">?attr/colorUi</item>
 
         <!-- Text -->
         <item name="android:textColor">?attr/colorTextPrimary</item>
@@ -53,11 +53,11 @@
         <item name="colorFabIcon">?attr/colorOnSecondary</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorSecondaryFaded</item>
+        <item name="colorBottomNavEnabled">?attr/colorSecondary</item>
         <item name="colorBottomNavTextEnabled">?attr/colorSecondaryFaded</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorSecondary</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorPopupBackground">?attr/colorSecondaryVariant</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
@@ -65,10 +65,10 @@
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
-        <item name="colorGroupButton">?attr/colorSecondaryVariant</item>
-        <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
-        <item name="colorGroupStroke">?attr/colorSecondary</item>
-        <item name="colorOptionsMenu">?attr/colorSecondary</item>
+        <item name="colorGroupButton">?attr/colorSecondaryDark</item>
+        <item name="colorGroupButtonDisabled">?attr/colorSecondary</item>
+        <item name="colorGroupStroke">?attr/colorSecondaryFaded</item>
+        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
         <item name="colorTabLayoutBg">?attr/colorPrimaryVariant</item>
 
         <!-- list_item -->
@@ -99,6 +99,8 @@
         <item name="colorDayValue">@color/daytime_light</item>
         <item name="colorNightHeader">@color/nighttime_solid</item>
         <item name="colorNightValue">@color/nighttime_light</item>
+        <item name="colorShowFiltersButton">?attr/colorSecondaryFaded</item>
+        <item name="colorShowFiltersButtonBg">?attr/colorSecondaryDark</item>
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryDark</item>

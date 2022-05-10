@@ -20,12 +20,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.github.mikephil.charting.charts.HorizontalBarChart
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.daos.TransactionDao.NewCpm
 import com.wtb.dashTracker.database.models.DashEntry
@@ -45,6 +47,7 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
     private var newCpmListWeekly = listOf<NewCpm>()
     private var entries = listOf<DashEntry>()
     private var weeklies = listOf<FullWeekly>()
+    private val charts = mutableListOf<DTChartHolder>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,26 +56,60 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
         return inflater.inflate(R.layout.frag_charts, container, false)
     }
 
+    inner class ChartHolder(val dtch: DTChartHolder) : RecyclerView.ViewHolder(dtch) {
+        fun bind(chart: DTChart) {
+            dtch.apply {
+                initialize(this@ChartsFragment, chart)
+                updateLists(
+                    cpmListDaily = newCpmListDaily,
+                    cpmListWeekly = newCpmListWeekly,
+                    entries = entries,
+                    weeklies = weeklies
+                )
+            }
+        }
+
+    }
+
+    inner class ChartAdapter : RecyclerView.Adapter<ChartHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChartHolder {
+            return ChartHolder(DTChartHolder(requireContext()).apply {
+                layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            })
+        }
+
+        override fun onBindViewHolder(holder: ChartHolder, position: Int) {
+            val chart = when (position) {
+                1 -> CpmChart(requireContext())
+                0 -> HourlyBarChart(requireContext())
+                2 -> ByDayOfWeekBarChart(requireContext())
+                else -> HourlyBarChart(requireContext())
+            }
+
+            charts.add(holder.dtch)
+
+            holder.bind(chart)
+        }
+
+        override fun getItemCount(): Int = 3
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragChartsBinding.bind(view)
 
-        val cpmChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartsFragment, CpmChart(context))
-        }
-        val hourlyGrossNetChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartsFragment, HourlyBarChart(context))
-        }
-        val hourlyByDayChartHolder = DTChartHolder(requireContext()).apply {
-            initialize(this@ChartsFragment, ByDayOfWeekBarChart(context))
-        }
+        val viewPager = binding.chartPager
+        viewPager.adapter = ChartAdapter()
 
-        binding.chartList.apply {
-            addView(cpmChartHolder)
-            addView(hourlyGrossNetChartHolder)
-            addView(hourlyByDayChartHolder)
-        }
+        TabLayoutMediator(binding.chartsTabs, viewPager) { tab, position ->
+            tab.text = when (position) {
+                1 -> "Cost per mile"
+                2 -> "Daily stats"
+                else -> "Hourly gross/net"
+            }
+        }.attach()
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -88,18 +125,14 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
                         )
                     }.reversed()
 
-                    hourlyGrossNetChartHolder.updateLists(
-                        cpmListDaily = newCpmListDaily,
-                        cpmListWeekly = newCpmListWeekly,
-                        entries = entries,
-                        weeklies = weeklies
-                    )
-                    hourlyByDayChartHolder.updateLists(
-                        cpmListDaily = newCpmListDaily,
-                        cpmListWeekly = newCpmListWeekly,
-                        entries = entries,
-                        weeklies = weeklies
-                    )
+                    charts.forEach { holder ->
+                        holder.updateLists(
+                            cpmListDaily = newCpmListDaily,
+                            cpmListWeekly = newCpmListWeekly,
+                            entries = entries,
+                            weeklies = weeklies
+                        )
+                    }
                 }
             }
         }
@@ -119,14 +152,14 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
                         )
                     }.reversed()
 
-                    cpmChartHolder.updateLists(cpmListWeekly = newCpmListWeekly)
-
-                    hourlyGrossNetChartHolder.updateLists(
-                        cpmListDaily = newCpmListDaily,
-                        cpmListWeekly = newCpmListWeekly,
-                        entries = entries,
-                        weeklies = weeklies
-                    )
+                    charts.forEach { holder ->
+                        holder.updateLists(
+                            cpmListDaily = newCpmListDaily,
+                            cpmListWeekly = newCpmListWeekly,
+                            entries = entries,
+                            weeklies = weeklies
+                        )
+                    }
                 }
             }
         }

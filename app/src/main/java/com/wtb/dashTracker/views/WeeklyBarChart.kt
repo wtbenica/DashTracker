@@ -19,6 +19,7 @@ package com.wtb.dashTracker.views
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -53,6 +54,16 @@ class WeeklyBarChart @JvmOverloads constructor(
         mXAxisRenderer =
             WeeklyXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer, isWeekly)
     }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        super.onInterceptTouchEvent(ev)
+        return true
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        super.onTouchEvent(event)
+        return true
+    }
 }
 
 @ExperimentalCoroutinesApi
@@ -71,6 +82,16 @@ class WeeklyLineChart @JvmOverloads constructor(
         super.init()
         mXAxisRenderer =
             WeeklyXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer, isWeekly)
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        super.onInterceptTouchEvent(ev)
+        return true
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        super.onTouchEvent(event)
+        return true
     }
 }
 

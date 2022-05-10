@@ -32,7 +32,7 @@
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
         <item name="android:fontFamily">@font/lalezar</item>
         <item name="titleFontFamily">@font/lalezar</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorUi</item>
+        <item name="android:statusBarColor">?attr/colorUi</item>
     </style>
 
     <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
@@ -113,7 +113,7 @@
 
         <!-- Status bar color. -->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorUi</item>
+        <item name="android:statusBarColor" >?attr/colorUi</item>
 
         <!-- Text -->
         <item name="android:textColor">?attr/colorTextPrimary</item>
@@ -147,12 +147,12 @@
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorSecondary</item>
+        <item name="colorTabIndicator">?attr/colorSecondaryDark</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorGroupButton">?attr/colorSecondary</item>
-        <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
-        <item name="colorGroupStroke">?attr/colorSecondary</item>
-        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
+        <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
+        <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
+        <item name="colorOptionsMenu">?attr/colorSecondaryFaded</item>
         <item name="colorTabLayoutBg">?attr/colorPrimaryFaded</item>
 
         <!-- list_item -->
@@ -184,6 +184,8 @@
         <item name="colorDayValue">@color/daytime_light</item>
         <item name="colorNightHeader">@color/nighttime_solid</item>
         <item name="colorNightValue">@color/nighttime_light</item>
+        <item name="colorShowFiltersButton">?attr/colorSecondaryDark</item>
+        <item name="colorShowFiltersButtonBg">?attr/colorSecondaryFaded</item>
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryVariant</item>

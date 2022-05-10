@@ -20,6 +20,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.content.res.ResourcesCompat
 import com.github.mikephil.charting.charts.BarChart
@@ -206,6 +207,17 @@ class HourlyBarChart(
         }
     }
 
+    override val filterTable: ViewGroup
+        get() = binding.tableFilters
+
+    //    override fun hideFilters(onComplete: (() -> Unit)?) {
+//        binding.tableFilters.collapse(onComplete)
+//    }
+//
+//    override fun showFilters(onComplete: (() -> Unit)?) {
+//        binding.tableFilters.expand(onComplete)
+//    }
+//
     override fun update(
         cpmListDaily: List<NewCpm>?,
         cpmListWeekly: List<NewCpm>?,

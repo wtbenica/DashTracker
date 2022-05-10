@@ -20,6 +20,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
 import androidx.core.content.res.ResourcesCompat
@@ -132,6 +133,10 @@ class ByDayOfWeekBarChart(
         setDrawGridBackground(true)
         setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
     }
+
+    override val filterTable: ViewGroup
+        get() = binding.tableFilters
+
 
     override fun update(
         cpmListDaily: List<TransactionDao.NewCpm>?,

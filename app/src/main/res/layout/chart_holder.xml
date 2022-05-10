@@ -20,53 +20,59 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/list_item_card"
-        style="@style/CardViewStyle.ListItem">
+        style="@style/CardViewStyle.ListItem"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/margin_half"
+        app:cardElevation="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_wrapper"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_list_item"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_list_item_expanded"
             android:orientation="vertical"
-            tools:background="@drawable/bg_list_item_expanded">
+            android:padding="@dimen/margin_half">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/list_item_header"
-                style="@style/ListItemHeader">
+            <TextView
+                android:id="@+id/chart_title_cpm"
+                style="@style/ListItemHeaderTextView.Title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/lbl_cost_per_mile" />
 
-                <TextView
-                    android:id="@+id/chart_title_cpm"
-                    style="@style/ListItemHeaderTextView.Title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@string/lbl_cost_per_mile" />
 
-                <TextView
-                    android:id="@+id/chart_subtitle_cpm"
-                    style="@style/ListItemHeaderTextView.Subtitle"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/chart_title_cpm"
-                    tools:text="@string/frag_title_expenses" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/list_item_details"
-                android:layout_width="match_parent"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_show_filters_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_narrow"
-                android:layout_marginBottom="@dimen/margin_narrow"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_marginStart="@dimen/margin_default"
+                android:padding="0dp"
+                app:cardCornerRadius="@dimen/margin_default"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <FrameLayout
-                    android:id="@+id/cpm_bottom"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:layout_height="400dp" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
+                <ImageButton
+                    android:id="@+id/btn_show_filters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/min_touch_target"
+                    android:background="?attr/colorShowFiltersButtonBg"
+                    android:elevation="4dp"
+                    android:minWidth="@dimen/min_touch_target"
+                    android:src="@drawable/anim_tune_to_close"
+                    app:tint="?attr/colorShowFiltersButton" />
+            </androidx.cardview.widget.CardView>
+
+            <FrameLayout
+                android:id="@+id/cpm_bottom"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/margin_half"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_show_filters_button" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </merge>
