@@ -56,9 +56,9 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
         return inflater.inflate(R.layout.frag_charts, container, false)
     }
 
-    inner class ChartHolder(val dtch: DTChartHolder) : RecyclerView.ViewHolder(dtch) {
+    inner class ChartHolder(val chartHolder: DTChartHolder) : RecyclerView.ViewHolder(chartHolder) {
         fun bind(chart: DTChart) {
-            dtch.apply {
+            chartHolder.apply {
                 initialize(this@ChartsFragment, chart)
                 updateLists(
                     cpmListDaily = newCpmListDaily,
@@ -86,13 +86,12 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
                 else -> HourlyBarChart(requireContext())
             }
 
-            charts.add(holder.dtch)
+            charts.add(holder.chartHolder)
 
             holder.bind(chart)
         }
 
         override fun getItemCount(): Int = 3
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

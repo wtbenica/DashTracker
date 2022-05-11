@@ -15,8 +15,7 @@
   -->
 
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-<dimen name="margin_wide">24dp</dimen>
+    <dimen name="margin_wide">24dp</dimen>
     <dimen name="margin_default">16dp</dimen>
     <dimen name="margin_half">8dp</dimen>
     <dimen name="margin_narrow">4dp</dimen>
@@ -30,6 +29,6 @@
     <dimen name="text_size_med">16sp</dimen>
     <dimen name="text_size_sm">14sp</dimen>
 
-    <dimen name="fragmentPaddingForBottomNav">72dp</dimen>
-
+    <dimen name="fragment_padding_for_bottom_nav">72dp</dimen>
+    <dimen name="chart_fragment_bottom_padding">86dp</dimen>
 </resources>

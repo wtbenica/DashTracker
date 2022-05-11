@@ -81,8 +81,8 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
     val animation = object : Animation() {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             layoutParams.height = if (interpolatedTime >= 1f) {
-                onComplete?.invoke()
                 visibility = GONE
+                onComplete?.invoke()
                 0
             } else {
                 initHeight - (initHeight * interpolatedTime).toInt()
