@@ -113,8 +113,6 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
                         callback.setDeductionType(DeductionType.IRS_STD)
                     }
                 }
-            } else {
-                callback.setDeductionType(DeductionType.NONE)
             }
         }
 

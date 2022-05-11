@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -48,6 +49,7 @@ import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
+import com.wtb.dashTracker.ui.fragment_trends.TAG
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
