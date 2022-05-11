@@ -35,6 +35,7 @@ import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.lang.Float.max
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -83,23 +84,22 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             }
 
             fragEntryStartMileage.apply {
-                doOnTextChanged { text, start, before, count ->
+                doOnTextChanged { _, _, _, _ ->
                     val endMileage = fragEntryEndMileage.text?.toFloatOrNull() ?: 0f
-                    this.onTextChangeUpdateTotal(fragEntryTotalMileage, endMileage) { other, self ->
-                        other - self
-                    }
+                    this.onTextChangeUpdateTotal(
+                        updateView = fragEntryTotalMileage,
+                        otherValue = endMileage
+                    ) { other, self -> max(other - self, 0f) }
                 }
             }
 
             fragEntryEndMileage.apply {
-                doOnTextChanged { text, start, before, count ->
+                doOnTextChanged { _, _, _, _ ->
                     val startMileage = fragEntryStartMileage.text?.toFloatOrNull() ?: 0f
                     this.onTextChangeUpdateTotal(
-                        fragEntryTotalMileage,
-                        startMileage
-                    ) { other, self ->
-                        self - other
-                    }
+                        updateView = fragEntryTotalMileage,
+                        otherValue = startMileage
+                    ) { other, self -> max(self - other, 0f) }
                 }
             }
 
@@ -244,13 +244,13 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 }
 
 fun EditText.onTextChangeUpdateTotal(
-    otherView: TextView,
-    baseValue: Float?,
-    funny: (Float, Float) -> Float
+    updateView: TextView,
+    otherValue: Float?,
+    operation: (Float, Float) -> Float
 ) {
-    val adjustAmount: Float = text?.toFloatOrNull() ?: 0f
-    val newTotal = funny(baseValue ?: 0f, adjustAmount)
-    otherView.text = if (newTotal == 0f) {
+    val self: Float = text?.toFloatOrNull() ?: 0f
+    val newTotal = operation(otherValue ?: 0f, self)
+    updateView.text = if (newTotal == 0f) {
         null
     } else {
         context.getFloatString(newTotal).dropLast(1)
