@@ -34,15 +34,21 @@
     </style>
 
     <style name="ChartCard" parent="CardView">
-        <item name="cardCornerRadius">0dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardCornerRadius">?attr/defaultCornerRadius</item>
+    </style>
+
+    <style name="chartTunerTable">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/colorOptionsMenu</item>
+        <item name="android:padding">@dimen/margin_default</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:columnCount">2</item>
     </style>
 
     <style name="DashTrackerChart">
         <item name="android:background">?attr/colorPrimaryFaded</item>
         <item name="android:padding">@dimen/margin_default</item>
-    </style>
-
-    <style name="HourlyTrendButton" parent="Widget.Material3.CardView.Elevated">
-        <item name="backgroundTint">@color/hourly_trend_button</item>
     </style>
 </resources>

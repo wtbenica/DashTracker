@@ -38,6 +38,7 @@
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/summary_bar"
                 style="@style/SummaryBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -32,10 +32,9 @@ import androidx.annotation.IdRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.isTouchTarget
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -191,7 +190,6 @@ class FabMenu @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TAG = APP + "FabMenu"
         private const val ANIM_LENGTH = 100L
         private const val ANIM_DELAY = 50L
     }

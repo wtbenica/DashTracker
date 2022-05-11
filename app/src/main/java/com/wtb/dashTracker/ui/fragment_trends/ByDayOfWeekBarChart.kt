@@ -18,8 +18,8 @@ package com.wtb.dashTracker.ui.fragment_trends
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
 import androidx.core.content.res.ResourcesCompat
@@ -76,13 +76,15 @@ class ByDayOfWeekBarChart(
                 update(null, mCpmListWeekly, mEntries, mWeeklies)
             }
         }
+
+        barChartHourlyByDay = binding.chartBarDailyHourly.apply { style() }
     }
 
     fun HorizontalBarChart.style() {
         fun XAxis.style() {
             setDrawBorders(true)
             typeface = ResourcesCompat.getFont(context, R.font.lalezar)
-            textColor = MainActivity.getAttrColor(context, R.attr.colorTextPrimary)
+            textColor = getAttrColor(context, R.attr.colorTextPrimary)
             textSize = context.getDimen(R.dimen.text_size_sm)
             position = XAxis.XAxisPosition.BOTTOM
             setDrawBorders(true)
@@ -90,7 +92,6 @@ class ByDayOfWeekBarChart(
             setCenterAxisLabels(false)
             valueFormatter = object : ValueFormatter() {
                 override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                    Log.d(TAG, "Axis $value")
                     return if (value in 1f..7f)
                         DayOfWeek.of(8 - value.toInt()).name.slice(0..2)
                     else ""
@@ -131,13 +132,13 @@ class ByDayOfWeekBarChart(
         setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
     }
 
-    override fun init() {
-        barChartHourlyByDay = binding.chartBarDailyHourly.apply { style() }
-    }
+    override val filterTable: ViewGroup
+        get() = binding.tableFilters
+
 
     override fun update(
-        cpmListDaily: List<TransactionDao.Cpm>?,
-        cpmListWeekly: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<TransactionDao.NewCpm>?,
+        cpmListWeekly: List<TransactionDao.NewCpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
@@ -218,7 +219,7 @@ class ByDayOfWeekBarChart(
 
     private fun BarDataSet.style(@AttrRes barColor: Int = R.attr.colorSecondary) {
         valueTypeface = ResourcesCompat.getFont(context, R.font.lalezar)
-        color = MainActivity.getAttrColor(context, barColor)
+        color = getAttrColor(context, barColor)
         valueTextSize = context.getDimen(R.dimen.text_size_sm)
         valueFormatter = object : ValueFormatter() {
             override fun getBarLabel(barEntry: BarEntry?): String {

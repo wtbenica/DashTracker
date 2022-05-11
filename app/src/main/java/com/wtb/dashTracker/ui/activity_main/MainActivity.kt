@@ -28,6 +28,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -57,6 +58,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
+import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
@@ -145,7 +147,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
             MobileAds.setRequestConfiguration(
                 RequestConfiguration.Builder()
-                    .setTestDeviceIds(listOf("B7667F22237B480FF03CE252659EAA82")).build()
+                    .setTestDeviceIds(
+                        listOf(
+                            "B7667F22237B480FF03CE252659EAA82",
+                            "04CE17DF0350024007F75AE926597C03"
+                        )
+                    ).build()
             )
 
             mAdView = binding.adView
@@ -172,6 +179,19 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             navController?.let {
                 setupActionBarWithNavController(it, appBarConfiguration)
                 navView.setupWithNavController(it)
+                it.addOnDestinationChangedListener { controller, destination, arguments ->
+                    when (destination.id) {
+                        R.id.navigation_income -> binding.summaryBar.apply {
+                            visibility = VISIBLE
+                            layoutParams.height = WRAP_CONTENT
+                        }
+                        R.id.navigation_expenses -> binding.summaryBar.apply {
+                            visibility = VISIBLE
+                            layoutParams.height = WRAP_CONTENT
+                        }
+                        R.id.navigation_insights -> binding.summaryBar.collapse()
+                    }
+                }
             }
         }
 

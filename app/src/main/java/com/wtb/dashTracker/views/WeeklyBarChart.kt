@@ -18,7 +18,7 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
+import android.view.MotionEvent
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -27,7 +27,6 @@ import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.wtb.dashTracker.extensions.endOfWeek
-import com.wtb.dashTracker.ui.fragment_trends.TAG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.lang.Float.max
 import java.time.DateTimeException
@@ -53,6 +52,16 @@ class WeeklyBarChart @JvmOverloads constructor(
         mXAxisRenderer =
             WeeklyXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer, isWeekly)
     }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        super.onInterceptTouchEvent(ev)
+        return true
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        super.onTouchEvent(event)
+        return true
+    }
 }
 
 @ExperimentalCoroutinesApi
@@ -71,6 +80,16 @@ class WeeklyLineChart @JvmOverloads constructor(
         super.init()
         mXAxisRenderer =
             WeeklyXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer, isWeekly)
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        super.onInterceptTouchEvent(ev)
+        return true
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        super.onTouchEvent(event)
+        return true
     }
 }
 
@@ -92,22 +111,17 @@ class WeeklyXAxisRenderer(
             super.computeAxisValues(min, max)
         } else {
             var newMin: Float
-            try {
-                newMin =
-                    LocalDate.ofEpochDay(max(min, 7f).toLong()).minusDays(7L).endOfWeek.toEpochDay()
-                        .toFloat()
-                Log.d(TAG, "MIN $min $max")
+            newMin = try {
+                LocalDate.ofEpochDay(max(min, 7f).toLong()).minusDays(7L).endOfWeek.toEpochDay()
+                    .toFloat()
             } catch (e: DateTimeException) {
-                Log.d(TAG, "EXCEPTION MIN $min $max")
-                newMin = 0f
+                0f
             }
             var newMax: Float
-            try {
-                newMax = LocalDate.ofEpochDay(max.toLong()).endOfWeek.toEpochDay().toFloat()
-                Log.d(TAG, "MAX $min $max")
+            newMax = try {
+                LocalDate.ofEpochDay(max.toLong()).endOfWeek.toEpochDay().toFloat()
             } catch (e: DateTimeException) {
-                Log.d(TAG, "EXCEPTION MAX $min $max")
-                newMax = 0f
+                0f
             }
 
             val range = kotlin.math.abs(newMax - newMin).toDouble()
@@ -119,7 +133,6 @@ class WeeklyXAxisRenderer(
                 mAxis.mEntryCount = 0
                 return
             }
-            Log.d(TAG, "Min: $newMin Max: $newMax Range: $range Labels: $labelCount")
             // Find out how much spacing (in y value space) between axis values
 
             // Find out how much spacing (in y value space) between axis values

@@ -18,8 +18,8 @@ package com.wtb.dashTracker.ui.fragment_trends
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -38,10 +38,12 @@ import com.wtb.dashTracker.databinding.ChartCpmBinding
 import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.views.WeeklyLineChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.lang.Integer.min
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -59,6 +61,13 @@ class CpmChart(
 ) {
     val binding = ChartCpmBinding.inflate(LayoutInflater.from(context), this)
     private var lineChartCpm: WeeklyLineChart = binding.cpmChartLineCpm.apply { style() }
+    private val selectedDeductionType: DeductionType
+        get() = when (binding.buttonGroupDeductionType.checkedButtonId) {
+            R.id.gas_button -> DeductionType.GAS_ONLY
+            R.id.actual_button -> DeductionType.ALL_EXPENSES
+            R.id.standard_button -> DeductionType.IRS_STD
+            else -> DeductionType.NONE
+        }
 
     fun WeeklyLineChart.style() {
         fun XAxis.style() {
@@ -121,7 +130,7 @@ class CpmChart(
         axisRight.isEnabled = false
     }
 
-    override fun init() {
+    init {
         fun SeekBar.initialize() {
             min = ChartsViewModel.MIN_NUM_WEEKS
             max = mCpmListWeekly.size
@@ -150,11 +159,16 @@ class CpmChart(
 
         lineChartCpm = binding.cpmChartLineCpm.apply { style() }
         binding.cpmSeekBarNumWeeks.initialize()
+
+        binding.buttonGroupDeductionType.addOnButtonCheckedListener { _, _, _ -> update() }
     }
 
+    override val filterTable: ViewGroup
+        get() = binding.tableFilters
+
     override fun update(
-        cpmListDaily: List<TransactionDao.Cpm>?,
-        cpmListWeekly: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<TransactionDao.NewCpm>?,
+        cpmListWeekly: List<TransactionDao.NewCpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
@@ -183,21 +197,15 @@ class CpmChart(
 
         fun getEntryList(): LineDataSet =
             mCpmListWeekly.mapNotNull { cpm ->
-                if (cpm.cpm !in listOf(Float.NaN, 0f)) {
-                    Entry(cpm.date.toEpochDay().toFloat(), cpm.cpm)
+                if (cpm.getCpm(selectedDeductionType) !in listOf(Float.NaN, 0f)) {
+                    Entry(cpm.date.toEpochDay().toFloat(), cpm.getCpm(selectedDeductionType))
                 } else {
                     null
                 }
             }.let {
-                Log.d(TAG, "getEntryList: $it")
-                LineDataSet(
-                    it.subList(
-                        Integer.max(
-                            it.size - binding.cpmSeekBarNumWeeks.progress,
-                            1
-                        ), it.size
-                    ), "CPM"
-                ).apply { style() }
+                val fromIndex =
+                    Integer.max(it.size - binding.cpmSeekBarNumWeeks.progress, min(it.size, 1))
+                LineDataSet(it.subList(fromIndex, it.size), "CPM").apply { style() }
             }
 
         val dataSet = getEntryList()

@@ -36,7 +36,6 @@ import com.wtb.dashTracker.databinding.ListItemExpenseBinding
 import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
 import com.wtb.dashTracker.extensions.formatted
 import com.wtb.dashTracker.extensions.getStringOrElse
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
@@ -228,7 +227,6 @@ class ExpenseListFragment : ListItemFragment() {
     }
 
     companion object {
-        private const val TAG = APP + "ExpenseListFragment"
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FullExpense>() {
             override fun areItemsTheSame(oldItem: FullExpense, newItem: FullExpense): Boolean =

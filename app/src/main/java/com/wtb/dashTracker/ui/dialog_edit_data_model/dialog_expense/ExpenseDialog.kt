@@ -18,7 +18,6 @@ package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -51,7 +50,6 @@ import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDial
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
-import com.wtb.dashTracker.ui.fragment_trends.TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -153,13 +151,9 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                 binding.fragExpensePrice.setText(
                     getStringOrElse(R.string.float_fmt, "", tempExpense.pricePerGal)
                 )
-                Log.d(TAG, "updateUI: Purpose: ${tempExpense.purpose}")
+
                 binding.fragExpensePurpose.apply {
                     (adapter as PurposeAdapter?)?.getPositionById(tempExpense.purpose)?.let { pos ->
-                        Log.d(
-                            TAG,
-                            "updateUI: Setting spinner: purpose: ${tempExpense.purpose} $pos"
-                        )
                         if (pos != -1) {
                             setSelection(pos)
                         }
@@ -201,7 +195,6 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             RK_ADD_PURPOSE
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
-            Log.d(TAG, "The result is $result")
             bundle.getInt(ARG_PURPOSE_ID).let { id ->
                 if (result) {
                     bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
@@ -239,7 +232,6 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     override fun clearFields() {
-        Log.d(TAG, "clearFields")
         binding.fragExpenseDate.text = LocalDate.now().format(dtfDate)
         binding.fragExpensePurpose.apply {
             (adapter as PurposeAdapter?)?.getPositionById(GAS.id)

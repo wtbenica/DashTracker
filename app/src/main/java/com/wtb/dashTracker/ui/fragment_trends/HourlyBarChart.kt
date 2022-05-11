@@ -18,8 +18,8 @@ package com.wtb.dashTracker.ui.fragment_trends
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.content.res.ResourcesCompat
 import com.github.mikephil.charting.charts.BarChart
@@ -31,13 +31,14 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.daos.TransactionDao
+import com.wtb.dashTracker.database.daos.TransactionDao.NewCpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHourlyGrossNetBinding
 import com.wtb.dashTracker.extensions.dtfMini
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
@@ -64,6 +65,13 @@ class HourlyBarChart(
 
     private val isDailySelected: Boolean
         get() = binding.hourlyTrendButtonGroup.checkedButtonId == R.id.hourly_trend_daily
+    private val selectedDeductionType: DeductionType
+        get() = when (binding.buttonGroupDeductionType.checkedButtonId) {
+            R.id.gas_button -> DeductionType.GAS_ONLY
+            R.id.actual_button -> DeductionType.ALL_EXPENSES
+            R.id.standard_button -> DeductionType.IRS_STD
+            else -> DeductionType.NONE
+        }
 
     fun BarChart.style() {
         fun XAxis.style() {
@@ -130,7 +138,7 @@ class HourlyBarChart(
         setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
     }
 
-    override fun init() {
+    init {
         fun SeekBar.initialize() {
             min = ChartsViewModel.MIN_NUM_DAYS_HOURLY_TREND
             max = if (isDailySelected) {
@@ -192,11 +200,26 @@ class HourlyBarChart(
 
         barChartGrossNetHourly = binding.chartLineHourlyTrend.apply { style() }
         binding.seekBarNumWeeksHourlyTrend.initialize()
+
+        binding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            update()
+        }
     }
 
+    override val filterTable: ViewGroup
+        get() = binding.tableFilters
+
+    //    override fun hideFilters(onComplete: (() -> Unit)?) {
+//        binding.tableFilters.collapse(onComplete)
+//    }
+//
+//    override fun showFilters(onComplete: (() -> Unit)?) {
+//        binding.tableFilters.expand(onComplete)
+//    }
+//
     override fun update(
-        cpmListDaily: List<TransactionDao.Cpm>?,
-        cpmListWeekly: List<TransactionDao.Cpm>?,
+        cpmListDaily: List<NewCpm>?,
+        cpmListWeekly: List<NewCpm>?,
         entries: List<DashEntry>?,
         weeklies: List<FullWeekly>?
     ) {
@@ -241,12 +264,13 @@ class HourlyBarChart(
                 val hourly = safeDiv(it.value.totalEarned, it.value.totalHours)
                 if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
                     val cpm =
-                        if (mCpmListDaily.isNotEmpty()) mCpmListDaily.getByDate(it.key)?.cpm
+                        if (mCpmListDaily.isNotEmpty()) mCpmListDaily.getByDate(
+                            it.key,
+                            selectedDeductionType
+                        )
                             ?: 0f else 0f
-                    Log.d(TAG, "${it.key} $cpm")
                     val a = it.value.mileage * cpm
                     val expense: Float = safeDiv(a, it.value.totalHours) ?: 0f
-                    Log.d(TAG, "${it.key} cpm: $cpm expense: $a")
                     val date = it.key.toEpochDay().toFloat()
                     Pair(
                         BarEntry(date - grossNetBarOffset, hourly),
@@ -267,26 +291,12 @@ class HourlyBarChart(
                     BarDataSet(subListGross, "Gross").apply { style() },
                     BarDataSet(subListNet, "Net").apply { style() })
             }
-//
-//        fun getWeeklyList(): BarDataSet =
-//            mWeeklies.mapNotNull {
-//                val hourly = it.hourly
-//                if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
-//                    BarEntry(it.weekly.date.toEpochDay().toFloat(), hourly)
-//                } else {
-//                    null
-//                }
-//            }.let {
-//                val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
-//                val subList = it.reversed().subList(Integer.max(startIndex, 0), it.size)
-//                BarDataSet(subList, "Hourly by Week").apply { style() }
-//            }
 
         fun getWeeklyList(): Pair<BarDataSet, BarDataSet> =
             mWeeklies.mapNotNull {
                 val hourly = it.hourly
                 if (hourly != null && hourly !in listOf(Float.NaN, 0f)) {
-                    val cpm = mCpmListWeekly.getByDate(it.weekly.date)?.cpm ?: 0f
+                    val cpm = mCpmListWeekly.getByDate(it.weekly.date, selectedDeductionType) ?: 0f
                     val mileageCost = cpm * it.miles
                     val hourlyCost = safeDiv(mileageCost, it.hours) ?: 0f
                     val date = it.weekly.date.toEpochDay().toFloat()
@@ -301,8 +311,8 @@ class HourlyBarChart(
                 val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
                 val subList = it.reversed().subList(Integer.max(startIndex, 0), it.size)
                 Pair(
-                    BarDataSet(subList.map { p -> p.first }, "Hourly by Week").apply { style() },
-                    BarDataSet(subList.map { p -> p.second }, "Hourly by Weekl").apply { style() }
+                    BarDataSet(subList.map { p -> p.first }, "Gross").apply { style() },
+                    BarDataSet(subList.map { p -> p.second }, "Net").apply { style() }
                 )
             }
 
@@ -354,12 +364,12 @@ class HourlyBarChart(
         }
     }
 
-    private fun List<TransactionDao.Cpm>.getByDate(date: LocalDate): TransactionDao.Cpm? {
-        val index = binarySearch { cpm: TransactionDao.Cpm ->
+    private fun List<NewCpm>.getByDate(date: LocalDate, deductionType: DeductionType): Float? {
+        val index = binarySearch { cpm: NewCpm ->
             cpm.date.compareTo(date)
         }
         return if (index >= 0)
-            get(index)
+            get(index).getCpm(deductionType)
         else
             null
     }

@@ -17,16 +17,20 @@
 package com.wtb.dashTracker.ui.fragment_trends
 
 import android.content.Context
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
-import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.daos.TransactionDao.NewCpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHolderBinding
-import com.wtb.dashTracker.ui.fragment_list_item_base.toggleListItemVisibility
+import com.wtb.dashTracker.extensions.collapse
+import com.wtb.dashTracker.extensions.expand
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
@@ -39,17 +43,25 @@ class DTChartHolder @JvmOverloads constructor(
     private var mCallback: DTChartHolderCallback? = null
     val binding = ChartHolderBinding.inflate(LayoutInflater.from(context), this)
 
-    private var mCpmListDaily = listOf<Cpm>()
-    private var mCpmListWeekly = listOf<Cpm>()
+    private var mCpmListDaily = listOf<NewCpm>()
+    private var mCpmListWeekly = listOf<NewCpm>()
     private var mEntries = listOf<DashEntry>()
     private var mWeeklies = listOf<FullWeekly>()
     private var mChart: DTChart? = null
+    private var mFilterVisible: Boolean = false
 
     interface DTChartHolderCallback
 
     init {
-        binding.listItemHeader.setOnClickListener {
-            toggleListItemVisibility(binding.listItemDetails, binding.listItemWrapper)
+        binding.btnShowFilters.setOnClickListener {
+            if (mFilterVisible) {
+                mChart?.hideFilters()
+                runShowTuneIconCollapseAnimation()
+            } else {
+                mChart?.showFilters()
+                runShowTuneIconExpandAnimation()
+            }
+            mFilterVisible = !mFilterVisible
         }
     }
 
@@ -58,16 +70,34 @@ class DTChartHolder @JvmOverloads constructor(
         mChart = chart
         binding.cpmBottom.addView(mChart)
         chart.title?.let { binding.chartTitleCpm.setText(it) }
-        chart.subtitle?.let { binding.chartSubtitleCpm.setText(it) }
+    }
+
+    private fun runShowTuneIconCollapseAnimation() {
+        binding.btnShowFilters.run {
+            setImageResource(R.drawable.anim_close_to_tune)
+            when (val d = drawable) {
+                is AnimatedVectorDrawableCompat -> d.start()
+                is AnimatedVectorDrawable -> d.start()
+            }
+        }
+    }
+
+    private fun runShowTuneIconExpandAnimation() {
+        binding.btnShowFilters.run {
+            setImageResource(R.drawable.anim_tune_to_close)
+            when (val d = drawable) {
+                is AnimatedVectorDrawableCompat -> d.start()
+                is AnimatedVectorDrawable -> d.start()
+            }
+        }
     }
 
     fun updateLists(
-        cpmListDaily: List<Cpm>? = null,
-        cpmListWeekly: List<Cpm>? = null,
+        cpmListDaily: List<NewCpm>? = null,
+        cpmListWeekly: List<NewCpm>? = null,
         entries: List<DashEntry>? = null,
         weeklies: List<FullWeekly>? = null
     ) {
-        Log.d(TAG, "updateLists")
         if (cpmListDaily?.isNotEmpty() == true) {
             mCpmListDaily = cpmListDaily
         }
@@ -92,10 +122,21 @@ abstract class DTChart @JvmOverloads constructor(
     @StringRes val title: Int? = null,
     @StringRes val subtitle: Int? = null
 ) : LinearLayout(context, attrSet, defStyleAttr) {
-    abstract fun init()
+
+    abstract val filterTable: ViewGroup
+
+    fun hideFilters(onComplete: (() -> Unit)? = null) {
+        filterTable.collapse(onComplete)
+    }
+
+    fun showFilters(onComplete: (() -> Unit)? = null) {
+        filterTable.expand(onComplete)
+    }
+
+
     open fun update(
-        cpmListDaily: List<Cpm>? = null,
-        cpmListWeekly: List<Cpm>? = null,
+        cpmListDaily: List<NewCpm>? = null,
+        cpmListWeekly: List<NewCpm>? = null,
         entries: List<DashEntry>? = null,
         weeklies: List<FullWeekly>? = null
     ) {
@@ -105,9 +146,8 @@ abstract class DTChart @JvmOverloads constructor(
         weeklies?.let { if (it.isNotEmpty()) mWeeklies = it }
     }
 
-    internal var mCpmListDaily = listOf<Cpm>()
-    internal var mCpmListWeekly = listOf<Cpm>()
+    internal var mCpmListDaily = listOf<NewCpm>()
+    internal var mCpmListWeekly = listOf<NewCpm>()
     internal var mEntries = listOf<DashEntry>()
     internal var mWeeklies = listOf<FullWeekly>()
 }
-

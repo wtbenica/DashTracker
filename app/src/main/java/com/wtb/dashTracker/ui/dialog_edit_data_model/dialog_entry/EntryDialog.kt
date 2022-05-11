@@ -204,8 +204,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
             val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
             val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
-            val textViewId = bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)
-            when (textViewId) {
+            when (bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)) {
                 R.id.frag_entry_date -> {
                     binding.fragEntryDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
@@ -219,8 +218,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
         ) { _, bundle ->
             val hour = bundle.getInt(TimePickerFragment.ARG_NEW_HOUR)
             val minute = bundle.getInt(TimePickerFragment.ARG_NEW_MINUTE)
-            val textViewId = bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)
-            when (textViewId) {
+            when (bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
                     binding.fragEntryStartTime.text =
                         LocalTime.of(hour, minute).format(dtfTime).toString()

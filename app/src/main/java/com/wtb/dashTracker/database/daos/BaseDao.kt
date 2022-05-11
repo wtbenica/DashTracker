@@ -29,9 +29,9 @@ import kotlinx.coroutines.flow.Flow
 abstract class BaseDao<T : DataModel>(private val tableName: String, private val idName: String = tableName + "Id") {
 
     @RawQuery
-    protected abstract fun getDataModelByQuery(query: SupportSQLiteQuery): T?
+    protected abstract suspend fun getDataModelByQuery(query: SupportSQLiteQuery): T?
 
-    fun get(id: Int): T? {
+    suspend fun get(id: Int): T? {
         val query = SimpleSQLiteQuery("SELECT * FROM $tableName WHERE $idName = $id")
 
         return getDataModelByQuery(query)

@@ -44,7 +44,6 @@ import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
@@ -124,28 +123,33 @@ class YearlyListFragment : ListItemFragment() {
                     // TODO: Something tells me this could be done better with sql
                     yearlies.clear()
                     var numChecked = 0
+                    // TODO: Originally, I added 1 to the default year, and I'm not sure why. I took
+                    //  it out, and I added a 'isNotEmpty' check for thisYears. If there are issues,
+                    //  this is where to look
                     var year =
-                        cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year + 1
+                        cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year
                     while (numChecked < cwList.size) {
                         val thisYears = cwList.mapNotNull { cw: FullWeekly ->
                             if (cw.weekly.date.year == year) cw else null
                         }
                         numChecked += thisYears.size
                         val res = Yearly(year)
-                        thisYears.forEach { cw: FullWeekly ->
-                            res.adjust += cw.weekly.basePayAdjustment ?: 0f
-                            res.pay += cw.entries.mapNotNull(DashEntry::pay)
-                                .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.otherPay += cw.entries.mapNotNull(DashEntry::otherPay)
-                                .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.cashTips += cw.entries.mapNotNull(DashEntry::cashTips)
-                                .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.mileage += cw.entries.mapNotNull(DashEntry::mileage)
-                                .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            res.hours += cw.entries.mapNotNull(DashEntry::totalHours)
-                                .reduceOrNull { acc, fl -> acc + fl } ?: 0f
+                        if (thisYears.isNotEmpty()) {
+                            thisYears.forEach { cw: FullWeekly ->
+                                res.adjust += cw.weekly.basePayAdjustment ?: 0f
+                                res.pay += cw.entries.mapNotNull(DashEntry::pay)
+                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
+                                res.otherPay += cw.entries.mapNotNull(DashEntry::otherPay)
+                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
+                                res.cashTips += cw.entries.mapNotNull(DashEntry::cashTips)
+                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
+                                res.mileage += cw.entries.mapNotNull(DashEntry::mileage)
+                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
+                                res.hours += cw.entries.mapNotNull(DashEntry::totalHours)
+                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
+                            }
+                            yearlies.add(res)
                         }
-                        yearlies.add(res)
                         year -= 1
                     }
                     entryAdapter.submitList(yearlies)
@@ -156,7 +160,8 @@ class YearlyListFragment : ListItemFragment() {
 
     interface YearlyListFragmentCallback : DeductionCallback
 
-    inner class YearlyAdapter : ListAdapter<Yearly, YearlyHolder>(DIFF_CALLBACK) {
+    inner class YearlyAdapter :
+        ListAdapter<YearlyListFragment.Yearly, YearlyHolder>(DIFF_CALLBACK) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): YearlyHolder =
             YearlyHolder(parent)
 
@@ -214,12 +219,18 @@ class YearlyListFragment : ListItemFragment() {
                             else -> {
                                 showExpenseFields()
 
-                                detailsBinding.listItemDeductionType.text = deductionType.fullDesc
+                                detailsBinding.listItemDeductionType.text =
+                                    deductionType.fullDesc
 
                                 detailsBinding.listItemYearlyExpenses.text =
-                                    getCurrencyString(this@YearlyHolder.item.getExpenses(costPerMile))
+                                    getCurrencyString(
+                                        this@YearlyHolder.item.getExpenses(
+                                            costPerMile
+                                        )
+                                    )
 
-                                detailsBinding.listItemYearlyCpm.text = getCpmString(costPerMile)
+                                detailsBinding.listItemYearlyCpm.text =
+                                    getCpmString(costPerMile)
 
                                 binding.listItemSubtitle2.text =
                                     getCurrencyString(this@YearlyHolder.item.getNet(costPerMile))
@@ -235,10 +246,12 @@ class YearlyListFragment : ListItemFragment() {
 
             binding.listItemTitle.text = this.item.year.toString()
             binding.listItemTitle2.text = getCurrencyString(this.item.totalPay)
-            detailsBinding.listItemReportedIncome.text = getCurrencyString(this.item.reportedPay)
+            detailsBinding.listItemReportedIncome.text =
+                getCurrencyString(this.item.reportedPay)
             detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
             detailsBinding.listItemYearlyMileage.text = getMileageString(this.item.mileage)
-            detailsBinding.listItemYearlyHours.text = getString(R.string.format_hours, item.hours)
+            detailsBinding.listItemYearlyHours.text =
+                getString(R.string.format_hours, item.hours)
             detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.item.hourly)
 
             setPayloadVisibility(payloads)
@@ -246,7 +259,6 @@ class YearlyListFragment : ListItemFragment() {
     }
 
     companion object {
-        private const val TAG = APP + "MainFragment"
 
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Yearly>() {
             override fun areItemsTheSame(oldItem: Yearly, newItem: Yearly): Boolean =

@@ -17,15 +17,12 @@
 package com.wtb.dashTracker.repository
 
 import android.content.Context
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.*
-import com.wtb.dashTracker.database.daos.TransactionDao.Cpm
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.util.CSVUtils
@@ -97,25 +94,9 @@ class Repository private constructor(context: Context) {
             DeductionType.NONE -> 0f
             DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDate(date, Purpose.GAS)
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
-            DeductionType.STD_DEDUCTION -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
+            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
         }
 
-
-    suspend fun getCpmByDate(
-        startDate: LocalDate,
-        endDate: LocalDate,
-        purpose: DeductionType
-    ): List<Cpm> {
-        val res = mutableListOf<Cpm>()
-        Log.d(TAG, "Firglkj $startDate $endDate")
-        for (epochDay in startDate.toEpochDay()..endDate.toEpochDay()) {
-            val date = LocalDate.ofEpochDay(epochDay)
-            val cpm = getCostPerMile(date, purpose)
-            Log.d(TAG, "D: $date $cpm")
-            res.add(Cpm(date, cpm))
-        }
-        return res
-    }
 
     /**
      * Weekly
@@ -157,7 +138,7 @@ class Repository private constructor(context: Context) {
             DeductionType.ALL_EXPENSES -> {
                 transactionDao.getCostPerMileAnnual(year)
             }
-            DeductionType.STD_DEDUCTION -> {
+            DeductionType.IRS_STD -> {
                 standardMileageDeductionDao.get(year)?.amount ?: 0f
             }
         }
@@ -292,7 +273,6 @@ class Repository private constructor(context: Context) {
     }
 
     companion object {
-        private const val TAG = APP + "Repository"
 
         private var INSTANCE: Repository? = null
 
@@ -310,6 +290,6 @@ enum class DeductionType(val text: String, val fullDesc: String? = null) {
     NONE("None"),
     GAS_ONLY("Gas", "Gas Cost"),
     ALL_EXPENSES("All", "All Costs"),
-    STD_DEDUCTION("IRS Rate", "IRS Std.")
+    IRS_STD("IRS Rate", "IRS Std.")
 }
 

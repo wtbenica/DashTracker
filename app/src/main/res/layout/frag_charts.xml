@@ -14,18 +14,42 @@
   ~ limitations under the License.
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:nestedScrollingEnabled="true"
+    android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingBottom="166dp"
     app:layout_dodgeInsetEdges="bottom">
 
-    <LinearLayout
-        android:id="@+id/chart_list"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/chartsTabs"
+        style="@style/FragIncomeTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-    </LinearLayout>
-</ScrollView>
+        android:layout_marginBottom="@dimen/margin_half"
+        android:backgroundTint="?attr/colorTabLayoutBg"
+        app:tabMode="scrollable">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cost per mile" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Day of week" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hourly gross/net" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/chart_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>
