@@ -135,7 +135,7 @@ class HourlyBarChart(
         axisLeft.style()
         axisRight.isEnabled = false
         setDrawGridBackground(true)
-        setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
+        setGridBackgroundColor(getAttrColor(context, R.attr.colorChartBackground))
     }
 
     init {

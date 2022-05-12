@@ -186,6 +186,7 @@
         <item name="colorNightValue">@color/nighttime_light</item>
         <item name="colorShowFiltersButton">?attr/colorSecondaryDark</item>
         <item name="colorShowFiltersButtonBg">?attr/colorSecondaryFaded</item>
+        <item name="colorChartBackground">?attr/colorListItem</item>
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryVariant</item>

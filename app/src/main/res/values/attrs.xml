@@ -113,6 +113,7 @@
     <attr name="insightsRowCornerRadius" format="reference" />
     <attr name="colorShowFiltersButton" format="reference|color" />
     <attr name="colorShowFiltersButtonBg" format="reference|color" />
+    <attr name="colorChartBackground" format="reference|color" />
 
     <!-- dialog -->
     <attr name="colorDialog" format="reference" />

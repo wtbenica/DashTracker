@@ -129,7 +129,7 @@ class ByDayOfWeekBarChart(
         axisRight.isEnabled = false
         setDrawValueAboveBar(false)
         setDrawGridBackground(true)
-        setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
+        setGridBackgroundColor(getAttrColor(context, R.attr.colorChartBackground))
     }
 
     override val filterTable: ViewGroup

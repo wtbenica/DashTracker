@@ -119,7 +119,7 @@ class CpmChart(
             )
         )
         setDrawGridBackground(true)
-        setGridBackgroundColor(getAttrColor(context, R.attr.colorListItem))
+        setGridBackgroundColor(getAttrColor(context, R.attr.colorChartBackground))
         description.isEnabled = false
         legend.isEnabled = false
         legend.typeface = ResourcesCompat.getFont(context, R.font.lalezar)
