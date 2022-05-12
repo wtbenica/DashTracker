@@ -110,6 +110,7 @@
         <entry key="app/src/main/res/drawable/rounded_corner_bg.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/drawable/save.xml" value="0.3525" />
         <entry key="app/src/main/res/drawable/shape_bottom_sheet.xml" value="0.338" />
+        <entry key="app/src/main/res/drawable/tab_indicator.xml" value="0.3075" />
         <entry key="app/src/main/res/drawable/tom_thumb.xml" value="0.1945" />
         <entry key="app/src/main/res/drawable/top_left_corner.xml" value="0.18697916666666667" />
         <entry key="app/src/main/res/drawable/top_right_corner.xml" value="0.18645833333333334" />
@@ -173,7 +174,7 @@
         <entry key="app/src/main/res/layout/fragment_entry.xml" value="0.35104166666666664" />
         <entry key="app/src/main/res/layout/fragment_entry_list.xml" value="0.11296296296296296" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.35104166666666664" />
-        <entry key="app/src/main/res/layout/fragment_income.xml" value="0.3087248322147651" />
+        <entry key="app/src/main/res/layout/fragment_income.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_insights.xml" value="0.35052083333333334" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/fragment_weekly_list.xml" value="0.35052083333333334" />

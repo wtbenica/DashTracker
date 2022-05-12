@@ -151,7 +151,7 @@
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorGroupButton">?attr/colorSecondary</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
-        <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
+        <item name="colorGroupStroke">?attr/colorSecondary</item>
         <item name="colorOptionsMenu">?attr/colorSecondaryFaded</item>
         <item name="colorTabLayoutBg">?attr/colorPrimaryFaded</item>
 

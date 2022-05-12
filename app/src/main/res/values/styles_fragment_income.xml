@@ -19,6 +19,8 @@
     <style name="FragIncomeTabLayout" parent="Widget.Material3.TabLayout">
         <item name="tabIndicatorColor">?attr/colorTabIndicator</item>
         <item name="tabTextColor">?attr/colorTabText</item>
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabIndicatorHeight">@dimen/margin_narrow</item>
     </style>
 
 

@@ -65,10 +65,10 @@
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
-        <item name="colorGroupButton">?attr/colorSecondaryDark</item>
-        <item name="colorGroupButtonDisabled">?attr/colorSecondary</item>
+        <item name="colorGroupButton">?attr/colorSecondaryFaded</item>
+        <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
         <item name="colorGroupStroke">?attr/colorSecondaryFaded</item>
-        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
+        <item name="colorOptionsMenu">?attr/colorSecondary</item>
         <item name="colorTabLayoutBg">?attr/colorPrimaryVariant</item>
 
         <!-- list_item -->
