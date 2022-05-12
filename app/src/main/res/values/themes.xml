@@ -191,7 +191,7 @@
         <item name="colorDialog">?attr/colorPrimaryVariant</item>
         <item name="colorDialogSecondary">?attr/colorPrimary</item>
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
-        <item name="colorDialogText">?android:attr/textColorPrimary</item>
+        <item name="colorDialogText">?attr/colorTextPrimary</item>
         <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorDialogContentBg</item>
