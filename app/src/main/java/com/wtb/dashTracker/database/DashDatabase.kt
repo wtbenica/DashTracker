@@ -18,6 +18,7 @@ package com.wtb.dashTracker.database
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
@@ -27,7 +28,7 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 4,
+    version = 5,
     entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class, StandardMileageDeduction::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -59,7 +60,7 @@ abstract class DashDatabase : RoomDatabase() {
                     DashDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations()
+                    .addMigrations(MIGRATION_4_5)
                     .addCallback(
                         object : RoomDatabase.Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {
@@ -88,6 +89,27 @@ abstract class DashDatabase : RoomDatabase() {
                         INSTANCE = it
                     }
             }
+        }
+
+        val MIGRATION_4_5 = object: Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                val purposes = Purpose.values().map { purpose ->
+                    ExpensePurpose(purpose.id, purpose.purposeName)
+                }
+
+                val standardDeductions =
+                    StandardMileageDeduction.STANDARD_DEDUCTIONS.map {
+                        StandardMileageDeduction(it.key, it.value)
+                    }
+
+                Executors.newSingleThreadScheduledExecutor().execute {
+                    INSTANCE?.apply {
+                        expensePurposeDao().upsertAll(purposes)
+                        standardMileageDeductionDao().upsertAll(standardDeductions)
+                    }
+                }
+            }
+
         }
 //
 //        @DeleteColumn(
