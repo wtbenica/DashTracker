@@ -16,6 +16,64 @@
 
 <resources>
 
+<!--    <style name="MyDatePickerStyle" parent="Theme.AppCompat.Light.Dialog">-->
+<!--        &lt;!&ndash; Calender Number color arrow color (< >) &ndash;&gt;-->
+<!--        <item name="android:textColorPrimary">@color/on_brick</item>-->
+
+<!--        &lt;!&ndash; calendar days of week &ndash;&gt;-->
+<!--        <item name="android:textColorSecondary">@color/faded</item>-->
+
+<!--        &lt;!&ndash;title bar day , month / selected day&ndash;&gt;-->
+<!--        <item name="android:textColorPrimaryInverse">@color/on_brick</item>-->
+
+<!--        &lt;!&ndash; Title bar year &ndash;&gt;-->
+<!--        <item name="android:textColorSecondaryInverse">@color/faded</item>-->
+
+<!--        &lt;!&ndash; Title bar background &ndash;&gt;-->
+<!--        <item name="colorAccent">@color/dark</item>-->
+
+<!--        &lt;!&ndash; selector &ndash;&gt;-->
+<!--        <item name="colorControlActivated">@color/regular</item>-->
+
+<!--        &lt;!&ndash; selected year highlight &ndash;&gt;-->
+<!--        <item name="colorControlHighlight">@color/faded</item>-->
+
+<!--        &lt;!&ndash; background &ndash;&gt;-->
+<!--        <item name="android:windowBackground">@color/brick_dark</item>-->
+<!--        <item name="android:timePickerStyle">@style/MyTimePicker</item>-->
+
+<!--        &lt;!&ndash; arrow background &ndash;&gt;-->
+<!--        <item name="android:selectableItemBackgroundBorderless">@android:color/transparent</item>-->
+
+<!--        <item name="android:buttonBarPositiveButtonStyle">-->
+<!--            @style/MyDatePickerButtonStyle-->
+<!--        </item>-->
+
+<!--        <item name="android:buttonBarNegativeButtonStyle">-->
+<!--            @style/MyDatePickerButtonStyle-->
+<!--        </item>-->
+<!--    </style>-->
+
+<!--    <style name="MyDatePickerButtonStyle">-->
+<!--        <item name="android:textColor">@color/faded</item>\-->
+<!--        <item name="backgroundTint">@android:color/transparent</item>-->
+<!--    </style>-->
+
+<!--    &lt;!&ndash; This isn't needed for the date picker, but is required for time picker.-->
+<!--    you might think you want to delete it, but you don't &ndash;&gt;-->
+<!--    <style name="PickerTitleTextAppearance" parent="TextAppearance.AppCompat.Display1">-->
+<!--        <item name="android:textColor">@color/on_brick</item>-->
+<!--    </style>-->
+
+<!--    <style name="MyTimePicker" parent="Widget.MaterialComponents.TimePicker">-->
+<!--        <item name="android:headerBackground">@color/dark</item>-->
+<!--        <item name="android:headerTimeTextAppearance">@style/PickerTitleTextAppearance</item>-->
+<!--        <item name="android:headerAmPmTextAppearance">@style/PickerTitleTextAppearance</item>-->
+<!--        <item name="android:numbersBackgroundColor">@color/brick</item>-->
+<!--        <item name="android:numbersSelectorColor">@color/light</item>-->
+<!--        <item name="android:numbersTextColor">@color/on_brick</item>-->
+<!--        <item name="android:timePickerMode">clock</item>-->
+<!--    </style>-->
     <style name="MyDatePickerStyle" parent="Theme.AppCompat.Light.Dialog">
         <!-- Calender Number color arrow color (< >) -->
         <item name="android:textColorPrimary">@color/on_brick</item>
@@ -33,14 +91,13 @@
         <item name="colorAccent">@color/dark</item>
 
         <!-- selector -->
-        <item name="colorControlActivated">@color/regular</item>
+        <item name="colorControlActivated">@color/brick_light</item>
 
         <!-- selected year highlight -->
         <item name="colorControlHighlight">@color/faded</item>
 
         <!-- background -->
-        <item name="android:windowBackground">@color/brick_dark</item>
-        <item name="android:timePickerStyle">@style/MyTimePicker</item>
+        <item name="android:windowBackground">@color/on_regular</item>
 
         <!-- arrow background -->
         <item name="android:selectableItemBackgroundBorderless">@android:color/transparent</item>
@@ -52,6 +109,8 @@
         <item name="android:buttonBarNegativeButtonStyle">
             @style/MyDatePickerButtonStyle
         </item>
+
+        <item name="android:timePickerStyle">@style/MyTimePicker</item>
     </style>
 
     <style name="MyDatePickerButtonStyle">
@@ -69,8 +128,8 @@
         <item name="android:headerBackground">@color/dark</item>
         <item name="android:headerTimeTextAppearance">@style/PickerTitleTextAppearance</item>
         <item name="android:headerAmPmTextAppearance">@style/PickerTitleTextAppearance</item>
-        <item name="android:numbersBackgroundColor">@color/brick</item>
-        <item name="android:numbersSelectorColor">@color/light</item>
+        <item name="android:numbersBackgroundColor">@color/on_regular_light</item>
+        <item name="android:numbersSelectorColor">@color/brick_light</item>
         <item name="android:numbersTextColor">@color/on_brick</item>
         <item name="android:timePickerMode">clock</item>
     </style>
