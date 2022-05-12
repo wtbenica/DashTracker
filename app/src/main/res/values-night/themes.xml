@@ -23,7 +23,7 @@
 
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorUIBackground">?attr/colorOnPrimaryVariant</item>
+        <item name="colorUIBackground">?attr/colorOnPrimary</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
