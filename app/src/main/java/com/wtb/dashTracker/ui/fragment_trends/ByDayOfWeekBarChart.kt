@@ -68,6 +68,14 @@ class ByDayOfWeekBarChart(
 
     @IdRes
     private var selectedGraph: Int = binding.graphSelector.checkedButtonId
+        set(value) {
+            field = value
+            binding.chartTitle.text = when(field) {
+                R.id.btn_chart_per_delivery -> context.getString(R.string.chart_title_avg_per_delivery)
+                R.id.btn_chart_del_per_hr -> context.getString(R.string.chart_title_avg_dels_per_hour)
+                else -> context.getString(R.string.chart_title_avg_per_hour)
+            }
+        }
 
     init {
         binding.graphSelector.addOnButtonCheckedListener { group, checkedId, isChecked ->

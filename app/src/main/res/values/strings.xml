@@ -151,4 +151,7 @@
     <string name="lbl_hourly_by_day_of_week">Stats by Day of Week</string>
     <string name="lbl_num_days">Num Days</string>
     <string name="lbl_num_weeks">Num Weeks</string>
+    <string name="chart_title_avg_per_delivery">Average per delivery</string>
+    <string name="chart_title_avg_dels_per_hour">Average deliveries per hour</string>
+    <string name="chart_title_avg_per_hour">Average per hour</string>
 </resources>
