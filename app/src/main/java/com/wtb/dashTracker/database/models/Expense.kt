@@ -17,9 +17,11 @@
 package com.wtb.dashTracker.database.models
 
 import androidx.room.*
+import com.wtb.csvutil.CSVConvertible
+import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
-import com.wtb.dashTracker.util.CSVConvertible
 import java.time.LocalDate
+import kotlin.reflect.KProperty1
 
 @Entity(
     foreignKeys = [
@@ -50,16 +52,19 @@ data class Expense(
         get() = pricePerGal?.let { amount?.let { a -> a / it } }
 
     companion object : CSVConvertible<Expense> {
-        private enum class Columns(val headerName: String) {
-            DATE("Date"),
-            AMOUNT("Amount"),
-            PURPOSE("Purpose"),
-            PRICE_PER_GAL("Price Per Gallon"),
-            IS_NEW("isNew")
+        private enum class Columns(val headerName: String, val getValue: KProperty1<Expense, *>) {
+            DATE("Date", Expense::date),
+            AMOUNT("Amount", Expense::amount),
+            PURPOSE("Purpose", Expense::purpose),
+            PRICE_PER_GAL("Price Per Gallon", Expense::pricePerGal),
+            IS_NEW("isNew", Expense::isNew)
         }
 
-        override val headerList: List<String>
-            get() = Columns.values().map(Columns::headerName)
+        override val saveFileName: String
+            get() = "expenses"
+
+        override fun getColumns(): Array<Column<Expense>> =
+            Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
 
         override fun fromCSV(row: Map<String, String>): Expense =
             Expense(
@@ -68,15 +73,6 @@ data class Expense(
                 purpose = row[Columns.PURPOSE.headerName]?.toInt() ?: Purpose.GAS.id,
                 pricePerGal = row[Columns.PRICE_PER_GAL.headerName]?.toFloatOrNull(),
                 isNew = row[Columns.IS_NEW.headerName]?.toBoolean() ?: false
-            )
-
-        override fun Expense.asList(): List<*> =
-            listOf(
-                date,
-                amount,
-                purpose,
-                pricePerGal,
-                isNew
             )
     }
 }
@@ -96,13 +92,16 @@ data class ExpensePurpose(
     override fun toString(): String = name ?: ""
 
     companion object : CSVConvertible<ExpensePurpose> {
-        private enum class Columns(val headerName: String) {
-            ID("Purpose Id"),
-            NAME("Name")
-        }
+        override val saveFileName: String
+            get() = "expense_purposes"
 
-        override val headerList: List<String>
-            get() = Columns.values().map(Columns::headerName)
+        private enum class Columns(
+            val headerName: String,
+            val getValue: KProperty1<ExpensePurpose, *>
+        ) {
+            ID("Purpose Id", ExpensePurpose::purposeId),
+            NAME("Name", ExpensePurpose::name)
+        }
 
         override fun fromCSV(row: Map<String, String>): ExpensePurpose =
             ExpensePurpose(
@@ -110,11 +109,8 @@ data class ExpensePurpose(
                 name = row[Columns.NAME.headerName]
             )
 
-        override fun ExpensePurpose.asList(): List<*> =
-            listOf(
-                purposeId,
-                name
-            )
+        override fun getColumns(): Array<Column<ExpensePurpose>> =
+            Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
     }
 }
 

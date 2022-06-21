@@ -16,7 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_main
 
-import android.content.Context
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -67,24 +67,23 @@ class MainActivityViewModel : ViewModel() {
         }
     }
 
+    suspend fun upsertAsync(dataModel: DataModel): Long =
+        withContext(Dispatchers.Default) {
+            repository.upsertModel(dataModel)
+        }
 
-    fun export(ctx: Context) = repository.export(ctx)
+    fun export() = repository.export()
 
-    fun import(ctx: Context) = repository.import(ctx)
+    fun import(activityResultLauncher: ActivityResultLauncher<String>) = repository.import(activityResultLauncher)
 
-    fun importStream(
+    fun insertOrReplace(
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,
         expenses: List<Expense>? = null,
         purposes: List<ExpensePurpose>? = null
     ) {
-        repository.importStream(entries, weeklies, expenses, purposes)
+        repository.insertOrReplace(entries, weeklies, expenses, purposes)
     }
-
-    suspend fun upsertAsync(dataModel: DataModel): Long =
-        withContext(Dispatchers.Default) {
-            repository.upsertModel(dataModel)
-        }
 
     companion object {
 

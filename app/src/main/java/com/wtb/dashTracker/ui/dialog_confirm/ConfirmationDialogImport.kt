@@ -24,7 +24,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmImportBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
@@ -33,7 +32,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 open class ConfirmationDialogImport(
-    private val ctx: MainActivity
+    val actionImport: () -> Unit
 ) : FullWidthDialogFragment() {
 
     override fun onCreateView(
@@ -61,14 +60,10 @@ open class ConfirmationDialogImport(
             }
         }
 
-        val mPosAction = {
-            ctx.contentZipLauncher.launch("application/zip")
-        }
-
         binding.yesButton1.apply {
             setOnClickListener {
                 dismiss()
-                mPosAction()
+                actionImport()
             }
         }
 

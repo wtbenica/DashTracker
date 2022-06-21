@@ -18,9 +18,7 @@ package com.wtb.dashTracker.ui.activity_main
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.TypedValue
 import android.view.Menu
@@ -28,7 +26,6 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
@@ -47,28 +44,32 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.wtb.csvutil.CSVUtils
+import com.wtb.csvutil.CSVUtils.Companion.FILE_ZIP
+import com.wtb.csvutil.ModelMap
+import com.wtb.csvutil.getConvertPackImport
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.*
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.Expense
+import com.wtb.dashTracker.database.models.ExpensePurpose
+import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
-import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.util.CSVUtils
-import com.wtb.dashTracker.util.CSVUtils.Companion.FILE_ZIP
 import com.wtb.dashTracker.views.FabMenuButtonInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,14 +77,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
@@ -95,12 +91,15 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     override val deductionType: StateFlow<DeductionType>
         get() = deductionTypeViewModel.deductionType
 
-    override fun setDeductionType(dType: DeductionType) {
-        deductionTypeViewModel.setDeductionType(dType)
-    }
-
     internal lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
+
+    private val contentZipLauncher =
+        CSVUtils(ctx = this).getContentLauncher(
+            prefix = FILE_ZIP,
+            kList = convertPacksImport,
+            action = this::insertOrReplace,
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,19 +176,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             navController?.let {
                 setupActionBarWithNavController(it, appBarConfiguration)
                 navView.setupWithNavController(it)
-                it.addOnDestinationChangedListener { controller, destination, arguments ->
+                it.addOnDestinationChangedListener { _, destination, _ ->
                     when (destination.id) {
-//                        R.id.navigation_income -> binding.summaryBar.apply {
-//                            visibility = VISIBLE
-//                            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-//                        }
-//                        R.id.navigation_expenses -> binding.summaryBar.apply {
-//                            visibility = VISIBLE
-//                            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-//                        }
-//                        R.id.navigation_insights -> binding.summaryBar.collapse {
-//                            binding.navHostFragmentActivityMain.rootView.postInvalidate()
-//                        }
                         R.id.navigation_income -> binding.appBarLayout.setExpanded(true)
                         R.id.navigation_expenses -> binding.appBarLayout.setExpanded(true)
                         R.id.navigation_insights -> binding.appBarLayout.setExpanded(false)
@@ -287,26 +275,33 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        fun exportDatabaseToCSV() = viewModel.export(this)
-
-        fun importCSVtoDatabase() = viewModel.import(this)
-
-        return when (item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
             R.id.action_licenses -> {
                 startActivity(Intent(this, OssLicensesMenuActivity::class.java))
                 true
             }
             R.id.action_export_to_csv -> {
-                exportDatabaseToCSV()
+                showExportConfirmationDialog()
                 true
             }
             R.id.action_import_from_csv -> {
-                importCSVtoDatabase()
+                showImportConfirmationDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+
+    private fun showImportConfirmationDialog() {
+        ConfirmationDialogImport {
+            viewModel.import(contentZipLauncher)
+        }.show(supportFragmentManager, null)
+    }
+
+    private fun showExportConfirmationDialog() {
+        ConfirmationDialogExport {
+            viewModel.export()
+        }.show(supportFragmentManager, null)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -314,108 +309,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         return super.dispatchTouchEvent(ev)
     }
 
-    internal val contentZipLauncher: ActivityResultLauncher<String> =
-        getContentLauncher(
-            FILE_ZIP,
-            ::extractZip,
-            ConfirmationDialog.newInstance(
-                text = R.string.unzip_error,
-                requestKey = "confirmUnzipError",
-                message = "Error",
-                posButton = R.string.ok,
-                posAction = LambdaWrapper {},
-                negButton = null
-            )
+    private fun insertOrReplace(models: ModelMap) {
+        viewModel.insertOrReplace(
+            entries = models.get<DashEntry, DashEntry.Companion>().ifEmpty { null },
+            weeklies = models.get<Weekly, Weekly.Companion>().ifEmpty { null },
+            expenses = models.get<Expense, Expense.Companion>().ifEmpty { null },
+            purposes = models.get<ExpensePurpose, ExpensePurpose.Companion>().ifEmpty { null }
         )
-
-    private fun extractZip(uri: Uri) {
-        ZipInputStream(contentResolver.openInputStream(uri)).use { zipIn ->
-            var entryModels: List<DashEntry> = emptyList()
-            var weeklyModels: List<Weekly> = emptyList()
-            var expenseModels: List<Expense> = emptyList()
-            var purposeModels: List<ExpensePurpose> = emptyList()
-
-            var nextEntry: ZipEntry? = zipIn.nextEntry
-            while (nextEntry != null) {
-                val destFile = File(filesDir, nextEntry.name)
-                if (!destFile.canonicalPath.startsWith(filesDir.canonicalPath)) {
-                    throw SecurityException()
-                }
-                FileOutputStream(destFile).use { t ->
-                    zipIn.copyTo(t, 1024)
-                }
-                val inputStream = FileInputStream(destFile)
-
-                nextEntry.name?.also { entryName ->
-                    when {
-                        entryName.startsWith(CSVUtils.FILE_ENTRIES, false) -> {
-                            getModelsFromCsv(inputStream) {
-                                DashEntry.fromCSV(it)
-                            }?.let { entryModels = it }
-                        }
-                        entryName.startsWith(CSVUtils.FILE_WEEKLIES, false) -> {
-                            getModelsFromCsv(inputStream) {
-                                Weekly.fromCSV(it)
-                            }?.let { weeklyModels = it }
-                        }
-                        entryName.startsWith(CSVUtils.FILE_EXPENSES, false) -> {
-                            getModelsFromCsv(inputStream) {
-                                Expense.fromCSV(it)
-                            }?.let { expenseModels = it }
-                        }
-                        entryName.startsWith(CSVUtils.FILE_PURPOSES, false) -> {
-                            getModelsFromCsv(inputStream) {
-                                ExpensePurpose.fromCSV(it)
-                            }?.let { purposeModels = it }
-                        }
-                    }
-                }
-
-                nextEntry = zipIn.nextEntry
-            }
-
-            zipIn.closeEntry()
-
-            viewModel.importStream(
-                entries = entryModels.ifEmpty { null },
-                weeklies = weeklyModels.ifEmpty { null },
-                expenses = expenseModels.ifEmpty { null },
-                purposes = purposeModels.ifEmpty { null }
-            )
-        }
     }
-
-    private fun <T : DataModel> getModelsFromCsv(
-        path: InputStream?,
-        function: (Map<String, String>) -> T
-    ): List<T>? =
-        path?.let { inStream ->
-            csvReader().readAllWithHeader(inStream).map { function(it) }
-        }
-
-    @Suppress("SameParameterValue")
-    private fun getContentLauncher(
-        prefix: String,
-        action: (Uri) -> Unit,
-        errorDialog: ConfirmationDialog
-    ): ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let {
-                contentResolver.query(it, null, null, null, null)
-                    ?.use { cursor ->
-                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                        cursor.moveToFirst()
-                        val fileName = cursor.getString(nameIndex)
-                        if (fileName.startsWith(prefix)) {
-                            try {
-                                action(it)
-                            } catch (e: SecurityException) {
-                                errorDialog.show(supportFragmentManager, null)
-                            }
-                        }
-                    }
-            }
-        }
 
     private fun getMenuItems(fm: FragmentManager): List<FabMenuButtonInfo> = listOf(
         FabMenuButtonInfo(
@@ -446,6 +347,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         //        ) { PayoutDialog().show(fm, "new_payout_dialog") }
     )
 
+    override fun setDeductionType(dType: DeductionType) {
+        deductionTypeViewModel.setDeductionType(dType)
+    }
+
     companion object {
         const val APP = "GT_"
         var isAuthenticated = false
@@ -466,6 +371,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             return color
         }
 
+        private val convertPacksImport = listOf(
+            DashEntry.getConvertPackImport(),
+            Weekly.getConvertPackImport(),
+            Expense.getConvertPackImport(),
+            ExpensePurpose.getConvertPackImport(),
+        )
     }
 }
 
