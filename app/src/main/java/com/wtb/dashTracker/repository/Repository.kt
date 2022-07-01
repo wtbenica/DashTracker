@@ -17,26 +17,28 @@
 package com.wtb.dashTracker.repository
 
 import android.content.Context
+import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
+import com.wtb.csvutil.CSVUtils
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
-import com.wtb.dashTracker.util.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
-class Repository private constructor(context: Context) {
+class Repository private constructor(private val context: Context) {
     private val executor = Executors.newSingleThreadExecutor()
     private val db = DashDatabase.getInstance(context)
     private val csvUtil: CSVUtils
-        get() = CSVUtils()
+        get() = CSVUtils(context as AppCompatActivity)
 
     private val entryDao: DashEntryDao
         get() = db.entryDao()
@@ -148,6 +150,9 @@ class Repository private constructor(context: Context) {
      */
     private suspend fun allExpenses(): List<Expense> = expenseDao.getAllSuspend()
 
+    private suspend fun allExpensePurposes(): List<ExpensePurpose> =
+        expensePurposeDao.getAllSuspend()
+
     val allExpensePurposes: Flow<List<ExpensePurpose>> = expensePurposeDao.getAll()
 
     val allFullPurposes: Flow<List<FullExpensePurpose>> = expensePurposeDao.getAllFull()
@@ -232,16 +237,21 @@ class Repository private constructor(context: Context) {
         }
     }
 
-    fun export(ctx: Context) {
+    fun export() {
         CoroutineScope(Dispatchers.Default).launch {
-            csvUtil.export(allEntries(), allWeeklies(), allExpenses(), allPurposes(), ctx)
+            csvUtil.export(
+                DashEntry.getConvertPackExport(allEntries()),
+                Weekly.getConvertPackExport(allWeeklies()),
+                Expense.getConvertPackExport(allExpenses()),
+                ExpensePurpose.getConvertPackExport(allExpensePurposes())
+            )
         }
     }
 
-    fun import(ctx: Context) = csvUtil.import(ctx)
+    fun import(activityResultLauncher: ActivityResultLauncher<String>) =
+        csvUtil.import(activityResultLauncher)
 
-
-    fun importStream(
+    fun insertOrReplace(
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,
         expenses: List<Expense>? = null,
@@ -252,6 +262,7 @@ class Repository private constructor(context: Context) {
                 weeklyDao.clear()
                 weeklyDao.upsertAll(it)
             }
+
             entries?.let {
                 entryDao.clear()
                 entryDao.upsertAll(it)

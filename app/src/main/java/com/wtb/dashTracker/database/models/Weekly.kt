@@ -20,10 +20,10 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import com.wtb.dashTracker.database.models.Weekly.Companion.Columns.*
+import com.wtb.csvutil.CSVConvertible
+import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.extensions.weekOfYear
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
-import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import kotlin.reflect.KProperty1
@@ -42,32 +42,28 @@ data class Weekly(
         get() = (basePayAdjustment == null || basePayAdjustment == 0f) && !isNew
 
     companion object : CSVConvertible<Weekly> {
-        private enum class Columns(val headerName: String) {
-            DATE("Start of Week"),
-            ADJUST("Base Pay Adjustment"),
-            WEEK_NUM("Week Number"),
-            IS_NEW("isNew")
+        private enum class Columns(
+            val headerName: String, val getValue: KProperty1<Weekly, *>
+        ) {
+            DATE("Start of Week", Weekly::date),
+            ADJUST("Base Pay Adjustment", Weekly::basePayAdjustment),
+            WEEK_NUM("Week Number", Weekly::weekNumber),
+            IS_NEW("isNew", Weekly::isNew)
         }
 
-        override val headerList: List<String>
-            get() = Columns.values().map(Columns::headerName)
+        override val saveFileName: String
+            get() = "weeklies"
+
+        override fun getColumns(): Array<Column<Weekly>> =
+            Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
 
         override fun fromCSV(row: Map<String, String>): Weekly =
             Weekly(
-                date = LocalDate.parse(row[DATE.headerName]),
-                basePayAdjustment = row[ADJUST.headerName]?.toFloatOrNull(),
-                isNew = row[IS_NEW.headerName]?.toBoolean() ?: false,
-            )
-
-        override fun Weekly.asList(): List<*> =
-            listOf(
-                date,
-                basePayAdjustment,
-                weekNumber,
-                isNew
+                date = LocalDate.parse(row[Columns.DATE.headerName]),
+                basePayAdjustment = row[Columns.ADJUST.headerName]?.toFloatOrNull(),
+                isNew = row[Columns.IS_NEW.headerName]?.toBoolean() ?: false,
             )
     }
-
 }
 
 @ExperimentalCoroutinesApi

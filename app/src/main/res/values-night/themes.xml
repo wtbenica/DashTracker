@@ -23,7 +23,7 @@
 
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorUIBackground">?attr/colorOnPrimaryVariant</item>
+        <item name="colorUIBackground">?attr/colorOnPrimary</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
@@ -66,9 +66,9 @@
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorGroupButton">?attr/colorSecondaryDark</item>
-        <item name="colorGroupButtonDisabled">?attr/colorSecondary</item>
-        <item name="colorGroupStroke">?attr/colorSecondaryFaded</item>
-        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
+        <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
+        <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
+        <item name="colorOptionsMenu">?attr/colorSecondary</item>
         <item name="colorTabLayoutBg">?attr/colorPrimaryVariant</item>
 
         <!-- list_item -->
@@ -101,6 +101,7 @@
         <item name="colorNightValue">@color/nighttime_light</item>
         <item name="colorShowFiltersButton">?attr/colorSecondaryFaded</item>
         <item name="colorShowFiltersButtonBg">?attr/colorSecondaryDark</item>
+        <item name="colorChartBackground">?attr/colorOnPrimaryVariant</item>
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryDark</item>

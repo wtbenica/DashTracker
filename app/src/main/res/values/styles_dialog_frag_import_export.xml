@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2022 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <style name="ShowNotesButton" parent="Widget.Material3.Button">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:paddingHorizontal">@dimen/margin_default</item>
+        <item name="iconTint">?attr/colorDialogItemOutline</item>
+        <item name="iconGravity">end</item>
+        <item name="iconSize">@dimen/margin_wide</item>
+        <item name="icon">@drawable/ic_arrow_expand</item>
+        <item name="android:textColor">?attr/colorDialogText</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:text">Notes</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
+
+    <style name="ConfirmImportPrimaryTextStyle">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:padding">@dimen/margin_default</item>
+        <item name="android:textColor">?attr/colorDialogText</item>
+        <item name="android:textSize">@dimen/text_size_med</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="NotesBox">
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@drawable/bg_notes</item>
+        <item name="android:layout_marginBottom">@dimen/margin_default</item>
+        <item name="android:layout_marginHorizontal">@dimen/margin_default</item>
+    </style>
+
+    <style  name="NotesStyle">
+        <item name="android:layout_marginBottom">@dimen/margin_default</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:paddingHorizontal">@dimen/margin_default</item>
+        <item name="android:textColor">?attr/colorDialogText</item>
+        <item name="android:textSize">@dimen/text_size_med</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:background">?attr/colorDialogItemOutline</item>
+    </style>
+
+    <style name="Divider.Horizontal">
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="Divider.Vertical">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="ConfirmDialogButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">?attr/colorDialogText</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="ConfirmDialogButton.Default">
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

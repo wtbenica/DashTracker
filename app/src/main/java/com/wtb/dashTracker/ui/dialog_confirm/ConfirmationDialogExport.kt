@@ -16,8 +16,6 @@
 
 package com.wtb.dashTracker.ui.dialog_confirm
 
-import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -26,7 +24,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmExportBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
@@ -34,8 +31,7 @@ import com.wtb.dashTracker.views.FullWidthDialogFragment
 
 
 open class ConfirmationDialogExport(
-    private val ctx: Context,
-    val intent: Intent,
+    val actionExport: () -> Unit,
 ) : FullWidthDialogFragment() {
 
     override fun onCreateView(
@@ -63,18 +59,10 @@ open class ConfirmationDialogExport(
             }
         }
 
-        val mPosAction = {
-            ContextCompat.startActivity(
-                ctx,
-                Intent.createChooser(intent, null),
-                null
-            )
-        }
-
         binding.yesButton1.apply {
             setOnClickListener {
                 dismiss()
-                mPosAction()
+                actionExport()
             }
         }
 

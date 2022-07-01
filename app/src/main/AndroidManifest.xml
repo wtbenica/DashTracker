@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wtb.dashTracker">
 
     <application
         android:allowBackup="true"
@@ -9,6 +10,7 @@
         android:roundIcon="@mipmap/icon_c"
         android:supportsRtl="true"
         android:theme="@style/SplashScreen">
+
         <activity
             android:name=".ui.activity_main.MainActivity"
             android:exported="true">
@@ -18,9 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
             android:theme="@style/LicensesActivitiesTheme" />
+
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/LicensesActivitiesTheme" />
@@ -38,9 +42,9 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-2598018805199505~7756228217" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
-
 </manifest>

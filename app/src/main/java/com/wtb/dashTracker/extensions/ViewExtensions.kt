@@ -26,6 +26,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import androidx.annotation.AttrRes
+import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import java.lang.Integer.max
@@ -44,6 +45,17 @@ fun View.isTouchTarget(ev: MotionEvent?): Boolean {
 
 fun View.setVisibleIfTrue(boolean: Boolean) {
     visibility = if (boolean) VISIBLE else GONE
+}
+
+fun View.toggleExpand(
+    onCompleteCollapse: (() -> Unit)? = null,
+    onCompleteExpand: (() -> Unit)? = null
+) {
+    if (isVisible) {
+        collapse(onCompleteCollapse)
+    } else {
+        expand(onCompleteExpand)
+    }
 }
 
 fun View.expand(onComplete: (() -> Unit)? = null) {

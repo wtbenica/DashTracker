@@ -20,15 +20,16 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.wtb.dashTracker.database.models.DashEntry.Companion.Columns.*
+import com.wtb.csvutil.CSVConvertible
+import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
-import com.wtb.dashTracker.util.CSVConvertible
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.reflect.KProperty1
 
 const val AUTO_ID = 0
 
@@ -228,53 +229,41 @@ data class DashEntry(
         private val daySplitTime = LocalTime.of(17, 0)
         private val nightSplitTime = daySplitTime.minusHours(12)
 
-        private enum class Columns(val headerName: String) {
-            START_DATE("Start Date"),
-            START_TIME("Start Time"),
-            END_DATE("End Date"),
-            END_TIME("End Time"),
-            START_ODO("Start Odometer"),
-            END_ODO("End Odometer"),
-            MILEAGE("Total Mileage"),
-            BASE_PAY("Base Pay"),
-            CASH_TIPS("Cash Tips"),
-            OTHER_PAY("Other Pay"),
-            NUM_DELIVERIES("Num Deliveries")
+        override val saveFileName: String
+            get() = "entries"
+
+        private enum class Columns(val headerName: String, val getValue: KProperty1<DashEntry, *>) {
+            START_DATE("Start Date", DashEntry::date),
+            START_TIME("Start Time", DashEntry::startTime),
+            END_DATE("End Date", DashEntry::endDate),
+            END_TIME("End Time", DashEntry::endTime),
+            START_ODO("Start Odometer", DashEntry::startOdometer),
+            END_ODO("End Odometer", DashEntry::endOdometer),
+            MILEAGE("Total Mileage", DashEntry::totalMileage),
+            BASE_PAY("Base Pay", DashEntry::pay),
+            CASH_TIPS("Cash Tips", DashEntry::cashTips),
+            OTHER_PAY("Other Pay", DashEntry::otherPay),
+            NUM_DELIVERIES("Num Deliveries", DashEntry::numDeliveries)
         }
 
         override fun fromCSV(row: Map<String, String>): DashEntry = DashEntry(
-            date = LocalDate.parse(row[START_DATE.headerName]),
-            endDate = LocalDate.parse(row[END_DATE.headerName]),
-            startTime = LocalTime.parse(row[START_TIME.headerName]),
-            endTime = row[END_TIME.headerName]?.let {
-                if (it == "") null else LocalTime.parse(row[END_TIME.headerName])
+            date = LocalDate.parse(row[Columns.START_DATE.headerName]),
+            endDate = LocalDate.parse(row[Columns.END_DATE.headerName]),
+            startTime = LocalTime.parse(row[Columns.START_TIME.headerName]),
+            endTime = row[Columns.END_TIME.headerName]?.let {
+                if (it == "") null else LocalTime.parse(row[Columns.END_TIME.headerName])
             },
-            startOdometer = row[START_ODO.headerName]?.toFloatOrNull(),
-            endOdometer = row[END_ODO.headerName]?.toFloatOrNull(),
-            totalMileage = row[MILEAGE.headerName]?.toFloatOrNull(),
-            pay = row[BASE_PAY.headerName]?.toFloatOrNull(),
-            cashTips = row[CASH_TIPS.headerName]?.toFloatOrNull(),
-            otherPay = row[OTHER_PAY.headerName]?.toFloatOrNull(),
-            numDeliveries = row[NUM_DELIVERIES.headerName]?.toIntOrNull(),
-            week = LocalDate.parse(row[START_DATE.headerName]).endOfWeek
+            startOdometer = row[Columns.START_ODO.headerName]?.toFloatOrNull(),
+            endOdometer = row[Columns.END_ODO.headerName]?.toFloatOrNull(),
+            totalMileage = row[Columns.MILEAGE.headerName]?.toFloatOrNull(),
+            pay = row[Columns.BASE_PAY.headerName]?.toFloatOrNull(),
+            cashTips = row[Columns.CASH_TIPS.headerName]?.toFloatOrNull(),
+            otherPay = row[Columns.OTHER_PAY.headerName]?.toFloatOrNull(),
+            numDeliveries = row[Columns.NUM_DELIVERIES.headerName]?.toIntOrNull(),
+            week = LocalDate.parse(row[Columns.START_DATE.headerName]).endOfWeek
         )
 
-        override val headerList: List<String>
-            get() = Columns.values().map(Columns::headerName)
-
-        override fun DashEntry.asList(): List<*> =
-            listOf(
-                date,
-                startTime,
-                endDate,
-                endTime,
-                startOdometer,
-                endOdometer,
-                totalMileage,
-                pay,
-                cashTips,
-                otherPay,
-                numDeliveries
-            )
+        override fun getColumns(): Array<Column<DashEntry>> =
+            Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
     }
 }

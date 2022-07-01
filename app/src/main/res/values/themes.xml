@@ -151,7 +151,7 @@
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorGroupButton">?attr/colorSecondary</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
-        <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
+        <item name="colorGroupStroke">?attr/colorSecondary</item>
         <item name="colorOptionsMenu">?attr/colorSecondaryFaded</item>
         <item name="colorTabLayoutBg">?attr/colorPrimaryFaded</item>
 
@@ -186,12 +186,13 @@
         <item name="colorNightValue">@color/nighttime_light</item>
         <item name="colorShowFiltersButton">?attr/colorSecondaryDark</item>
         <item name="colorShowFiltersButtonBg">?attr/colorSecondaryFaded</item>
+        <item name="colorChartBackground">?attr/colorListItem</item>
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryVariant</item>
         <item name="colorDialogSecondary">?attr/colorPrimary</item>
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
-        <item name="colorDialogText">?android:attr/textColorPrimary</item>
+        <item name="colorDialogText">?attr/colorTextPrimary</item>
         <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorDialogContentBg</item>

@@ -39,7 +39,6 @@
 
         <!-- background -->
         <item name="android:windowBackground">@color/on_brick</item>
-        <item name="android:timePickerStyle">@style/MyTimePicker</item>
 
         <!-- arrow background -->
         <item name="android:selectableItemBackgroundBorderless">@android:color/transparent</item>
@@ -51,6 +50,8 @@
         <item name="android:buttonBarNegativeButtonStyle">
             @style/MyDatePickerButtonStyle
         </item>
+
+        <item name="android:timePickerStyle">@style/MyTimePicker</item>
     </style>
 
     <style name="MyDatePickerButtonStyle">
