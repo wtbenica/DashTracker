@@ -233,10 +233,10 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
     companion object {
 
-        fun newInstance(entryId: Int) =
+        fun newInstance(entryId: Long) =
             EntryDialog().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_ITEM_ID, entryId)
+                    putLong(ARG_ITEM_ID, entryId)
                 }
             }
 

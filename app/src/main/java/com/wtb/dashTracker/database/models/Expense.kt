@@ -37,15 +37,15 @@ import kotlin.reflect.KProperty1
     ]
 )
 data class Expense(
-    @PrimaryKey(autoGenerate = true) val expenseId: Int = AUTO_ID,
+    @PrimaryKey(autoGenerate = true) val expenseId: Long = AUTO_ID,
     var date: LocalDate = LocalDate.now(),
     var amount: Float? = null,
-    var purpose: Int = Purpose.GAS.id,
+    var purpose: Long = Purpose.GAS.id,
     var pricePerGal: Float? = null,
     @ColumnInfo(defaultValue = "0")
     var isNew: Boolean = false
 ) : DataModel() {
-    override val id: Int
+    override val id: Long
         get() = expenseId
 
     val gallons: Float?
@@ -70,7 +70,7 @@ data class Expense(
             Expense(
                 date = LocalDate.parse(row[Columns.DATE.headerName]),
                 amount = row[Columns.AMOUNT.headerName]?.toFloatOrNull(),
-                purpose = row[Columns.PURPOSE.headerName]?.toInt() ?: Purpose.GAS.id,
+                purpose = row[Columns.PURPOSE.headerName]?.toLong() ?: Purpose.GAS.id,
                 pricePerGal = row[Columns.PRICE_PER_GAL.headerName]?.toFloatOrNull(),
                 isNew = row[Columns.IS_NEW.headerName]?.toBoolean() ?: false
             )
@@ -83,10 +83,10 @@ data class Expense(
     ]
 )
 data class ExpensePurpose(
-    @PrimaryKey(autoGenerate = true) val purposeId: Int = AUTO_ID,
+    @PrimaryKey(autoGenerate = true) val purposeId: Long = AUTO_ID,
     var name: String? = null
 ) : DataModel() {
-    override val id: Int
+    override val id: Long
         get() = purposeId
 
     override fun toString(): String = name ?: ""
@@ -105,7 +105,7 @@ data class ExpensePurpose(
 
         override fun fromCSV(row: Map<String, String>): ExpensePurpose =
             ExpensePurpose(
-                purposeId = row[Columns.ID.headerName]?.toInt() ?: AUTO_ID,
+                purposeId = row[Columns.ID.headerName]?.toLong() ?: AUTO_ID,
                 name = row[Columns.NAME.headerName]
             )
 
@@ -114,7 +114,7 @@ data class ExpensePurpose(
     }
 }
 
-enum class Purpose(val id: Int, val purposeName: String) {
+enum class Purpose(val id: Long, val purposeName: String) {
     GAS(1, "Gas"),
     LOAN(2, "Car Payment"),
     INSURANCE(3, "Insurance"),
@@ -123,14 +123,14 @@ enum class Purpose(val id: Int, val purposeName: String) {
 
 @Entity
 data class StandardMileageDeduction(
-    @PrimaryKey val year: Int,
+    @PrimaryKey val year: Long,
     var amount: Float
 ) : DataModel() {
-    override val id: Int
+    override val id: Long
         get() = year
 
     companion object {
-        val STANDARD_DEDUCTIONS = mapOf(2021 to 0.56f, 2022 to 0.585f)
+        val STANDARD_DEDUCTIONS: Map<Long, Float> = mapOf(2021L to 0.56f, 2022L to 0.585f)
     }
 }
 
@@ -141,7 +141,7 @@ data class FullExpense(
     @Relation(parentColumn = "purpose", entityColumn = "purposeId")
     val purpose: ExpensePurpose
 ) : ListItemType {
-    val id: Int
+    val id: Long
         get() = expense.expenseId
 
     val isEmpty: Boolean

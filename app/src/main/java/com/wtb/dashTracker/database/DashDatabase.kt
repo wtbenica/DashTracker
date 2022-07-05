@@ -28,12 +28,14 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 5,
-    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class, StandardMileageDeduction::class],
+    version = 6,
+    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class,
+        StandardMileageDeduction::class, LocationData::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4)
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 5, to = 6)
     ],
     exportSchema = true,
 )
@@ -45,6 +47,7 @@ abstract class DashDatabase : RoomDatabase() {
     abstract fun expensePurposeDao(): ExpensePurposeDao
     abstract fun standardMileageDeductionDao(): StandardMileageDeductionDao
     abstract fun transactionDao(): TransactionDao
+    abstract fun locationDao(): LocationDao
 
     companion object {
         @Volatile

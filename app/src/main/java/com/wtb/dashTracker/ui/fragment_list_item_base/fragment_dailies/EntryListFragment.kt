@@ -88,7 +88,7 @@ class EntryListFragment : ListItemFragment() {
             ConfirmType.DELETE.key
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
-            val id = bundle.getInt(ARG_EXTRA)
+            val id = bundle.getLong(ARG_EXTRA)
             if (result) {
                 viewModel.deleteEntryById(id)
             }

@@ -17,7 +17,9 @@
 package com.wtb.dashTracker.database
 
 import androidx.room.TypeConverter
+import com.wtb.dashTracker.extensions.dtfDateTime
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 class DbTypeConverters {
@@ -33,6 +35,20 @@ class DbTypeConverters {
     @TypeConverter
     fun fromLocalDate(date: LocalDate?): String? {
         return date?.toString()
+    }
+
+    @TypeConverter
+    fun toLocalDateTime(date: String?): LocalDateTime? {
+        return if (date == null || date == "null") {
+            null
+        } else {
+            LocalDateTime.parse(date, dtfDateTime)
+        }
+    }
+
+    @TypeConverter
+    fun fromLocalDateTime(date: LocalDateTime?): String? {
+        return date?.format(dtfDateTime)
     }
 
     @TypeConverter

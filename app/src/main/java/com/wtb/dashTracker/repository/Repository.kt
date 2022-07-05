@@ -58,6 +58,9 @@ class Repository private constructor(private val context: Context) {
     private val transactionDao: TransactionDao
         get() = db.transactionDao()
 
+    private val locationDao: LocationDao
+    get() = db.locationDao()
+
     /**
      * Dash Entry
      */
@@ -79,7 +82,7 @@ class Repository private constructor(private val context: Context) {
         }
     ).flow
 
-    fun deleteEntryById(id: Int) {
+    fun deleteEntryById(id: Long) {
         CoroutineScope(Dispatchers.Default).launch {
             withContext(Dispatchers.Default) {
                 entryDao.deleteById(id)
@@ -89,14 +92,14 @@ class Repository private constructor(private val context: Context) {
         }
     }
 
-    fun getEntryFlowById(id: Int) = entryDao.getFlow(id)
+    fun getEntryFlowById(id: Long) = entryDao.getFlow(id)
 
     suspend fun getCostPerMile(date: LocalDate, purpose: DeductionType): Float =
         when (purpose) {
             DeductionType.NONE -> 0f
             DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDate(date, Purpose.GAS)
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
-            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
+            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year.toLong())?.amount ?: 0f
         }
 
 
@@ -124,7 +127,7 @@ class Repository private constructor(private val context: Context) {
     suspend fun getWeeklyByDateSus(date: LocalDate): FullWeekly? =
         weeklyDao.getWeeklyByDateSus(date)
 
-    fun getBasePayAdjustFlowById(id: Int) = weeklyDao.getFlow(id)
+    fun getBasePayAdjustFlowById(id: Long) = weeklyDao.getFlow(id)
 
     /**
      * Yearly
@@ -141,7 +144,7 @@ class Repository private constructor(private val context: Context) {
                 transactionDao.getCostPerMileAnnual(year)
             }
             DeductionType.IRS_STD -> {
-                standardMileageDeductionDao.get(year)?.amount ?: 0f
+                standardMileageDeductionDao.get(year.toLong())?.amount ?: 0f
             }
         }
 
@@ -157,7 +160,7 @@ class Repository private constructor(private val context: Context) {
 
     val allFullPurposes: Flow<List<FullExpensePurpose>> = expensePurposeDao.getAllFull()
 
-    fun getExpenseFlowById(id: Int): Flow<Expense?> = expenseDao.getFlow(id)
+    fun getExpenseFlowById(id: Long): Flow<Expense?> = expenseDao.getFlow(id)
 
     private var expensePagingSource: PagingSource<Int, FullExpense>? = null
 
@@ -173,7 +176,7 @@ class Repository private constructor(private val context: Context) {
         }
     ).flow
 
-    fun deleteExpenseById(id: Int) {
+    fun deleteExpenseById(id: Long) {
         CoroutineScope(Dispatchers.Default).launch {
             withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
                 expenseDao.deleteById(id)
@@ -191,7 +194,7 @@ class Repository private constructor(private val context: Context) {
 
     private suspend fun allPurposes(): List<ExpensePurpose> = expensePurposeDao.getAllSuspend()
 
-    fun getExpensePurposeFlowById(id: Int): Flow<ExpensePurpose?> =
+    fun getExpensePurposeFlowById(id: Long): Flow<ExpensePurpose?> =
         expensePurposeDao.getFlow(id)
 
     /**
@@ -211,6 +214,7 @@ class Repository private constructor(private val context: Context) {
             is Expense -> expenseDao.upsert(model)
             is ExpensePurpose -> expensePurposeDao.upsert(model)
             is StandardMileageDeduction -> standardMileageDeductionDao.upsert(model)
+            is LocationData -> locationDao.upsert(model)
         }
 
     fun saveModel(model: DataModel) {
@@ -221,9 +225,21 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.insert(model)
                 is ExpensePurpose -> expensePurposeDao.insert(model)
                 is StandardMileageDeduction -> standardMileageDeductionDao.insert(model)
+                is LocationData -> locationDao.insert(model)
             }
         }
     }
+
+    suspend fun saveModelSus(model: DataModel): Long =
+        when (model) {
+            is DashEntry -> entryDao.insertSus(model)
+            is Weekly -> weeklyDao.insertSus(model)
+            is Expense -> expenseDao.insertSus(model)
+            is ExpensePurpose -> expensePurposeDao.insertSus(model)
+            is StandardMileageDeduction -> standardMileageDeductionDao.insertSus(model)
+            is LocationData -> locationDao.insertSus(model)
+        }
+
 
     fun deleteModel(model: DataModel) {
         executor.execute {
@@ -233,6 +249,7 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.delete(model)
                 is ExpensePurpose -> expensePurposeDao.delete(model)
                 is StandardMileageDeduction -> standardMileageDeductionDao.delete(model)
+                is LocationData -> locationDao.delete(model)
             }
         }
     }
@@ -284,7 +301,6 @@ class Repository private constructor(private val context: Context) {
     }
 
     companion object {
-
         private var INSTANCE: Repository? = null
 
         fun initialize(context: Context) {

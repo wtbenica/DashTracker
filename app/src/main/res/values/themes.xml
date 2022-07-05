@@ -75,8 +75,8 @@
         <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
 
         <!-- Text -->
-        <item name="android:fontFamily">@font/lalezar</item>
-        <item name="titleFontFamily">@font/lalezar</item>
+        <item name="android:fontFamily">@font/oswald</item>
+        <item name="titleFontFamily">@font/oswald</item>
 
         <!-- activity_main -->
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>

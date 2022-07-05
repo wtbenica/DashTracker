@@ -223,7 +223,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
         fun newInstance(
             @StringRes text: Int?,
             requestKey: String,
-            confirmId: Int? = null,
+            confirmId: Long? = null,
             message: String? = null,
             @StringRes posButton: Int = R.string.yes,
             posAction: LambdaWrapper? = null,
@@ -235,7 +235,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
             arguments = Bundle().apply {
                 text?.let { putInt(ARG_TEXT, it) }
                 putString(ARG_REQ_KEY, requestKey)
-                confirmId?.let { putInt(ARG_CONFIRM_ID, it) }
+                confirmId?.let { putLong(ARG_CONFIRM_ID, it) }
                 putString(ARG_MESSAGE, message)
                 putInt(ARG_POS_TEXT, posButton)
                 putParcelable(ARG_POS_ACTION, posAction)
@@ -260,7 +260,7 @@ enum class ConfirmType(val key: String) {
 class ConfirmDeleteDialog {
     companion object {
         fun newInstance(
-            confirmId: Int? = null,
+            confirmId: Long? = null,
             @StringRes text: Int? = null,
         ) = ConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_delete,

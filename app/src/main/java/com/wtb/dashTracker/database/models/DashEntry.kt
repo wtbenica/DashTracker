@@ -31,7 +31,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KProperty1
 
-const val AUTO_ID = 0
+const val AUTO_ID = 0L
 
 @ExperimentalCoroutinesApi
 @Entity(
@@ -48,7 +48,7 @@ const val AUTO_ID = 0
     ]
 )
 data class DashEntry(
-    @PrimaryKey(autoGenerate = true) val entryId: Int = AUTO_ID,
+    @PrimaryKey(autoGenerate = true) val entryId: Long = AUTO_ID,
     val date: LocalDate = LocalDate.now(),
     val endDate: LocalDate = date,
     val startTime: LocalTime? = LocalTime.now(),
@@ -62,7 +62,7 @@ data class DashEntry(
     val numDeliveries: Int? = null,
     var week: LocalDate? = date.endOfWeek
 ) : DataModel(), ListItemType {
-    override val id: Int
+    override val id: Long
         get() = entryId
 
     val isIncomplete
@@ -185,7 +185,7 @@ data class DashEntry(
     }
 
     override fun hashCode(): Int {
-        var result = entryId
+        var result = entryId.toInt()
         result = 31 * result + date.hashCode()
         result = 31 * result + startTime.hashCode()
         result = 31 * result + endTime.hashCode()

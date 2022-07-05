@@ -29,7 +29,7 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
     protected val repository = Repository.get()
 
     private val _id = MutableStateFlow(AUTO_ID)
-    protected val id: StateFlow<Int>
+    protected val id: StateFlow<Long>
         get() = _id
 
     internal open val item: StateFlow<T?> = id.flatMapLatest { id ->
@@ -41,19 +41,21 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         initialValue = null
     )
 
-    abstract fun getItemFlowById(id: Int): Flow<T?>
+    abstract fun getItemFlowById(id: Long): Flow<T?>
 
-    fun loadDataModel(id: Int?) {
+    fun loadDataModel(id: Long?) {
         _id.value = id ?: AUTO_ID
     }
 
     fun insert(dataModel: DataModel) = repository.saveModel(dataModel)
 
+    suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)
+
     fun upsert(dataModel: DataModel, loadItem: Boolean = true) {
         CoroutineScope(Dispatchers.Default).launch {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {
-                _id.value = id.toInt()
+                _id.value = id
             }
         }
     }
@@ -62,7 +64,7 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         withContext(Dispatchers.Default) {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {
-                _id.value = id.toInt()
+                _id.value = id
             }
             id
         }

@@ -51,7 +51,6 @@ import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.csvutil.CSVUtils
-import com.wtb.csvutil.CSVUtils.Companion.FILE_ZIP
 import com.wtb.csvutil.ModelMap
 import com.wtb.csvutil.getConvertPackImport
 import com.wtb.dashTracker.R
@@ -95,9 +94,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private lateinit var mAdView: AdView
 
     private val contentZipLauncher =
-        CSVUtils(ctx = this).getContentLauncher(
-            prefix = FILE_ZIP,
-            kList = convertPacksImport,
+        CSVUtils(activity = this).getContentLauncher(
+            importPacks = convertPacksImport,
             action = this::insertOrReplace,
         )
 
@@ -270,7 +268,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         binding.container.visibility = INVISIBLE
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
     }
@@ -325,7 +323,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         ) {
             CoroutineScope(Dispatchers.Default).launch {
                 val id = viewModel.upsertAsync(DashEntry())
-                EntryDialog.newInstance(id.toInt()).show(fm, "new_entry_dialog")
+                EntryDialog.newInstance(id).show(fm, "new_entry_dialog")
             }
         },
         FabMenuButtonInfo(
@@ -338,7 +336,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         ) {
             CoroutineScope(Dispatchers.Default).launch {
                 val id = viewModel.upsertAsync(Expense(isNew = true))
-                ExpenseDialog.newInstance(id.toInt()).show(fm, "new_expense_dialog")
+                ExpenseDialog.newInstance(id).show(fm, "new_expense_dialog")
             }
         },
         //        FabMenuButtonInfo(

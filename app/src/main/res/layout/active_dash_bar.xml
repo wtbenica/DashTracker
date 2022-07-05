@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2022 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:background="@drawable/something_special"
+    android:columnCount="4"
+    android:rowCount="2">
+
+    <TextView
+        android:id="@+id/lbl_elapsed_time"
+        style="@style/ActiveDashTextView.Label"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:fontFamily="@font/oswald"
+        android:text="Elapsed:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        style="@style/ActiveDashTextView.Value"
+        android:id="@+id/val_elapsed_time"
+        android:layout_row="0"
+        android:layout_column="1"
+        android:text="4h 20m"
+        app:layout_constraintStart_toEndOf="@id/lbl_elapsed_time"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        style="@style/ActiveDashTextView.Label"
+        android:id="@+id/lbl_mileage"
+        android:layout_row="1"
+        android:layout_column="0"
+        android:text="Miles:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_elapsed_time" />
+
+    <TextView
+        style="@style/ActiveDashTextView.Value"
+        android:id="@+id/val_mileage"
+        android:layout_row="1"
+        android:layout_column="1"
+        android:text="52.8mi"
+        app:layout_constraintStart_toEndOf="@id/lbl_mileage"
+        app:layout_constraintTop_toBottomOf="@id/val_elapsed_time" />
+
+    <ImageButton
+        style="@style/ActiveDashImageButton"
+        android:id="@+id/start_button"
+        android:layout_row="0"
+        android:layout_rowSpan="2"
+        android:layout_column="3"
+        android:src="@drawable/ic_twotone_pause_circle_24"
+        app:layout_constraintEnd_toStartOf="@id/stop_button"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        style="@style/ActiveDashImageButton"
+        android:id="@+id/stop_button"
+        android:layout_row="0"
+        android:layout_rowSpan="2"
+        android:layout_column="2"
+        android:src="@drawable/ic_twotone_stop_circle_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</GridLayout>

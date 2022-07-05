@@ -19,7 +19,9 @@ package com.wtb.dashTracker.extensions
 import android.util.Log
 import android.widget.Spinner
 import com.wtb.dashTracker.ui.fragment_trends.TAG
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 fun Spinner.hideDropdown() {
     try {
         Log.d(TAG, "Go to bed, bitch!")

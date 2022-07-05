@@ -60,6 +60,7 @@
     <string name="content_desc_delete">Delete</string>
     <string name="content_desc_reset">Reset</string>
     <string name="content_desc_save">Save</string>
+    <string name="content_desc_start">Start</string>
     <string name="content_desc_fab_menu">Open menu</string>
     <string name="content_desc_incomplete_entry">Incomplete entry</string>
     <string name="content_desc_fab_menu_closed">Open add item menu</string>
@@ -128,7 +129,6 @@
     <string name="confirm_delete">The information you\'ve entered will not be recoverable</string>
     <string name="confirm_reset">Any changes will be permanently lost</string>
     <string name="csv_generation_failed">CSV generation failed</string>
-
 
     <string name="confirm_dialog">Confirm %s</string>
     <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>

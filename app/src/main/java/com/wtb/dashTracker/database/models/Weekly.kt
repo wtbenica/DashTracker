@@ -35,8 +35,8 @@ data class Weekly(
     val weekNumber: Int = date.weekOfYear,
     var isNew: Boolean = false
 ) : DataModel() {
-    override val id: Int
-        get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toInt()
+    override val id: Long
+        get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toLong()
 
     val isIncomplete: Boolean
         get() = (basePayAdjustment == null || basePayAdjustment == 0f) && !isNew

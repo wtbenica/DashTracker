@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
 class EntryViewModel : ListItemViewModel<DashEntry>() {
-    override fun getItemFlowById(id: Int): Flow<DashEntry?> =
+    override fun getItemFlowById(id: Long): Flow<DashEntry?> =
         repository.getEntryFlowById(id)
+
+    fun deleteTrip(id: Long) = repository.deleteEntryById(id)
 }
