@@ -278,10 +278,9 @@ data class FullEntry(
             var prevLoc: LocationData? = null
             val res = locations.fold(0.0) { f, loc ->
                 val tempPrev = prevLoc
-                val tempLoc = loc
                 prevLoc = loc
                 f + if (tempPrev != null) {
-                    tempLoc.distanceTo(tempPrev)
+                    loc.distanceTo(tempPrev)
                 } else {
                     0.0
                 }

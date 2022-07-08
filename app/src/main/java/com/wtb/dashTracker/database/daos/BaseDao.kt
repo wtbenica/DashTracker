@@ -70,7 +70,7 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
         if (id == -1L) {
             update(obj)
         }
-        return if (id != -1L) id else obj.id.toLong()
+        return if (id != -1L) id else obj.id
     }
 
     fun upsertAll(models: List<T>) {

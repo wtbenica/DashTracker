@@ -94,7 +94,7 @@ abstract class DashDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_4_5 = object: Migration(4, 5) {
+        private val MIGRATION_4_5 = object: Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 val purposes = Purpose.values().map { purpose ->
                     ExpensePurpose(purpose.id, purpose.purposeName)

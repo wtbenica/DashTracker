@@ -321,7 +321,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
-    fun togglePlayPauseButton(btn: ImageButton) {
+    private fun togglePlayPauseButton(btn: ImageButton) {
         btn.run {
             when (tag ?: R.drawable.anim_play_to_pause) {
                 R.drawable.anim_pause_to_play -> {
@@ -622,8 +622,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         )
     }
 
-    var activeEntry: FullEntry? = null
-    var activeEntryId: Long? = null
+    private var activeEntry: FullEntry? = null
+    private var activeEntryId: Long? = null
     private var locationService: LocationService? = null
     private var locationServiceBound = false
 

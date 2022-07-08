@@ -36,7 +36,7 @@ class MainActivityViewModel : ViewModel() {
     private val repository = Repository.get()
 
     private val _entryId = MutableStateFlow(AUTO_ID)
-    protected val entryId: StateFlow<Long>
+    internal val entryId: StateFlow<Long>
         get() = _entryId
 
     fun loadEntry(id: Long?) {

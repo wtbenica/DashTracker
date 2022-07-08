@@ -48,9 +48,7 @@ class LocationData constructor(
         time = loc.localDateTime,
         latitude = loc.latitude, longitude = loc.longitude, accuracy = loc.accuracy, bearing = loc
             .bearing, bearingAccuracy = loc.bearingAccuracyDegrees, entry = entryId
-    ) {
-
-    }
+    )
 
     override val id: Long
         get() = locationId
