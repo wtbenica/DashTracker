@@ -5,9 +5,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.wtb.csvutil.CSVConvertible
-import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.extensions.dtfDate
+import com.wtb.dashTracker.extensions.dtfDateTime
+import dev.benica.csvutil.CSVConvertible
+import dev.benica.csvutil.CSVConvertible.Column
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Instant
 import java.time.LocalDateTime
@@ -55,7 +56,7 @@ class LocationData constructor(
         get() = locationId
 
     val timeFmt: String?
-        get() = time?.format(dtfDate)
+        get() = time?.format(dtfDateTime)
 
     fun distanceTo(loc: LocationData): Double {
         val distResults = floatArrayOf(0f)

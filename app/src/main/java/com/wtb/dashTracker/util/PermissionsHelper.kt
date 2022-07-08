@@ -3,10 +3,13 @@ package com.wtb.dashTracker.util
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import com.wtb.dashTracker.ui.activity_main.TAG
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 internal val REQUIRED_PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_BACKGROUND_LOCATION,
@@ -27,7 +30,8 @@ internal fun hasPermissions(context: Context, vararg permissions: String): Boole
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
 
-internal fun Fragment.registerMultiplePermissionsLauncher(onGranted: () -> Unit) =
+@ExperimentalCoroutinesApi
+internal fun AppCompatActivity.registerMultiplePermissionsLauncher(onGranted: () -> Unit) =
     registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
         it?.let { permissionMap ->
             val permissionGranted = permissionMap.toList().let { permissions ->
@@ -36,20 +40,23 @@ internal fun Fragment.registerMultiplePermissionsLauncher(onGranted: () -> Unit)
                 }
             }
             if (permissionGranted) {
+                Log.d(TAG, "I can haz permission?")
                 onGranted()
+            } else {
+                Log.d(TAG, "Missing permission")
             }
         }
     }
 
-internal fun Fragment.registerSinglePermissionLauncher(onGranted: () -> Unit) =
+internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: () -> Unit) =
     registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         if (it) {
             onGranted()
         }
     }
 
-internal fun Fragment.showRationaleLocation(onGranted: () -> Unit) {
-    AlertDialog.Builder(activity as Context)
+internal fun AppCompatActivity.showRationaleLocation(onGranted: () -> Unit) {
+    AlertDialog.Builder(this as Context)
         .setTitle("Grant Location Access Permissions")
         .setMessage(
             "LocationModule uses location data to automatically track your " +
@@ -70,8 +77,8 @@ internal fun Fragment.showRationaleLocation(onGranted: () -> Unit) {
         }.show()
 }
 
-internal fun Fragment.showRationaleBgLocation(onGranted: () -> Unit) {
-    AlertDialog.Builder(activity as Context)
+internal fun AppCompatActivity.showRationaleBgLocation(onGranted: () -> Unit) {
+    AlertDialog.Builder(this as Context)
         .setTitle("Grant Location Access Permissions")
         .setMessage(
             "LocationModule uses background location so we always know where you are."

@@ -23,11 +23,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
-import com.wtb.csvutil.CSVUtils
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
+import dev.benica.csvutil.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -59,7 +59,7 @@ class Repository private constructor(private val context: Context) {
         get() = db.transactionDao()
 
     private val locationDao: LocationDao
-    get() = db.locationDao()
+        get() = db.locationDao()
 
     /**
      * Dash Entry
@@ -94,12 +94,15 @@ class Repository private constructor(private val context: Context) {
 
     fun getEntryFlowById(id: Long) = entryDao.getFlow(id)
 
+    fun getFullEntryFlowById(id: Long) = entryDao.getFullEntryFlow(id)
+
     suspend fun getCostPerMile(date: LocalDate, purpose: DeductionType): Float =
         when (purpose) {
             DeductionType.NONE -> 0f
             DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDate(date, Purpose.GAS)
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
-            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year.toLong())?.amount ?: 0f
+            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year.toLong())?.amount
+                ?: 0f
         }
 
 
@@ -155,6 +158,8 @@ class Repository private constructor(private val context: Context) {
 
     private suspend fun allExpensePurposes(): List<ExpensePurpose> =
         expensePurposeDao.getAllSuspend()
+
+    private suspend fun allLocationData(): List<LocationData> = locationDao.getAllSuspend()
 
     val allExpensePurposes: Flow<List<ExpensePurpose>> = expensePurposeDao.getAll()
 
@@ -260,7 +265,8 @@ class Repository private constructor(private val context: Context) {
                 DashEntry.getConvertPackExport(allEntries()),
                 Weekly.getConvertPackExport(allWeeklies()),
                 Expense.getConvertPackExport(allExpenses()),
-                ExpensePurpose.getConvertPackExport(allExpensePurposes())
+                ExpensePurpose.getConvertPackExport(allExpensePurposes()),
+                LocationData.getConvertPackExport(allLocationData())
             )
         }
     }

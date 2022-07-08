@@ -166,8 +166,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setOnClickListener {
             saveConfirmed = true
             setFragmentResult(
-                REQUEST_KEY_ENTRY_DIALOG,
-                bundleOf(
+                requestKey = REQUEST_KEY_ENTRY_DIALOG,
+                result = bundleOf(
                     ARG_MODIFICATION_STATE to ModificationState.MODIFIED.ordinal
                 )
             )

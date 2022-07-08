@@ -16,14 +16,11 @@
 
 package com.wtb.dashTracker.database.models
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
-import com.wtb.csvutil.CSVConvertible
-import com.wtb.csvutil.CSVConvertible.Column
+import androidx.room.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
+import dev.benica.csvutil.CSVConvertible
+import dev.benica.csvutil.CSVConvertible.Column
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration
 import java.time.LocalDate
@@ -266,4 +263,29 @@ data class DashEntry(
         override fun getColumns(): Array<Column<DashEntry>> =
             Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
     }
+}
+
+@ExperimentalCoroutinesApi
+data class FullEntry(
+    @Embedded
+    val entry: DashEntry,
+
+    @Relation(parentColumn = "entryId", entityColumn = "entry")
+    val locations: List<LocationData>
+) {
+    val distance: Double
+        get() {
+            var prevLoc: LocationData? = null
+            val res = locations.fold(0.0) { f, loc ->
+                val tempPrev = prevLoc
+                val tempLoc = loc
+                prevLoc = loc
+                f + if (tempPrev != null) {
+                    tempLoc.distanceTo(tempPrev)
+                } else {
+                    0.0
+                }
+            }
+            return res
+        }
 }

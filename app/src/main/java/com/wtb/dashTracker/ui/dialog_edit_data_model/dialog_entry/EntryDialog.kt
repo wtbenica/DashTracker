@@ -51,7 +51,6 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
     override fun getViewBinding(inflater: LayoutInflater): DialogFragEntryBinding =
         DialogFragEntryBinding.inflate(layoutInflater).apply {
-
             fragEntryDate.apply {
                 setOnClickListener {
                     DatePickerFragment.newInstance(
@@ -232,14 +231,12 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
     }
 
     companion object {
-
-        fun newInstance(entryId: Long) =
+        fun newInstance(entryId: Long): EntryDialog  =
             EntryDialog().apply {
                 arguments = Bundle().apply {
                     putLong(ARG_ITEM_ID, entryId)
                 }
             }
-
     }
 }
 

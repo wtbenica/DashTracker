@@ -17,9 +17,9 @@
 package com.wtb.dashTracker.database.models
 
 import androidx.room.*
-import com.wtb.csvutil.CSVConvertible
-import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
+import dev.benica.csvutil.CSVConvertible
+import dev.benica.csvutil.CSVConvertible.Column
 import java.time.LocalDate
 import kotlin.reflect.KProperty1
 

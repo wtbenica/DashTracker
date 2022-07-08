@@ -30,6 +30,9 @@ abstract class LocationDao : BaseDao<LocationData>("LocationData", "locationId")
     @Query(SQL_GET_ALL)
     abstract override fun getAll(): Flow<List<LocationData>>
 
+    @Query(SQL_GET_ALL)
+    abstract suspend fun getAllSuspend(): List<LocationData>
+
     @Query("DELETE FROM LocationData")
     abstract override fun clear()
 
@@ -38,7 +41,8 @@ abstract class LocationDao : BaseDao<LocationData>("LocationData", "locationId")
 
     companion object {
         private const val SQL_GET_ALL =
-            """SELECT * FROM LocationData
-                ORDER BY time desc"""
+            """SELECT * 
+                FROM LocationData
+                ORDER BY locationId"""
     }
 }

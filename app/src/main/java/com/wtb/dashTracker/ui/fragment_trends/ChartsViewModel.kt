@@ -27,10 +27,6 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
-val Any.TAG: String
-    get() = APP + this::class.simpleName
-
-@ExperimentalCoroutinesApi
 class ChartsViewModel : ViewModel() {
     companion object {
         const val MIN_NUM_WEEKS = 8

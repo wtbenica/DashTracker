@@ -17,6 +17,8 @@
 <resources>
     <string name="app_name">DashTracker</string>
 
+    <string name="location_service_desc">Dashtracker mileage tracking active</string>
+
     <string name="frag_title_daily_list">Daily</string>
     <string name="frag_title_weekly_list">Weekly</string>
     <string name="frag_title_yearly_list">Yearly</string>

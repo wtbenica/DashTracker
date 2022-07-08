@@ -32,8 +32,8 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.fragment_trends.TAG
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
