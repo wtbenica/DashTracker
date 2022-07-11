@@ -50,7 +50,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     override fun getViewBinding(inflater: LayoutInflater): DialogFragStartDashBinding =
         DialogFragStartDashBinding.inflate(layoutInflater).apply {
 
-            fragEntryDate.apply {
+            fragStartDashDate.apply {
                 setOnClickListener {
                     DatePickerFragment.newInstance(
                         R.id.frag_entry_date,
@@ -60,7 +60,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
                 }
             }
 
-            fragEntryStartTime.apply {
+            fragStartDashStartTime.apply {
                 setOnClickListener {
                     TimePickerFragment.newInstance(
                         R.id.frag_entry_start_time,
@@ -71,15 +71,15 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
                 }
             }
 
-            fragEntryBtnDelete.apply {
+            fragStartDashBtnDelete.apply {
                 setOnDeletePressed()
             }
 
-            fragEntryBtnCancel.apply {
+            fragStartDashBtnCancel.apply {
                 setOnResetPressed()
             }
 
-            fragEntryBtnStart.apply {
+            fragStartDashBtnStart.apply {
                 setOnClickListener {
                     saveConfirmed = true
                     setFragmentResult(
@@ -103,23 +103,23 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     override fun updateUI() {
         val tempEntry = item
         if (tempEntry != null) {
-            binding.fragEntryDate.text = tempEntry.date.format(dtfDate)
+            binding.fragStartDashDate.text = tempEntry.date.format(dtfDate)
             tempEntry.startTime?.let { st ->
-                binding.fragEntryStartTime.text = st.format(dtfTime)
+                binding.fragStartDashStartTime.text = st.format(dtfTime)
             }
-            tempEntry.startOdometer?.let { so -> binding.fragEntryStartMileage.setText(so.toString()) }
+            tempEntry.startOdometer?.let { so -> binding.fragStartDashStartMileage.setText(so.toString()) }
         } else {
             clearFields()
         }
     }
 
     override fun saveValues() {
-        val currDate = binding.fragEntryDate.text.toDateOrNull()
+        val currDate = binding.fragStartDashDate.text.toDateOrNull()
         val e = DashEntry(
             entryId = item?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
-            startTime = binding.fragEntryStartTime.text.toTimeOrNull(),
-            startOdometer = binding.fragEntryStartMileage.text.toFloatOrNull(),
+            startTime = binding.fragStartDashStartTime.text.toTimeOrNull(),
+            startOdometer = binding.fragStartDashStartMileage.text.toFloatOrNull(),
         )
 
         viewModel.upsert(e)
@@ -127,17 +127,17 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
 
     override fun clearFields() {
         binding.apply {
-            fragEntryDate.text = LocalDate.now().format(dtfDate)
-            fragEntryStartTime.text = LocalDateTime.now().format(dtfTime)
-            fragEntryStartMileage.text.clear()
+            fragStartDashDate.text = LocalDate.now().format(dtfDate)
+            fragStartDashStartTime.text = LocalDateTime.now().format(dtfTime)
+            fragStartDashStartMileage.text.clear()
         }
     }
 
     override fun isEmpty(): Boolean {
-        val isTodaysDate = binding.fragEntryDate.text == LocalDate.now().format(dtfDate)
+        val isTodaysDate = binding.fragStartDashDate.text == LocalDate.now().format(dtfDate)
         return isTodaysDate &&
                 !startTimeChanged &&
-                binding.fragEntryStartMileage.text.isBlank()
+                binding.fragStartDashStartMileage.text.isBlank()
     }
 
     override fun setDialogListeners() {
@@ -151,7 +151,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
             when (bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)) {
                 R.id.frag_entry_date -> {
-                    binding.fragEntryDate.text =
+                    binding.fragStartDashDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
                 }
             }
@@ -165,7 +165,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             val minute = bundle.getInt(TimePickerFragment.ARG_NEW_MINUTE)
             when (bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
-                    binding.fragEntryStartTime.text =
+                    binding.fragStartDashStartTime.text =
                         LocalTime.of(hour, minute).format(dtfTime).toString()
                 }
             }

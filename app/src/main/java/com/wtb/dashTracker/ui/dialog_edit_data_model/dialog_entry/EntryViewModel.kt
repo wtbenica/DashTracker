@@ -16,15 +16,28 @@
 
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
+import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
 class EntryViewModel : ListItemViewModel<DashEntry>() {
+    internal val fullDash: StateFlow<FullEntry?> = id.flatMapLatest { id ->
+        repository.getFullEntryFlowById(id)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
+
     override fun getItemFlowById(id: Long): Flow<DashEntry?> =
         repository.getEntryFlowById(id)
+
+    fun getFullEntryFlowById(id: Long): Flow<FullEntry?> =
+        repository.getFullEntryFlowById(id)
 
     fun deleteTrip(id: Long) = repository.deleteEntryById(id)
 }

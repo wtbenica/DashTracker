@@ -32,7 +32,7 @@
             android:background="?attr/colorDialog">
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/frag_entry_toolbar"
+                android:id="@+id/frag_start_dash_toolbar"
                 style="@style/DialogToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,16 +42,16 @@
                 app:title="Start Dash" />
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/frag_entry_table_card"
+                android:id="@+id/frag_start_dash_table_card"
                 style="@style/DialogContentCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
+                app:layout_constraintTop_toBottomOf="@id/frag_start_dash_toolbar">
 
                 <GridLayout
-                    android:id="@+id/frag_entry_table"
+                    android:id="@+id/frag_start_dash_table"
                     style="@style/DialogContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                     android:rowCount="11"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
+                    app:layout_constraintTop_toBottomOf="@id/frag_start_dash_toolbar">
 
                     <!--    Row 0   -->
                     <TextView
@@ -69,11 +69,11 @@
                         android:layout_row="0"
                         android:layout_column="0"
                         android:focusable="false"
-                        android:labelFor="@id/frag_entry_date"
+                        android:labelFor="@id/frag_start_dash_date"
                         android:text="@string/lbl_date" />
 
                     <TextView
-                        android:id="@+id/frag_entry_date"
+                        android:id="@+id/frag_start_dash_date"
                         style="@style/FragEntryValueTextView"
                         android:layout_width="0dp"
                         android:layout_row="0"
@@ -90,11 +90,11 @@
                         android:layout_row="1"
                         android:layout_column="0"
                         android:focusable="false"
-                        android:labelFor="@id/frag_entry_start_time"
+                        android:labelFor="@id/frag_start_dash_start_time"
                         android:text="@string/lbl_start_time" />
 
                     <TextView
-                        android:id="@+id/frag_entry_start_time"
+                        android:id="@+id/frag_start_dash_start_time"
                         style="@style/FragEntryValueTextView"
                         android:layout_width="0dp"
                         android:layout_row="1"
@@ -110,18 +110,18 @@
                         android:layout_row="4"
                         android:layout_column="0"
                         android:focusable="false"
-                        android:labelFor="@id/frag_entry_start_mileage"
+                        android:labelFor="@id/frag_start_dash_start_mileage"
                         android:text="@string/lbl_start_mileage" />
 
                     <EditText
-                        android:id="@+id/frag_entry_start_mileage"
+                        android:id="@+id/frag_start_dash_start_mileage"
                         style="@style/FragEntryValueTextView"
                         android:layout_width="0dp"
                         android:layout_row="4"
                         android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
-                        android:inputType="numberDecimal" />
+                        android:inputType="number" />
                 </GridLayout>
             </androidx.cardview.widget.CardView>
 
@@ -133,22 +133,22 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_entry_table_card">
+                app:layout_constraintTop_toBottomOf="@id/frag_start_dash_table_card">
 
                 <ImageButton
-                    android:id="@+id/frag_entry_btn_delete"
+                    android:id="@+id/frag_start_dash_btn_delete"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/content_desc_delete"
                     android:src="@drawable/ic_action_delete" />
 
                 <ImageButton
-                    android:id="@+id/frag_entry_btn_cancel"
+                    android:id="@+id/frag_start_dash_btn_cancel"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/content_desc_reset"
                     android:src="@drawable/ic_action_reset" />
 
                 <ImageButton
-                    android:id="@+id/frag_entry_btn_start"
+                    android:id="@+id/frag_start_dash_btn_start"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/content_desc_start"
                     android:src="@drawable/ic_play_arrow" />

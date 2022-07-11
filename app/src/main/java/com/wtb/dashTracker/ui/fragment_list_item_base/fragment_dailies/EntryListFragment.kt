@@ -189,7 +189,8 @@ class EntryListFragment : ListItemFragment() {
                                 else -> {
                                     showExpenseFields()
 
-                                    detailsBinding.listItemDeductionType.text = deductionType.fullDesc
+                                    detailsBinding.listItemDeductionType.text =
+                                        deductionType.fullDesc
 
                                     detailsBinding.listItemEntryExpenses.text = getCurrencyString(
                                         this@EntryHolder.item.getExpenses(costPerMile)
@@ -237,7 +238,11 @@ class EntryListFragment : ListItemFragment() {
                     getStringOrElse(R.string.float_fmt, "-", this.item.totalHours)
                 detailsBinding.listItemEntryMileageRange.text =
                     getOdometerRangeString(this.item.startOdometer, this.item.endOdometer)
-                detailsBinding.listItemEntryMileage.text = "${this.item.mileage ?: "-"}"
+                detailsBinding.listItemEntryMileage.text = getStringOrElse(
+                    R.string.mileage_fmt,
+                    "-",
+                    this.item.mileage
+                )
                 detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.mileage == null)
                 detailsBinding.listItemEntryNumDeliveries.text =
                     "${this.item.numDeliveries ?: "-"}"

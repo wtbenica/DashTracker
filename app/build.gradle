@@ -107,8 +107,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:20.0.0'
 
     implementation files('../../MyLibraries/CsvUtil-release.aar')
+    implementation project(path: ':mileageTracker')
     implementation files('../../MyLibraries/notificationutil-release.aar')
-    implementation files('../../MyLibraries/mileageTracker-release.aar')
 
     kapt 'androidx.room:room-compiler:2.4.2'
     testImplementation 'junit:junit:4.13.2'

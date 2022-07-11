@@ -123,6 +123,10 @@
         <entry key="app/src/main/res/drawable/save.xml" value="0.3525" />
         <entry key="app/src/main/res/drawable/shape_bottom_sheet.xml" value="0.338" />
         <entry key="app/src/main/res/drawable/something_special.xml" value="0.2185" />
+        <entry key="app/src/main/res/drawable/status_inactive.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/status_paused.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/status_stopped.xml" value="0.184" />
+        <entry key="app/src/main/res/drawable/status_tracking.xml" value="0.3565" />
         <entry key="app/src/main/res/drawable/tab_indicator.xml" value="0.3075" />
         <entry key="app/src/main/res/drawable/tom_thumb.xml" value="0.1945" />
         <entry key="app/src/main/res/drawable/top_left_corner.xml" value="0.18697916666666667" />
@@ -162,7 +166,8 @@
         <entry key="app/src/main/res/layout/dialog_frag_confirm_edit_purposes.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_export.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_import.xml" value="0.67" />
-        <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/dialog_frag_end_dash.xml" value="0.275" />
+        <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.31347962382445144" />
         <entry key="app/src/main/res/layout/dialog_frag_expense.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_expense_purpose_dropdown_footer.xml" value="1.0" />
         <entry key="app/src/main/res/layout/dialog_frag_expense_purpose_dropdown_header.xml" value="0.75" />

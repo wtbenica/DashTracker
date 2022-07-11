@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.activity_main
 
 import android.Manifest
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+import android.animation.ValueAnimator
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -79,6 +80,7 @@ import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.ARG_ENTRY_ID
@@ -105,6 +107,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 
+
+const val TESTING = false
+
 @ExperimentalCoroutinesApi
 val Any.TAG: String
     get() = APP + this::class.simpleName
@@ -128,6 +133,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             importPacks = convertPacksImport,
             action = this::insertOrReplace,
         )
+
+    var animator: ValueAnimator? = null
+
+    var testDistance = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -230,7 +239,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     getCurrencyString(it)
             }
 
-
             lifecycleScope.launch {
                 this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.activeEntry.collectLatest {
@@ -239,7 +247,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                             activeEntry = it
                             activeEntryId = it.entry.entryId
                             activeDashBinding.valMileage.text =
-                                getString(R.string.mileage_fmt, entry.distance)
+                                if (TESTING) {
+                                    testDistance += 1.0
+                                    getString(R.string.mileage_fmt, testDistance)
+                                } else {
+                                    getString(R.string.mileage_fmt, entry.distance)
+                                }
                             val t: Float = ChronoUnit.MINUTES.between(
                                 entry.entry.startDateTime,
                                 LocalDateTime.now()
@@ -271,14 +284,39 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         LocationService.ServiceState.STOPPED -> {} // Do Nothing
                     }
                 }
-
-//            togglePlayPauseButton(it as ImageButton)
             }
         }
 
         activeDashBinding.stopButton.setOnClickListener {
             locationService?.stop()
+            if (TESTING) {
+                activeEntry?.entry?.let { e ->
+                    e.totalMileage = testDistance.toFloat()
+                    CoroutineScope(Dispatchers.Default).launch {
+                        withContext(Dispatchers.Default) {
+                            viewModel.upsertAsync(e)
+                        }.let {
+                            EndDashDialog.newInstance(activeEntryId ?: AUTO_ID)
+                                .show(supportFragmentManager, "end_dash_dialog")
+                        }
+                    }
+                }
+                testDistance = 0.0
+            } else {
+                EndDashDialog.newInstance(activeEntryId ?: AUTO_ID)
+                    .show(supportFragmentManager, "end_dash_dialog")
+            }
         }
+
+        animator = ValueAnimator.ofFloat(0.4f, 1f).apply {
+            duration = 800
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = -1
+        }
+        animator?.addUpdateListener { animation ->
+            activeDashBinding.statusIndicator.setAlpha(animation.animatedValue as Float)
+        }
+        animator?.start()
 
         setContentView(binding.root)
 
@@ -357,6 +395,19 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                                 activeDashBinding.root.expand { toggleIt() }
                             else
                                 toggleIt()
+
+                            activeDashBinding.statusIndicator.apply {
+                                setImageResource(
+                                    if (locationService?.isTracking?.value == true) {
+                                        animator?.start()
+                                        R.drawable.status_tracking
+                                    } else {
+                                        animator?.pause()
+                                        this.alpha = 1f
+                                        R.drawable.status_inactive
+                                    }
+                                )
+                            }
                         }
                         LocationService.ServiceState.PAUSED -> {
                             fun toggleIt() {
@@ -371,15 +422,47 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                                 activeDashBinding.root.expand { toggleIt() }
                             else
                                 toggleIt()
+
+                            activeDashBinding.statusIndicator.setImageResource(
+                                R.drawable.status_paused
+                            )
+                            animator?.pause()
+                            activeDashBinding.statusIndicator.alpha = 1f
                         }
                         LocationService.ServiceState.STOPPED -> {
                             if (activeDashBinding.root.visibility == VISIBLE)
                                 activeDashBinding.root.collapse()
+                            viewModel.loadEntry(null)
                         }
                         else -> {
                             // Do nothing, I don't care
                         }
                     }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                locationService?.isTracking?.collectLatest {
+                    activeDashBinding.statusIndicator.setImageResource(
+                        when (locationService?.serviceState?.value) {
+                            LocationService.ServiceState.TRACKING ->
+                                if (it) {
+                                    animator?.start()
+                                    R.drawable.status_tracking
+                                } else {
+                                    animator?.pause()
+                                    activeDashBinding.statusIndicator.alpha = 1f
+                                    R.drawable.status_inactive
+                                }
+                            else -> {
+                                animator?.pause()
+                                activeDashBinding.statusIndicator.alpha = 1f
+                                R.drawable.status_paused
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -640,8 +723,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }.let { newTripId ->
                     val currentTripFromService =
                         locationService?.start(newTripId) { loc, entryId ->
-                            Repository.get()
-                                .saveModel(LocationData(loc = loc, entryId = entryId))
+                            Repository.get().saveModel(LocationData(loc = loc, entryId = entryId))
                         } ?: newTripId
                     if (currentTripFromService != newTripId) {
                         viewModel.loadEntry(currentTripFromService)
@@ -672,7 +754,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     notificationChannel = getNotificationChannel(),
                     notificationText = { "Mileage tracking is on. Background location is in use." }
                 )
-//                setIsTesting(true)
+
+                if (TESTING)
+                    setIsTesting(true)
             }
             initLocSvcObservers()
         }
