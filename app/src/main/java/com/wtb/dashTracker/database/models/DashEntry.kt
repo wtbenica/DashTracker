@@ -272,19 +272,42 @@ data class FullEntry(
 
     @Relation(parentColumn = "entryId", entityColumn = "entry")
     val locations: List<LocationData>
-) {
+) : ListItemType {
     val distance: Double
         get() {
             var prevLoc: LocationData? = null
             val res = locations.fold(0.0) { f, loc ->
                 val tempPrev = prevLoc
                 prevLoc = loc
+
                 f + if (tempPrev != null) {
-                    loc.distanceTo(tempPrev)
+                    val dist = loc.distanceTo(tempPrev)
+                    // includes locations where still == 100, but it seems like there's motion
+                    if (loc.still != 100 || dist > 0.002) dist else 0.0
                 } else {
                     0.0
                 }
             }
             return res
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FullEntry
+
+        if (entry != other.entry) return false
+        if (locations != other.locations) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = entry.hashCode()
+        result = 31 * result + locations.hashCode()
+        return result
+    }
+
+
 }

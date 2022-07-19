@@ -14,16 +14,10 @@ import android.util.Log
 import com.google.android.gms.location.*
 import com.google.android.gms.location.ActivityTransition.ACTIVITY_TRANSITION_ENTER
 import com.wtb.notificationutil.NotificationUtils
-import dev.benica.mileagetracker.ActivityTransitionReceiver.Companion.ACT_TRANS_INTENT
 import dev.benica.mileagetracker.ActivityUpdateReceiver.Companion.ACT_UPDATE_INTENT
 import dev.benica.mileagetracker.LocationService.Companion.dtf
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -45,12 +39,29 @@ fun Location.toText(): String {
  */
 @ExperimentalCoroutinesApi
 class LocationService : Service() {
+    // Private properties
+    private val _tripId = MutableStateFlow<Long?>(null)
+    private var serviceRunningInForeground = false
+    private var configurationChange = false
+    private var activityTransitionReceiverRegistered = false
+    private var activityUpdateReceiverRegistered = false
+
+    private val _isStarted = MutableStateFlow(false)
+    private val _isStill = MutableStateFlow(false)
+    private val _inVehicle = MutableStateFlow(false)
+    private val _onFoot = MutableStateFlow(false)
+    private val _isTesting = MutableStateFlow(false)
+
+    private val serviceJob = Job()
+    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
+
     // State accessors
     /**
      * The current [ServiceState] of the [LocationService]
      */
-    val serviceState: StateFlow<ServiceState>
-        get() = _serviceState
+//    val serviceState: StateFlow<ServiceState>
+//        get() = _serviceState
+
 
     /**
      * The current tripId, null if not set. It is the value that is passed to the handler that is
@@ -59,11 +70,13 @@ class LocationService : Service() {
     val tripId: StateFlow<Long?>
         get() = _tripId
 
+
     /**
      * The user's detected activity is [inVehicle] if [isTesting] is false, [onFoot] if it is true
      */
-    val inSelectedTransport: StateFlow<Boolean>
-        get() = _inSelectedTransport
+//    val inSelectedTransport: StateFlow<Boolean>
+//        get() = _inSelectedTransport
+//
 
     /**
      * The service is running
@@ -101,11 +114,35 @@ class LocationService : Service() {
     }
 
     /**
-     * Location updates are being processed. [serviceState] is [ServiceState.TRACKING] and either
+     * Location updates are being processed. [serviceState] is [ServiceState.TRACKING_ACTIVE] and either
      * [isTesting] or ![isStill] and [inVehicle]
      */
-    val isTracking: StateFlow<Boolean>
-        get() = _isTracking
+//    val isTracking: StateFlow<Boolean>
+//        get() = _isTracking
+
+    val isTracking: StateFlow<Boolean> =
+        combine(isStarted, isTesting, isStill, inVehicle) { started, testing, still, inCar ->
+            Log.d(TAG, "start: $started | test: $testing | still: $still | inCar: $inCar")
+            started && (testing || inCar)
+        }.stateIn(
+            scope = serviceScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
+    val serviceState: StateFlow<ServiceState> =
+        combine(isStarted, tripId, isTracking) { started: Boolean, id: Long?, track: Boolean ->
+            when {
+                started && (id != null) && track -> ServiceState.TRACKING_ACTIVE
+                started && (id != null) && !track -> ServiceState.TRACKING_INACTIVE
+                !started && (id != null) -> ServiceState.PAUSED
+                else -> ServiceState.STOPPED
+            }
+        }.stateIn(
+            scope = serviceScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ServiceState.STOPPED
+        )
 
     // Public methods
     /**
@@ -133,19 +170,19 @@ class LocationService : Service() {
     }
 
     /**
-     * Starts location tracking. Sets [serviceState] to [ServiceState.TRACKING]. It will call
+     * Starts location tracking. Sets [serviceState] to [ServiceState.TRACKING_ACTIVE]. It will call
      * [Service.startService] if necessary, and will begin receiving [Location] updates.
      * If [serviceState] was [ServiceState.STOPPED], it sets [tripId] to [newTripId]. If
-     * [serviceState] was [ServiceState.PAUSED] or [ServiceState.TRACKING], [tripId] remains
+     * [serviceState] was [ServiceState.PAUSED] or [ServiceState.TRACKING_ACTIVE], [tripId] remains
      * unchanged.
      *
      * @param newTripId the next expected [tripId]
      * @param locationHandler a handler function for incoming [Location] and the current [tripId]
      * @return if the [serviceState] was originally [ServiceState.STOPPED], [newTripId]. If the
-     * [serviceState] was [ServiceState.PAUSED] or [ServiceState.TRACKING], it will return the
+     * [serviceState] was [ServiceState.PAUSED] or [ServiceState.TRACKING_ACTIVE], it will return the
      * existing [tripId].
      */
-    fun start(newTripId: Long, locationHandler: (Location, Long) -> Unit): Long {
+    fun start(newTripId: Long, locationHandler: (Location, Long, Int, Int, Int, Int) -> Unit): Long {
         when (serviceState.value) {
             ServiceState.STOPPED -> {
                 _tripId.value = newTripId
@@ -157,10 +194,13 @@ class LocationService : Service() {
                 userActivity.registerForActivityUpdates()
                 activityUpdateReceiverRegistered = true
 
-                registerReceiver(activityTransitionReceiver, IntentFilter(ACT_TRANS_INTENT))
-                userActivity.registerForActivityTransitionUpdates()
-                activityTransitionReceiverRegistered = true
+// Moved this to activityUpdateReceiver so that it switches over, rather than have both running
+// concurrently
 
+//                registerReceiver(activityTransitionReceiver, IntentFilter(ACT_TRANS_INTENT))
+//                userActivity.registerForActivityTransitionUpdates()
+//                activityTransitionReceiverRegistered = true
+//
                 try {
                     locationCallback = getLocationCallback(locationHandler)
                     fusedLocationClient.requestLocationUpdates(
@@ -231,21 +271,6 @@ class LocationService : Service() {
         }
     }
 
-    // Private properties
-    private var serviceRunningInForeground = false
-    private var configurationChange = false
-    private var activityTransitionReceiverRegistered = false
-    private var activityUpdateReceiverRegistered = false
-
-    private val _serviceState = MutableStateFlow(ServiceState.STOPPED)
-    private val _tripId = MutableStateFlow<Long?>(null)
-    private val _inSelectedTransport = MutableStateFlow(false)
-    private val _isStarted = MutableStateFlow(false)
-    private val _isStill = MutableStateFlow(false)
-    private val _inVehicle = MutableStateFlow(false)
-    private val _onFoot = MutableStateFlow(false)
-    private val _isTesting = MutableStateFlow(false)
-    private val _isTracking = MutableStateFlow(false)
 
     private val localBinder = LocalBinder()
 
@@ -273,17 +298,27 @@ class LocationService : Service() {
     // Activity Detection
     private val userActivity = ActivityTransitionUtils(this)
 
-    private fun getLocationCallback(onComplete: (Location, Long) -> Unit) =
+    private fun getLocationCallback(onComplete: (Location, Long, Int, Int, Int, Int) -> Unit) =
         object : LocationCallback() {
             override fun onLocationResult(loc: LocationResult) {
                 super.onLocationResult(loc)
                 val lastLoc = loc.lastLocation
-                if (lastLoc == null || !lastLoc.hasAccuracy() || lastLoc.accuracy > 20f || !isTracking.value) {
+                if (lastLoc == null || !lastLoc.hasAccuracy() || lastLoc.accuracy > 20f) {
+                    //|| !(isTracking.value)) {
                     return
                 }
 
                 currentLocation = lastLoc
-                tripId.value?.let { onComplete(lastLoc, it) }
+                tripId.value?.let {
+                    onComplete(
+                        lastLoc,
+                        it,
+                        stillVal.value,
+                        carVal.value,
+                        footVal.value,
+                        unknownVal.value
+                    )
+                }
 
                 if (serviceRunningInForeground) {
                     getUpdateNotificationText?.let {
@@ -300,7 +335,7 @@ class LocationService : Service() {
         }
 
     override fun onCreate() {
-        initObservers()
+//        initObservers()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
@@ -310,13 +345,14 @@ class LocationService : Service() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         if (activityUpdateReceiverRegistered)
             unregisterReceiver(activityUpdateReceiver)
 
         if (activityTransitionReceiverRegistered)
             unregisterReceiver(activityTransitionReceiver)
+
+        serviceScope.cancel()
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -353,6 +389,22 @@ class LocationService : Service() {
         configurationChange = true
     }
 
+    private val _stillVal = MutableStateFlow<Int>(-1)
+    val stillVal: StateFlow<Int>
+        get() = _stillVal
+
+    private val _carVal = MutableStateFlow<Int>(-1)
+    val carVal: StateFlow<Int>
+        get() = _carVal
+
+    private val _footVal = MutableStateFlow<Int>(-1)
+    val footVal: StateFlow<Int>
+        get() = _footVal
+
+    private val _unknownVal = MutableStateFlow(-1)
+    val unknownVal: StateFlow<Int>
+        get() = _unknownVal
+
     private val activityUpdateReceiver = ActivityUpdateReceiver().apply {
         action = { result ->
             val still = result.getActivityConfidence(DetectedActivity.STILL)
@@ -360,17 +412,27 @@ class LocationService : Service() {
             val foot = result.getActivityConfidence(DetectedActivity.ON_FOOT)
             val unknown = result.getActivityConfidence(DetectedActivity.UNKNOWN)
 
-            if (unknown < 20) {
-                _isStill.value = still > 50
-                _inVehicle.value = car > 50
-                _onFoot.value = foot > 50
-            }
+            _stillVal.value = still
+            _carVal.value = car
+            _footVal.value = foot
+            _unknownVal.value = unknown
 
-            if (unknown < 10 && (car > 50 || foot > 50 || still > 90)) {
-                unregisterReceiver(this)
-                activityUpdateReceiverRegistered = false
-                userActivity.removeActivityUpdates()
-            }
+            _isStill.value = still > 50
+            _inVehicle.value = car > 50
+            _onFoot.value = foot > 50
+
+//            if (unknown < 10 && (car > 70 || foot > 70 || still > 70)) {
+//                unregisterReceiver(this)
+//                activityUpdateReceiverRegistered = false
+//                userActivity.removeActivityUpdates()
+//
+//                registerReceiver(
+//                    activityTransitionReceiver,
+//                    IntentFilter(ActivityTransitionReceiver.ACT_TRANS_INTENT)
+//                )
+//                userActivity.registerForActivityTransitionUpdates()
+//                activityTransitionReceiverRegistered = true
+//            }
         }
     }
 
@@ -393,72 +455,13 @@ class LocationService : Service() {
         }
     }
 
-    private fun initObservers() {
-        fun updateTrack() {
-            _isTracking.value =
-                isStarted.value && (isTesting.value || (!isStill.value && inVehicle.value))
-        }
-
-        fun updateServiceState() {
-            _serviceState.value = when {
-                isStarted.value && (tripId.value != null) -> ServiceState.TRACKING
-                !isStarted.value && (tripId.value != null) -> ServiceState.PAUSED
-                else -> ServiceState.STOPPED
-            }
-        }
-
-        fun updateMode() {
-            _inSelectedTransport.value = if (isTesting.value) onFoot.value else inVehicle.value
-        }
-
-        CoroutineScope(Dispatchers.Default).launch {
-            tripId.collectLatest {
-                updateServiceState()
-            }
-        }
-
-        CoroutineScope(Dispatchers.Default).launch {
-            isTesting.collectLatest {
-                updateMode()
-                updateTrack()
-            }
-        }
-
-        CoroutineScope(Dispatchers.Default).launch {
-            isStill.collectLatest {
-                updateTrack()
-            }
-        }
-
-        CoroutineScope(Dispatchers.Default).launch {
-            inVehicle.collectLatest {
-                updateMode()
-                updateTrack()
-            }
-        }
-
-        CoroutineScope(Dispatchers.Default).launch {
-            onFoot.collectLatest {
-                updateMode()
-                updateTrack()
-            }
-        }
-
-        CoroutineScope(Dispatchers.Default).launch {
-            isStarted.collectLatest {
-                updateTrack()
-                updateServiceState()
-            }
-        }
-    }
-
     inner class LocalBinder : Binder() {
         val service: LocationService
             get() = this@LocationService
     }
 
     enum class ServiceState {
-        TRACKING, PAUSED, STOPPED
+        TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED, STOPPED
     }
 
     companion object {

@@ -70,6 +70,8 @@ class Repository private constructor(private val context: Context) {
 
     private var entryPagingSource: PagingSource<Int, DashEntry>? = null
 
+    private var fullEntryPagingSource: PagingSource<Int, FullEntry>? = null
+
     val allEntriesPaged: Flow<PagingData<DashEntry>> = Pager(
         config = PagingConfig(
             pageSize = 20,
@@ -82,12 +84,25 @@ class Repository private constructor(private val context: Context) {
         }
     ).flow
 
+    val allFullEntriesPaged: Flow<PagingData<FullEntry>> = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+            enablePlaceholders = true
+        ),
+        pagingSourceFactory = {
+            val ps = entryDao.getAllFullPagingSource()
+            fullEntryPagingSource = ps
+            ps
+        }
+    ).flow
+
     fun deleteEntryById(id: Long) {
         CoroutineScope(Dispatchers.Default).launch {
             withContext(Dispatchers.Default) {
                 entryDao.deleteById(id)
             }.let {
                 entryPagingSource?.invalidate()
+                fullEntryPagingSource?.invalidate()
             }
         }
     }

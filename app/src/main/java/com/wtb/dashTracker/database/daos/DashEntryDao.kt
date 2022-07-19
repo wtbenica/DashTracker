@@ -70,6 +70,10 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @Query(SQL_GET_ALL)
     abstract fun getAllPagingSource(): PagingSource<Int, DashEntry>
 
+    @Transaction
+    @Query(SQL_GET_ALL)
+    abstract fun getAllFullPagingSource(): PagingSource<Int, FullEntry>
+
     @Query(SQL_GET_BY_DATE)
     abstract fun getEntriesByDatePagingSource(
         startDate: LocalDate = LocalDate.MIN,

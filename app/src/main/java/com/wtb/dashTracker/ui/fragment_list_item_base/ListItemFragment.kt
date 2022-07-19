@@ -17,6 +17,8 @@
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
@@ -31,8 +33,8 @@ abstract class ListItemFragment : Fragment()
 
 interface ListItemType
 
-fun toggleListItemVisibility(collapseArea: View, backgroundArea: View) {
-    if (collapseArea.visibility == View.VISIBLE) {
+fun toggleListItemVisibility(collapseArea: View, backgroundArea: View, isVisible: Boolean? = null) {
+    if (collapseArea.visibility == VISIBLE || isVisible == false) {
         collapseArea.collapse()
         backgroundArea.transitionBackground(
             R.attr.colorListItemExpanded,
@@ -50,13 +52,65 @@ fun toggleListItemVisibility(collapseArea: View, backgroundArea: View) {
 // Just contains boilerplate--nothing special
 abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
     PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback) {
+
+    var mExpandedPosition = mutableSetOf<Int>()
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+
+        registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                val oldPositions = mutableListOf<Int>().apply {
+                    mExpandedPosition.forEach { this.add(it) }
+                }
+                val newPositions: List<Int> = oldPositions.map {
+                    if (it >= positionStart)
+                        it + itemCount
+                    else
+                        it
+                }
+                mExpandedPosition = mutableSetOf<Int>().apply {
+                    newPositions.forEach { this.add(it) }
+                }
+            }
+
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                super.onItemRangeRemoved(positionStart, itemCount)
+                val oldPositions = mutableListOf<Int>().apply {
+                    mExpandedPosition.forEach { this.add(it) }
+                }
+                val newPositions: List<Int> = oldPositions.mapNotNull {
+                    if (it >= positionStart + itemCount)
+                        it - itemCount
+                    else if (it >= positionStart)
+                        null
+                    else
+                        it
+                }
+                mExpandedPosition = mutableSetOf<Int>().apply {
+                    newPositions.forEach { this.add(it) }
+                }
+            }
+        })
+    }
+
     override fun onBindViewHolder(
         holder: BaseItemHolder<T>,
         position: Int,
-        payloads: MutableList<Any>
+        payloads: List<Any>
     ) {
         super.onBindViewHolder(holder, position, payloads)
-        getItem(position)?.let { holder.bind(it, payloads) }
+        val tt = listOf(
+            if (position in mExpandedPosition) {
+                VISIBLE
+            } else {
+                GONE
+            }
+        ) + payloads
+        getItem(position)?.let {
+            holder.bind(it, tt)
+        }
     }
 
     override fun onBindViewHolder(holder: BaseItemHolder<T>, position: Int) {
@@ -79,27 +133,37 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
     abstract val collapseArea: ViewGroup
     abstract val backgroundArea: ViewGroup
 
-    abstract fun bind(item: T, payloads: MutableList<Any>? = null)
+    abstract fun bind(item: T, payloads: List<Any>? = null)
 
     init {
         itemView.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
-        toggleListItemVisibility(collapseArea, backgroundArea)
+        if (bindingAdapter is BaseItemAdapter<*>) {
+            if (collapseArea.visibility == VISIBLE) {
+                (bindingAdapter as BaseItemAdapter<*>).mExpandedPosition.remove(
+                    bindingAdapterPosition
+                )
+            } else {
+                (bindingAdapter as BaseItemAdapter<*>).mExpandedPosition.add(bindingAdapterPosition)
+            }
+        }
+        bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
+//        toggleListItemVisibility(collapseArea, backgroundArea)
     }
 
-    protected fun setPayloadVisibility(payloads: MutableList<Any>?) {
+    protected fun setPayloadVisibility(payloads: List<Any>?) {
         val listItemDetailsVisibility = (payloads?.let {
-            if (it.size == 1 && it[0] in listOf(
-                    View.VISIBLE,
-                    View.GONE
+            if (it.size >= 1 && it[0] in listOf(
+                    VISIBLE,
+                    GONE
                 )
             ) it[0] else null
-        } ?: View.GONE) as Int
+        } ?: GONE) as Int
 
         backgroundArea.setBackgroundResource(
-            if (listItemDetailsVisibility == View.VISIBLE)
+            if (listItemDetailsVisibility == VISIBLE)
                 R.drawable.bg_list_item_expanded
             else
                 R.drawable.bg_list_item

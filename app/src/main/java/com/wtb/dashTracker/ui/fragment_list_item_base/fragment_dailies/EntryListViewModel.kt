@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +31,8 @@ class EntryListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()
 
     val entryList: Flow<PagingData<DashEntry>> = repository.allEntriesPaged
+
+    val fullEntryList: Flow<PagingData<FullEntry>> = repository.allFullEntriesPaged
 
     fun delete(entry: DashEntry) = repository.deleteModel(entry)
 

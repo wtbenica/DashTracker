@@ -191,7 +191,7 @@ class YearlyListFragment : ListItemFragment() {
         override val backgroundArea: ViewGroup
             get() = binding.listItemWrapper
 
-        override fun bind(item: Yearly, payloads: MutableList<Any>?) {
+        override fun bind(item: Yearly, payloads: List<Any>?) {
             fun showExpenseFields() {
                 binding.listItemSubtitle2Label.visibility = VISIBLE
                 binding.listItemSubtitle2.visibility = VISIBLE

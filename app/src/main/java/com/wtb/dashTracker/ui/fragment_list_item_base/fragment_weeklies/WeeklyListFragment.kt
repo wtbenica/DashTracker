@@ -135,7 +135,7 @@ class WeeklyListFragment : ListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullWeekly, payloads: MutableList<Any>?) {
+            override fun bind(item: FullWeekly, payloads: List<Any>?) {
                 fun showExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE

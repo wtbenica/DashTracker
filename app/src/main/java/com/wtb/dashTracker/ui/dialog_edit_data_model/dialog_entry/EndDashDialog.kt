@@ -168,8 +168,11 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                             if (tempEntry.endOdometer != null) {
                                 tempEntry.endOdometer
                             } else {
-                                (tempEntry.startOdometer ?: 0f) + (fullEntry?.distance?.toFloat()
-                                    ?: 0f)
+                                (tempEntry.startOdometer ?: 0f) + (
+                                        (if (tempEntry.mileage != null)
+                                            tempEntry.mileage
+                                        else
+                                            fullEntry?.distance?.toFloat()) ?: 0f)
                             }
                         )
                     )

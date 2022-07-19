@@ -42,12 +42,31 @@ class LocationData constructor(
     val accuracy: Float?,
     val bearing: Float?,
     val bearingAccuracy: Float?,
-    val entry: Long
+    val entry: Long,
+    val still: Int? = null,
+    val car: Int? = null,
+    val foot: Int? = null,
+    val unknown: Int? = null
 ) : DataModel() {
-    constructor(loc: Location, entryId: Long) : this(
+    constructor(
+        loc: Location, 
+        entryId: Long, 
+        still: Int,
+        car: Int,
+        foot: Int,
+        unknown: Int
+    ) : this(
         time = loc.localDateTime,
-        latitude = loc.latitude, longitude = loc.longitude, accuracy = loc.accuracy, bearing = loc
-            .bearing, bearingAccuracy = loc.bearingAccuracyDegrees, entry = entryId
+        latitude = loc.latitude,
+        longitude = loc.longitude,
+        accuracy = loc.accuracy,
+        bearing = loc.bearing,
+        bearingAccuracy = loc.bearingAccuracyDegrees,
+        entry = entryId,
+        still = still,
+        car = car,
+        foot = foot,
+        unknown = unknown
     )
 
     override val id: Long
@@ -85,7 +104,11 @@ class LocationData constructor(
             ACCURACY("Accuracy", LocationData::accuracy),
             BEARING("Bearing", LocationData::bearing),
             BEARING_ACCURACY("Bearing Accuracy", LocationData::bearingAccuracy),
-            ENTRY("Entry", LocationData::entry)
+            ENTRY("Entry", LocationData::entry),
+            STILL("Still", LocationData::still),
+            CAR("Car", LocationData::car),
+            FOOT("Foot", LocationData::foot),
+            UNKNOWN("Unknown", LocationData::unknown)
         }
 
         @Throws(IllegalStateException::class)
@@ -103,7 +126,11 @@ class LocationData constructor(
                 accuracy = row[Columns.ACCURACY.headerName]?.toFloatOrNull(),
                 bearing = row[Columns.BEARING.headerName]?.toFloatOrNull(),
                 bearingAccuracy = row[Columns.BEARING_ACCURACY.headerName]?.toFloatOrNull(),
-                entry = entry
+                entry = entry,
+                still = row[Columns.STILL.headerName]?.toIntOrNull(),
+                car = row[Columns.CAR.headerName]?.toIntOrNull(),
+                foot = row[Columns.FOOT.headerName]?.toIntOrNull(),
+                unknown = row[Columns.UNKNOWN.headerName]?.toIntOrNull()
             )
         }
 

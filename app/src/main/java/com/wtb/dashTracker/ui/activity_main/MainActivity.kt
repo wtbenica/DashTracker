@@ -42,6 +42,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
@@ -97,7 +98,9 @@ import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
 import dev.benica.csvutil.getConvertPackImport
 import dev.benica.mileagetracker.LocationService
+import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
@@ -134,12 +137,19 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             action = this::insertOrReplace,
         )
 
-    var animator: ValueAnimator? = null
-
-    var testDistance = 0.0
+    private val blinkAnimator: ValueAnimator = ValueAnimator.ofFloat(0.4f, 1f).apply {
+        duration = 800
+        repeatMode = ValueAnimator.REVERSE
+        repeatCount = -1
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (savedInstanceState != null) {
+            isAuthenticated = savedInstanceState.getBoolean(ARG_EXPECTED_EXIT)
+            Log.d(TAG, "savedInstanceState ARG_EXPECTED_EXIT: $isAuthenticated")
+        }
 
         fun initBiometrics() {
             val biometricManager = BiometricManager.from(this)
@@ -247,12 +257,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                             activeEntry = it
                             activeEntryId = it.entry.entryId
                             activeDashBinding.valMileage.text =
-                                if (TESTING) {
-                                    testDistance += 1.0
-                                    getString(R.string.mileage_fmt, testDistance)
-                                } else {
-                                    getString(R.string.mileage_fmt, entry.distance)
-                                }
+                                getString(R.string.mileage_fmt, entry.distance)
                             val t: Float = ChronoUnit.MINUTES.between(
                                 entry.entry.startDateTime,
                                 LocalDateTime.now()
@@ -269,54 +274,45 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         Repository.initialize(this)
         supportActionBar?.title = "DashTracker"
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        binding.fab.initialize(getMenuItems(supportFragmentManager), binding.container)
-
-        activeDashBinding = binding.activeDashBar
-        activeDashBinding.startButton.apply {
-            tag = tag ?: R.drawable.anim_pause_to_play
-            setOnClickListener {
-                locationService?.let {
-                    Log.d(TAG, "startButton onClick: Service state = ${it.serviceState.value.name}")
-                    when (it.serviceState.value) {
-                        LocationService.ServiceState.TRACKING -> it.pause()
-                        LocationService.ServiceState.PAUSED -> it.start(0) { _, _ -> }
-                        LocationService.ServiceState.STOPPED -> {} // Do Nothing
-                    }
-                }
-            }
+        fun initMainActivityBinding() {
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            binding.fab.initialize(getMenuItems(supportFragmentManager), binding.container)
         }
 
-        activeDashBinding.stopButton.setOnClickListener {
-            locationService?.stop()
-            if (TESTING) {
-                activeEntry?.entry?.let { e ->
-                    e.totalMileage = testDistance.toFloat()
-                    CoroutineScope(Dispatchers.Default).launch {
-                        withContext(Dispatchers.Default) {
-                            viewModel.upsertAsync(e)
-                        }.let {
-                            EndDashDialog.newInstance(activeEntryId ?: AUTO_ID)
-                                .show(supportFragmentManager, "end_dash_dialog")
+        fun initActiveDashBinding() {
+            activeDashBinding = binding.activeDashBar
+            activeDashBinding.startButton.apply {
+                tag = tag ?: R.drawable.anim_pause_to_play
+                setOnClickListener {
+                    locationService?.let {
+                        Log.d(
+                            TAG,
+                            "startButton onClick: Service state = ${it.serviceState.value.name}"
+                        )
+                        when (it.serviceState.value) {
+                            TRACKING_ACTIVE -> it.pause()
+                            TRACKING_INACTIVE -> it.pause()
+                            PAUSED -> it.start(0) { _, _, _, _, _, _ -> }
+                            STOPPED -> {} // Do Nothing
                         }
                     }
                 }
-                testDistance = 0.0
-            } else {
+            }
+
+            activeDashBinding.stopButton.setOnClickListener {
+                locationService?.stop()
                 EndDashDialog.newInstance(activeEntryId ?: AUTO_ID)
                     .show(supportFragmentManager, "end_dash_dialog")
             }
+
+            blinkAnimator.addUpdateListener { animation ->
+                activeDashBinding.statusIndicator.alpha = animation.animatedValue as Float
+            }
+            blinkAnimator.start()
         }
 
-        animator = ValueAnimator.ofFloat(0.4f, 1f).apply {
-            duration = 800
-            repeatMode = ValueAnimator.REVERSE
-            repeatCount = -1
-        }
-        animator?.addUpdateListener { animation ->
-            activeDashBinding.statusIndicator.setAlpha(animation.animatedValue as Float)
-        }
-        animator?.start()
+        initMainActivityBinding()
+        initActiveDashBinding()
 
         setContentView(binding.root)
 
@@ -378,12 +374,19 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
+    @DrawableRes
+    private var trackingDrawable: Int = R.drawable.status_tracking
+
+    var drawRes: Flow<Int>? = null
+
     private fun initLocSvcObservers() {
+        // Update status indicator drawable & animation
+        // update start/pause button, show/hide acive dash
         lifecycleScope.launch {
             this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                locationService?.serviceState?.collectLatest {
-                    when (it) {
-                        LocationService.ServiceState.TRACKING -> {
+                locationService?.serviceState?.collectLatest { state ->
+                    when (state) {
+                        TRACKING_ACTIVE -> {
                             fun toggleIt() {
                                 activeDashBinding.startButton.apply {
                                     if (tag == R.drawable.anim_pause_to_play) {
@@ -391,25 +394,37 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                                     }
                                 }
                             }
-                            if (activeDashBinding.root.visibility == GONE)
-                                activeDashBinding.root.expand { toggleIt() }
-                            else
-                                toggleIt()
 
-                            activeDashBinding.statusIndicator.apply {
-                                setImageResource(
-                                    if (locationService?.isTracking?.value == true) {
-                                        animator?.start()
-                                        R.drawable.status_tracking
-                                    } else {
-                                        animator?.pause()
-                                        this.alpha = 1f
-                                        R.drawable.status_inactive
-                                    }
-                                )
+                            trackingDrawable = R.drawable.status_tracking
+                            blinkAnimator.start()
+
+                            if (activeDashBinding.root.visibility == GONE) {
+                                activeDashBinding.root.expand { toggleIt() }
+                            } else {
+                                toggleIt()
                             }
                         }
-                        LocationService.ServiceState.PAUSED -> {
+
+                        TRACKING_INACTIVE -> {
+                            fun toggleIt() {
+                                activeDashBinding.startButton.apply {
+                                    if (tag == R.drawable.anim_pause_to_play) {
+                                        togglePlayPauseButton(this)
+                                    }
+                                }
+                            }
+
+                            trackingDrawable = R.drawable.status_inactive
+                            blinkAnimator.pause()
+
+                            if (activeDashBinding.root.visibility == GONE) {
+                                activeDashBinding.root.expand { toggleIt() }
+                            } else {
+                                toggleIt()
+                            }
+                        }
+
+                        PAUSED -> {
                             fun toggleIt() {
                                 activeDashBinding.startButton.apply {
                                     if (tag == R.drawable.anim_play_to_pause) {
@@ -418,51 +433,67 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                                 }
                             }
 
-                            if (activeDashBinding.root.visibility == GONE)
-                                activeDashBinding.root.expand { toggleIt() }
-                            else
-                                toggleIt()
+                            trackingDrawable = R.drawable.status_paused
+                            blinkAnimator.pause()
 
-                            activeDashBinding.statusIndicator.setImageResource(
-                                R.drawable.status_paused
-                            )
-                            animator?.pause()
-                            activeDashBinding.statusIndicator.alpha = 1f
+                            if (activeDashBinding.root.visibility == GONE) {
+                                activeDashBinding.root.expand { toggleIt() }
+                            } else {
+                                toggleIt()
+                            }
                         }
-                        LocationService.ServiceState.STOPPED -> {
-                            if (activeDashBinding.root.visibility == VISIBLE)
+
+                        else -> {
+                            trackingDrawable = R.drawable.status_paused
+                            blinkAnimator.pause()
+
+                            if (activeDashBinding.root.visibility == VISIBLE) {
                                 activeDashBinding.root.collapse()
+                            }
                             viewModel.loadEntry(null)
                         }
-                        else -> {
-                            // Do nothing, I don't care
-                        }
                     }
+
+                    val drawName = when (trackingDrawable) {
+                        R.drawable.status_tracking -> "Tracking"
+                        R.drawable.status_paused -> "Paused"
+                        R.drawable.status_inactive -> "Inactive"
+                        else -> "other"
+                    }
+                    Log.d(TAG, "Drawable is: $drawName")
+                    activeDashBinding.statusIndicator.setImageResource(trackingDrawable)
                 }
             }
         }
 
         lifecycleScope.launch {
             this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                locationService?.isTracking?.collectLatest {
-                    activeDashBinding.statusIndicator.setImageResource(
-                        when (locationService?.serviceState?.value) {
-                            LocationService.ServiceState.TRACKING ->
-                                if (it) {
-                                    animator?.start()
-                                    R.drawable.status_tracking
-                                } else {
-                                    animator?.pause()
-                                    activeDashBinding.statusIndicator.alpha = 1f
-                                    R.drawable.status_inactive
-                                }
-                            else -> {
-                                animator?.pause()
-                                activeDashBinding.statusIndicator.alpha = 1f
-                                R.drawable.status_paused
-                            }
-                        }
-                    )
+                locationService?.stillVal?.collectLatest {
+                    activeDashBinding.stillValue.text = it.toString()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                locationService?.carVal?.collectLatest {
+                    activeDashBinding.carValue.text = it.toString()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                locationService?.footVal?.collectLatest {
+                    activeDashBinding.footValue.text = it.toString()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                locationService?.unknownVal?.collectLatest {
+                    activeDashBinding.unknownValue.text = it.toString()
                 }
             }
         }
@@ -547,6 +578,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         Log.d(TAG, "onResume")
         cleanupFiles()
         expectedExit = false
+        Log.d(TAG, "Already authenticated? $isAuthenticated")
         if (!isAuthenticated) {
             authenticate()
         }
@@ -566,6 +598,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             binding.container.visibility = INVISIBLE
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(ARG_EXPECTED_EXIT, expectedExit)
+    }
+
+    private val ARG_EXPECTED_EXIT = "expected_exit"
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
@@ -722,8 +762,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     newEntryId
                 }.let { newTripId ->
                     val currentTripFromService =
-                        locationService?.start(newTripId) { loc, entryId ->
-                            Repository.get().saveModel(LocationData(loc = loc, entryId = entryId))
+                        locationService?.start(newTripId) { loc, entryId, still, car, foot, unk ->
+                            Repository.get().saveModel(
+                                LocationData(
+                                    loc = loc, entryId = entryId,
+                                    still = still, car = car, foot = foot, unknown = unk
+                                )
+                            )
                         } ?: newTripId
                     if (currentTripFromService != newTripId) {
                         viewModel.loadEntry(currentTripFromService)
@@ -735,8 +780,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
         } else {
             Log.d(TAG, "loadNewTrip | existing entry")
-            locationService?.start(activeEntryId ?: entry!!.id) { loc, id ->
-                Repository.get().saveModel(LocationData(loc, id))
+            locationService?.start(activeEntryId ?: entry!!.id) { loc, id, still, car, foot, unk ->
+                Repository.get().saveModel(
+                    LocationData(
+                        loc = loc, entryId = id,
+                        still = still, car = car, foot = foot, unknown = unk
+                    )
+                )
             }
         }
     }

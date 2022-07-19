@@ -160,7 +160,7 @@ class ExpenseListFragment : ListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
+            override fun bind(item: FullExpense, payloads: List<Any>?) {
                 this.item = item
 
                 if (this.item.isEmpty) {
@@ -213,7 +213,7 @@ class ExpenseListFragment : ListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
+            override fun bind(item: FullExpense, payloads: List<Any>?) {
                 this.item = item
 
                 binding.listItemTitle.text = this.item.expense.date.formatted.uppercase()
