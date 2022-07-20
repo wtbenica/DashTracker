@@ -238,7 +238,9 @@ class LocationService : Service() {
      * [tripId] will be set to the 'newTripId' argument.
      *
      */
-    fun stop() {
+    fun stop(id: Long? = null) {
+        if (id != tripId.value) return
+
         userActivity.removeActivityTransitionUpdates()
         if (activityTransitionReceiverRegistered) {
             unregisterReceiver(activityTransitionReceiver)

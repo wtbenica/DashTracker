@@ -143,6 +143,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         repeatCount = -1
     }
 
+    fun stop(id: Long) {
+        locationService?.stop(id)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

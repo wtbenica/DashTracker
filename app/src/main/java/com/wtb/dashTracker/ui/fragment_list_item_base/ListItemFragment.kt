@@ -150,7 +150,6 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
             }
         }
         bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
-//        toggleListItemVisibility(collapseArea, backgroundArea)
     }
 
     protected fun setPayloadVisibility(payloads: List<Any>?) {

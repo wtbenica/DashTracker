@@ -90,6 +90,7 @@ class EntryListFragment : ListItemFragment() {
             val result = bundle.getBoolean(ARG_CONFIRM)
             val id = bundle.getLong(ARG_EXTRA)
             if (result) {
+                (activity as MainActivity).stop(id)
                 viewModel.deleteEntryById(id)
             }
         }
@@ -164,10 +165,8 @@ class EntryListFragment : ListItemFragment() {
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
                         ConfirmDeleteDialog.newInstance(
-                            confirmId = this@EntryHolder.item
-                                .entry.entryId
-                        )
-                            .show(parentFragmentManager, "delete_entry")
+                            confirmId = this@EntryHolder.item.entry.entryId
+                        ).show(parentFragmentManager, "delete_entry")
                     }
                 }
             }
