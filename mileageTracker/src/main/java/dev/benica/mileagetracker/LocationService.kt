@@ -239,7 +239,7 @@ class LocationService : Service() {
      *
      */
     fun stop(id: Long? = null) {
-        if (id != tripId.value) return
+        id?.let { if (it != tripId.value) return }
 
         userActivity.removeActivityTransitionUpdates()
         if (activityTransitionReceiverRegistered) {

@@ -102,9 +102,10 @@ class MainActivityViewModel : ViewModel() {
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,
         expenses: List<Expense>? = null,
-        purposes: List<ExpensePurpose>? = null
+        purposes: List<ExpensePurpose>? = null,
+        locationData: List<LocationData>? = null
     ) {
-        repository.insertOrReplace(entries, weeklies, expenses, purposes)
+        repository.insertOrReplace(entries, weeklies, expenses, purposes, locationData)
     }
 
     companion object {

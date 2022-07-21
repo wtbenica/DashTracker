@@ -655,8 +655,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             entries = models.get<DashEntry, DashEntry.Companion>().ifEmpty { null },
             weeklies = models.get<Weekly, Weekly.Companion>().ifEmpty { null },
             expenses = models.get<Expense, Expense.Companion>().ifEmpty { null },
-            purposes = models.get<ExpensePurpose, ExpensePurpose.Companion>()
-                .ifEmpty { null }
+            purposes = models.get<ExpensePurpose, ExpensePurpose.Companion>().ifEmpty { null },
+            locationData = models.get<LocationData, LocationData.Companion>().ifEmpty { null }
         )
     }
 

@@ -293,7 +293,8 @@ class Repository private constructor(private val context: Context) {
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,
         expenses: List<Expense>? = null,
-        purposes: List<ExpensePurpose>? = null
+        purposes: List<ExpensePurpose>? = null,
+        locationData: List<LocationData>? = null
     ) {
         CoroutineScope(Dispatchers.Default).launch {
             weeklies?.let {
@@ -304,6 +305,11 @@ class Repository private constructor(private val context: Context) {
             entries?.let {
                 entryDao.clear()
                 entryDao.upsertAll(it)
+            }
+
+            locationData?.let {
+                locationDao.clear()
+                locationDao.upsertAll(it)
             }
 
             if (expenses != null && purposes != null) {
