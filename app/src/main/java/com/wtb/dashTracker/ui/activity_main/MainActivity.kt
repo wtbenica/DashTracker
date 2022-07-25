@@ -27,8 +27,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.drawable.AnimatedVectorDrawable
+import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
+import android.os.Parcelable
 import android.provider.ContactsContract
 import android.provider.Settings
 import android.util.Log
@@ -98,11 +100,13 @@ import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
 import dev.benica.csvutil.getConvertPackImport
 import dev.benica.mileagetracker.LocationService
+import dev.benica.mileagetracker.LocationService.Companion.EXTRA_LOCATION_HANDLER
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -149,7 +153,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.d(TAG, "ON_CREATE")
         if (savedInstanceState != null) {
             isAuthenticated = savedInstanceState.getBoolean(ARG_EXPECTED_EXIT)
             Log.d(TAG, "savedInstanceState ARG_EXPECTED_EXIT: $isAuthenticated")
@@ -555,18 +559,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-                        isAuthenticated = true
-                        this@MainActivity.binding.container.visibility = VISIBLE
-
-
-                        val locationServiceIntent =
-                            Intent(this@MainActivity, LocationService::class.java)
-
-                        bindService(
-                            locationServiceIntent,
-                            locationServiceConnection,
-                            Context.BIND_AUTO_CREATE
-                        )
+                        onUnlock()
                     }
                 })
 
@@ -579,17 +572,46 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
         super.onResume()
-        Log.d(TAG, "onResume")
+        Log.d(TAG, "ON_RESUME")
         cleanupFiles()
         expectedExit = false
         Log.d(TAG, "Already authenticated? $isAuthenticated")
         if (!isAuthenticated) {
             authenticate()
+        } else {
+            onUnlock()
         }
     }
 
+    val lh = LocationHandler { loc: Location, entryId: Long, still: Int, car: Int, foot: Int, unk:
+    Int ->
+        Repository.get().saveModel(
+            LocationData(
+                loc = loc, entryId = entryId,
+                still = still, car = car, foot = foot, unknown = unk
+            )
+        )
+    }
+
+    private fun onUnlock() {
+        isAuthenticated = true
+        this@MainActivity.binding.container.visibility = VISIBLE
+
+
+        val locationServiceIntent =
+            Intent(applicationContext, LocationService::class.java).apply {
+                putExtra(EXTRA_LOCATION_HANDLER, lh)
+            }
+
+        bindService(
+            locationServiceIntent,
+            locationServiceConnection,
+            BIND_AUTO_CREATE
+        )
+    }
+
     override fun onPause() {
-        Log.d(TAG, "onPause")
+        Log.d(TAG, "ON_PAUSE")
         if (locationServiceBound) {
             unbindService(locationServiceConnection)
             locationServiceBound = false
@@ -605,8 +627,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
-        outState.putBoolean(ARG_EXPECTED_EXIT, expectedExit)
+        Log.d(TAG, "saving ARG_EXPECTED_EXIT: $expectedExit")
+        outState.putBoolean(ARG_EXPECTED_EXIT, true)
     }
 
     private val ARG_EXPECTED_EXIT = "expected_exit"
@@ -774,6 +796,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                                 )
                             )
                         } ?: newTripId
+
                     if (currentTripFromService != newTripId) {
                         viewModel.loadEntry(currentTripFromService)
                         viewModel.deleteEntry(newTripId)
@@ -783,7 +806,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }
             }
         } else {
-            Log.d(TAG, "loadNewTrip | existing entry")
+            Log.d(
+                TAG, "loadNewTrip | existing entry | location service ${
+                    if (locationService ==
+                        null
+                    ) "is" else "is not"
+                } null"
+            )
             locationService?.start(activeEntryId ?: entry!!.id) { loc, id, still, car, foot, unk ->
                 Repository.get().saveModel(
                     LocationData(
@@ -865,6 +894,21 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 PendingIntent.FLAG_IMMUTABLE
             )
         }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "ON_START")
+    }
+
+    override fun onStop() {
+        Log.d(TAG, "ON_STOP")
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        Log.d(TAG, "ON_DESTROY ")
+        super.onDestroy()
+    }
 }
 
 interface DeductionCallback
