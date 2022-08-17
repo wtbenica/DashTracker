@@ -68,8 +68,7 @@
                         android:layout_rowWeight="1"
                         android:layout_column="0"
                         android:layout_columnSpan="2"
-                        android:src="@drawable/bg_edit_text_disabled"
-                        app:tint="?attr/colorPrimary" />
+                        android:src="@drawable/bg_end_dash_summary_card" />
 
                     <ImageView
                         android:layout_row="0"
@@ -77,8 +76,7 @@
                         android:layout_rowWeight="1"
                         android:layout_column="1"
                         android:layout_columnWeight="1"
-                        android:src="@drawable/bg_edit_text_disabled"
-                        app:tint="?attr/colorPrimaryDark" />
+                        android:src="@drawable/bg_end_dash_summary" />
 
                     <!--    Row 0   -->
                     <TextView
@@ -182,8 +180,7 @@
                         android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:buttonTint="?attr/colorDialogItemOutline"
-                        android:text="@string/lbl_ends_on_following_day"
-                        android:textColor="?attr/colorDialogText" />
+                        android:text="@string/lbl_ends_on_following_day" />
 
                     <!--    Row 7   -->
                     <TextView

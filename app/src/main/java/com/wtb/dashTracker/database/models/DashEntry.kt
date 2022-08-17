@@ -59,6 +59,7 @@ data class DashEntry(
     val numDeliveries: Int? = null,
     var week: LocalDate? = date.endOfWeek
 ) : DataModel(), ListItemType {
+
     override val id: Long
         get() = entryId
 
