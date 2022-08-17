@@ -18,7 +18,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <stroke
         android:width="@dimen/bg_edit_text_border"
-        android:color="?attr/colorDialogItemOutline" />
+        android:color="?attr/colorPrimary" />
     <corners android:radius="24dp" />
-    <solid android:color="?attr/colorDialogItemDisabled" />
+    <solid android:color="?attr/colorPrimaryVariant" />
 </shape>

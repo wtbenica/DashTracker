@@ -11,7 +11,6 @@ import android.os.Binder
 import android.os.IBinder
 import android.os.Looper
 import android.os.Parcelable
-import android.telephony.ServiceState
 import android.util.Log
 import com.google.android.gms.location.*
 import com.google.android.gms.location.ActivityTransition.ACTIVITY_TRANSITION_ENTER
@@ -57,10 +56,10 @@ class LocationService : Service() {
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
-    private val sharedPrefs = applicationContext.getSharedPreferences(SHARED_PREFS, 0)
+    private val sharedPrefs
+        get() = getSharedPreferences(SHARED_PREFS, 0)
 
     // State accessors
-
     /**
      * The current tripId, null if not set. It is the value that is passed to the handler that is
      * passed to [start].
@@ -102,20 +101,6 @@ class LocationService : Service() {
     fun setIsTesting(isTesting: Boolean) {
         _isTesting.value = isTesting
     }
-//
-//    /**
-//     * Location updates are being processed. [serviceState] is [ServiceState.TRACKING_ACTIVE] and either
-//     * [isTesting] or ![isStill] and [inVehicle]
-//     */
-//    val isTracking: StateFlow<Boolean> =
-//        combine(isStarted, isTesting, isStill, inVehicle) { started, testing, still, inCar ->
-//            Log.d(TAG, "start: $started | test: $testing | still: $still | inCar: $inCar")
-//            started && (testing || inCar)
-//        }.stateIn(
-//            scope = serviceScope,
-//            started = SharingStarted.WhileSubscribed(5000),
-//            initialValue = false
-//        )
 
     /**
      * The current [ServiceState] of the [LocationService]
@@ -123,12 +108,12 @@ class LocationService : Service() {
     val serviceState: StateFlow<ServiceState> =
         combine(isStarted, tripId) { started: Boolean, id: Long? ->
             val res = when {
-                started && (id != null) -> dev.benica.mileagetracker.ServiceState.TRACKING_ACTIVE
+                started && (id != null) -> ServiceState.TRACKING_ACTIVE
                 !started && (id != null) -> ServiceState.PAUSED
                 else -> ServiceState.STOPPED
             }
 
-            sharedPrefs.edit().putInt("service_state", res.ordinal).apply()
+            sharedPrefs.edit().putBoolean(PREFS_IS_PAUSED, res == ServiceState.PAUSED).apply()
 
             res
         }.stateIn(
@@ -179,43 +164,28 @@ class LocationService : Service() {
         newTripId: Long,
         locationHandler: (Location, Long, Int, Int, Int, Int) -> Unit
     ): Long {
-        when (serviceState.value) {
+        Log.d(TAG, "start | called while: ${serviceState.value.name}")
+        return when (serviceState.value) {
             ServiceState.STOPPED -> {
-                _tripId.value = newTripId
-                _isStarted.value = true
-
-                sharedPrefs.edit().putLong("current_trip_id", newTripId).apply()
-
+                Log.d(TAG, "start | calling startService")
                 startService(
                     Intent(applicationContext, LocationService::class.java)
                         .putExtra(EXTRA_LOCATION_HANDLER, LocationHandler(locationHandler))
                         .putExtra(EXTRA_TRIP_ID, newTripId)
                 )
-
-//                registerReceiver(activityUpdateReceiver, IntentFilter(ACT_UPDATE_INTENT))
-//                userActivity.registerForActivityUpdates()
-//                activityUpdateReceiverRegistered = true
-//
-//                try {
-//                    locationCallback = getLocationCallback(locationHandler)
-//                    fusedLocationClient.requestLocationUpdates(
-//                        locationRequest,
-//                        locationCallback!!,
-//                        Looper.getMainLooper()
-//                    )
-//                } catch (e: SecurityException) {
-//                    Log.e(TAG, e.toString())
-//                }
+                newTripId
             }
             ServiceState.PAUSED -> {
                 _isStarted.value = true
+                tripId.value!!
             }
             else -> {
                 // Do nothing
+                tripId.value!!
             }
         }
-
-        return this.tripId.value!!
+//
+//        return this.tripId.value ?: newTripId
     }
 
     /**
@@ -236,18 +206,16 @@ class LocationService : Service() {
     fun stop(id: Long? = null) {
         id?.let { if (it != tripId.value) return }
 
-
-
-        userActivity.removeActivityTransitionUpdates()
-        if (activityTransitionReceiverRegistered) {
-            unregisterReceiver(activityTransitionReceiver)
-            activityTransitionReceiverRegistered = false
-        }
-
+        userActivity.removeActivityUpdates()
         if (activityUpdateReceiverRegistered) {
             unregisterReceiver(activityUpdateReceiver)
             activityUpdateReceiverRegistered = false
         }
+//
+//        if (activityTransitionReceiverRegistered) {
+//            unregisterReceiver(activityTransitionReceiver)
+//            activityTransitionReceiverRegistered = false
+//        }
 
         try {
             val removeTask = locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }
@@ -302,7 +270,8 @@ class LocationService : Service() {
             override fun onLocationResult(loc: LocationResult) {
                 super.onLocationResult(loc)
                 val lastLoc = loc.lastLocation
-                if (lastLoc == null || !lastLoc.hasAccuracy() || lastLoc.accuracy > 20f) {
+                if (lastLoc == null || !lastLoc.hasAccuracy() || lastLoc.accuracy > 20f  ||
+                    serviceState.value == ServiceState.PAUSED) {
                     return
                 }
 
@@ -336,23 +305,33 @@ class LocationService : Service() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
-
-    @Parcelize
-    class LocationHandler(
-        val handleLocation: (loc: Location, tripId: Long, still: Int, inCar: Int, onFoot: Int, unknown: Int) -> Unit
-    ) : Parcelable
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d(TAG, "onStartCommand")
         intent?.let {
+            Log.d(TAG, "onStartCommand: has intent")
+
+            if (it.getBooleanExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, false)) {
+                stop()
+            }
+
             val locHandler = it.getParcelableExtra<LocationHandler>(EXTRA_LOCATION_HANDLER)
-            val tripId: Long = it.getLongExtra(EXTRA_TRIP_ID, 0L)
+            val tripId: Long = it.getLongExtra(EXTRA_TRIP_ID, -1L)
+            Log.d(TAG, "onStartCommand: tripId: $tripId")
+            if (tripId != -1L) {
+                _tripId.value = tripId
+            }
+
+            _isStarted.value = !sharedPrefs.getBoolean(PREFS_IS_PAUSED, false)
+            Log.d(TAG, "onStartCommand: isStarted: ${isStarted.value} | locHandler ${if 
+                    (locHandler != null) "is not" else "is"} null")
+
             locHandler?.handleLocation?.let { lh ->
                 registerReceiver(
                     activityUpdateReceiver,
                     IntentFilter(ActivityUpdateReceiver.ACT_UPDATE_INTENT)
                 )
-                userActivity.registerForActivityUpdates()
                 activityUpdateReceiverRegistered = true
+                userActivity.registerForActivityUpdates()
 
                 try {
                     locationCallback = getLocationCallback(lh)
@@ -367,21 +346,24 @@ class LocationService : Service() {
             }
         }
 
-        return START_STICKY
+        return START_REDELIVER_INTENT
     }
 
     override fun onDestroy() {
-        if (activityUpdateReceiverRegistered)
+        if (activityUpdateReceiverRegistered) {
             unregisterReceiver(activityUpdateReceiver)
+        }
 
-        if (activityTransitionReceiverRegistered)
+        if (activityTransitionReceiverRegistered) {
             unregisterReceiver(activityTransitionReceiver)
+        }
 
         serviceScope.cancel()
         super.onDestroy()
     }
 
     override fun onBind(intent: Intent): IBinder {
+        Log.d(TAG, "onBind")
         stopForeground(true)
         serviceRunningInForeground = false
         configurationChange = false
@@ -397,7 +379,9 @@ class LocationService : Service() {
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
+        Log.d(TAG, "onUnbind")
         if (!configurationChange) {
+            Log.d(TAG, "onUnbind: starting ongoing background notification")
             val notification: Notification = notificationUtil.generateNotification(
                 getNotificationText?.invoke(currentLocation) ?: "Location Service in use.",
                 notificationChannel
@@ -490,13 +474,22 @@ class LocationService : Service() {
         TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED, STOPPED
     }
 
+    @Parcelize
+    class LocationHandler(
+        val handleLocation: (loc: Location, tripId: Long, still: Int, inCar: Int, onFoot: Int, unknown: Int) -> Unit
+    ) : Parcelable
+
     companion object {
         private const val NOTIFICATION_ID = 101101
         private const val UPDATE_INTERVAL_MILLISECONDS: Long = 5000
         private const val FASTEST_UPDATE_INTERVAL_MILLISECONDS = UPDATE_INTERVAL_MILLISECONDS / 2
+        private const val PREFS_IS_PAUSED = "service_state"
+        const val EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION =
+            "${BuildConfig.LIBRARY_PACKAGE_NAME}.extra.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICAITON"
+
         const val SHARED_PREFS = "mileage_tracker"
-        const val EXTRA_LOCATION_HANDLER = "locHandler"
-        const val EXTRA_TRIP_ID = "tripId"
+        const val EXTRA_LOCATION_HANDLER = "${BuildConfig.LIBRARY_PACKAGE_NAME}.locHandler"
+        const val EXTRA_TRIP_ID = "${BuildConfig.LIBRARY_PACKAGE_NAME}.tripId"
 
         private val locationRequest: LocationRequest
             get() = LocationRequest.create().apply {

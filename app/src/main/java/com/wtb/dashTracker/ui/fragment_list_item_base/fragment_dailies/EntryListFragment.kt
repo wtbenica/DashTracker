@@ -94,7 +94,6 @@ class EntryListFragment : ListItemFragment() {
                 viewModel.deleteEntryById(id)
             }
         }
-
     }
 
     @SuppressLint("NotifyDataSetChanged")

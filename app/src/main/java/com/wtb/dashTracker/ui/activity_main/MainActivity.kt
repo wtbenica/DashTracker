@@ -30,8 +30,6 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Parcelable
-import android.provider.ContactsContract
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -100,20 +98,17 @@ import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
 import dev.benica.csvutil.getConvertPackImport
 import dev.benica.mileagetracker.LocationService
-import dev.benica.mileagetracker.LocationService.Companion.EXTRA_LOCATION_HANDLER
+import dev.benica.mileagetracker.LocationService.Companion.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
-
 
 const val TESTING = false
 
@@ -151,13 +146,28 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         locationService?.stop(id)
     }
 
+    fun endDash() {
+        locationService?.stop()
+        Log.d(TAG, "load entry 1 | null")
+        viewModel.loadEntry(null)
+        EndDashDialog.newInstance(activeEntryId ?: AUTO_ID)
+            .show(supportFragmentManager, "end_dash_dialog")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "ON_CREATE")
-        if (savedInstanceState != null) {
-            isAuthenticated = savedInstanceState.getBoolean(ARG_EXPECTED_EXIT)
-            Log.d(TAG, "savedInstanceState ARG_EXPECTED_EXIT: $isAuthenticated")
-        }
+        Log.d(TAG, "onCreate    |")
+//        if (savedInstanceState != null) {
+//            isAuthenticated = savedInstanceState.getBoolean(ARG_EXPECTED_EXIT)
+//            val entry = savedInstanceState.getLong(ARG_ENTRY_ID)
+//            if (entry != -1L) {
+//                Log.d(TAG, "onCreate | savedInstanceState entry: $entry")
+//                viewModel.loadEntry(entry)
+//            }
+//            Log.d(TAG, "savedInstanceState ARG_EXPECTED_EXIT: $isAuthenticated")
+//        } else {
+//            Log.d(TAG, "onCreate | savedInstanceState is null")
+//        }
 
         fun initBiometrics() {
             val biometricManager = BiometricManager.from(this)
@@ -260,18 +270,27 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             lifecycleScope.launch {
                 this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.activeEntry.collectLatest {
-                        it?.let { entry: FullEntry ->
-                            Log.d(TAG, "New active entry incoming")
+                        it.let { entry: FullEntry? ->
+                            Log.d(TAG, "incoming entry | id: ${entry?.entry?.entryId}")
                             activeEntry = it
-                            activeEntryId = it.entry.entryId
-                            activeDashBinding.valMileage.text =
-                                getString(R.string.mileage_fmt, entry.distance)
-                            val t: Float = ChronoUnit.MINUTES.between(
-                                entry.entry.startDateTime,
-                                LocalDateTime.now()
-                            ) / 60f
-                            activeDashBinding.valElapsedTime.text =
-                                getString(R.string.float_fmt, t)
+                            activeEntryId = it?.entry?.entryId
+//                            if (hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) &&
+//                                locationService?.serviceState?.value != TRACKING_ACTIVE
+//                            ) {
+//                                Log.d(TAG, "loc start 1")
+//                                locationService?.start(it.entry.entryId, saveLocation)
+//                            }
+
+                            it?.let { e ->
+                                activeDashBinding.valMileage.text =
+                                    getString(R.string.mileage_fmt, e.distance)
+                                val t: Float = ChronoUnit.MINUTES.between(
+                                    e.entry.startDateTime,
+                                    LocalDateTime.now()
+                                ) / 60f
+                                activeDashBinding.valElapsedTime.text =
+                                    getString(R.string.float_fmt, t)
+                            }
                         }
                     }
                 }
@@ -308,9 +327,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
 
             activeDashBinding.stopButton.setOnClickListener {
-                locationService?.stop()
-                EndDashDialog.newInstance(activeEntryId ?: AUTO_ID)
-                    .show(supportFragmentManager, "end_dash_dialog")
+                endDash()
             }
 
             blinkAnimator.addUpdateListener { animation ->
@@ -335,28 +352,28 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             this
         ) { requestKey, bundle ->
             val result = bundle.getBoolean(ARG_RESULT)
-            activeEntryId = bundle.getLong(ARG_ENTRY_ID)
-            Log.d(TAG, "THIS IS ENTRY ID: $activeEntryId")
-            viewModel.loadEntry(activeEntryId)
+            val eid = bundle.getLong(ARG_ENTRY_ID)
+
+            Log.d(TAG, "load entry 2 | $eid")
+            viewModel.loadEntry(eid)
 
             if (result) {
-                Log.d(TAG, "Start Dash received by activity")
                 when {
                     hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
-                        Log.d(TAG, "has all location permissions")
-                        loadNewTrip()
+                        Log.d(TAG, "Result | loadNewTrip")
+//                        loadNewTrip()
+                        locationService?.start(eid, saveLocation)
                     }
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                        Log.d(TAG, "needs some permissions, needs rationale")
                         expectedExit = true
                         showRationaleLocation {
                             locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                                .also { expectedExit = true }
                         }
                     }
                     else -> {
-                        expectedExit = true
-                        Log.d(TAG, "needs some permissions, no rationale")
                         locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        expectedExit = true
                     }
                 }
             }
@@ -385,124 +402,113 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     @DrawableRes
     private var trackingDrawable: Int = R.drawable.status_tracking
 
-    var drawRes: Flow<Int>? = null
-
     private fun initLocSvcObservers() {
         // Update status indicator drawable & animation
         // update start/pause button, show/hide acive dash
-        lifecycleScope.launch {
-            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                locationService?.serviceState?.collectLatest { state ->
-                    when (state) {
-                        TRACKING_ACTIVE -> {
-                            fun toggleIt() {
-                                activeDashBinding.startButton.apply {
-                                    if (tag == R.drawable.anim_pause_to_play) {
-                                        togglePlayPauseButton(this)
-                                    }
+        lifecycleScope.launchWhenStarted {
+            locationService?.serviceState?.collectLatest { state ->
+                when (state) {
+                    TRACKING_ACTIVE -> {
+                        fun toggleIt() {
+                            activeDashBinding.startButton.apply {
+                                if (tag == R.drawable.anim_pause_to_play) {
+                                    togglePlayPauseButton(this)
                                 }
-                            }
-
-                            trackingDrawable = R.drawable.status_tracking
-                            blinkAnimator.start()
-
-                            if (activeDashBinding.root.visibility == GONE) {
-                                activeDashBinding.root.expand { toggleIt() }
-                            } else {
-                                toggleIt()
                             }
                         }
 
-                        TRACKING_INACTIVE -> {
-                            fun toggleIt() {
-                                activeDashBinding.startButton.apply {
-                                    if (tag == R.drawable.anim_pause_to_play) {
-                                        togglePlayPauseButton(this)
-                                    }
-                                }
-                            }
+                        trackingDrawable = R.drawable.status_tracking
+                        blinkAnimator.start()
 
-                            trackingDrawable = R.drawable.status_inactive
-                            blinkAnimator.pause()
-
-                            if (activeDashBinding.root.visibility == GONE) {
-                                activeDashBinding.root.expand { toggleIt() }
-                            } else {
-                                toggleIt()
-                            }
-                        }
-
-                        PAUSED -> {
-                            fun toggleIt() {
-                                activeDashBinding.startButton.apply {
-                                    if (tag == R.drawable.anim_play_to_pause) {
-                                        togglePlayPauseButton(this)
-                                    }
-                                }
-                            }
-
-                            trackingDrawable = R.drawable.status_paused
-                            blinkAnimator.pause()
-
-                            if (activeDashBinding.root.visibility == GONE) {
-                                activeDashBinding.root.expand { toggleIt() }
-                            } else {
-                                toggleIt()
-                            }
-                        }
-
-                        else -> {
-                            trackingDrawable = R.drawable.status_paused
-                            blinkAnimator.pause()
-
-                            if (activeDashBinding.root.visibility == VISIBLE) {
-                                activeDashBinding.root.collapse()
-                            }
-                            viewModel.loadEntry(null)
+                        if (activeDashBinding.root.visibility == GONE) {
+                            activeDashBinding.root.expand { toggleIt() }
+                        } else {
+                            toggleIt()
                         }
                     }
 
-                    val drawName = when (trackingDrawable) {
-                        R.drawable.status_tracking -> "Tracking"
-                        R.drawable.status_paused -> "Paused"
-                        R.drawable.status_inactive -> "Inactive"
-                        else -> "other"
+                    TRACKING_INACTIVE -> {
+                        fun toggleIt() {
+                            activeDashBinding.startButton.apply {
+                                if (tag == R.drawable.anim_pause_to_play) {
+                                    togglePlayPauseButton(this)
+                                }
+                            }
+                        }
+
+                        trackingDrawable = R.drawable.status_inactive
+                        blinkAnimator.pause()
+
+                        if (activeDashBinding.root.visibility == GONE) {
+                            activeDashBinding.root.expand { toggleIt() }
+                        } else {
+                            toggleIt()
+                        }
                     }
-                    Log.d(TAG, "Drawable is: $drawName")
-                    activeDashBinding.statusIndicator.setImageResource(trackingDrawable)
+
+                    PAUSED -> {
+                        fun toggleIt() {
+                            activeDashBinding.startButton.apply {
+                                if (tag == R.drawable.anim_play_to_pause) {
+                                    togglePlayPauseButton(this)
+                                }
+                            }
+                        }
+
+                        trackingDrawable = R.drawable.status_paused
+                        blinkAnimator.pause()
+
+                        if (activeDashBinding.root.visibility == GONE) {
+                            activeDashBinding.root.expand { toggleIt() }
+                        } else {
+                            toggleIt()
+                        }
+                    }
+
+                    else -> {
+                        trackingDrawable = R.drawable.status_paused
+                        blinkAnimator.pause()
+
+                        if (activeDashBinding.root.visibility == VISIBLE) {
+                            activeDashBinding.root.collapse()
+                        }
+                        Log.d(TAG, "load entry 3 | null")
+//                        viewModel.loadEntry(null)
+                    }
                 }
+
+                val drawName = when (trackingDrawable) {
+                    R.drawable.status_tracking -> "Tracking"
+                    R.drawable.status_paused -> "Paused"
+                    R.drawable.status_inactive -> "Inactive"
+                    else -> "other"
+                }
+
+                activeDashBinding.statusIndicator.setImageResource(trackingDrawable)
             }
         }
 
-        lifecycleScope.launch {
-            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                locationService?.stillVal?.collectLatest {
-                    activeDashBinding.stillValue.text = it.toString()
-                }
+        lifecycleScope.launchWhenStarted {
+            locationService?.stillVal?.collectLatest {
+                activeDashBinding.stillValue.text = it.toString()
             }
         }
 
-        lifecycleScope.launch {
-            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                locationService?.carVal?.collectLatest {
-                    activeDashBinding.carValue.text = it.toString()
-                }
+        lifecycleScope.launchWhenStarted {
+            locationService?.carVal?.collectLatest {
+                activeDashBinding.carValue.text = it.toString()
             }
         }
 
-        lifecycleScope.launch {
-            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                locationService?.footVal?.collectLatest {
-                    activeDashBinding.footValue.text = it.toString()
-                }
+        lifecycleScope.launchWhenStarted {
+            locationService?.footVal?.collectLatest {
+                activeDashBinding.footValue.text = it.toString()
             }
         }
 
-        lifecycleScope.launch {
-            this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                locationService?.unknownVal?.collectLatest {
-                    activeDashBinding.unknownValue.text = it.toString()
-                }
+        lifecycleScope.launchWhenStarted {
+            locationService?.unknownVal?.collectLatest {
+                activeDashBinding.unknownValue.text = it.toString()
             }
         }
     }
@@ -518,16 +524,20 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         Log.d(TAG, "getBgLocationPermission")
         when {
             hasPermissions(this, ACCESS_BACKGROUND_LOCATION) -> {
-                Log.d(TAG, "has bg location permission")
+                Log.d(TAG, "BgLocationPermissions | loadNewTrip")
                 loadNewTrip()
             }
             shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
-                Log.d(TAG, "needs bg location permission, needs rationale")
-                showRationaleBgLocation { bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION) }
+                showRationaleBgLocation {
+                    Log.d(TAG, "BgLocationPermissions | onGranted -> loadNewTrip")
+                    bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+                        .also { expectedExit = true }
+                }
             }
             else -> {
-                Log.d(TAG, "needs bg location permission, no rationale")
+                Log.d(TAG, "BgLocationPermissions | onGranted -> loadNewTrip")
                 bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+                expectedExit = true
             }
         }
     }
@@ -572,49 +582,60 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
         super.onResume()
-        Log.d(TAG, "ON_RESUME")
+        Log.d(TAG, "onResume    |")
         cleanupFiles()
-        expectedExit = false
-        Log.d(TAG, "Already authenticated? $isAuthenticated")
-        if (!isAuthenticated) {
-            authenticate()
-        } else {
+        val extra = intent.getBooleanExtra(EXTRA_END_DASH, false)
+        Log.d(TAG, "EXTRA: $extra")
+        if (extra) {
+            Log.d(TAG, "onResume    | end dash")
             onUnlock()
+            endDash()
+        } else {
+            expectedExit = false
+            Log.d(TAG, "onResume    | Already authenticated? $isAuthenticated")
+            if (!isAuthenticated) {
+                authenticate()
+            } else {
+                onUnlock()
+            }
         }
-    }
-
-    val lh = LocationHandler { loc: Location, entryId: Long, still: Int, car: Int, foot: Int, unk:
-    Int ->
-        Repository.get().saveModel(
-            LocationData(
-                loc = loc, entryId = entryId,
-                still = still, car = car, foot = foot, unknown = unk
-            )
-        )
     }
 
     private fun onUnlock() {
         isAuthenticated = true
         this@MainActivity.binding.container.visibility = VISIBLE
 
+        val locationServiceIntent = Intent(applicationContext, LocationService::class.java)
 
-        val locationServiceIntent =
-            Intent(applicationContext, LocationService::class.java).apply {
-                putExtra(EXTRA_LOCATION_HANDLER, lh)
-            }
+        locationServiceConnection = getLocationServiceConnection(
+            activeEntry?.entry?.let { e ->
+                activeEntryId?.let { id ->
+                    {
+                        Log.d(TAG, "loc start 2 | entryId: $id")
+                        locationService?.start(id, saveLocation)
+                    }
+                }
+            })
 
         bindService(
             locationServiceIntent,
-            locationServiceConnection,
+            locationServiceConnection!!,
             BIND_AUTO_CREATE
         )
+
+//        Log.d(TAG, "onUnlock        | activeEntry?")
+//        if (activeEntry?.entry != null && activeEntryId != null) {
+//            Log.d(TAG, "onUnlock        | activeEntry | starting service")
+//            locationService?.start(activeEntryId!!, saveLocation)
+//        }
     }
 
     override fun onPause() {
         Log.d(TAG, "ON_PAUSE")
         if (locationServiceBound) {
-            unbindService(locationServiceConnection)
+            unbindService(locationServiceConnection!!)
             locationServiceBound = false
+            locationServiceConnection = null
             locationService = null
         }
 
@@ -627,11 +648,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.d(TAG, "saving ARG_EXPECTED_EXIT: $expectedExit")
-        outState.putBoolean(ARG_EXPECTED_EXIT, true)
-    }
 
-    private val ARG_EXPECTED_EXIT = "expected_exit"
+        outState.putBoolean(ARG_EXPECTED_EXIT, true)
+        outState.putLong(ARG_ENTRY_ID, activeEntryId ?: -1L)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
@@ -732,10 +752,11 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val LOC_SVC_CHANNEL_NAME = "dt_mileage_tracker"
         private const val LOC_SVC_CHANNEL_DESC = "Dashtracker mileage tracker is active"
 
-        private const val EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION =
-            "${ContactsContract.Directory.PACKAGE_NAME}.extra.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICAITON"
         private const val EXTRA_NOTIFICATION_CHANNEL =
             "${BuildConfig.APPLICATION_ID}.NotificationChannel"
+        private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"
+
+        private const val ARG_EXPECTED_EXIT = "expected_exit"
 
         private fun getNotificationChannel() =
             NotificationChannel(
@@ -787,50 +808,87 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     val newEntryId = viewModel.insertSus(newEntry)
                     newEntryId
                 }.let { newTripId ->
+                    Log.d(TAG, "loc start 3")
                     val currentTripFromService =
-                        locationService?.start(newTripId) { loc, entryId, still, car, foot, unk ->
-                            Repository.get().saveModel(
-                                LocationData(
-                                    loc = loc, entryId = entryId,
-                                    still = still, car = car, foot = foot, unknown = unk
-                                )
-                            )
-                        } ?: newTripId
+                        locationService?.start(newTripId, saveLocation) ?: newTripId
 
                     if (currentTripFromService != newTripId) {
+                        Log.d(TAG, "load entry 4 | $currentTripFromService")
                         viewModel.loadEntry(currentTripFromService)
                         viewModel.deleteEntry(newTripId)
                     } else {
+                        Log.d(TAG, "load entry 5 | $newTripId")
                         viewModel.loadEntry(newTripId)
                     }
                 }
             }
         } else {
-            Log.d(
-                TAG, "loadNewTrip | existing entry | location service ${
-                    if (locationService ==
-                        null
-                    ) "is" else "is not"
-                } null"
-            )
-            locationService?.start(activeEntryId ?: entry!!.id) { loc, id, still, car, foot, unk ->
-                Repository.get().saveModel(
-                    LocationData(
-                        loc = loc, entryId = id,
-                        still = still, car = car, foot = foot, unknown = unk
-                    )
-                )
-            }
+            Log.d(TAG, "loc start 4")
+            locationService?.start(activeEntryId ?: entry!!.id, saveLocation)
         }
     }
 
-    private val locationServiceConnection = object : ServiceConnection {
+    private val saveLocation =
+        { loc: Location,
+          entryId: Long,
+          still: Int,
+          car: Int,
+          foot: Int,
+          unknown: Int ->
+            Repository.get().saveModel(
+                LocationData(
+                    loc = loc,
+                    entryId = entryId,
+                    still = still,
+                    car = car,
+                    foot = foot,
+                    unknown = unknown
+                )
+            )
+        }
+
+    private var locationServiceConnection: ServiceConnection? = null
+
+    //    private val locationServiceConnection = object : ServiceConnection {
+//        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+//            Log.d(TAG, "onServiceConnected")
+//            val binder = service as LocationService.LocalBinder
+//
+//            locationService = binder.service
+//            locationServiceBound = true
+//            locationService?.tripId?.value.let { viewModel.loadEntry(it) }
+//            locationService?.apply {
+//                initialize(
+//                    notificationData = locationServiceNotifData,
+//                    notificationChannel = getNotificationChannel(),
+//                    notificationText = { "Mileage tracking is on. Background location is in use." }
+//                )
+//
+//                if (TESTING)
+//                    setIsTesting(true)
+//            }
+//            initLocSvcObservers()
+//        }
+//
+//        override fun onServiceDisconnected(name: ComponentName?) {
+//            Log.d(TAG, "onServiceDisconnected")
+//            locationService = null
+//            locationServiceBound = false
+//        }
+//    }
+//
+    private fun getLocationServiceConnection(onBind: (() -> Unit)? = null) = object :
+        ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.d(TAG, "onServiceConnected")
             val binder = service as LocationService.LocalBinder
 
             locationService = binder.service
             locationServiceBound = true
-            locationService?.tripId?.value.let { viewModel.loadEntry(it) }
+            locationService?.tripId?.value?.let {
+                Log.d(TAG, "load entry 6 | $it")
+                viewModel.loadEntry(it)
+            }
             locationService?.apply {
                 initialize(
                     notificationData = locationServiceNotifData,
@@ -842,10 +900,11 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     setIsTesting(true)
             }
             initLocSvcObservers()
+            onBind?.invoke()
         }
 
-
         override fun onServiceDisconnected(name: ComponentName?) {
+            Log.d(TAG, "onServiceDisconnected")
             locationService = null
             locationServiceBound = false
         }
@@ -865,7 +924,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 NotificationCompat.Action(
                     R.drawable.ic_cancel,
                     "Stop",
-                    cancelServicePendingIntent
+                    endDashPendingIntent
                 )
             )
         )
@@ -883,6 +942,19 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             )
         }
 
+    private val endDashPendingIntent: PendingIntent?
+        get() {
+            val intent = Intent(this, MainActivity::class.java)
+                .putExtra(EXTRA_END_DASH, true)
+
+            return PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        }
+
     private val launchActivityPendingIntent: PendingIntent?
         get() {
             val launchActivityIntent = Intent(this, MainActivity::class.java)
@@ -897,16 +969,16 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     override fun onStart() {
         super.onStart()
-        Log.d(TAG, "ON_START")
+        Log.d(TAG, "onStart     |")
     }
 
     override fun onStop() {
-        Log.d(TAG, "ON_STOP")
+        Log.d(TAG, "onStop      |")
         super.onStop()
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "ON_DESTROY ")
+        Log.d(TAG, "onDestroy   | ")
         super.onDestroy()
     }
 }
