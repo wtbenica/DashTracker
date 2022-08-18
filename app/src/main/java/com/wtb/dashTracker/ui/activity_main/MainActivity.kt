@@ -146,12 +146,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         locationService?.stop(id)
     }
 
-    fun endDash() {
-        locationService?.stop()
-        Log.d(TAG, "load entry 1 | null")
-        viewModel.loadEntry(null)
-        EndDashDialog.newInstance(activeEntryId ?: AUTO_ID)
+    private fun endDash(entryId: Long? = activeEntryId) {
+        Log.d(TAG, "endDash | load entry 1 | $entryId / null")
+//        viewModel.loadEntry(null)
+        EndDashDialog.newInstance(entryId ?: AUTO_ID)
             .show(supportFragmentManager, "end_dash_dialog")
+        locationService?.stop()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -274,6 +274,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                             Log.d(TAG, "incoming entry | id: ${entry?.entry?.entryId}")
                             activeEntry = it
                             activeEntryId = it?.entry?.entryId
+                            Log.d(TAG, "Setting activeEntryId: $activeEntryId")
 //                            if (hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) &&
 //                                locationService?.serviceState?.value != TRACKING_ACTIVE
 //                            ) {
@@ -584,12 +585,15 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         super.onResume()
         Log.d(TAG, "onResume    |")
         cleanupFiles()
-        val extra = intent.getBooleanExtra(EXTRA_END_DASH, false)
-        Log.d(TAG, "EXTRA: $extra")
-        if (extra) {
-            Log.d(TAG, "onResume    | end dash")
+        val extra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
+        Log.d(TAG, "HAS_EXTRA: ${intent?.hasExtra(EXTRA_END_DASH)} EXTRA: $extra")
+        intent.removeExtra(EXTRA_END_DASH)
+        if (extra == true) {
+            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1L)
+            intent.removeExtra(EXTRA_TRIP_ID)
+            Log.d(TAG, "onResume    | end dash | tripId: $tripId")
             onUnlock()
-            endDash()
+            endDash(tripId)
         } else {
             expectedExit = false
             Log.d(TAG, "onResume    | Already authenticated? $isAuthenticated")
@@ -601,18 +605,19 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
-    private fun onUnlock() {
+    private fun onUnlock(onComplete: (() -> Unit)? = null) {
         isAuthenticated = true
         this@MainActivity.binding.container.visibility = VISIBLE
 
         val locationServiceIntent = Intent(applicationContext, LocationService::class.java)
 
         locationServiceConnection = getLocationServiceConnection(
-            activeEntry?.entry?.let { e ->
+            activeEntry?.entry?.let { _ ->
                 activeEntryId?.let { id ->
                     {
-                        Log.d(TAG, "loc start 2 | entryId: $id")
+                        Log.d(TAG, "onUnlock | loc start 2 | entryId: $id")
                         locationService?.start(id, saveLocation)
+                        onComplete?.invoke()
                     }
                 }
             })
@@ -623,6 +628,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             BIND_AUTO_CREATE
         )
 
+        onComplete?.invoke()
 //        Log.d(TAG, "onUnlock        | activeEntry?")
 //        if (activeEntry?.entry != null && activeEntryId != null) {
 //            Log.d(TAG, "onUnlock        | activeEntry | starting service")
@@ -755,6 +761,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val EXTRA_NOTIFICATION_CHANNEL =
             "${BuildConfig.APPLICATION_ID}.NotificationChannel"
         private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"
+        private const val EXTRA_TRIP_ID = "${BuildConfig.APPLICATION_ID}.tripId"
 
         private const val ARG_EXPECTED_EXIT = "expected_exit"
 
@@ -882,16 +889,17 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             Log.d(TAG, "onServiceConnected")
             val binder = service as LocationService.LocalBinder
-
+            var tripId: Long? = activeEntryId
             locationService = binder.service
             locationServiceBound = true
             locationService?.tripId?.value?.let {
                 Log.d(TAG, "load entry 6 | $it")
                 viewModel.loadEntry(it)
+                tripId = it
             }
             locationService?.apply {
                 initialize(
-                    notificationData = locationServiceNotifData,
+                    notificationData = locationServiceNotifData(tripId),
                     notificationChannel = getNotificationChannel(),
                     notificationText = { "Mileage tracking is on. Background location is in use." }
                 )
@@ -910,8 +918,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
-    val locationServiceNotifData
-        get() = NotificationUtils.NotificationData(
+    fun locationServiceNotifData(tripId: Long? = null) = NotificationUtils.NotificationData(
             contentTitle = R.string.app_name,
             bigContentTitle = R.string.app_name,
             icon = R.mipmap.icon_c,
@@ -924,7 +931,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 NotificationCompat.Action(
                     R.drawable.ic_cancel,
                     "Stop",
-                    endDashPendingIntent
+                    endDashPendingIntent(tripId)
                 )
             )
         )
@@ -942,16 +949,16 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             )
         }
 
-    private val endDashPendingIntent: PendingIntent?
-        get() {
-            val intent = Intent(this, MainActivity::class.java)
+    private fun endDashPendingIntent(tripId: Long? = null): PendingIntent? {
+        val intent = Intent(this, MainActivity::class.java)
                 .putExtra(EXTRA_END_DASH, true)
+                .putExtra(EXTRA_TRIP_ID, tripId)
 
             return PendingIntent.getActivity(
                 this,
                 0,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
         }
 
@@ -963,7 +970,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 this,
                 0,
                 launchActivityIntent,
-                PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
         }
 
