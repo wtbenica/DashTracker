@@ -146,28 +146,25 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         locationService?.stop(id)
     }
 
+    private var explicitlyStopped = false
+
     private fun endDash(entryId: Long? = activeEntryId) {
         Log.d(TAG, "endDash | load entry 1 | $entryId / null")
-//        viewModel.loadEntry(null)
+        viewModel.loadEntry(null)
         EndDashDialog.newInstance(entryId ?: AUTO_ID)
             .show(supportFragmentManager, "end_dash_dialog")
-        locationService?.stop()
+
+        locationService.let {
+            if (it != null)
+                it.stop()
+            else
+                explicitlyStopped = true
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate    |")
-//        if (savedInstanceState != null) {
-//            isAuthenticated = savedInstanceState.getBoolean(ARG_EXPECTED_EXIT)
-//            val entry = savedInstanceState.getLong(ARG_ENTRY_ID)
-//            if (entry != -1L) {
-//                Log.d(TAG, "onCreate | savedInstanceState entry: $entry")
-//                viewModel.loadEntry(entry)
-//            }
-//            Log.d(TAG, "savedInstanceState ARG_EXPECTED_EXIT: $isAuthenticated")
-//        } else {
-//            Log.d(TAG, "onCreate | savedInstanceState is null")
-//        }
 
         fun initBiometrics() {
             val biometricManager = BiometricManager.from(this)
@@ -274,13 +271,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                             Log.d(TAG, "incoming entry | id: ${entry?.entry?.entryId}")
                             activeEntry = it
                             activeEntryId = it?.entry?.entryId
+                            activeEntryId?.let { id -> updateLocationServiceNotificationData(id) }
                             Log.d(TAG, "Setting activeEntryId: $activeEntryId")
-//                            if (hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) &&
-//                                locationService?.serviceState?.value != TRACKING_ACTIVE
-//                            ) {
-//                                Log.d(TAG, "loc start 1")
-//                                locationService?.start(it.entry.entryId, saveLocation)
-//                            }
 
                             it?.let { e ->
                                 activeDashBinding.valMileage.text =
@@ -320,21 +312,21 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         when (it.serviceState.value) {
                             TRACKING_ACTIVE -> it.pause()
                             TRACKING_INACTIVE -> it.pause()
-                            PAUSED -> it.start(0) { _, _, _, _, _, _ -> }
+                            PAUSED -> it.start(AUTO_ID) { _, _, _, _, _, _ -> }
                             STOPPED -> {} // Do Nothing
                         }
                     }
                 }
             }
 
-            activeDashBinding.stopButton.setOnClickListener {
-                endDash()
-            }
+            activeDashBinding.stopButton.setOnClickListener { endDash() }
 
-            blinkAnimator.addUpdateListener { animation ->
-                activeDashBinding.statusIndicator.alpha = animation.animatedValue as Float
+            blinkAnimator.apply {
+                addUpdateListener { animation ->
+                    activeDashBinding.statusIndicator.alpha = animation.animatedValue as Float
+                }
+                blinkAnimator.start()
             }
-            blinkAnimator.start()
         }
 
         initMainActivityBinding()
@@ -359,10 +351,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             viewModel.loadEntry(eid)
 
             if (result) {
+                explicitlyStopped = false
                 when {
                     hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
                         Log.d(TAG, "Result | loadNewTrip")
-//                        loadNewTrip()
                         locationService?.start(eid, saveLocation)
                     }
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
@@ -466,23 +458,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         }
                     }
 
-                    else -> {
+                    STOPPED -> {
                         trackingDrawable = R.drawable.status_paused
                         blinkAnimator.pause()
 
                         if (activeDashBinding.root.visibility == VISIBLE) {
                             activeDashBinding.root.collapse()
                         }
-                        Log.d(TAG, "load entry 3 | null")
-//                        viewModel.loadEntry(null)
                     }
-                }
-
-                val drawName = when (trackingDrawable) {
-                    R.drawable.status_tracking -> "Tracking"
-                    R.drawable.status_paused -> "Paused"
-                    R.drawable.status_inactive -> "Inactive"
-                    else -> "other"
                 }
 
                 activeDashBinding.statusIndicator.setImageResource(trackingDrawable)
@@ -586,17 +569,16 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         Log.d(TAG, "onResume    |")
         cleanupFiles()
         val extra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
-        Log.d(TAG, "HAS_EXTRA: ${intent?.hasExtra(EXTRA_END_DASH)} EXTRA: $extra")
+        val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1L)
         intent.removeExtra(EXTRA_END_DASH)
+        intent.removeExtra(EXTRA_TRIP_ID)
+
         if (extra == true) {
-            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1L)
-            intent.removeExtra(EXTRA_TRIP_ID)
-            Log.d(TAG, "onResume    | end dash | tripId: $tripId")
             onUnlock()
             endDash(tripId)
         } else {
             expectedExit = false
-            Log.d(TAG, "onResume    | Already authenticated? $isAuthenticated")
+
             if (!isAuthenticated) {
                 authenticate()
             } else {
@@ -629,11 +611,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         )
 
         onComplete?.invoke()
-//        Log.d(TAG, "onUnlock        | activeEntry?")
-//        if (activeEntry?.entry != null && activeEntryId != null) {
-//            Log.d(TAG, "onUnlock        | activeEntry | starting service")
-//            locationService?.start(activeEntryId!!, saveLocation)
-//        }
     }
 
     override fun onPause() {
@@ -835,7 +812,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
-    private val saveLocation =
+    // Not sure why, but this doesn't work when it's a fun and passed as a lambda, but it does
+// work when it's a val
+    private val saveLocation: (Location, Long, Int, Int, Int, Int) -> Unit =
         { loc: Location,
           entryId: Long,
           still: Int,
@@ -856,69 +835,50 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     private var locationServiceConnection: ServiceConnection? = null
 
-    //    private val locationServiceConnection = object : ServiceConnection {
-//        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-//            Log.d(TAG, "onServiceConnected")
-//            val binder = service as LocationService.LocalBinder
-//
-//            locationService = binder.service
-//            locationServiceBound = true
-//            locationService?.tripId?.value.let { viewModel.loadEntry(it) }
-//            locationService?.apply {
-//                initialize(
-//                    notificationData = locationServiceNotifData,
-//                    notificationChannel = getNotificationChannel(),
-//                    notificationText = { "Mileage tracking is on. Background location is in use." }
-//                )
-//
-//                if (TESTING)
-//                    setIsTesting(true)
-//            }
-//            initLocSvcObservers()
-//        }
-//
-//        override fun onServiceDisconnected(name: ComponentName?) {
-//            Log.d(TAG, "onServiceDisconnected")
-//            locationService = null
-//            locationServiceBound = false
-//        }
-//    }
-//
-    private fun getLocationServiceConnection(onBind: (() -> Unit)? = null) = object :
-        ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Log.d(TAG, "onServiceConnected")
-            val binder = service as LocationService.LocalBinder
-            var tripId: Long? = activeEntryId
-            locationService = binder.service
-            locationServiceBound = true
-            locationService?.tripId?.value?.let {
-                Log.d(TAG, "load entry 6 | $it")
-                viewModel.loadEntry(it)
-                tripId = it
+    private fun getLocationServiceConnection(onBind: (() -> Unit)? = null): ServiceConnection =
+        object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                Log.d(TAG, "onServiceConnected")
+                val binder = service as LocationService.LocalBinder
+                var tripId: Long? = activeEntryId
+                locationService = binder.service
+                locationServiceBound = true
+                locationService?.tripId?.value?.let {
+                    Log.d(TAG, "load entry 6 | $it")
+                    viewModel.loadEntry(it)
+                    tripId = it
+                }
+                updateLocationServiceNotificationData(tripId)
+                initLocSvcObservers()
+                onBind?.invoke()
+                if (explicitlyStopped) {
+                    locationService?.stop()
+                    explicitlyStopped = false
+                }
             }
-            locationService?.apply {
-                initialize(
-                    notificationData = locationServiceNotifData(tripId),
-                    notificationChannel = getNotificationChannel(),
-                    notificationText = { "Mileage tracking is on. Background location is in use." }
-                )
 
-                if (TESTING)
-                    setIsTesting(true)
+            override fun onServiceDisconnected(name: ComponentName?) {
+                Log.d(TAG, "onServiceDisconnected")
+                locationService = null
+                locationServiceBound = false
             }
-            initLocSvcObservers()
-            onBind?.invoke()
         }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            Log.d(TAG, "onServiceDisconnected")
-            locationService = null
-            locationServiceBound = false
+    private fun updateLocationServiceNotificationData(tripId: Long?) {
+        locationService?.apply {
+            initialize(
+                notificationData = locationServiceNotifData(tripId),
+                notificationChannel = getNotificationChannel(),
+                notificationText = { "Mileage tracking is on. Background location is in use." }
+            )
+
+            if (TESTING)
+                setIsTesting(true)
         }
     }
 
-    fun locationServiceNotifData(tripId: Long? = null) = NotificationUtils.NotificationData(
+    private fun locationServiceNotifData(tripId: Long? = null) =
+        NotificationUtils.NotificationData(
             contentTitle = R.string.app_name,
             bigContentTitle = R.string.app_name,
             icon = R.mipmap.icon_c,
@@ -949,18 +909,18 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             )
         }
 
-    private fun endDashPendingIntent(tripId: Long? = null): PendingIntent? {
+    private fun endDashPendingIntent(tripId: Long?): PendingIntent? {
         val intent = Intent(this, MainActivity::class.java)
-                .putExtra(EXTRA_END_DASH, true)
-                .putExtra(EXTRA_TRIP_ID, tripId)
+            .putExtra(EXTRA_END_DASH, true)
+            .putExtra(EXTRA_TRIP_ID, tripId ?: AUTO_ID)
 
-            return PendingIntent.getActivity(
-                this,
-                0,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        }
+        return PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
 
     private val launchActivityPendingIntent: PendingIntent?
         get() {
