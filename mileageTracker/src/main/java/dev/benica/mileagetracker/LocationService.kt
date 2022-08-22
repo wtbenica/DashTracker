@@ -103,7 +103,9 @@ class LocationService : Service() {
     }
 
     /**
-     * The current [ServiceState] of the [LocationService]
+     * The current [ServiceState] of the [LocationService]. When tracking is started, state is
+     * either [ServiceState.TRACKING_ACTIVE] or [ServiceState.PAUSED], else it is
+     * [ServiceState.STOPPED].
      */
     val serviceState: StateFlow<ServiceState> =
         combine(isStarted, tripId) { started: Boolean, id: Long? ->
