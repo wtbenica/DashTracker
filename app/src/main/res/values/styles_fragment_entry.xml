@@ -57,6 +57,7 @@
     <style name="FragEntryTextView.Value">
         <item name="android:textAlignment">textEnd</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textSize">?attr/textSizeItemValue</item>
     </style>
 
     <style name="DialogFragSpinnerStyle">
