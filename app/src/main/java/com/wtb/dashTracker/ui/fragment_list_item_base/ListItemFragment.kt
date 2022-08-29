@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -23,46 +24,25 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.extensions.collapse
-import com.wtb.dashTracker.extensions.expand
-import com.wtb.dashTracker.extensions.transitionBackground
+import com.wtb.dashTracker.ui.activity_main.TAG
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 abstract class ListItemFragment : Fragment()
 
 interface ListItemType
 
-fun toggleListItemVisibility(collapseArea: View, backgroundArea: View, isVisible: Boolean? = null) {
-    if (collapseArea.visibility == VISIBLE || isVisible == false) {
-        collapseArea.collapse()
-        backgroundArea.transitionBackground(
-            R.attr.colorListItemExpanded,
-            R.attr.colorListItem
-        )
-    } else {
-        collapseArea.expand()
-        backgroundArea.transitionBackground(
-            R.attr.colorListItem,
-            R.attr.colorListItemExpanded
-        )
-    }
-}
+interface ExpandableAdapter {
+    var mExpandedPositions: MutableSet<Int>
 
-// Just contains boilerplate--nothing special
-abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
-    PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback) {
-
-    var mExpandedPosition = mutableSetOf<Int>()
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-
-        registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+    val adapterObserver: RecyclerView.AdapterDataObserver
+        get() = object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
                 val oldPositions = mutableListOf<Int>().apply {
-                    mExpandedPosition.forEach { this.add(it) }
+                    mExpandedPositions.forEach { this.add(it) }
                 }
                 val newPositions: List<Int> = oldPositions.map {
                     if (it >= positionStart)
@@ -70,7 +50,7 @@ abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCall
                     else
                         it
                 }
-                mExpandedPosition = mutableSetOf<Int>().apply {
+                mExpandedPositions = mutableSetOf<Int>().apply {
                     newPositions.forEach { this.add(it) }
                 }
             }
@@ -78,7 +58,7 @@ abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCall
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
                 val oldPositions = mutableListOf<Int>().apply {
-                    mExpandedPosition.forEach { this.add(it) }
+                    mExpandedPositions.forEach { this.add(it) }
                 }
                 val newPositions: List<Int> = oldPositions.mapNotNull {
                     if (it >= positionStart + itemCount)
@@ -88,11 +68,22 @@ abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCall
                     else
                         it
                 }
-                mExpandedPosition = mutableSetOf<Int>().apply {
+                mExpandedPositions = mutableSetOf<Int>().apply {
                     newPositions.forEach { this.add(it) }
                 }
             }
-        })
+        }
+}
+
+abstract class BaseItemListAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
+    ListAdapter<T, BaseItemHolder<T>>(diffCallback), ExpandableAdapter {
+
+    override var mExpandedPositions = mutableSetOf<Int>()
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+
+        registerAdapterDataObserver(adapterObserver)
     }
 
     override fun onBindViewHolder(
@@ -101,15 +92,52 @@ abstract class BaseItemAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCall
         payloads: List<Any>
     ) {
         super.onBindViewHolder(holder, position, payloads)
-        val tt = listOf(
-            if (position in mExpandedPosition) {
-                VISIBLE
-            } else {
-                GONE
-            }
-        ) + payloads
+        val itemIsExpanded = if (position in mExpandedPositions) {
+            VISIBLE
+        } else {
+            GONE
+        }
+        val newPayloads = listOf(itemIsExpanded) + payloads
         getItem(position)?.let {
-            holder.bind(it, tt)
+            holder.bind(it, newPayloads)
+        }
+    }
+
+    override fun onBindViewHolder(holder: BaseItemHolder<T>, position: Int) {
+        getItem(position)?.let { holder.bind(it) }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<T> =
+        getViewHolder(parent, viewType)
+
+    abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): BaseItemHolder<T>
+}
+
+abstract class BaseItemPagingDataAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
+    PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback), ExpandableAdapter {
+
+    override var mExpandedPositions = mutableSetOf<Int>()
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+
+        registerAdapterDataObserver(adapterObserver)
+    }
+
+    override fun onBindViewHolder(
+        holder: BaseItemHolder<T>,
+        position: Int,
+        payloads: List<Any>
+    ) {
+        super.onBindViewHolder(holder, position, payloads)
+        val itemIsExpanded = if (position in mExpandedPositions) {
+            VISIBLE
+        } else {
+            GONE
+        }
+        val newPayloads = listOf(itemIsExpanded) + payloads
+        getItem(position)?.let {
+            holder.bind(it, newPayloads)
         }
     }
 
@@ -139,16 +167,25 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
         itemView.setOnClickListener(this)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onClick(v: View?) {
-        if (bindingAdapter is BaseItemAdapter<*>) {
-            if (collapseArea.visibility == VISIBLE) {
-                (bindingAdapter as BaseItemAdapter<*>).mExpandedPosition.remove(
-                    bindingAdapterPosition
-                )
-            } else {
-                (bindingAdapter as BaseItemAdapter<*>).mExpandedPosition.add(bindingAdapterPosition)
+        if (bindingAdapter is ExpandableAdapter) {
+            val adapter: ExpandableAdapter? = when (bindingAdapter) {
+                is BaseItemPagingDataAdapter<*> -> bindingAdapter as BaseItemPagingDataAdapter<*>
+                is BaseItemListAdapter<*> -> bindingAdapter as BaseItemListAdapter<*>
+                else -> null
             }
+            adapter?.let {
+                if (collapseArea.visibility == VISIBLE) {
+                    it.mExpandedPositions.remove(bindingAdapterPosition)
+                } else {
+                    it.mExpandedPositions.add(bindingAdapterPosition)
+                }
+            }
+        } else {
+            Log.d(TAG, "A BaseItemHolder is meant to be used with an ExpandableAdapter.")
         }
+
         bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
     }
 

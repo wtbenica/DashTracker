@@ -45,11 +45,11 @@ import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
+import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -80,24 +80,24 @@ class WeeklyListFragment : ListItemFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val entryAdapter = EntryAdapter().apply {
+        val adapter = FullWeeklyAdapter().apply {
             registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                     binding.itemListRecyclerView.scrollToPosition(positionStart)
                 }
             })
         }
-        binding.itemListRecyclerView.adapter = entryAdapter
+        binding.itemListRecyclerView.adapter = adapter
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
             deductionType = it
-            entryAdapter.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
         }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allWeekliesPaged.collectLatest {
-                    entryAdapter.submitData(it)
+                    adapter.submitData(it)
                 }
             }
         }
@@ -110,7 +110,7 @@ class WeeklyListFragment : ListItemFragment() {
 
     interface WeeklyListFragmentCallback : DeductionCallback
 
-    inner class EntryAdapter : BaseItemAdapter<FullWeekly>(DIFF_CALLBACK) {
+    inner class FullWeeklyAdapter : BaseItemPagingDataAdapter<FullWeekly>(DIFF_CALLBACK) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullWeekly> =
             WeeklyHolder(parent)
 
