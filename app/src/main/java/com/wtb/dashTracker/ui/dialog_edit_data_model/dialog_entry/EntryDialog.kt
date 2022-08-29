@@ -122,16 +122,23 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = item
             if (tempEntry != null) {
-                binding.fragEntryDate.text = tempEntry.date.format(dtfDate)
+                binding.fragEntryDate.setText(tempEntry.date.format(dtfDate))
                 tempEntry.startTime?.let { st ->
-                    binding.fragEntryStartTime.text = st.format(dtfTime)
+                    binding.fragEntryStartTime.setText(st.format(dtfTime))
                 }
-                tempEntry.endTime?.let { et -> binding.fragEntryEndTime.text = et.format(dtfTime) }
-                binding.fragEntryCheckEndsNextDay.isChecked =
+                tempEntry.endTime?.let { et -> binding.fragEntryEndTime.setText(et.format(dtfTime)) }
+                binding.fragEntryCheckEndsNextDay.setChecked(
                     tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
-                tempEntry.startOdometer?.let { so -> binding.fragEntryStartMileage.setText(so.toString()) }
-                tempEntry.endOdometer?.let { eo -> binding.fragEntryEndMileage.setText(eo.toString()) }
-                tempEntry.mileage?.let { m -> binding.fragEntryTotalMileage.setText(m.toString()) }
+                )
+                tempEntry.startOdometer?.let { so ->
+                    binding.fragEntryStartMileage.setText(getString(R.string.odometer_fmt, so))
+                }
+                tempEntry.endOdometer?.let { eo ->
+                    binding.fragEntryEndMileage.setText(getString(R.string.odometer_fmt, eo))
+                }
+                tempEntry.mileage?.let { m ->
+                    binding.fragEntryTotalMileage.setText(getString(R.string.odometer_fmt, m))
+                }
                 tempEntry.pay?.let { p -> binding.fragEntryPay.setText(p.toString()) }
                 tempEntry.otherPay?.let { op -> binding.fragEntryPayOther.setText(op.toString()) }
                 tempEntry.cashTips?.let { ct -> binding.fragEntryCashTips.setText(ct.toString()) }

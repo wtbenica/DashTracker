@@ -231,15 +231,16 @@ class YearlyListFragment : ListItemFragment() {
                     }
                 }
 
-            binding.listItemTitle.text = this.item.year.toString()
-            binding.listItemTitle2.text = getCurrencyString(this.item.totalPay)
-            detailsBinding.listItemReportedIncome.text =
-                getCurrencyString(this.item.reportedPay)
-            detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
-            detailsBinding.listItemYearlyMileage.text = getMileageString(this.item.mileage)
-            detailsBinding.listItemYearlyHours.text =
-                getString(R.string.format_hours, item.hours)
-            detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.item.hourly)
+                binding.listItemTitle.text = this.item.year.toString()
+                binding.listItemTitle2.text = getCurrencyString(this.item.totalPay)
+                detailsBinding.listItemReportedIncome.text =
+                    getCurrencyString(this.item.reportedPay)
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
+                detailsBinding.listItemYearlyMileage.text =
+                    getStringOrElse(R.string.odometer_fmt, "-", this.item.mileage)
+                detailsBinding.listItemYearlyHours.text =
+                    getString(R.string.format_hours, item.hours)
+                detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.item.hourly)
 
                 setPayloadVisibility(payloads)
             }

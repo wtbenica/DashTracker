@@ -235,7 +235,8 @@ class WeeklyListFragment : ListItemFragment() {
                 detailsBinding.listItemWeeklyHourly.text = getCurrencyString(this.item.hourly)
                 detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(this.item.avgDelivery)
                 detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(this.item.delPerHour)
-                detailsBinding.listItemWeeklyMiles.text = getFloatString(this.item.miles)
+                detailsBinding.listItemWeeklyMiles.text =
+                    getStringOrElse(R.string.odometer_fmt, "-", this.item.miles)
 
                 setPayloadVisibility(payloads)
             }

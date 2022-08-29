@@ -251,7 +251,7 @@ class EntryListFragment : ListItemFragment() {
                         this.item.entry.endOdometer
                     )
                 detailsBinding.listItemEntryMileage.text = getStringOrElse(
-                    R.string.mileage_fmt,
+                    R.string.odometer_fmt,
                     "-",
                     this.item.entry.mileage
                 )

@@ -241,7 +241,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             )
             fragEndDashTotalMileage.setText(
                 fullEntry?.distance?.let {
-                    getString(R.string.mileage_fmt, it)
+                    getString(R.string.odometer_fmt, it)
                 } ?: ""
             )
             fragEndDashPay.text.clear()
