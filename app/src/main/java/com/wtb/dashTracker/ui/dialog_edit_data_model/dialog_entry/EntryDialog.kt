@@ -122,14 +122,12 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = item
             if (tempEntry != null) {
-                binding.fragEntryDate.setText(tempEntry.date.format(dtfDate))
+                binding.fragEntryDate.text = tempEntry.date.format(dtfDate)
                 tempEntry.startTime?.let { st ->
-                    binding.fragEntryStartTime.setText(st.format(dtfTime))
+                    binding.fragEntryStartTime.text = st.format(dtfTime)
                 }
-                tempEntry.endTime?.let { et -> binding.fragEntryEndTime.setText(et.format(dtfTime)) }
-                binding.fragEntryCheckEndsNextDay.setChecked(
-                    tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
-                )
+                tempEntry.endTime?.let { et -> binding.fragEntryEndTime.text = et.format(dtfTime) }
+                binding.fragEntryCheckEndsNextDay.isChecked = tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
                 tempEntry.startOdometer?.let { so ->
                     binding.fragEntryStartMileage.setText(getString(R.string.odometer_fmt, so))
                 }

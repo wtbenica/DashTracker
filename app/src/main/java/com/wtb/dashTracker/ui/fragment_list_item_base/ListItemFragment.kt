@@ -191,7 +191,7 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
 
     protected fun setPayloadVisibility(payloads: List<Any>?) {
         val listItemDetailsVisibility = (payloads?.let {
-            if (it.size >= 1 && it[0] in listOf(
+            if (it.isNotEmpty() && it[0] in listOf(
                     VISIBLE,
                     GONE
                 )

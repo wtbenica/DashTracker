@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Splash screen theme -->
     <style name="SplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@mipmap/icon_c_foreground</item>
@@ -113,7 +113,7 @@
 
         <!-- Status bar color. -->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor" >?attr/colorUi</item>
+        <item name="android:statusBarColor">?attr/colorUi</item>
 
         <!-- Text -->
         <item name="android:textColor">?attr/colorTextPrimary</item>
