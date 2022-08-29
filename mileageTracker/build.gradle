@@ -38,7 +38,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:20.0.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
-    implementation files('../../MyLibraries/notificationutil-release.aar')
+    implementation files('../../MyLibraries/notificationutil-release2.aar')
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

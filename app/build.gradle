@@ -108,7 +108,7 @@ dependencies {
 
     implementation files('../../MyLibraries/CsvUtil-release.aar')
     implementation project(path: ':mileageTracker')
-    implementation files('../../MyLibraries/notificationutil-release.aar')
+    implementation files('../../MyLibraries/notificationutil-release2.aar')
 
     kapt 'androidx.room:room-compiler:2.4.3'
     testImplementation 'junit:junit:4.13.2'

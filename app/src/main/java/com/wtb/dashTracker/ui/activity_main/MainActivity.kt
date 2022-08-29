@@ -97,7 +97,6 @@ import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
 import dev.benica.csvutil.getConvertPackImport
 import dev.benica.mileagetracker.LocationService
-import dev.benica.mileagetracker.LocationService.Companion.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
@@ -489,13 +488,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
         intent.removeExtra(EXTRA_END_DASH)
-
+        Log.d(TAG, "Intent ${intent.identifier} | EXTRA_END_DASH: $endDashExtra")
         if (endDashExtra == true) {
             val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1L)
             intent.removeExtra(EXTRA_TRIP_ID)
-
-            onUnlock()
+            Log.d(TAG, "Intent ${intent.identifier} | EXTRA_TRIP_ID: $tripId")
             endDash(tripId)
+            onUnlock()
         } else {
             expectedExit = false
 
@@ -683,10 +682,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      */
     fun stopLocationService(id: Long? = null) {
         locationService.let {
-            if (it != null)
+            if (it != null) {
+                Log.d(TAG, "stopLocationService | Connected to service")
                 it.stop(id)
-            else
+            }else {
+                Log.d(TAG, "stopLocationService | No service, set stopped to true")
                 explicitlyStopped = true
+            }
         }
     }
 
@@ -720,16 +722,18 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 val binder = service as LocationService.LocalBinder
                 locationService = binder.service
                 locationServiceBound = true
-                initLocSvcObservers()
-
-                syncActiveEntryId()
-
-                onBind?.invoke()
 
                 if (explicitlyStopped) {
-                    stopLocationService()
+                    Log.d(TAG, "onServiceConnected | stopping service bc explicit")
+                    locationService?.stop()
+//                    stopLocationService()
                     explicitlyStopped = false
+                } else {
+                    initLocSvcObservers()
+                    syncActiveEntryId()
                 }
+
+                onBind?.invoke()
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -745,64 +749,65 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      * @param tripId the id of the active trip
      */
     private fun updateLocationServiceNotificationData(tripId: Long?) {
-        fun endDashPendingIntent(tripId: Long?): PendingIntent? {
-            val intent = Intent(this, MainActivity::class.java)
-                .putExtra(EXTRA_END_DASH, true)
-                .putExtra(EXTRA_TRIP_ID, tripId ?: AUTO_ID)
 
-            return PendingIntent.getActivity(
-                this,
-                0,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        }
+        fun getOpenActivityAction(context: Context): NotificationCompat.Action {
+            fun getLaunchActivityPendingIntent(): PendingIntent? {
+                val launchActivityIntent = Intent(context, MainActivity::class.java)
+                    .putExtra(EXTRA_END_DASH, false)
+                Log.d(TAG, "getLaunchActivityPendingIntent ${launchActivityIntent.identifier}")
 
-        fun launchActivityPendingIntent(): PendingIntent? {
-            val launchActivityIntent = Intent(this, MainActivity::class.java)
-
-            return PendingIntent.getActivity(
-                this,
-                0,
-                launchActivityIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        }
-
-        fun cancelServicePendingIntent(): PendingIntent? {
-            val cancelIntent = Intent(this, LocationService::class.java).apply {
-                putExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, true)
+                return PendingIntent.getActivity(
+                    context,
+                    0,
+                    launchActivityIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
             }
-            return PendingIntent.getService(
-                this,
-                0,
-                cancelIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+
+            return NotificationCompat.Action(
+                R.drawable.ic_launch,
+                "Open",
+                getLaunchActivityPendingIntent()
             )
         }
 
-        fun locServiceOngoingNotificationData(tripId: Long? = null) =
+        fun getStopServiceAction(ctx: Context): NotificationCompat.Action {
+            fun getEndDashPendingIntent(): PendingIntent? {
+                val intent = Intent(ctx, MainActivity::class.java)
+                    .putExtra(EXTRA_END_DASH, true)
+                    .putExtra(EXTRA_TRIP_ID, tripId ?: AUTO_ID)
+
+                Log.d(TAG, "getEndDashPendingIntent ${intent.identifier}")
+
+                return PendingIntent.getActivity(
+                    ctx,
+                    1,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
+
+            return NotificationCompat.Action(
+                R.drawable.ic_cancel,
+                "Stop",
+                getEndDashPendingIntent()
+            )
+        }
+
+        fun locServiceOngoingNotificationData() =
             NotificationUtils.NotificationData(
                 contentTitle = R.string.app_name,
                 bigContentTitle = R.string.app_name,
                 icon = R.mipmap.icon_c,
                 actions = listOf(
-                    NotificationCompat.Action(
-                        R.drawable.ic_launch,
-                        "Open",
-                        launchActivityPendingIntent()
-                    ),
-                    NotificationCompat.Action(
-                        R.drawable.ic_cancel,
-                        "Stop",
-                        endDashPendingIntent(tripId)
-                    )
+                    ::getOpenActivityAction,
+                    ::getStopServiceAction
                 )
             )
 
         locationService?.apply {
             initialize(
-                notificationData = locServiceOngoingNotificationData(tripId),
+                notificationData = locServiceOngoingNotificationData(),
                 notificationChannel = getNotificationChannel(),
                 notificationText = { "Mileage tracking is on. Background location is in use." }
             )
