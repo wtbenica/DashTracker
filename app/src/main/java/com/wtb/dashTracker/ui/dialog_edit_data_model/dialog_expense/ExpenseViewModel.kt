@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
 class ExpenseViewModel : ListItemViewModel<Expense>() {
-    override fun getItemFlowById(id: Int): Flow<Expense?> =
+    override fun getItemFlowById(id: Long): Flow<Expense?> =
         repository.getExpenseFlowById(id)
 
     val expensePurposes: Flow<List<ExpensePurpose>> = repository.allExpensePurposes

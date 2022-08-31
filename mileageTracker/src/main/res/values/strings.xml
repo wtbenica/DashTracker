@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="uninit_notif_data_exception">Location Tracker Service needs to have its NotificationData set before use</string>
+</resources>

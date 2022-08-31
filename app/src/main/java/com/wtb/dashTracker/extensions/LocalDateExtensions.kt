@@ -26,6 +26,8 @@ val dtfShortDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
 val dtfMini: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
 val dtfShortDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
 val dtfTime: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
+val dtfDateTime: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
+val dtfDateTimeOld: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm a")
 
 val LocalDate.formatted: String
     get() = if (year == LocalDate.now().year) {
