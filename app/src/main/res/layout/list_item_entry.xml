@@ -81,6 +81,22 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/chart_title_cpm"
                 tools:text="$24.32" />
+
+            <TextView
+                android:id="@+id/tracked_lbl"
+                style="@style/ListItemHeaderTextView.Subtitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/list_item_subtitle"
+                android:text="@string/lbl_tracked_mileage"/>
+
+            <TextView
+                android:id="@+id/tracked_value"
+                android:layout_marginStart="@dimen/margin_default"
+                style="@style/ListItemHeaderTextView.Subtitle"
+                app:layout_constraintTop_toTopOf="@id/tracked_lbl"
+                app:layout_constraintBottom_toBottomOf="@id/tracked_lbl"
+                app:layout_constraintStart_toEndOf="@id/tracked_lbl"
+                android:text="10.2"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

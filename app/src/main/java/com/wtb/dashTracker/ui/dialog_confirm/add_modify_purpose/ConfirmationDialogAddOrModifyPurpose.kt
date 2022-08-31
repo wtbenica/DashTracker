@@ -32,8 +32,8 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.fragment_trends.TAG
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +57,7 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val purposeId = arguments?.getInt(ARG_PURPOSE_ID)
+        val purposeId = arguments?.getLong(ARG_PURPOSE_ID)
         arguments?.getBoolean(ARG_IS_NEW)?.let { isNew = it }
         viewModel.loadDataModel(purposeId)
     }
@@ -142,14 +142,14 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
         const val RK_ADD_PURPOSE = "add_purpose"
 
         fun newInstance(
-            purposeId: Int,
-            prevPurpose: Int? = null,
+            purposeId: Long,
+            prevPurpose: Long? = null,
             isNew: Boolean = true,
         ) = ConfirmationDialogAddOrModifyPurpose().apply {
             arguments = Bundle().apply {
-                putInt(ARG_PURPOSE_ID, purposeId)
+                putLong(ARG_PURPOSE_ID, purposeId)
                 putBoolean(ARG_IS_NEW, isNew)
-                prevPurpose?.let { putInt(ARG_PREV_PURPOSE, it) }
+                prevPurpose?.let { putLong(ARG_PREV_PURPOSE, it) }
             }
         }
     }

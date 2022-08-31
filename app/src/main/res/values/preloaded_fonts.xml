@@ -18,5 +18,6 @@
 <resources>
     <array name="preloaded_fonts">
         <item>@font/lalezar</item>
+        <item>@font/oswald</item>
     </array>
 </resources>

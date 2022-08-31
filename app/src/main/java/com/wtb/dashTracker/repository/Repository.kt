@@ -23,11 +23,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
-import com.wtb.csvutil.CSVUtils
 import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
+import dev.benica.csvutil.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -58,6 +58,9 @@ class Repository private constructor(private val context: Context) {
     private val transactionDao: TransactionDao
         get() = db.transactionDao()
 
+    private val locationDao: LocationDao
+        get() = db.locationDao()
+
     /**
      * Dash Entry
      */
@@ -66,6 +69,8 @@ class Repository private constructor(private val context: Context) {
     private suspend fun allEntries(): List<DashEntry> = entryDao.getAllSuspend()
 
     private var entryPagingSource: PagingSource<Int, DashEntry>? = null
+
+    private var fullEntryPagingSource: PagingSource<Int, FullEntry>? = null
 
     val allEntriesPaged: Flow<PagingData<DashEntry>> = Pager(
         config = PagingConfig(
@@ -79,24 +84,40 @@ class Repository private constructor(private val context: Context) {
         }
     ).flow
 
-    fun deleteEntryById(id: Int) {
+    val allFullEntriesPaged: Flow<PagingData<FullEntry>> = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+            enablePlaceholders = true
+        ),
+        pagingSourceFactory = {
+            val ps = entryDao.getAllFullPagingSource()
+            fullEntryPagingSource = ps
+            ps
+        }
+    ).flow
+
+    fun deleteEntryById(id: Long) {
         CoroutineScope(Dispatchers.Default).launch {
             withContext(Dispatchers.Default) {
                 entryDao.deleteById(id)
             }.let {
                 entryPagingSource?.invalidate()
+                fullEntryPagingSource?.invalidate()
             }
         }
     }
 
-    fun getEntryFlowById(id: Int) = entryDao.getFlow(id)
+    fun getEntryFlowById(id: Long) = entryDao.getFlow(id)
+
+    fun getFullEntryFlowById(id: Long) = entryDao.getFullEntryFlow(id)
 
     suspend fun getCostPerMile(date: LocalDate, purpose: DeductionType): Float =
         when (purpose) {
             DeductionType.NONE -> 0f
             DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDate(date, Purpose.GAS)
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
-            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year)?.amount ?: 0f
+            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year.toLong())?.amount
+                ?: 0f
         }
 
 
@@ -124,7 +145,7 @@ class Repository private constructor(private val context: Context) {
     suspend fun getWeeklyByDateSus(date: LocalDate): FullWeekly? =
         weeklyDao.getWeeklyByDateSus(date)
 
-    fun getBasePayAdjustFlowById(id: Int) = weeklyDao.getFlow(id)
+    fun getBasePayAdjustFlowById(id: Long) = weeklyDao.getFlow(id)
 
     /**
      * Yearly
@@ -141,7 +162,7 @@ class Repository private constructor(private val context: Context) {
                 transactionDao.getCostPerMileAnnual(year)
             }
             DeductionType.IRS_STD -> {
-                standardMileageDeductionDao.get(year)?.amount ?: 0f
+                standardMileageDeductionDao.get(year.toLong())?.amount ?: 0f
             }
         }
 
@@ -153,11 +174,13 @@ class Repository private constructor(private val context: Context) {
     private suspend fun allExpensePurposes(): List<ExpensePurpose> =
         expensePurposeDao.getAllSuspend()
 
+    private suspend fun allLocationData(): List<LocationData> = locationDao.getAllSuspend()
+
     val allExpensePurposes: Flow<List<ExpensePurpose>> = expensePurposeDao.getAll()
 
     val allFullPurposes: Flow<List<FullExpensePurpose>> = expensePurposeDao.getAllFull()
 
-    fun getExpenseFlowById(id: Int): Flow<Expense?> = expenseDao.getFlow(id)
+    fun getExpenseFlowById(id: Long): Flow<Expense?> = expenseDao.getFlow(id)
 
     private var expensePagingSource: PagingSource<Int, FullExpense>? = null
 
@@ -173,7 +196,7 @@ class Repository private constructor(private val context: Context) {
         }
     ).flow
 
-    fun deleteExpenseById(id: Int) {
+    fun deleteExpenseById(id: Long) {
         CoroutineScope(Dispatchers.Default).launch {
             withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
                 expenseDao.deleteById(id)
@@ -191,7 +214,7 @@ class Repository private constructor(private val context: Context) {
 
     private suspend fun allPurposes(): List<ExpensePurpose> = expensePurposeDao.getAllSuspend()
 
-    fun getExpensePurposeFlowById(id: Int): Flow<ExpensePurpose?> =
+    fun getExpensePurposeFlowById(id: Long): Flow<ExpensePurpose?> =
         expensePurposeDao.getFlow(id)
 
     /**
@@ -211,6 +234,7 @@ class Repository private constructor(private val context: Context) {
             is Expense -> expenseDao.upsert(model)
             is ExpensePurpose -> expensePurposeDao.upsert(model)
             is StandardMileageDeduction -> standardMileageDeductionDao.upsert(model)
+            is LocationData -> locationDao.upsert(model)
         }
 
     fun saveModel(model: DataModel) {
@@ -221,9 +245,21 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.insert(model)
                 is ExpensePurpose -> expensePurposeDao.insert(model)
                 is StandardMileageDeduction -> standardMileageDeductionDao.insert(model)
+                is LocationData -> locationDao.insert(model)
             }
         }
     }
+
+    suspend fun saveModelSus(model: DataModel): Long =
+        when (model) {
+            is DashEntry -> entryDao.insertSus(model)
+            is Weekly -> weeklyDao.insertSus(model)
+            is Expense -> expenseDao.insertSus(model)
+            is ExpensePurpose -> expensePurposeDao.insertSus(model)
+            is StandardMileageDeduction -> standardMileageDeductionDao.insertSus(model)
+            is LocationData -> locationDao.insertSus(model)
+        }
+
 
     fun deleteModel(model: DataModel) {
         executor.execute {
@@ -233,6 +269,7 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.delete(model)
                 is ExpensePurpose -> expensePurposeDao.delete(model)
                 is StandardMileageDeduction -> standardMileageDeductionDao.delete(model)
+                is LocationData -> locationDao.delete(model)
             }
         }
     }
@@ -243,7 +280,8 @@ class Repository private constructor(private val context: Context) {
                 DashEntry.getConvertPackExport(allEntries()),
                 Weekly.getConvertPackExport(allWeeklies()),
                 Expense.getConvertPackExport(allExpenses()),
-                ExpensePurpose.getConvertPackExport(allExpensePurposes())
+                ExpensePurpose.getConvertPackExport(allExpensePurposes()),
+                LocationData.getConvertPackExport(allLocationData())
             )
         }
     }
@@ -255,7 +293,8 @@ class Repository private constructor(private val context: Context) {
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,
         expenses: List<Expense>? = null,
-        purposes: List<ExpensePurpose>? = null
+        purposes: List<ExpensePurpose>? = null,
+        locationData: List<LocationData>? = null
     ) {
         CoroutineScope(Dispatchers.Default).launch {
             weeklies?.let {
@@ -266,6 +305,11 @@ class Repository private constructor(private val context: Context) {
             entries?.let {
                 entryDao.clear()
                 entryDao.upsertAll(it)
+            }
+
+            locationData?.let {
+                locationDao.clear()
+                locationDao.upsertAll(it)
             }
 
             if (expenses != null && purposes != null) {
@@ -284,7 +328,6 @@ class Repository private constructor(private val context: Context) {
     }
 
     companion object {
-
         private var INSTANCE: Repository? = null
 
         fun initialize(context: Context) {

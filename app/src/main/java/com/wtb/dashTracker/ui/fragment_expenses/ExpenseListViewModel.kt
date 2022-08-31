@@ -32,5 +32,5 @@ class ExpenseListViewModel : ViewModel() {
 
     fun delete(expense: Expense) = repository.deleteModel(expense)
 
-    fun deleteExpenseById(id: Int) = repository.deleteExpenseById(id)
+    fun deleteExpenseById(id: Long) = repository.deleteExpenseById(id)
 }

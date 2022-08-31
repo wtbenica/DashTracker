@@ -120,7 +120,7 @@
                 <TextView
                     android:id="@+id/list_item_entry_mileage"
                     style="@style/ValueStyle"
-                    tools:text="41mi" />
+                    tools:text="41" />
             </TableRow>
 
             <TableRow

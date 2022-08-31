@@ -26,7 +26,7 @@ import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -34,6 +34,26 @@ import java.time.LocalDate
 @ExperimentalCoroutinesApi
 class MainActivityViewModel : ViewModel() {
     private val repository = Repository.get()
+
+    private val _entryId = MutableStateFlow(AUTO_ID)
+    internal val entryId: StateFlow<Long>
+        get() = _entryId
+
+    fun loadEntry(id: Long?) {
+        _entryId.value = id ?: AUTO_ID
+    }
+
+    fun deleteEntry(id: Long) {
+        repository.deleteEntryById(id)
+    }
+
+    internal val activeEntry: StateFlow<FullEntry?> = entryId.flatMapLatest { id ->
+        repository.getFullEntryFlowById(id)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
 
     private val _hourly = MutableLiveData(0f)
     val hourly: LiveData<Float>
@@ -67,6 +87,8 @@ class MainActivityViewModel : ViewModel() {
         }
     }
 
+    suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)
+
     suspend fun upsertAsync(dataModel: DataModel): Long =
         withContext(Dispatchers.Default) {
             repository.upsertModel(dataModel)
@@ -80,9 +102,10 @@ class MainActivityViewModel : ViewModel() {
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,
         expenses: List<Expense>? = null,
-        purposes: List<ExpensePurpose>? = null
+        purposes: List<ExpensePurpose>? = null,
+        locationData: List<LocationData>? = null
     ) {
-        repository.insertOrReplace(entries, weeklies, expenses, purposes)
+        repository.insertOrReplace(entries, weeklies, expenses, purposes, locationData)
     }
 
     companion object {

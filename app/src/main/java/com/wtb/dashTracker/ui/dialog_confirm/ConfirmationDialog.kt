@@ -39,7 +39,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
     @StringRes
     var text: Int? = null
     private lateinit var requestKey: String
-    private var confirmId: Int? = null
+    private var confirmId: Long? = null
     private var message: String? = null
 
     @StringRes
@@ -65,9 +65,16 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
                     null
             }
 
+            fun getLongNotZero(key: String): Long? = getLong(key).let {
+                if (it != 0L)
+                    it
+                else
+                    null
+            }
+
             text = getIntNotZero(ARG_TEXT)
             getString(ARG_REQ_KEY)?.let { requestKey = it }
-            confirmId = getIntNotZero(ARG_CONFIRM_ID)
+            confirmId = getLongNotZero(ARG_CONFIRM_ID)
             getString(ARG_MESSAGE)?.let { message = it }
             posButton = getIntNotZero(ARG_POS_TEXT) ?: R.string.yes
             posAction = getParcelable<LambdaWrapper?>(ARG_POS_ACTION)?.action
@@ -117,7 +124,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
             val mPosAction = posAction ?: {
                 val bundlePairs = bundleOf()
                 bundlePairs.putBoolean(ARG_CONFIRM, true)
-                confirmId?.let { bundlePairs.putInt(ARG_EXTRA, it) }
+                confirmId?.let { bundlePairs.putLong(ARG_EXTRA, it) }
                 if (confirmId == null) {
                     parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
                 } else {
@@ -223,7 +230,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
         fun newInstance(
             @StringRes text: Int?,
             requestKey: String,
-            confirmId: Int? = null,
+            confirmId: Long? = null,
             message: String? = null,
             @StringRes posButton: Int = R.string.yes,
             posAction: LambdaWrapper? = null,
@@ -235,7 +242,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
             arguments = Bundle().apply {
                 text?.let { putInt(ARG_TEXT, it) }
                 putString(ARG_REQ_KEY, requestKey)
-                confirmId?.let { putInt(ARG_CONFIRM_ID, it) }
+                confirmId?.let { putLong(ARG_CONFIRM_ID, it) }
                 putString(ARG_MESSAGE, message)
                 putInt(ARG_POS_TEXT, posButton)
                 putParcelable(ARG_POS_ACTION, posAction)
@@ -260,7 +267,7 @@ enum class ConfirmType(val key: String) {
 class ConfirmDeleteDialog {
     companion object {
         fun newInstance(
-            confirmId: Int? = null,
+            confirmId: Long? = null,
             @StringRes text: Int? = null,
         ) = ConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_delete,

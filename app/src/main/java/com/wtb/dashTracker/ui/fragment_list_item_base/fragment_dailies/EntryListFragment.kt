@@ -36,7 +36,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
@@ -50,8 +50,8 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CO
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -88,12 +88,12 @@ class EntryListFragment : ListItemFragment() {
             ConfirmType.DELETE.key
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
-            val id = bundle.getInt(ARG_EXTRA)
+            val id = bundle.getLong(ARG_EXTRA)
             if (result) {
+                (activity as MainActivity).stopLocationService(id)
                 viewModel.deleteEntryById(id)
             }
         }
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -111,12 +111,20 @@ class EntryListFragment : ListItemFragment() {
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
             deductionType = it
-            entryAdapter.notifyDataSetChanged()
+            entryAdapter.notifyItemRangeChanged(0, entryAdapter.itemCount)
         }
+//
+//        lifecycleScope.launch {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                viewModel.entryList.collectLatest {
+//                    entryAdapter.submitData(it)
+//                }
+//            }
+//        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.entryList.collectLatest {
+                viewModel.fullEntryList.collectLatest {
                     entryAdapter.submitData(it)
                 }
             }
@@ -130,11 +138,11 @@ class EntryListFragment : ListItemFragment() {
 
     interface EntryListFragmentCallback : DeductionCallback
 
-    inner class EntryAdapter : BaseItemAdapter<DashEntry>(DIFF_CALLBACK) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<DashEntry> =
+    inner class EntryAdapter : BaseItemPagingDataAdapter<FullEntry>(DIFF_CALLBACK) {
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullEntry> =
             EntryHolder(parent)
 
-        inner class EntryHolder(parent: ViewGroup) : BaseItemHolder<DashEntry>(
+        inner class EntryHolder(parent: ViewGroup) : BaseItemHolder<FullEntry>(
             LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
         ) {
             private val binding = ListItemEntryBinding.bind(itemView)
@@ -148,20 +156,21 @@ class EntryListFragment : ListItemFragment() {
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        EntryDialog.newInstance(this@EntryHolder.item.entryId)
+                        EntryDialog.newInstance(this@EntryHolder.item.entry.entryId)
                             .show(parentFragmentManager, "edit_entry_details")
                     }
                 }
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(confirmId = this@EntryHolder.item.entryId)
-                            .show(parentFragmentManager, "delete_entry")
+                        ConfirmDeleteDialog.newInstance(
+                            confirmId = this@EntryHolder.item.entry.entryId
+                        ).show(parentFragmentManager, "delete_entry")
                     }
                 }
             }
 
-            override fun bind(item: DashEntry, payloads: MutableList<Any>?) {
+            override fun bind(item: FullEntry, payloads: List<Any>?) {
                 fun showExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
@@ -180,7 +189,7 @@ class EntryListFragment : ListItemFragment() {
 
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(Dispatchers.Default) {
-                        viewModel.getCostPerMile(item.date, deductionType)
+                        viewModel.getCostPerMile(item.entry.date, deductionType)
                     }.let { cpm: Float? ->
                         val costPerMile = cpm ?: 0f
                         (context as MainActivity).runOnUiThread {
@@ -189,10 +198,11 @@ class EntryListFragment : ListItemFragment() {
                                 else -> {
                                     showExpenseFields()
 
-                                    detailsBinding.listItemDeductionType.text = deductionType.fullDesc
+                                    detailsBinding.listItemDeductionType.text =
+                                        deductionType.fullDesc
 
                                     detailsBinding.listItemEntryExpenses.text = getCurrencyString(
-                                        this@EntryHolder.item.getExpenses(costPerMile)
+                                        this@EntryHolder.item.entry.getExpenses(costPerMile)
                                     )
 
                                     detailsBinding.listItemEntryCpm.text =
@@ -202,17 +212,15 @@ class EntryListFragment : ListItemFragment() {
 
                                     binding.listItemSubtitle2.text =
                                         getCurrencyString(
-                                            this@EntryHolder.item.getNet(
-                                                costPerMile
-                                            )
+                                            this@EntryHolder.item.entry.getNet(costPerMile)
                                         )
 
                                     detailsBinding.listItemEntryHourly.text = getCurrencyString(
-                                        this@EntryHolder.item.getHourly(costPerMile)
+                                        this@EntryHolder.item.entry.getHourly(costPerMile)
                                     )
 
                                     detailsBinding.listItemEntryAvgDel.text = getCurrencyString(
-                                        this@EntryHolder.item.getAvgDelivery(costPerMile)
+                                        this@EntryHolder.item.entry.getAvgDelivery(costPerMile)
                                     )
                                 }
                             }
@@ -220,34 +228,43 @@ class EntryListFragment : ListItemFragment() {
                     }
                 }
 
-                binding.listItemTitle.text = this.item.date.formatted.uppercase()
-                binding.listItemTitle2.text = getCurrencyString(this.item.totalEarned)
+                binding.listItemTitle.text = this.item.entry.date.formatted.uppercase()
+                binding.listItemTitle2.text = getCurrencyString(this.item.entry.totalEarned)
                 binding.listItemSubtitle.text =
-                    getHoursRangeString(this.item.startTime, this.item.endTime)
+                    getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)
                 binding.listItemAlert.visibility =
-                    toVisibleIfTrueElseGone(this.item.isIncomplete)
+                    toVisibleIfTrueElseGone(this.item.entry.isIncomplete)
+                val mileageString = getMileageString(item.distance.toFloat())
+                binding.trackedValue.text = mileageString
 
-                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.pay)
-                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
-                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
+                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.entry.pay)
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.entry.cashTips)
+                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.entry.otherPay)
                 detailsBinding.listItemAlertHours.setVisibleIfTrue(
-                    this.item.startTime == null || this.item.endTime == null
+                    this.item.entry.startTime == null || this.item.entry.endTime == null
                 )
                 detailsBinding.listItemEntryHours.text =
-                    getStringOrElse(R.string.float_fmt, "-", this.item.totalHours)
+                    getStringOrElse(R.string.float_fmt, "-", this.item.entry.totalHours)
                 detailsBinding.listItemEntryMileageRange.text =
-                    getOdometerRangeString(this.item.startOdometer, this.item.endOdometer)
-                detailsBinding.listItemEntryMileage.text = "${this.item.mileage ?: "-"}"
-                detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.mileage == null)
+                    getOdometerRangeString(
+                        this.item.entry.startOdometer,
+                        this.item.entry.endOdometer
+                    )
+                detailsBinding.listItemEntryMileage.text = getStringOrElse(
+                    R.string.odometer_fmt,
+                    "-",
+                    this.item.entry.mileage
+                )
+                detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.entry.mileage == null)
                 detailsBinding.listItemEntryNumDeliveries.text =
-                    "${this.item.numDeliveries ?: "-"}"
-                detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.item.numDeliveries == null)
+                    "${this.item.entry.numDeliveries ?: "-"}"
+                detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.item.entry.numDeliveries == null)
                 detailsBinding.listItemEntryHourly.text =
-                    getCurrencyString(this.item.hourly)
+                    getCurrencyString(this.item.entry.hourly)
                 detailsBinding.listItemEntryAvgDel.text =
-                    getCurrencyString(this.item.avgDelivery)
+                    getCurrencyString(this.item.entry.avgDelivery)
                 detailsBinding.listItemEntryHourlyDels.text =
-                    getFloatString(this.item.hourlyDeliveries)
+                    getFloatString(this.item.entry.hourlyDeliveries)
 
                 setPayloadVisibility(payloads)
             }
@@ -255,16 +272,17 @@ class EntryListFragment : ListItemFragment() {
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DashEntry>() {
-            override fun areItemsTheSame(oldItem: DashEntry, newItem: DashEntry): Boolean =
-                oldItem.entryId == newItem.entryId
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FullEntry>() {
+            override fun areItemsTheSame(oldItem: FullEntry, newItem: FullEntry): Boolean =
+                oldItem.entry.entryId == newItem.entry.entryId
 
 
             override fun areContentsTheSame(
-                oldItem: DashEntry,
-                newItem: DashEntry
+                oldItem: FullEntry,
+                newItem: FullEntry
             ): Boolean =
-                oldItem == newItem
+                oldItem.entry.equals(newItem.entry) &&
+                        oldItem.distance == newItem.distance
         }
 
         fun toVisibleIfTrueElseGone(boolean: Boolean) = if (boolean) VISIBLE else GONE
