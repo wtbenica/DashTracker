@@ -18,6 +18,7 @@ package com.wtb.dashTracker.database.models
 
 import androidx.room.*
 import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.extensions.toIntOrNull
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import dev.benica.csvutil.CSVConvertible
 import dev.benica.csvutil.CSVConvertible.Column
@@ -231,6 +232,7 @@ data class DashEntry(
             get() = "entries"
 
         private enum class Columns(val headerName: String, val getValue: KProperty1<DashEntry, *>) {
+            ENTRY_ID("Entry ID", DashEntry::entryId),
             START_DATE("Start Date", DashEntry::date),
             START_TIME("Start Time", DashEntry::startTime),
             END_DATE("End Date", DashEntry::endDate),
@@ -241,25 +243,36 @@ data class DashEntry(
             BASE_PAY("Base Pay", DashEntry::pay),
             CASH_TIPS("Cash Tips", DashEntry::cashTips),
             OTHER_PAY("Other Pay", DashEntry::otherPay),
-            NUM_DELIVERIES("Num Deliveries", DashEntry::numDeliveries)
+            NUM_DELIVERIES("Num Deliveries", DashEntry::numDeliveries),
+            LAST_UPDATED("Last Updated", DashEntry::lastUpdated)
         }
 
-        override fun fromCSV(row: Map<String, String>): DashEntry = DashEntry(
-            date = LocalDate.parse(row[Columns.START_DATE.headerName]),
-            endDate = LocalDate.parse(row[Columns.END_DATE.headerName]),
-            startTime = LocalTime.parse(row[Columns.START_TIME.headerName]),
-            endTime = row[Columns.END_TIME.headerName]?.let {
-                if (it == "") null else LocalTime.parse(row[Columns.END_TIME.headerName])
-            },
-            startOdometer = row[Columns.START_ODO.headerName]?.toFloatOrNull(),
-            endOdometer = row[Columns.END_ODO.headerName]?.toFloatOrNull(),
-            totalMileage = row[Columns.MILEAGE.headerName]?.toFloatOrNull(),
-            pay = row[Columns.BASE_PAY.headerName]?.toFloatOrNull(),
-            cashTips = row[Columns.CASH_TIPS.headerName]?.toFloatOrNull(),
-            otherPay = row[Columns.OTHER_PAY.headerName]?.toFloatOrNull(),
-            numDeliveries = row[Columns.NUM_DELIVERIES.headerName]?.toIntOrNull(),
-            week = LocalDate.parse(row[Columns.START_DATE.headerName]).endOfWeek
-        )
+        @Throws(IllegalStateException::class)
+        override fun fromCSV(row: Map<String, String>): DashEntry {
+            val idColumnValue = row[Columns.ENTRY_ID.headerName]
+            val entryId: Long = idColumnValue?.toLongOrNull()
+                ?: throw IllegalStateException("Entry ID must be filled with a valid value, not $idColumnValue")
+            val week = LocalDate.parse(row[Columns.START_DATE.headerName]).endOfWeek
+            return DashEntry(
+                entryId = entryId,
+                date = LocalDate.parse(row[Columns.START_DATE.headerName]),
+                endDate = LocalDate.parse(row[Columns.END_DATE.headerName]),
+                startTime = LocalTime.parse(row[Columns.START_TIME.headerName]),
+                endTime = row[Columns.END_TIME.headerName]?.let {
+                    if (it == "") null else LocalTime.parse(row[Columns.END_TIME.headerName])
+                },
+                startOdometer = row[Columns.START_ODO.headerName]?.toFloatOrNull(),
+                endOdometer = row[Columns.END_ODO.headerName]?.toFloatOrNull(),
+                totalMileage = row[Columns.MILEAGE.headerName]?.toFloatOrNull(),
+                pay = row[Columns.BASE_PAY.headerName]?.toFloatOrNull(),
+                cashTips = row[Columns.CASH_TIPS.headerName]?.toFloatOrNull(),
+                otherPay = row[Columns.OTHER_PAY.headerName]?.toFloatOrNull(),
+                numDeliveries = row[Columns.NUM_DELIVERIES.headerName]?.toIntOrNull(),
+                week = week
+            ).apply {
+                lastUpdated = LocalDate.parse(row[Columns.LAST_UPDATED.headerName])
+            }
+        }
 
         override fun getColumns(): Array<Column<DashEntry>> =
             Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()

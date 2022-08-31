@@ -57,7 +57,8 @@ data class Expense(
             AMOUNT("Amount", Expense::amount),
             PURPOSE("Purpose", Expense::purpose),
             PRICE_PER_GAL("Price Per Gallon", Expense::pricePerGal),
-            IS_NEW("isNew", Expense::isNew)
+            IS_NEW("isNew", Expense::isNew),
+            LAST_UPDATED("Last Updated", Expense::lastUpdated)
         }
 
         override val saveFileName: String
@@ -73,7 +74,9 @@ data class Expense(
                 purpose = row[Columns.PURPOSE.headerName]?.toLong() ?: Purpose.GAS.id,
                 pricePerGal = row[Columns.PRICE_PER_GAL.headerName]?.toFloatOrNull(),
                 isNew = row[Columns.IS_NEW.headerName]?.toBoolean() ?: false
-            )
+            ).apply {
+                lastUpdated = LocalDate.parse(row[Columns.LAST_UPDATED.headerName])
+            }
     }
 }
 
@@ -100,14 +103,21 @@ data class ExpensePurpose(
             val getValue: KProperty1<ExpensePurpose, *>
         ) {
             ID("Purpose Id", ExpensePurpose::purposeId),
-            NAME("Name", ExpensePurpose::name)
+            NAME("Name", ExpensePurpose::name),
+            LAST_UPDATED("Last Updated", ExpensePurpose::lastUpdated)
         }
 
-        override fun fromCSV(row: Map<String, String>): ExpensePurpose =
-            ExpensePurpose(
-                purposeId = row[Columns.ID.headerName]?.toLong() ?: AUTO_ID,
+        override fun fromCSV(row: Map<String, String>): ExpensePurpose {
+            val idColumnValue = row[Columns.ID.headerName]
+            val purposeId = idColumnValue?.toLongOrNull()
+                ?: throw IllegalStateException("Trip column must be filled with a valid tripId, not: $idColumnValue")
+            return ExpensePurpose(
+                purposeId = purposeId,
                 name = row[Columns.NAME.headerName]
-            )
+            ).apply {
+                lastUpdated = LocalDate.parse(row[Columns.LAST_UPDATED.headerName])
+            }
+        }
 
         override fun getColumns(): Array<Column<ExpensePurpose>> =
             Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()

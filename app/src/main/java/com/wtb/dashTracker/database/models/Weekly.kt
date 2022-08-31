@@ -48,7 +48,8 @@ data class Weekly(
             DATE("Start of Week", Weekly::date),
             ADJUST("Base Pay Adjustment", Weekly::basePayAdjustment),
             WEEK_NUM("Week Number", Weekly::weekNumber),
-            IS_NEW("isNew", Weekly::isNew)
+            IS_NEW("isNew", Weekly::isNew),
+            LAST_UPDATED("Last Updated", Weekly::lastUpdated)
         }
 
         override val saveFileName: String
@@ -62,7 +63,9 @@ data class Weekly(
                 date = LocalDate.parse(row[Columns.DATE.headerName]),
                 basePayAdjustment = row[Columns.ADJUST.headerName]?.toFloatOrNull(),
                 isNew = row[Columns.IS_NEW.headerName]?.toBoolean() ?: false,
-            )
+            ).apply {
+                lastUpdated = LocalDate.parse(row[Columns.LAST_UPDATED.headerName])
+            }
     }
 }
 

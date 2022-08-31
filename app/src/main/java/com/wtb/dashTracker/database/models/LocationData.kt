@@ -5,12 +5,12 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.extensions.dtfDateTime
 import dev.benica.csvutil.CSVConvertible
 import dev.benica.csvutil.CSVConvertible.Column
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlin.reflect.KProperty1
@@ -49,8 +49,8 @@ class LocationData constructor(
     val unknown: Int? = null
 ) : DataModel() {
     constructor(
-        loc: Location, 
-        entryId: Long, 
+        loc: Location,
+        entryId: Long,
         still: Int,
         car: Int,
         foot: Int,
@@ -108,7 +108,8 @@ class LocationData constructor(
             STILL("Still", LocationData::still),
             CAR("Car", LocationData::car),
             FOOT("Foot", LocationData::foot),
-            UNKNOWN("Unknown", LocationData::unknown)
+            UNKNOWN("Unknown", LocationData::unknown),
+            LAST_UPDATED("Last Updated", LocationData::lastUpdated)
         }
 
         @Throws(IllegalStateException::class)
@@ -116,10 +117,11 @@ class LocationData constructor(
             val entryColumnValue = row[Columns.ENTRY.headerName]
             val entry = entryColumnValue?.toLongOrNull()
                 ?: throw IllegalStateException("Trip column must be filled with a valid tripId, not: $entryColumnValue")
+
             return LocationData(
                 locationId = row[Columns.ID.headerName]?.toLong() ?: AUTO_ID,
                 time = row[Columns.TIME.headerName]?.let {
-                    LocalDateTime.parse(it, dtfDate)
+                    LocalDateTime.parse(it, dtfDateTime)
                 },
                 latitude = row[Columns.LAT.headerName]?.toDoubleOrNull(),
                 longitude = row[Columns.LONG.headerName]?.toDoubleOrNull(),
@@ -131,7 +133,9 @@ class LocationData constructor(
                 car = row[Columns.CAR.headerName]?.toIntOrNull(),
                 foot = row[Columns.FOOT.headerName]?.toIntOrNull(),
                 unknown = row[Columns.UNKNOWN.headerName]?.toIntOrNull()
-            )
+            ).apply {
+                lastUpdated = LocalDate.parse(row[Columns.LAST_UPDATED.headerName])
+            }
         }
 
         override fun getColumns(): Array<Column<LocationData>> =
