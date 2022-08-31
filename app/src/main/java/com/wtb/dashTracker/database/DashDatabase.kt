@@ -28,15 +28,12 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 7,
-    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class,
-        StandardMileageDeduction::class, LocationData::class],
+    version = 5,
+    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class, StandardMileageDeduction::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4),
-        AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7)
+        AutoMigration(from = 3, to = 4)
     ],
     exportSchema = true,
 )
@@ -48,7 +45,6 @@ abstract class DashDatabase : RoomDatabase() {
     abstract fun expensePurposeDao(): ExpensePurposeDao
     abstract fun standardMileageDeductionDao(): StandardMileageDeductionDao
     abstract fun transactionDao(): TransactionDao
-    abstract fun locationDao(): LocationDao
 
     companion object {
         @Volatile
@@ -95,7 +91,7 @@ abstract class DashDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_4_5 = object: Migration(4, 5) {
+        val MIGRATION_4_5 = object: Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 val purposes = Purpose.values().map { purpose ->
                     ExpensePurpose(purpose.id, purpose.purposeName)

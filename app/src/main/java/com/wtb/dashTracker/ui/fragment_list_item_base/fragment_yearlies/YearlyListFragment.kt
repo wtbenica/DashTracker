@@ -24,8 +24,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
@@ -33,6 +31,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
@@ -41,13 +40,12 @@ import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.extensions.getMileageString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemListAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import kotlinx.coroutines.*
@@ -162,92 +160,106 @@ class YearlyListFragment : ListItemFragment() {
 
     interface YearlyListFragmentCallback : DeductionCallback
 
-    inner class YearlyAdapter : BaseItemListAdapter<Yearly>(DIFF_CALLBACK) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<Yearly> =
+    inner class YearlyAdapter :
+        ListAdapter<Yearly, YearlyHolder>(DIFF_CALLBACK) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): YearlyHolder =
             YearlyHolder(parent)
 
-        inner class YearlyHolder(parent: ViewGroup) : BaseItemHolder<Yearly>(
-            LayoutInflater.from(parent.context).inflate(R.layout.list_item_yearly, parent, false)
+        override fun onBindViewHolder(holder: YearlyHolder, position: Int) {
+            holder.bind(getItem(position))
+        }
+
+        override fun onBindViewHolder(
+            holder: YearlyHolder,
+            position: Int,
+            payloads: MutableList<Any>
         ) {
-            private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
-            private val detailsBinding: ListItemYearlyDetailsTableBinding =
-                ListItemYearlyDetailsTableBinding.bind(itemView)
+            super.onBindViewHolder(holder, position, payloads)
+            holder.bind(getItem(position), payloads)
+        }
+    }
 
-            override val collapseArea: ConstraintLayout
-                get() = binding.listItemDetails
-            override val backgroundArea: LinearLayout
-                get() = binding.listItemWrapper
+    inner class YearlyHolder(parent: ViewGroup) : BaseItemHolder<Yearly>(
+        LayoutInflater.from(parent.context).inflate(R.layout.list_item_yearly, parent, false)
+    ) {
+        private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
+        private val detailsBinding: ListItemYearlyDetailsTableBinding =
+            ListItemYearlyDetailsTableBinding.bind(itemView)
 
-            override fun bind(item: Yearly, payloads: List<Any>?) {
-                fun showExpenseFields() {
-                    binding.listItemSubtitle2Label.visibility = VISIBLE
-                    binding.listItemSubtitle2.visibility = VISIBLE
-                    detailsBinding.listItemYearlyCpmRow.visibility = VISIBLE
-                    detailsBinding.listItemYearlyExpensesRow.visibility = VISIBLE
-                }
+        override val collapseArea: ViewGroup
+            get() = binding.listItemDetails
+        override val backgroundArea: ViewGroup
+            get() = binding.listItemWrapper
 
-                fun hideExpenseFields() {
-                    binding.listItemSubtitle2Label.visibility = GONE
-                    binding.listItemSubtitle2.visibility = GONE
-                    detailsBinding.listItemYearlyCpmRow.visibility = GONE
-                    detailsBinding.listItemYearlyExpensesRow.visibility = GONE
-                }
+        override fun bind(item: Yearly, payloads: MutableList<Any>?) {
+            fun showExpenseFields() {
+                binding.listItemSubtitle2Label.visibility = VISIBLE
+                binding.listItemSubtitle2.visibility = VISIBLE
+                detailsBinding.listItemYearlyCpmRow.visibility = VISIBLE
+                detailsBinding.listItemYearlyExpensesRow.visibility = VISIBLE
+            }
 
-                this.item = item
+            fun hideExpenseFields() {
+                binding.listItemSubtitle2Label.visibility = GONE
+                binding.listItemSubtitle2.visibility = GONE
+                detailsBinding.listItemYearlyCpmRow.visibility = GONE
+                detailsBinding.listItemYearlyExpensesRow.visibility = GONE
+            }
 
-                CoroutineScope(Dispatchers.Default).launch {
-                    withContext(Dispatchers.Default) {
-                        viewModel.getAnnualCostPerMile(this@YearlyHolder.item.year, deductionType)
-                    }.let { cpm: Float? ->
-                        val costPerMile: Float = cpm ?: 0f
-                        (context as MainActivity).runOnUiThread {
-                            when (deductionType) {
-                                DeductionType.NONE -> hideExpenseFields()
-                                else -> {
-                                    showExpenseFields()
+            this.item = item
 
-                                    detailsBinding.listItemDeductionType.text =
-                                        deductionType.fullDesc
+            CoroutineScope(Dispatchers.Default).launch {
+                withContext(Dispatchers.Default) {
+                    viewModel.getAnnualCostPerMile(this@YearlyHolder.item.year, deductionType)
+                }.let { cpm: Float? ->
+                    val costPerMile: Float = cpm ?: 0f
+                    (context as MainActivity).runOnUiThread {
+                        when (deductionType) {
+                            DeductionType.NONE -> hideExpenseFields()
+                            else -> {
+                                showExpenseFields()
 
-                                    detailsBinding.listItemYearlyExpenses.text =
-                                        getCurrencyString(
-                                            this@YearlyHolder.item.getExpenses(
-                                                costPerMile
-                                            )
+                                detailsBinding.listItemDeductionType.text =
+                                    deductionType.fullDesc
+
+                                detailsBinding.listItemYearlyExpenses.text =
+                                    getCurrencyString(
+                                        this@YearlyHolder.item.getExpenses(
+                                            costPerMile
                                         )
-
-                                    detailsBinding.listItemYearlyCpm.text =
-                                        getCpmString(costPerMile)
-
-                                    binding.listItemSubtitle2.text =
-                                        getCurrencyString(this@YearlyHolder.item.getNet(costPerMile))
-
-                                    detailsBinding.listItemYearlyHourly.text = getCurrencyString(
-                                        this@YearlyHolder.item.getHourly(costPerMile)
                                     )
-                                }
+
+                                detailsBinding.listItemYearlyCpm.text =
+                                    getCpmString(costPerMile)
+
+                                binding.listItemSubtitle2.text =
+                                    getCurrencyString(this@YearlyHolder.item.getNet(costPerMile))
+
+                                detailsBinding.listItemYearlyHourly.text = getCurrencyString(
+                                    this@YearlyHolder.item.getHourly(costPerMile)
+                                )
                             }
                         }
                     }
                 }
-
-                binding.listItemTitle.text = this.item.year.toString()
-                binding.listItemTitle2.text = getCurrencyString(this.item.totalPay)
-                detailsBinding.listItemReportedIncome.text =
-                    getCurrencyString(this.item.reportedPay)
-                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
-                detailsBinding.listItemYearlyMileage.text =
-                    getStringOrElse(R.string.odometer_fmt, "-", this.item.mileage)
-                detailsBinding.listItemYearlyHours.text =
-                    getString(R.string.format_hours, item.hours)
-                detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.item.hourly)
-
-                setPayloadVisibility(payloads)
             }
+
+            binding.listItemTitle.text = this.item.year.toString()
+            binding.listItemTitle2.text = getCurrencyString(this.item.totalPay)
+            detailsBinding.listItemReportedIncome.text =
+                getCurrencyString(this.item.reportedPay)
+            detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
+            detailsBinding.listItemYearlyMileage.text = getMileageString(this.item.mileage)
+            detailsBinding.listItemYearlyHours.text =
+                getString(R.string.format_hours, item.hours)
+            detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.item.hourly)
+
+            setPayloadVisibility(payloads)
         }
     }
 
     companion object {
+
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Yearly>() {
             override fun areItemsTheSame(oldItem: Yearly, newItem: Yearly): Boolean =
                 oldItem.year == newItem.year

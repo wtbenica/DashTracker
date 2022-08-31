@@ -66,7 +66,7 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
 
         setFragmentResultListener(RK_ADD_PURPOSE) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
-            bundle.getLong(ARG_PURPOSE_ID).let { id ->
+            bundle.getInt(ARG_PURPOSE_ID).let { id ->
                 if (result) {
                     bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
                         viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName))
@@ -111,4 +111,6 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
             }
         }
     }
+
+    companion object
 }

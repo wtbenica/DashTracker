@@ -31,7 +31,7 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
     @RawQuery
     protected abstract suspend fun getDataModelByQuery(query: SupportSQLiteQuery): T?
 
-    suspend fun get(id: Long): T? {
+    suspend fun get(id: Int): T? {
         val query = SimpleSQLiteQuery("SELECT * FROM $tableName WHERE $idName = $id")
 
         return getDataModelByQuery(query)
@@ -43,7 +43,7 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
 
     protected abstract fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<T?>
 
-    fun getFlow(id: Long): Flow<T?> {
+    fun getFlow(id: Int): Flow<T?> {
         val query = SimpleSQLiteQuery("SELECT * FROM $tableName WHERE $idName = $id")
 
         return getDataModelFlowByQuery(query)
@@ -51,9 +51,6 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
 
     @Insert(onConflict = IGNORE)
     abstract fun insert(obj: T): Long
-
-    @Insert(onConflict = IGNORE)
-    abstract suspend fun insertSus(obj: T): Long
 
     @Insert(onConflict = IGNORE)
     abstract fun insert(obj: List<T>): List<Long>
@@ -70,7 +67,7 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
         if (id == -1L) {
             update(obj)
         }
-        return if (id != -1L) id else obj.id
+        return if (id != -1L) id else obj.id.toLong()
     }
 
     fun upsertAll(models: List<T>) {

@@ -20,5 +20,5 @@ import java.io.Serializable
 import java.time.LocalDate
 
 sealed class DataModel(var lastUpdated: LocalDate = LocalDate.now()) : Serializable {
-    abstract val id: Long
+    abstract val id: Int
 }
