@@ -20,12 +20,10 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
-import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.Expense
-import com.wtb.dashTracker.database.models.FullEntry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -51,11 +49,7 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
     @RawQuery(observedEntities = [DashEntry::class])
     abstract fun executeRawQuery(query: SupportSQLiteQuery): Int
 
-    @Transaction
-    @Query("SELECT * FROM DashEntry WHERE entryId = :id LIMIT 1")
-    abstract fun getFullEntryFlow(id: Long): Flow<FullEntry?>
-
-    fun deleteById(id: Long): Int {
+    fun deleteById(id: Int): Int {
         val query = SimpleSQLiteQuery("DELETE FROM DashEntry WHERE entryId = $id")
 
         return executeRawQuery(query)
@@ -69,10 +63,6 @@ abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {
 
     @Query(SQL_GET_ALL)
     abstract fun getAllPagingSource(): PagingSource<Int, DashEntry>
-
-    @Transaction
-    @Query(SQL_GET_ALL)
-    abstract fun getAllFullPagingSource(): PagingSource<Int, FullEntry>
 
     @Query(SQL_GET_BY_DATE)
     abstract fun getEntriesByDatePagingSource(

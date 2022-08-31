@@ -20,10 +20,10 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.wtb.csvutil.CSVConvertible
+import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.extensions.weekOfYear
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
-import dev.benica.csvutil.CSVConvertible
-import dev.benica.csvutil.CSVConvertible.Column
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import kotlin.reflect.KProperty1
@@ -35,8 +35,8 @@ data class Weekly(
     val weekNumber: Int = date.weekOfYear,
     var isNew: Boolean = false
 ) : DataModel() {
-    override val id: Long
-        get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toLong()
+    override val id: Int
+        get() = "${date.year}${date.monthValue}${date.dayOfMonth}".toInt()
 
     val isIncomplete: Boolean
         get() = (basePayAdjustment == null || basePayAdjustment == 0f) && !isNew

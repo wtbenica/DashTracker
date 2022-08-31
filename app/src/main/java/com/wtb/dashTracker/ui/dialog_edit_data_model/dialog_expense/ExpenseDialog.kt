@@ -195,7 +195,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             RK_ADD_PURPOSE
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
-            bundle.getLong(ARG_PURPOSE_ID).let { id ->
+            bundle.getInt(ARG_PURPOSE_ID).let { id ->
                 if (result) {
                     bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
                         viewModel.upsert(
@@ -254,10 +254,10 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     companion object {
-        fun newInstance(expenseId: Long): ExpenseDialog =
+        fun newInstance(expenseId: Int): ExpenseDialog =
             ExpenseDialog().apply {
                 arguments = Bundle().apply {
-                    putLong(ARG_ITEM_ID, expenseId)
+                    putInt(ARG_ITEM_ID, expenseId)
                 }
             }
     }
@@ -309,7 +309,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                         val purposeId = viewModel.upsertAsync(ExpensePurpose())
                         val prevPurpose = item?.purpose
                         ConfirmationDialogAddOrModifyPurpose.newInstance(
-                            purposeId = purposeId,
+                            purposeId = purposeId.toInt(),
                             prevPurpose = prevPurpose,
                         ).show(parentFragmentManager, null)
                     }
@@ -340,7 +340,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             return tempConvertView
         }
 
-        fun getPositionById(id: Long): Int {
+        fun getPositionById(id: Int): Int {
             var pos = -1
             itemList.forEachIndexed { index, purpose ->
                 if (id == purpose.purposeId) {

@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Splash screen theme -->
     <style name="SplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@mipmap/icon_c_foreground</item>
@@ -75,8 +75,8 @@
         <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
 
         <!-- Text -->
-        <item name="android:fontFamily">@font/oswald</item>
-        <item name="titleFontFamily">@font/oswald</item>
+        <item name="android:fontFamily">@font/lalezar</item>
+        <item name="titleFontFamily">@font/lalezar</item>
 
         <!-- activity_main -->
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
@@ -113,7 +113,7 @@
 
         <!-- Status bar color. -->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">?attr/colorUi</item>
+        <item name="android:statusBarColor" >?attr/colorUi</item>
 
         <!-- Text -->
         <item name="android:textColor">?attr/colorTextPrimary</item>

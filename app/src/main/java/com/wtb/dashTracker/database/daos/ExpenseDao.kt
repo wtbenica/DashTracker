@@ -49,7 +49,7 @@ abstract class ExpenseDao : BaseDao<Expense>("Expense", "expenseId") {
     @RawQuery(observedEntities = [Expense::class])
     abstract fun executeRawQuery(query: SupportSQLiteQuery): Int
 
-    fun deleteById(id: Long): Int {
+    fun deleteById(id: Int): Int {
         val query = SimpleSQLiteQuery("DELETE FROM Expense WHERE expenseId = $id")
 
         return executeRawQuery(query)

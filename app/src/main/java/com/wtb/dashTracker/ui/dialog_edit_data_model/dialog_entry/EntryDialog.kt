@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.TextView
-import androidx.annotation.StringRes
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -36,10 +35,10 @@ import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.lang.Float.max
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import kotlin.math.max
 
 @ExperimentalCoroutinesApi
 class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
@@ -52,6 +51,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
     override fun getViewBinding(inflater: LayoutInflater): DialogFragEntryBinding =
         DialogFragEntryBinding.inflate(layoutInflater).apply {
+
             fragEntryDate.apply {
                 setOnClickListener {
                     DatePickerFragment.newInstance(
@@ -88,8 +88,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                     val endMileage = fragEntryEndMileage.text?.toFloatOrNull() ?: 0f
                     this.onTextChangeUpdateTotal(
                         updateView = fragEntryTotalMileage,
-                        otherValue = endMileage,
-                        stringFormat = R.string.odometer_fmt
+                        otherValue = endMileage
                     ) { other, self -> max(other - self, 0f) }
                 }
             }
@@ -99,8 +98,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                     val startMileage = fragEntryStartMileage.text?.toFloatOrNull() ?: 0f
                     this.onTextChangeUpdateTotal(
                         updateView = fragEntryTotalMileage,
-                        otherValue = startMileage,
-                        stringFormat = R.string.odometer_fmt
+                        otherValue = startMileage
                     ) { other, self -> max(self - other, 0f) }
                 }
             }
@@ -127,16 +125,11 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                     binding.fragEntryStartTime.text = st.format(dtfTime)
                 }
                 tempEntry.endTime?.let { et -> binding.fragEntryEndTime.text = et.format(dtfTime) }
-                binding.fragEntryCheckEndsNextDay.isChecked = tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
-                tempEntry.startOdometer?.let { so ->
-                    binding.fragEntryStartMileage.setText(getString(R.string.odometer_fmt, so))
-                }
-                tempEntry.endOdometer?.let { eo ->
-                    binding.fragEntryEndMileage.setText(getString(R.string.odometer_fmt, eo))
-                }
-                tempEntry.mileage?.let { m ->
-                    binding.fragEntryTotalMileage.setText(getString(R.string.odometer_fmt, m))
-                }
+                binding.fragEntryCheckEndsNextDay.isChecked =
+                    tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
+                tempEntry.startOdometer?.let { so -> binding.fragEntryStartMileage.setText(so.toString()) }
+                tempEntry.endOdometer?.let { eo -> binding.fragEntryEndMileage.setText(eo.toString()) }
+                tempEntry.mileage?.let { m -> binding.fragEntryTotalMileage.setText(m.toString()) }
                 tempEntry.pay?.let { p -> binding.fragEntryPay.setText(p.toString()) }
                 tempEntry.otherPay?.let { op -> binding.fragEntryPayOther.setText(op.toString()) }
                 tempEntry.cashTips?.let { ct -> binding.fragEntryCashTips.setText(ct.toString()) }
@@ -239,19 +232,20 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
     }
 
     companion object {
-        fun newInstance(entryId: Long): EntryDialog =
+
+        fun newInstance(entryId: Int) =
             EntryDialog().apply {
                 arguments = Bundle().apply {
-                    putLong(ARG_ITEM_ID, entryId)
+                    putInt(ARG_ITEM_ID, entryId)
                 }
             }
+
     }
 }
 
 fun EditText.onTextChangeUpdateTotal(
     updateView: TextView,
     otherValue: Float?,
-    @StringRes stringFormat: Int? = null,
     operation: (Float, Float) -> Float
 ) {
     val self: Float = text?.toFloatOrNull() ?: 0f
@@ -259,10 +253,6 @@ fun EditText.onTextChangeUpdateTotal(
     updateView.text = if (newTotal == 0f) {
         null
     } else {
-        if (stringFormat != null) {
-            context.getString(stringFormat, newTotal)
-        } else {
-            context.getFloatString(newTotal).dropLast(1)
-        }
+        context.getFloatString(newTotal).dropLast(1)
     }
 }

@@ -16,11 +16,14 @@
 
 package com.wtb.dashTracker.database.models
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import com.wtb.csvutil.CSVConvertible
+import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
-import dev.benica.csvutil.CSVConvertible
-import dev.benica.csvutil.CSVConvertible.Column
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration
 import java.time.LocalDate
@@ -28,7 +31,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KProperty1
 
-const val AUTO_ID = 0L
+const val AUTO_ID = 0
 
 @ExperimentalCoroutinesApi
 @Entity(
@@ -45,7 +48,7 @@ const val AUTO_ID = 0L
     ]
 )
 data class DashEntry(
-    @PrimaryKey(autoGenerate = true) val entryId: Long = AUTO_ID,
+    @PrimaryKey(autoGenerate = true) val entryId: Int = AUTO_ID,
     val date: LocalDate = LocalDate.now(),
     val endDate: LocalDate = date,
     val startTime: LocalTime? = LocalTime.now(),
@@ -59,8 +62,7 @@ data class DashEntry(
     val numDeliveries: Int? = null,
     var week: LocalDate? = date.endOfWeek
 ) : DataModel(), ListItemType {
-
-    override val id: Long
+    override val id: Int
         get() = entryId
 
     val isIncomplete
@@ -183,7 +185,7 @@ data class DashEntry(
     }
 
     override fun hashCode(): Int {
-        var result = entryId.toInt()
+        var result = entryId
         result = 31 * result + date.hashCode()
         result = 31 * result + startTime.hashCode()
         result = 31 * result + endTime.hashCode()
@@ -264,51 +266,4 @@ data class DashEntry(
         override fun getColumns(): Array<Column<DashEntry>> =
             Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
     }
-}
-
-@ExperimentalCoroutinesApi
-data class FullEntry(
-    @Embedded
-    val entry: DashEntry,
-
-    @Relation(parentColumn = "entryId", entityColumn = "entry")
-    val locations: List<LocationData>
-) : ListItemType {
-    val distance: Double
-        get() {
-            var prevLoc: LocationData? = null
-            val res = locations.fold(0.0) { f, loc ->
-                val tempPrev = prevLoc
-                prevLoc = loc
-
-                f + if (tempPrev != null) {
-                    val dist = loc.distanceTo(tempPrev)
-                    // includes locations where still == 100, but it seems like there's motion
-                    if (loc.still != 100 || dist > 0.002) dist else 0.0
-                } else {
-                    0.0
-                }
-            }
-            return res
-        }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as FullEntry
-
-        if (entry != other.entry) return false
-        if (locations != other.locations) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = entry.hashCode()
-        result = 31 * result + locations.hashCode()
-        return result
-    }
-
-
 }

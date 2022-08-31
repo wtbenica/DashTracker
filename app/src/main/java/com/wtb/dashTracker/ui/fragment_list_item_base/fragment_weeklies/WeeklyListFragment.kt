@@ -45,11 +45,11 @@ import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
+import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -80,24 +80,24 @@ class WeeklyListFragment : ListItemFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = FullWeeklyAdapter().apply {
+        val entryAdapter = EntryAdapter().apply {
             registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                     binding.itemListRecyclerView.scrollToPosition(positionStart)
                 }
             })
         }
-        binding.itemListRecyclerView.adapter = adapter
+        binding.itemListRecyclerView.adapter = entryAdapter
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
             deductionType = it
-            adapter.notifyDataSetChanged()
+            entryAdapter.notifyDataSetChanged()
         }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allWeekliesPaged.collectLatest {
-                    adapter.submitData(it)
+                    entryAdapter.submitData(it)
                 }
             }
         }
@@ -110,7 +110,7 @@ class WeeklyListFragment : ListItemFragment() {
 
     interface WeeklyListFragmentCallback : DeductionCallback
 
-    inner class FullWeeklyAdapter : BaseItemPagingDataAdapter<FullWeekly>(DIFF_CALLBACK) {
+    inner class EntryAdapter : BaseItemAdapter<FullWeekly>(DIFF_CALLBACK) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullWeekly> =
             WeeklyHolder(parent)
 
@@ -135,7 +135,7 @@ class WeeklyListFragment : ListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullWeekly, payloads: List<Any>?) {
+            override fun bind(item: FullWeekly, payloads: MutableList<Any>?) {
                 fun showExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
@@ -235,8 +235,7 @@ class WeeklyListFragment : ListItemFragment() {
                 detailsBinding.listItemWeeklyHourly.text = getCurrencyString(this.item.hourly)
                 detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(this.item.avgDelivery)
                 detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(this.item.delPerHour)
-                detailsBinding.listItemWeeklyMiles.text =
-                    getStringOrElse(R.string.odometer_fmt, "-", this.item.miles)
+                detailsBinding.listItemWeeklyMiles.text = getFloatString(this.item.miles)
 
                 setPayloadVisibility(payloads)
             }
