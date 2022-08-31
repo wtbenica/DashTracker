@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +16,7 @@
   -->
 
 <resources>
-
-    <style name="FragEntryHeaderTextView" parent="Widget.AppCompat.TextView">
+    <style name="FragEntryHeaderTextView">
         <item name="android:layout_marginEnd">@dimen/margin_default</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:singleLine">true</item>
@@ -36,28 +36,6 @@
         <item name="android:textSize">?attr/textSizeItemValue</item>
         <item name="android:textColor">?attr/colorDialogText</item>
         <item name="android:textAlignment">textEnd</item>
-    </style>
-
-    <style name="FragEntryTextView" parent="Widget.AppCompat.TextView">
-        <item name="android:layout_marginEnd">@dimen/margin_default</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:paddingVertical">8dp</item>
-        <item name="android:textSize">?attr/textSizeItemHeader</item>
-        <item name="android:textColor">?attr/colorDialogText</item>
-        <item name="android:background">@android:color/transparent</item>
-    </style>
-
-    <style name="FragEntryTextView.Header">
-        <item name="android:textAlignment">textStart</item>
-        <item name="android:focusable">false</item>
-        <item name="android:layout_marginStart">@dimen/margin_default</item>
-    </style>
-
-    <style name="FragEntryTextView.Value">
-        <item name="android:textAlignment">textEnd</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">?attr/textSizeItemValue</item>
     </style>
 
     <style name="DialogFragSpinnerStyle">

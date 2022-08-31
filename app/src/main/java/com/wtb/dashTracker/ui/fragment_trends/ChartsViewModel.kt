@@ -21,9 +21,14 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+
+@ExperimentalCoroutinesApi
+val Any.TAG: String
+    get() = APP + this::class.simpleName
 
 @ExperimentalCoroutinesApi
 class ChartsViewModel : ViewModel() {

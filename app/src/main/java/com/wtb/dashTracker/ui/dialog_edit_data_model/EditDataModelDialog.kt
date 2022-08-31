@@ -61,8 +61,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.getLong(ARG_ITEM_ID, -1L)?.let {
-            if (it != -1L) {
+        arguments?.getInt(ARG_ITEM_ID, -1)?.let {
+            if (it != -1) {
                 viewModel.loadDataModel(it)
             }
         }
@@ -125,8 +125,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
             val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
             if (result) {
                 saveOnExit = false
-
-                // TODO: Is this necessary? Doesn't appear to get used anywhere
                 setFragmentResult(
                     REQUEST_KEY_ENTRY_DIALOG,
                     bundleOf(
@@ -166,8 +164,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setOnClickListener {
             saveConfirmed = true
             setFragmentResult(
-                requestKey = REQUEST_KEY_ENTRY_DIALOG,
-                result = bundleOf(
+                REQUEST_KEY_ENTRY_DIALOG,
+                bundleOf(
                     ARG_MODIFICATION_STATE to ModificationState.MODIFIED.ordinal
                 )
             )

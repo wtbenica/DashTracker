@@ -16,12 +16,14 @@
 
 package com.wtb.dashTracker.database.models
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import com.wtb.csvutil.CSVConvertible
+import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.extensions.endOfWeek
-import com.wtb.dashTracker.extensions.toIntOrNull
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
-import dev.benica.csvutil.CSVConvertible
-import dev.benica.csvutil.CSVConvertible.Column
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Duration
 import java.time.LocalDate
@@ -29,7 +31,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KProperty1
 
-const val AUTO_ID = 0L
+const val AUTO_ID = 0
 
 @ExperimentalCoroutinesApi
 @Entity(
@@ -46,7 +48,7 @@ const val AUTO_ID = 0L
     ]
 )
 data class DashEntry(
-    @PrimaryKey(autoGenerate = true) val entryId: Long = AUTO_ID,
+    @PrimaryKey(autoGenerate = true) val entryId: Int = AUTO_ID,
     val date: LocalDate = LocalDate.now(),
     val endDate: LocalDate = date,
     val startTime: LocalTime? = LocalTime.now(),
@@ -60,8 +62,7 @@ data class DashEntry(
     val numDeliveries: Int? = null,
     var week: LocalDate? = date.endOfWeek
 ) : DataModel(), ListItemType {
-
-    override val id: Long
+    override val id: Int
         get() = entryId
 
     val isIncomplete
@@ -184,7 +185,7 @@ data class DashEntry(
     }
 
     override fun hashCode(): Int {
-        var result = entryId.toInt()
+        var result = entryId
         result = 31 * result + date.hashCode()
         result = 31 * result + startTime.hashCode()
         result = 31 * result + endTime.hashCode()
@@ -232,7 +233,6 @@ data class DashEntry(
             get() = "entries"
 
         private enum class Columns(val headerName: String, val getValue: KProperty1<DashEntry, *>) {
-            ENTRY_ID("Entry ID", DashEntry::entryId),
             START_DATE("Start Date", DashEntry::date),
             START_TIME("Start Time", DashEntry::startTime),
             END_DATE("End Date", DashEntry::endDate),
@@ -243,85 +243,27 @@ data class DashEntry(
             BASE_PAY("Base Pay", DashEntry::pay),
             CASH_TIPS("Cash Tips", DashEntry::cashTips),
             OTHER_PAY("Other Pay", DashEntry::otherPay),
-            NUM_DELIVERIES("Num Deliveries", DashEntry::numDeliveries),
-            LAST_UPDATED("Last Updated", DashEntry::lastUpdated)
+            NUM_DELIVERIES("Num Deliveries", DashEntry::numDeliveries)
         }
 
-        @Throws(IllegalStateException::class)
-        override fun fromCSV(row: Map<String, String>): DashEntry {
-            val idColumnValue = row[Columns.ENTRY_ID.headerName]
-            val entryId: Long = idColumnValue?.toLongOrNull()
-                ?: throw IllegalStateException("Entry ID must be filled with a valid value, not $idColumnValue")
-            val week = LocalDate.parse(row[Columns.START_DATE.headerName]).endOfWeek
-            return DashEntry(
-                entryId = entryId,
-                date = LocalDate.parse(row[Columns.START_DATE.headerName]),
-                endDate = LocalDate.parse(row[Columns.END_DATE.headerName]),
-                startTime = LocalTime.parse(row[Columns.START_TIME.headerName]),
-                endTime = row[Columns.END_TIME.headerName]?.let {
-                    if (it == "") null else LocalTime.parse(row[Columns.END_TIME.headerName])
-                },
-                startOdometer = row[Columns.START_ODO.headerName]?.toFloatOrNull(),
-                endOdometer = row[Columns.END_ODO.headerName]?.toFloatOrNull(),
-                totalMileage = row[Columns.MILEAGE.headerName]?.toFloatOrNull(),
-                pay = row[Columns.BASE_PAY.headerName]?.toFloatOrNull(),
-                cashTips = row[Columns.CASH_TIPS.headerName]?.toFloatOrNull(),
-                otherPay = row[Columns.OTHER_PAY.headerName]?.toFloatOrNull(),
-                numDeliveries = row[Columns.NUM_DELIVERIES.headerName]?.toIntOrNull(),
-                week = week
-            ).apply {
-                lastUpdated = LocalDate.parse(row[Columns.LAST_UPDATED.headerName])
-            }
-        }
+        override fun fromCSV(row: Map<String, String>): DashEntry = DashEntry(
+            date = LocalDate.parse(row[Columns.START_DATE.headerName]),
+            endDate = LocalDate.parse(row[Columns.END_DATE.headerName]),
+            startTime = LocalTime.parse(row[Columns.START_TIME.headerName]),
+            endTime = row[Columns.END_TIME.headerName]?.let {
+                if (it == "") null else LocalTime.parse(row[Columns.END_TIME.headerName])
+            },
+            startOdometer = row[Columns.START_ODO.headerName]?.toFloatOrNull(),
+            endOdometer = row[Columns.END_ODO.headerName]?.toFloatOrNull(),
+            totalMileage = row[Columns.MILEAGE.headerName]?.toFloatOrNull(),
+            pay = row[Columns.BASE_PAY.headerName]?.toFloatOrNull(),
+            cashTips = row[Columns.CASH_TIPS.headerName]?.toFloatOrNull(),
+            otherPay = row[Columns.OTHER_PAY.headerName]?.toFloatOrNull(),
+            numDeliveries = row[Columns.NUM_DELIVERIES.headerName]?.toIntOrNull(),
+            week = LocalDate.parse(row[Columns.START_DATE.headerName]).endOfWeek
+        )
 
         override fun getColumns(): Array<Column<DashEntry>> =
             Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
     }
-}
-
-@ExperimentalCoroutinesApi
-data class FullEntry(
-    @Embedded
-    val entry: DashEntry,
-
-    @Relation(parentColumn = "entryId", entityColumn = "entry")
-    val locations: List<LocationData>
-) : ListItemType {
-    val distance: Double
-        get() {
-            var prevLoc: LocationData? = null
-            val res = locations.fold(0.0) { f, loc ->
-                val tempPrev = prevLoc
-                prevLoc = loc
-
-                f + if (tempPrev != null) {
-                    val dist = loc.distanceTo(tempPrev)
-                    // includes locations where still == 100, but it seems like there's motion
-                    if (loc.still != 100 || dist > 0.002) dist else 0.0
-                } else {
-                    0.0
-                }
-            }
-            return res
-        }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as FullEntry
-
-        if (entry != other.entry) return false
-        if (locations != other.locations) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = entry.hashCode()
-        result = 31 * result + locations.hashCode()
-        return result
-    }
-
-
 }
