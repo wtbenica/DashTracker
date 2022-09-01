@@ -946,7 +946,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         var isAuthenticated = false
 
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
-        private const val LOC_SVC_CHANNEL_NAME = "dt_mileage_tracker"
+        private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "Dashtracker mileage tracker is active"
 
         private const val EXTRA_NOTIFICATION_CHANNEL =
