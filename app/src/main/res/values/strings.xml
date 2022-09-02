@@ -17,7 +17,7 @@
 <resources>
     <string name="app_name">DashTracker</string>
 
-    <string name="location_service_desc">Dashtracker mileage tracking active</string>
+    <string name="location_service_desc">DashTracker mileage tracking active</string>
 
     <string name="frag_title_daily_list">Daily</string>
     <string name="frag_title_weekly_list">Weekly</string>
@@ -88,7 +88,6 @@
     <string name="dialog_text_import">Please locate the ZIP file you would like to import. The imported data will overwrite any existing data.</string>
     <string name="dialog_notes_import"><b>If you have modified the CSV files:</b>\n\n<ul>
         <li>The CSV files must be put into a zip file in order to import.\n\n</li>
-        <li>The CSV files names must start with \'dash_tracker_entries_\' or \'dash_tracker_weeklies_\', as appropriate.\n\n</li>
         <li>Specific values are expected in the header row. If you\'ve changed any of the header row values, you must change them back. You can create a new export to find the appropriate values.</li></ul>
     </string>
     <string name="dialog_text_export">This will create a ZIP file containing a CSV-formatted backup of your data.</string>
