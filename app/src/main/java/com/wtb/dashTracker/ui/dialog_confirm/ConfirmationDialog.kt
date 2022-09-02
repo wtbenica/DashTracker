@@ -59,17 +59,19 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
         arguments?.apply {
             fun getIntNotZero(key: String): Int? = getInt(key).let {
-                if (it != 0)
+                if (it != 0) {
                     it
-                else
+                } else {
                     null
+                }
             }
 
             fun getLongNotZero(key: String): Long? = getLong(key).let {
-                if (it != 0L)
+                if (it != 0L) {
                     it
-                else
+                } else {
                     null
+                }
             }
 
             text = getIntNotZero(ARG_TEXT)

@@ -127,6 +127,7 @@
     <string name="delete">Delete</string>
     <string name="reset">Reset</string>
     <string name="save">Save</string>
+    <string name="dont_ask">Don\'t ask again</string>
 
     <string name="confirm_delete">The information you\'ve entered will not be recoverable</string>
     <string name="confirm_reset">Any changes will be permanently lost</string>
@@ -157,4 +158,6 @@
     <string name="chart_title_avg_dels_per_hour">Average deliveries per hour</string>
     <string name="chart_title_avg_per_hour">Average per hour</string>
     <string name="lbl_tracked_mileage">Tracked Mileage</string>
+
+    <string name="dialog_bg_location_text">LocationModule uses background location so we always know where you are.</string>
 </resources>

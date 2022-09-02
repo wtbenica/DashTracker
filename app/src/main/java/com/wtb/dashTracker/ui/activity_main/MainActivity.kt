@@ -38,6 +38,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View.*
 import android.widget.ImageButton
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
@@ -188,13 +189,20 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private var locationService: LocationService? = null
     private var locationServiceBound = false
 
-    private val locationPermLauncher =
+    /**
+     * An [ActivityResultLauncher] that calls [getBgLocationPermission] if the requested
+     * permissions are granted
+     */
+    private val locationPermLauncher: ActivityResultLauncher<Array<String>> =
         registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermission)
 
-    private val bgLocationPermLauncher =
+    /**
+     * An [ActivityResultLauncher] that calls [loadNewTrip] if the requested permission is granted
+     */
+    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
         registerSinglePermissionLauncher(onGranted = ::loadNewTrip)
 
-    private val csvImportLauncher =
+    private val csvImportLauncher: ActivityResultLauncher<String> =
         CSVUtils(activity = this).getContentLauncher(
             importPacks = convertPacksImport,
             action = this::insertOrReplace,
@@ -395,24 +403,28 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             viewModel.loadEntry(eid)
 
             if (result) {
-                explicitlyStopped = false
-                when {
-                    hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
-                        Log.d(TAG, "Result | loadNewTrip")
-                        startLocationService(eid)
-                    }
-                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                        expectedExit = true
-                        showRationaleLocation {
-                            locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                                .also { expectedExit = true }
-                        }
-                    }
-                    else -> {
-                        locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                        expectedExit = true
-                    }
+                getLocationPermissions(eid)
+            }
+        }
+    }
+
+    private fun getLocationPermissions(eid: Long) {
+        explicitlyStopped = false
+        when {
+            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
+                Log.d(TAG, "Result | loadNewTrip")
+                startLocationService(eid)
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                expectedExit = true
+                showRationaleLocation {
+                    locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        .also { expectedExit = true }
                 }
+            }
+            else -> {
+                locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                expectedExit = true
             }
         }
     }
@@ -450,14 +462,17 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
             val locationServiceIntent = Intent(applicationContext, LocationService::class.java)
 
-            val onBind: (() -> Unit)? = activeEntryId?.let { id -> { startLocationService(id) } }
-            locationServiceConnection = getLocationServiceConnection(onBind)
+            if (hasPermissions(this, *REQUIRED_PERMISSIONS)) {
+                val onBind: (() -> Unit)? =
+                    activeEntryId?.let { id -> { startLocationService(id) } }
+                locationServiceConnection = getLocationServiceConnection(onBind)
 
-            bindService(
-                locationServiceIntent,
-                locationServiceConnection!!,
-                BIND_AUTO_CREATE
-            )
+                bindService(
+                    locationServiceIntent,
+                    locationServiceConnection!!,
+                    BIND_AUTO_CREATE
+                )
+            }
         }
 
         /**
@@ -685,7 +700,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             if (it != null) {
                 Log.d(TAG, "stopLocationService | Connected to service")
                 it.stop(id)
-            }else {
+            } else {
                 Log.d(TAG, "stopLocationService | No service, set stopped to true")
                 explicitlyStopped = true
             }
