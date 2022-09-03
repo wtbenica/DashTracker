@@ -127,6 +127,8 @@
     <string name="delete">Delete</string>
     <string name="reset">Reset</string>
     <string name="save">Save</string>
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
     <string name="dont_ask">Don\'t ask again</string>
 
     <string name="confirm_delete">The information you\'ve entered will not be recoverable</string>
@@ -159,5 +161,18 @@
     <string name="chart_title_avg_per_hour">Average per hour</string>
     <string name="lbl_tracked_mileage">Tracked Mileage</string>
 
-    <string name="dialog_bg_location_text">LocationModule uses background location so we always know where you are.</string>
+    <string name="dialog_location_permission">DashTracker uses location data to automatically
+        calculate your mileage.
+        \n\nIf you choose not to allow location access, you can still track your mileage by entering
+        your starting and ending odometer readings.
+    </string>
+
+    <string name="dialog_bg_location_text"><b>DashTracker needs additional permission to access
+        your location while it is running in the background.</b> Without this permission,
+        DashTracker cannot provide accurate mileage tracking.
+        \n\nIf you choose not to allow location access, you can still track your mileage by entering
+        your starting and ending odometer readings.
+        \n\nIf you would like to use automatic mileage tracking, select "Allow," and on the
+        next screen, select "Always Allow."
+    </string>
 </resources>

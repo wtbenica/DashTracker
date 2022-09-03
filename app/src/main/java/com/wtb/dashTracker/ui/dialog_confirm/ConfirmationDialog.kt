@@ -233,7 +233,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
             @StringRes text: Int?,
             requestKey: String,
             confirmId: Long? = null,
-            message: String? = null,
+            title: String? = null,
             @StringRes posButton: Int = R.string.yes,
             posAction: LambdaWrapper? = null,
             @StringRes negButton: Int? = null,
@@ -245,7 +245,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
                 text?.let { putInt(ARG_TEXT, it) }
                 putString(ARG_REQ_KEY, requestKey)
                 confirmId?.let { putLong(ARG_CONFIRM_ID, it) }
-                putString(ARG_MESSAGE, message)
+                putString(ARG_MESSAGE, title)
                 putInt(ARG_POS_TEXT, posButton)
                 putParcelable(ARG_POS_ACTION, posAction)
                 negButton?.let { putInt(ARG_NEG_TEXT, it) }

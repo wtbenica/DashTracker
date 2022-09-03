@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.wtb.dashTracker.R
@@ -78,33 +77,27 @@ internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: () ->
 
 // TODO: Update to use ConfirmatonDialog
 internal fun AppCompatActivity.showRationaleLocation(onGranted: () -> Unit) {
-    AlertDialog.Builder(this as Context)
-        .setTitle("Grant Location Access Permissions")
-        .setMessage(
-            "LocationModule uses location data to automatically track your " +
-                    "mileage. We do not share this data with anyone, nor do we " +
-                    "access or store it.\nIf you choose not to grant location " +
-                    "access, you can still track your mileage by manually " +
-                    "entering your starting end ending odometer readings."
-        )
-        .setPositiveButton("Yes") { dialog, which ->
-            onGranted()
-        }
-        .setNeutralButton("Don't ask again") { dialog, which ->
-            dialog.dismiss()
-            // TODO: Save to prefs
-        }
-        .setNegativeButton("No") { dialog, which ->
-            dialog.dismiss()
-        }.show()
+    ConfirmationDialog.newInstance(
+        text = R.string.dialog_location_permission,
+        requestKey = "Thrust",
+        title = "Allow location access",
+        posButton = R.string.allow,
+        posAction = LambdaWrapper { onGranted() },
+        negButton = R.string.deny,
+        negAction = LambdaWrapper { },
+        posButton2 = R.string.dont_ask,
+        posAction2 = LambdaWrapper { }
+    ).show(supportFragmentManager, null)
 }
 
 internal fun AppCompatActivity.showRationaleBgLocation(onGranted: () -> Unit) {
     ConfirmationDialog.newInstance(
-        text = R.string.dialog_bg_location_text, requestKey = "Bob",
-        posButton = R.string.yes,
+        text = R.string.dialog_bg_location_text,
+        requestKey = "Bob",
+        title = "Allow background location",
+        posButton = R.string.allow,
         posAction = LambdaWrapper { onGranted() },
-        negButton = R.string.no,
+        negButton = R.string.deny,
         negAction = LambdaWrapper { },
         posButton2 = R.string.dont_ask,
         posAction2 = LambdaWrapper { }
