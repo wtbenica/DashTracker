@@ -8,6 +8,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.PREFS_DONT_ASK_BG_LOCATION
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.PREFS_DONT_ASK_LOCATION
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
@@ -43,23 +46,22 @@ internal fun hasPermissions(context: Context, vararg permissions: String): Boole
 internal fun AppCompatActivity.registerMultiplePermissionsLauncher(
     onGranted: () -> Unit,
     onNotGranted: (() -> Unit)? = null
-) =
-    registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-        it?.let { permissionMap ->
-            val permissionGranted = permissionMap.toList().let { permissions ->
-                permissions.foldRight(true) { p, b ->
-                    p.second && b
-                }
-            }
-            if (permissionGranted) {
-                Log.d(TAG, "I can haz permission?")
-                onGranted()
-            } else {
-                Log.d(TAG, "Missing permission")
-                onNotGranted?.invoke()
+) = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+    it?.let { permissionMap ->
+        val permissionGranted = permissionMap.toList().let { permissions ->
+            permissions.foldRight(true) { p, b ->
+                p.second && b
             }
         }
+        if (permissionGranted) {
+            Log.d(TAG, "I can haz permission?")
+            onGranted()
+        } else {
+            Log.d(TAG, "Missing permission")
+            onNotGranted?.invoke()
+        }
     }
+}
 
 /**
  * Registers the [AppCompatActivity] for a request to start an Activity for result that requests a
@@ -68,15 +70,17 @@ internal fun AppCompatActivity.registerMultiplePermissionsLauncher(
  * @param onGranted the function to call if permission is granted
  * @return an [ActivityResultLauncher]
  */
-internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: () -> Unit) =
-    registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-        if (it) {
-            onGranted()
-        }
+internal fun AppCompatActivity.registerSinglePermissionLauncher(
+    onGranted: () -> Unit
+) = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+    if (it) {
+        onGranted()
     }
+}
 
-// TODO: Update to use ConfirmatonDialog
-internal fun AppCompatActivity.showRationaleLocation(onGranted: () -> Unit) {
+
+@OptIn(ExperimentalCoroutinesApi::class)
+internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
     ConfirmationDialog.newInstance(
         text = R.string.dialog_location_permission,
         requestKey = "Thrust",
@@ -86,11 +90,17 @@ internal fun AppCompatActivity.showRationaleLocation(onGranted: () -> Unit) {
         negButton = R.string.deny,
         negAction = LambdaWrapper { },
         posButton2 = R.string.dont_ask,
-        posAction2 = LambdaWrapper { }
+        posAction2 = LambdaWrapper {
+            this.sharedPrefs
+                .edit()
+                .putBoolean(PREFS_DONT_ASK_LOCATION, true)
+                .commit()
+        }
     ).show(supportFragmentManager, null)
 }
 
-internal fun AppCompatActivity.showRationaleBgLocation(onGranted: () -> Unit) {
+@OptIn(ExperimentalCoroutinesApi::class)
+internal fun MainActivity.showRationaleBgLocation(onGranted: () -> Unit) {
     ConfirmationDialog.newInstance(
         text = R.string.dialog_bg_location_text,
         requestKey = "Bob",
@@ -100,6 +110,11 @@ internal fun AppCompatActivity.showRationaleBgLocation(onGranted: () -> Unit) {
         negButton = R.string.deny,
         negAction = LambdaWrapper { },
         posButton2 = R.string.dont_ask,
-        posAction2 = LambdaWrapper { }
+        posAction2 = LambdaWrapper {
+            this.sharedPrefs
+                .edit()
+                .putBoolean(PREFS_DONT_ASK_BG_LOCATION, true)
+                .commit()
+        }
     ).show(supportFragmentManager, null)
 }

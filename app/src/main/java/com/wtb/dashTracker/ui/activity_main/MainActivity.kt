@@ -119,6 +119,9 @@ val Any.TAG: String
 class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback {
 
+    internal val sharedPrefs
+        get() = getSharedPreferences(DT_SHARED_PREFS, 0)
+
     private val viewModel: MainActivityViewModel by viewModels()
 
     // IncomeFragmentCallback
@@ -411,6 +414,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private fun getLocationPermissions(eid: Long) {
         explicitlyStopped = false
         when {
+            sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> { }
             hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
                 Log.d(TAG, "Result | loadNewTrip")
                 startLocationService(eid)
@@ -604,6 +608,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private fun getBgLocationPermission() {
         Log.d(TAG, "getBgLocationPermission")
         when {
+            sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> { }
             hasPermissions(this, ACCESS_BACKGROUND_LOCATION) -> {
                 Log.d(TAG, "BgLocationPermissions | loadNewTrip")
                 loadNewTrip()
@@ -960,6 +965,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         const val APP = "GT_"
         var isAuthenticated = false
 
+        private const val DT_SHARED_PREFS = "dashtracker_prefs"
+        internal const val PREFS_DONT_ASK_LOCATION = "Don't ask | location"
+        internal const val PREFS_DONT_ASK_BG_LOCATION ="Don't ask | bg location"
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
