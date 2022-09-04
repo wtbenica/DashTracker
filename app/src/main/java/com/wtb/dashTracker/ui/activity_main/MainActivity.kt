@@ -414,7 +414,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private fun getLocationPermissions(eid: Long) {
         explicitlyStopped = false
         when {
-            sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> { }
+            sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> {}
             hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
                 Log.d(TAG, "Result | loadNewTrip")
                 startLocationService(eid)
@@ -608,7 +608,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private fun getBgLocationPermission() {
         Log.d(TAG, "getBgLocationPermission")
         when {
-            sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> { }
+            sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> {}
             hasPermissions(this, ACCESS_BACKGROUND_LOCATION) -> {
                 Log.d(TAG, "BgLocationPermissions | loadNewTrip")
                 loadNewTrip()
@@ -814,7 +814,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             )
         }
 
-        fun locServiceOngoingNotificationData() =
+        val locServiceOngoingNotificationData =
             NotificationUtils.NotificationData(
                 contentTitle = R.string.app_name,
                 bigContentTitle = R.string.app_name,
@@ -827,8 +827,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         locationService?.apply {
             initialize(
-                notificationData = locServiceOngoingNotificationData(),
-                notificationChannel = getNotificationChannel(),
+                notificationData = locServiceOngoingNotificationData,
+                notificationChannel = notificationChannel,
                 notificationText = { "Mileage tracking is on. Background location is in use." }
             )
 
@@ -967,7 +967,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         private const val DT_SHARED_PREFS = "dashtracker_prefs"
         internal const val PREFS_DONT_ASK_LOCATION = "Don't ask | location"
-        internal const val PREFS_DONT_ASK_BG_LOCATION ="Don't ask | bg location"
+        internal const val PREFS_DONT_ASK_BG_LOCATION = "Don't ask | bg location"
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
@@ -979,7 +979,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         private const val ARG_EXPECTED_EXIT = "expected_exit"
 
-        private fun getNotificationChannel() =
+        private val notificationChannel =
             NotificationChannel(
                 LOC_SVC_CHANNEL_ID,
                 LOC_SVC_CHANNEL_NAME,
