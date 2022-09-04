@@ -161,7 +161,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         FabMenuButtonInfo(
             "Add Adjustment",
             R.drawable.ic_new_adjust
-        ) { WeeklyDialog.newInstance().show(supportFragmentManager, "new_adjust_dialog") },
+        ) {
+            WeeklyDialog.newInstance().show(supportFragmentManager, "new_adjust_dialog")
+        },
         FabMenuButtonInfo(
             "Add Expense",
             R.drawable.ic_nav_daily
@@ -411,28 +413,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
-    private fun getLocationPermissions(eid: Long) {
-        explicitlyStopped = false
-        when {
-            sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> {}
-            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
-                Log.d(TAG, "Result | loadNewTrip")
-                startLocationService(eid)
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                expectedExit = true
-                showRationaleLocation {
-                    locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                        .also { expectedExit = true }
-                }
-            }
-            else -> {
-                locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                expectedExit = true
-            }
-        }
-    }
-
     override fun onResume() {
         /**
          * Deletes any files created from import/export
@@ -579,6 +559,24 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 showImportConfirmationDialog()
                 true
             }
+            R.id.action_new_entry -> {
+                CoroutineScope(Dispatchers.Default).launch {
+                    val id = viewModel.upsertAsync(DashEntry())
+                    EntryDialog.newInstance(id).show(supportFragmentManager, "new_entry_dialog")
+                }
+                true
+            }
+            R.id.action_new_weekly -> {
+                WeeklyDialog.newInstance().show(supportFragmentManager, "new_adjust_dialog")
+                true
+            }
+            R.id.action_new_expense -> {
+                CoroutineScope(Dispatchers.Default).launch {
+                    val id = viewModel.upsertAsync(Expense(isNew = true))
+                    ExpenseDialog.newInstance(id).show(supportFragmentManager, "new_expense_dialog")
+                }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -600,6 +598,28 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             .show(supportFragmentManager, "end_dash_dialog")
 
         stopLocationService()
+    }
+
+    private fun getLocationPermissions(eid: Long) {
+        explicitlyStopped = false
+        when {
+            sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> {}
+            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
+                Log.d(TAG, "Result | loadNewTrip")
+                startLocationService(eid)
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                expectedExit = true
+                showRationaleLocation {
+                    locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        .also { expectedExit = true }
+                }
+            }
+            else -> {
+                locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                expectedExit = true
+            }
+        }
     }
 
     /**
