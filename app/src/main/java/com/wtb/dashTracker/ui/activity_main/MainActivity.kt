@@ -35,7 +35,6 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View.*
 import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
@@ -349,7 +348,19 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         fun initMainActivityBinding() {
             binding = ActivityMainBinding.inflate(layoutInflater)
-            binding.fab.initialize(menuItems, binding.container)
+
+            binding.fab.setOnClickListener {
+                Log.d(TAG, "The tag is ${binding.fab.tag}. ActiveId: $activeEntryId.")
+                if (binding.fab.tag == null || binding.fab.tag == R.drawable.anim_stop_to_play) {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        val id = viewModel.upsertAsync(DashEntry())
+                        StartDashDialog.newInstance(id)
+                            .show(supportFragmentManager, "start_dash_dialog")
+                    }
+                } else {
+                    endDash()
+                }
+            }
         }
 
         fun initActiveDashBinding() {
@@ -579,11 +590,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        binding.fab.interceptTouchEvent(ev)
-        return super.dispatchTouchEvent(ev)
     }
 
     /**
@@ -857,31 +863,35 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
+    private fun toggleButtonAnimatedVectorDrawable(
+        btn: ImageButton,
+        @DrawableRes initialDrawable: Int,
+        @DrawableRes otherDrawable: Int
+    ) {
+        btn.run {
+            when (tag ?: otherDrawable) {
+                otherDrawable -> {
+                    setImageResource(initialDrawable)
+                    tag = initialDrawable
+                }
+                initialDrawable -> {
+                    setImageResource(otherDrawable)
+                    tag = otherDrawable
+                }
+            }
+            when (val d = drawable) {
+                is AnimatedVectorDrawableCompat -> d.start()
+                is AnimatedVectorDrawable -> d.start()
+            }
+        }
+    }
+
     /**
      * Monitors [locationService] and updates active entry box, play/pause button,
      * and tracking status indicator to match. Also updates still/in car/on foot confidence
      * numbers (this can/should be removed at some point)
      */
     private fun initLocSvcObservers() {
-        fun togglePlayPauseButton(btn: ImageButton) {
-            btn.run {
-                when (tag ?: R.drawable.anim_play_to_pause) {
-                    R.drawable.anim_pause_to_play -> {
-                        setImageResource(R.drawable.anim_play_to_pause)
-                        tag = R.drawable.anim_play_to_pause
-                    }
-                    R.drawable.anim_play_to_pause -> {
-                        setImageResource(R.drawable.anim_pause_to_play)
-                        tag = R.drawable.anim_pause_to_play
-                    }
-                }
-                when (val d = drawable) {
-                    is AnimatedVectorDrawableCompat -> d.start()
-                    is AnimatedVectorDrawable -> d.start()
-                }
-            }
-        }
-
         lifecycleScope.launchWhenStarted {
             locationService?.serviceState?.collectLatest { state ->
                 when (state) {
@@ -889,8 +899,22 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         fun toggleIt() {
                             activeDashBinding.startButton.apply {
                                 if (tag == R.drawable.anim_pause_to_play) {
-                                    togglePlayPauseButton(this)
+                                    toggleButtonAnimatedVectorDrawable(
+                                        this,
+                                        R.drawable.anim_pause_to_play,
+                                        R.drawable.anim_play_to_pause
+                                    )
                                 }
+                            }
+                        }
+
+                        binding.fab.apply {
+                            if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                                toggleButtonAnimatedVectorDrawable(
+                                    btn = this,
+                                    initialDrawable = R.drawable.anim_play_to_stop,
+                                    otherDrawable = R.drawable.anim_stop_to_play
+                                )
                             }
                         }
 
@@ -908,8 +932,22 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         fun toggleIt() {
                             activeDashBinding.startButton.apply {
                                 if (tag == R.drawable.anim_pause_to_play) {
-                                    togglePlayPauseButton(this)
+                                    toggleButtonAnimatedVectorDrawable(
+                                        this,
+                                        R.drawable.anim_pause_to_play,
+                                        R.drawable.anim_play_to_pause
+                                    )
                                 }
+                            }
+                        }
+
+                        binding.fab.apply {
+                            if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                                toggleButtonAnimatedVectorDrawable(
+                                    btn = this,
+                                    initialDrawable = R.drawable.anim_play_to_stop,
+                                    otherDrawable = R.drawable.anim_stop_to_play
+                                )
                             }
                         }
 
@@ -927,8 +965,22 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         fun toggleIt() {
                             activeDashBinding.startButton.apply {
                                 if (tag == R.drawable.anim_play_to_pause) {
-                                    togglePlayPauseButton(this)
+                                    toggleButtonAnimatedVectorDrawable(
+                                        this,
+                                        R.drawable.anim_pause_to_play,
+                                        R.drawable.anim_play_to_pause
+                                    )
                                 }
+                            }
+                        }
+
+                        binding.fab.apply {
+                            if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                                toggleButtonAnimatedVectorDrawable(
+                                    btn = this,
+                                    initialDrawable = R.drawable.anim_play_to_stop,
+                                    otherDrawable = R.drawable.anim_stop_to_play
+                                )
                             }
                         }
 
@@ -943,6 +995,16 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     }
 
                     STOPPED -> {
+                        binding.fab.apply {
+                            if (tag == R.drawable.anim_play_to_stop) {
+                                toggleButtonAnimatedVectorDrawable(
+                                    btn = this,
+                                    initialDrawable = R.drawable.anim_stop_to_play,
+                                    otherDrawable = R.drawable.anim_play_to_stop
+                                )
+                            }
+                        }
+
                         trackingDrawable = R.drawable.status_paused
                         blinkAnimator.pause()
 
