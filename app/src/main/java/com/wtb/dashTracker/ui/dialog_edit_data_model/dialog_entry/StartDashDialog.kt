@@ -16,8 +16,6 @@
 
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.os.Bundle
 import android.provider.ContactsContract.Directory.PACKAGE_NAME
 import android.view.LayoutInflater
@@ -30,7 +28,10 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.DialogFragStartDashBinding
-import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.extensions.dtfDate
+import com.wtb.dashTracker.extensions.dtfTime
+import com.wtb.dashTracker.extensions.toDateOrNull
+import com.wtb.dashTracker.extensions.toFloatOrNull
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
@@ -106,6 +107,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             binding.fragStartDashDate.text = tempEntry.date.format(dtfDate)
             tempEntry.startTime?.let { st ->
                 binding.fragStartDashStartTime.text = st.format(dtfTime)
+                binding.fragStartDashStartTime.tag = st
             }
             tempEntry.startOdometer?.let { so -> binding.fragStartDashStartMileage.setText(so.toString()) }
         } else {
@@ -118,7 +120,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
         val e = DashEntry(
             entryId = item?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
-            startTime = binding.fragStartDashStartTime.text.toTimeOrNull(),
+            startTime = binding.fragStartDashStartTime.tag as LocalTime?,
             startOdometer = binding.fragStartDashStartMileage.text.toFloatOrNull(),
         )
 
@@ -172,171 +174,6 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
         }
     }
 
-    // Location stuff
-//    private var locationService: LocationService? = null
-//    private var locationServiceBound = false
-//
-//    private val locationPermLauncher =
-//        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermission)
-//    private val bgLocationPermLauncher = registerSinglePermissionLauncher(onGranted = ::loadNewTrip)
-//
-//    private val locationServiceConnection = object : ServiceConnection {
-//        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-//            val binder = service as LocationService.LocalBinder
-//
-//            locationService = binder.service
-//            locationServiceBound = true
-//            locationService?.tripId?.value.let { viewModel.loadDataModel(it) }
-//            locationService?.apply {
-//                initialize(
-//                    notificationData = locationServiceNotifData,
-//                    notificationChannel = getNotificationChannel(),
-//                    notificationText = { "Mileage tracking is on. Background location is in use." }
-//                )
-//                setIsTesting(true)
-//            }
-//            initLocSvcObservers()
-//        }
-//
-//
-//        override fun onServiceDisconnected(name: ComponentName?) {
-//            locationService = null
-//            locationServiceBound = false
-//        }
-//    }
-//
-//    private fun initLocSvcObservers() {
-//        lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                locationService?.serviceState?.collectLatest {
-//
-//// TODO: This might be useful
-////
-////                    when (it) {
-////                        LocationService.ServiceState.TRACKING -> binding?.startButton?.isChecked =
-////                            true
-////                        LocationService.ServiceState.PAUSED -> binding?.pauseButton?.isChecked =
-////                            true
-////                        LocationService.ServiceState.STOPPED -> binding?.stopButton?.isChecked =
-////                            true
-////                        else -> {
-////                            // Do nothing, I don't care
-////                        }
-////                    }
-//                }
-//            }
-//        }
-//
-//// TODO: These probably aren't useful
-////
-////        lifecycleScope.launch {
-////            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-////                locationService?.isStill?.collectLatest {
-////                    binding?.isStillValue?.text = it.toString()
-////                }
-////            }
-////        }
-////
-////        lifecycleScope.launch {
-////            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-////                locationService?.inSelectedTransport?.collectLatest {
-////                    binding?.inVehicleValue?.text = it.toString()
-////                }
-////            }
-////        }
-////
-////        lifecycleScope.launch {
-////            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-////                locationService?.isTracking?.collectLatest {
-////                    binding?.isTrackingValue?.text = it.toString()
-////                }
-////            }
-////        }
-//    }
-//
-//    val locationServiceNotifData
-//        get() = NotificationUtils.NotificationData(
-//            contentTitle = R.string.app_name,
-//            bigContentTitle = R.string.app_name,
-//            icon = R.mipmap.icon_c,
-//            actions = listOf(
-//                NotificationCompat.Action(
-//                    R.drawable.ic_launch,
-//                    "Open",
-//                    launchActivityPendingIntent
-//                ),
-//                NotificationCompat.Action(
-//                    R.drawable.ic_cancel,
-//                    "Stop",
-//                    cancelServicePendingIntent
-//                )
-//            )
-//        )
-//
-//    private val cancelServicePendingIntent: PendingIntent?
-//        get() {
-//            val cancelIntent = Intent(requireContext(), LocationService::class.java).apply {
-//                putExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, true)
-//            }
-//            return PendingIntent.getService(
-//                requireContext(),
-//                0,
-//                cancelIntent,
-//                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//            )
-//        }
-//
-//    private val launchActivityPendingIntent: PendingIntent?
-//        get() {
-//            val launchActivityIntent = Intent(requireActivity(), MainActivity::class.java)
-//
-//            return PendingIntent.getActivity(
-//                requireContext(),
-//                0,
-//                launchActivityIntent,
-//                PendingIntent.FLAG_IMMUTABLE
-//            )
-//        }
-//
-//    private fun getBgLocationPermission() {
-//        when {
-//            hasPermissions(
-//                activity as Context,
-//                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-//            ) -> loadNewTrip()
-//            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION) ->
-//                showRationaleBgLocation { bgLocationPermLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION) }
-//            else -> bgLocationPermLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-//        }
-//    }
-//
-//    private fun loadNewTrip() {
-//        val entry: DashEntry? = item
-//        if (entry == null) {
-//            CoroutineScope(Dispatchers.Default).launch {
-//                withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
-//                    val newTrip = DashEntry()
-//                    val newTripId = viewModel.insertSus(newTrip)
-//                    newTripId
-//                }.let { newTripId ->
-//                    val currentTripFromService = locationService?.start(newTripId) { loc, trip ->
-//                        Repository.get().saveModel(LocationData(loc = loc, entryId = trip))
-//                    } ?: newTripId
-//                    if (currentTripFromService != newTripId) {
-//                        viewModel.loadDataModel(currentTripFromService)
-//                        viewModel.deleteTrip(newTripId)
-//                    } else {
-//                        viewModel.loadDataModel(newTripId)
-//                    }
-//                }
-//            }
-//        } else {
-//            locationService?.start(entry.id) { loc, tripId ->
-//                Repository.get().saveModel(LocationData(loc, tripId))
-//            }
-//        }
-//    }
-
     companion object {
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "dt_mileage_tracker"
@@ -350,15 +187,6 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             "${PACKAGE_NAME}.extra.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICAITON"
         private const val EXTRA_NOTIFICATION_CHANNEL =
             "${BuildConfig.APPLICATION_ID}.NotificationChannel"
-
-        private fun getNotificationChannel() =
-            NotificationChannel(
-                LOC_SVC_CHANNEL_ID,
-                LOC_SVC_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = LOC_SVC_CHANNEL_DESC
-            }
 
         fun newInstance(entryId: Long): StartDashDialog =
             StartDashDialog().apply {

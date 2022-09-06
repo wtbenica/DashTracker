@@ -30,6 +30,7 @@ import com.wtb.dashTracker.extensions.endOfWeek
 import dev.benica.csvutil.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 import java.util.concurrent.Executors
 
@@ -118,6 +119,17 @@ class Repository private constructor(private val context: Context) {
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
             DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year.toLong())?.amount
                 ?: 0f
+        }
+
+    fun getCostPerMileFlow(date: LocalDate, purpose: DeductionType): Flow<Float?> =
+        when (purpose) {
+            DeductionType.NONE -> flow { emit(0f) }
+            DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDateFlow(date, Purpose.GAS)
+            DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDateFlow(date)
+            DeductionType.IRS_STD -> flow {
+                emit(standardMileageDeductionDao.get(date.year.toLong())?.amount ?: 0f)
+            }
+
         }
 
 

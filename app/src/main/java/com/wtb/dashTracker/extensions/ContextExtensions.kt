@@ -27,6 +27,28 @@ fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: 
     else
         ifNull
 
+fun getElapsedHours(seconds: Long): String {
+    val _hours = seconds / 3600
+    val _minutes = (seconds - 3600 * _hours) / 60
+    val _seconds = (seconds - 3600 * _hours - 60 * _minutes)
+
+    return StringBuilder().run {
+        if (_hours > 0L) {
+            append("${_hours}".format("%2d"))
+            append("h")
+        }
+        if (_minutes > 0L) {
+            append("${_minutes}".format(" %2d"))
+            append("m")
+        }
+        if (_hours == 0L && _minutes == 0L) {
+            append("${_seconds}".format(" %2d"))
+            append("s")
+        }
+        toString()
+    }
+}
+
 fun Context.getCurrencyString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())
         getString(R.string.blank_currency)

@@ -113,7 +113,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_columnSpan="3"
-                    android:layout_margin="8dp"
                     android:visibility="gone"
                     tools:visibility="visible" />
             </GridLayout>
@@ -132,28 +131,15 @@
             android:id="@+id/fab"
             style="@style/Widget.Material3.FloatingActionButton.Primary"
             android:layout_width="wrap_content"
-            app:maxImageSize="48dp"
             android:layout_height="wrap_content"
+            android:contentDescription="TODO"
             android:src="@drawable/anim_play_to_stop"
-            app:backgroundTint="?attr/colorFab"
+            app:backgroundTint="?attr/colorSecondaryVariant"
             app:layout_anchor="@id/bottom_app_bar"
             app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
             app:layout_dodgeInsetEdges="bottom"
-            app:tint="?attr/colorFabIcon" />
-
-        <!--        <com.wtb.dashTracker.views.FabMenu-->
-        <!--            android:id="@+id/fab"-->
-        <!--            style="@style/Widget.Material3.FloatingActionButton.Primary"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:contentDescription="@string/content_desc_fab_menu"-->
-        <!--            android:src="@drawable/anim_fab_expand"-->
-        <!--            android:translationY="-16dp"-->
-        <!--            app:layout_anchor="@id/bottom_app_bar"-->
-        <!--            app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"-->
-        <!--            app:layout_dodgeInsetEdges="bottom"-->
-        <!--            app:tint="?attr/colorFabIcon"-->
-        <!--            tools:ignore="ImageContrastCheck" />-->
+            app:maxImageSize="48dp"
+            app:tint="?attr/colorFab" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"

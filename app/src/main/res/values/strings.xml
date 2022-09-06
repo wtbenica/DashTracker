@@ -179,4 +179,6 @@
     <string name="action_add_dash">Add Dash</string>
     <string name="action_add_weekly">Add Weekly Adjustment</string>
     <string name="action_add_expense">Add Expense</string>
+    <string name="cont_desc_pause_mileage_tracking">Pause Mileage Tracking</string>
+    <string name="cont_desc_resume_mileage_tracking">Resume Mileage Tracking</string>
 </resources>

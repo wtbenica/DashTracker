@@ -14,167 +14,101 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/something_special"
-    android:orientation="vertical">
+    android:columnCount="4"
+    android:padding="@dimen/margin_default"
+    android:rowCount="3">
 
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnCount="4"
-        android:padding="8dp"
-        android:rowCount="3">
+    <!--    Row 0        -->
+    <!--    Cols 0 - 1        -->
+    <TextView
+        style="@style/ActiveDashTextView.Label"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:layout_columnSpan="2"
+        android:layout_marginBottom="@dimen/margin_half"
+        android:padding="0dp"
+        android:paddingStart="@dimen/margin_narrow"
+        android:paddingEnd="@dimen/margin_narrow"
+        android:text="Current Dash"
+        android:textSize="@dimen/text_size_large" />
 
-        <TextView
-            style="@style/ActiveDashTextView.Label"
-            android:layout_row="0"
-            android:layout_column="0"
-            android:layout_columnSpan="2"
-            android:text="Current Dash"
-            android:textStyle="bold" />
+    <!--    Cols 2 - 3        -->
+    <TextView
+        android:id="@+id/val_elapsed_time"
+        style="@style/ActiveDashTextView.Value"
+        android:layout_row="0"
+        android:layout_column="2"
+        android:layout_columnSpan="2"
+        android:padding="0dp"
+        android:paddingStart="@dimen/margin_narrow"
+        android:paddingEnd="@dimen/margin_narrow"
+        android:textSize="@dimen/text_size_large"
+        tools:text="4h 20m" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_row="0"
-            android:layout_column="2"
-            android:layout_gravity="end"
-            android:text="Status" />
+    <!--    Rows 1 - 2     -->
+    <ImageView
+        android:layout_row="1"
+        android:layout_rowSpan="2"
+        android:layout_column="0"
+        android:layout_columnSpan="3"
+        android:layout_columnWeight="1"
+        android:layout_gravity="fill"
+        android:src="@drawable/dark_outline" />
 
-        <ImageView
-            android:id="@+id/status_indicator"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_row="0"
-            android:layout_column="3"
-            android:layout_gravity="center"
-            android:src="@drawable/status_tracking" />
+    <!--    Row 1            -->
+    <!--    Col 0            -->
+    <TextView
+        android:id="@+id/lbl_mileage"
+        style="@style/ActiveDashTextView.Label"
+        android:layout_row="1"
+        android:layout_column="0"
+        android:layout_marginTop="@dimen/margin_half"
+        android:text="@string/header_mileage" />
 
-        <TextView
-            android:id="@+id/lbl_elapsed_time"
-            style="@style/ActiveDashTextView.Label"
-            android:layout_row="1"
-            android:layout_column="0"
-            android:fontFamily="@font/oswald"
-            android:text="Elapsed:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!--    Col 1 - 2            -->
+    <TextView
+        android:id="@+id/val_mileage"
+        style="@style/ActiveDashTextView.Value"
+        android:layout_row="1"
+        android:layout_column="1"
+        android:layout_columnSpan="2"
+        android:layout_marginTop="@dimen/margin_half"
+        tools:text="52.8mi" />
 
-        <TextView
-            android:id="@+id/val_elapsed_time"
-            style="@style/ActiveDashTextView.Value"
-            android:layout_row="1"
-            android:layout_column="1"
-            android:text="4h 20m"
-            app:layout_constraintStart_toEndOf="@id/lbl_elapsed_time"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!--    Col 3        -->
+    <ImageButton
+        android:id="@+id/start_button"
+        style="@style/ActiveDashImageButton"
+        android:layout_row="1"
+        android:layout_rowSpan="2"
+        android:layout_column="3"
+        android:layout_columnWeight="0"
+        android:layout_marginStart="@dimen/margin_half"
+        android:src="@drawable/anim_pause_to_play"
+        android:contentDescription="@string/cont_desc_pause_mileage_tracking" />
 
-        <TextView
-            android:id="@+id/lbl_mileage"
-            style="@style/ActiveDashTextView.Label"
-            android:layout_row="2"
-            android:layout_column="0"
-            android:text="Miles:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_elapsed_time" />
+    <!--    Row 2       -->
+    <!--    Col 0       -->
+    <TextView
+        android:id="@+id/lbl_cost"
+        style="@style/ActiveDashTextView.Label"
+        android:layout_row="2"
+        android:layout_column="0"
+        android:layout_marginBottom="@dimen/margin_half"
+        android:text="@string/lbl_net_expenses" />
 
-        <TextView
-            android:id="@+id/val_mileage"
-            style="@style/ActiveDashTextView.Value"
-            android:layout_row="2"
-            android:layout_column="1"
-            android:text="52.8mi"
-            app:layout_constraintStart_toEndOf="@id/lbl_mileage"
-            app:layout_constraintTop_toBottomOf="@id/val_elapsed_time" />
+    <!--    Col 1 - 2       -->
+    <TextView
+        android:id="@+id/val_cost"
+        style="@style/ActiveDashTextView.Value"
+        android:layout_row="2"
+        android:layout_column="1"
+        android:layout_columnSpan="2"
+        tools:text="$14.75" />
 
-        <ImageButton
-            android:id="@+id/stop_button"
-            style="@style/ActiveDashImageButton"
-            android:layout_row="1"
-            android:layout_rowSpan="2"
-            android:layout_column="2"
-            android:src="@drawable/ic_twotone_stop_circle_24"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/start_button"
-            style="@style/ActiveDashImageButton"
-            android:layout_row="1"
-            android:layout_rowSpan="2"
-            android:layout_column="3"
-            android:src="@drawable/anim_pause_to_play"
-            app:layout_constraintEnd_toStartOf="@id/stop_button"
-            app:layout_constraintTop_toTopOf="parent" />
-    </GridLayout>
-
-<!--    <GridLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:padding="8dp"-->
-<!--        android:columnCount="4"-->
-<!--        android:rowCount="2">-->
-
-<!--        <TextView-->
-<!--            style="@style/ActiveDashTextView.Label"-->
-<!--            android:layout_row="0"-->
-<!--            android:layout_column="0"-->
-<!--            android:layout_columnWeight="1"-->
-<!--            android:text="Still" />-->
-
-<!--        <TextView-->
-<!--            style="@style/ActiveDashTextView.Label"-->
-<!--            android:layout_row="0"-->
-<!--            android:layout_column="1"-->
-<!--            android:layout_columnWeight="1"-->
-<!--            android:text="Car" />-->
-
-<!--        <TextView-->
-<!--            style="@style/ActiveDashTextView.Label"-->
-<!--            android:layout_row="0"-->
-<!--            android:layout_column="2"-->
-<!--            android:layout_columnWeight="1"-->
-<!--            android:text="Foot" />-->
-
-<!--        <TextView-->
-<!--            style="@style/ActiveDashTextView.Label"-->
-<!--            android:layout_row="0"-->
-<!--            android:layout_column="3"-->
-<!--            android:layout_columnWeight="1"-->
-<!--            android:text="Unknown" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/still_value"-->
-<!--            style="@style/ActiveDashTextView.Label"-->
-<!--            android:layout_row="1"-->
-<!--            android:layout_column="0"-->
-<!--            android:layout_columnWeight="1"-->
-<!--            android:text="50" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/car_value"-->
-<!--            style="@style/ActiveDashTextView.Label"-->
-<!--            android:layout_row="1"-->
-<!--            android:layout_column="1"-->
-<!--            android:layout_columnWeight="1"-->
-<!--            android:text="50" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/foot_value"-->
-<!--            style="@style/ActiveDashTextView.Label"-->
-<!--            android:layout_row="1"-->
-<!--            android:layout_column="2"-->
-<!--            android:layout_columnWeight="1"-->
-<!--            android:text="50" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/unknown_value"-->
-<!--            style="@style/ActiveDashTextView.Label"-->
-<!--            android:layout_row="1"-->
-<!--            android:layout_column="3"-->
-<!--            android:layout_columnWeight="1"-->
-<!--            android:text="50" />-->
-<!--    </GridLayout>-->
-</LinearLayout>
+</GridLayout>
