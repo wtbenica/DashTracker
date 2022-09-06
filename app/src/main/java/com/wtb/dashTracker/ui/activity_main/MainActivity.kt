@@ -141,9 +141,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private var expectedExit = false
     private var explicitlyStopped = false
 
-    @DrawableRes
-    private var trackingDrawable: Int = R.drawable.status_tracking
-
     // Active Entry
     private var activeEntry: FullEntry? = null
     private var activeEntryId: Long? = null
@@ -171,12 +168,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             importPacks = convertPacksImport,
             action = this::insertOrReplace,
         )
-
-    private val blinkAnimator: ValueAnimator = ValueAnimator.ofFloat(0.4f, 1f).apply {
-        duration = 800
-        repeatMode = ValueAnimator.REVERSE
-        repeatCount = -1
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

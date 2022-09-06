@@ -36,8 +36,4 @@ class EntryViewModel : ListItemViewModel<DashEntry>() {
     override fun getItemFlowById(id: Long): Flow<DashEntry?> =
         repository.getEntryFlowById(id)
 
-    fun getFullEntryFlowById(id: Long): Flow<FullEntry?> =
-        repository.getFullEntryFlowById(id)
-
-    fun deleteTrip(id: Long) = repository.deleteEntryById(id)
 }

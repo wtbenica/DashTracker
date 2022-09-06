@@ -190,7 +190,7 @@ class ActivityTransitionReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val ACT_TRANS_INTENT = "LocationLibrary.act_trans_intent"
+        private const val ACT_TRANS_INTENT = "LocationLibrary.act_trans_intent"
 
         @SuppressLint("UnspecifiedImmutableFlag")
         fun getPendingIntent(context: Context): PendingIntent {

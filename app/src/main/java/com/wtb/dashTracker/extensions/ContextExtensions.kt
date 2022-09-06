@@ -28,21 +28,21 @@ fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: 
         ifNull
 
 fun getElapsedHours(seconds: Long): String {
-    val _hours = seconds / 3600
-    val _minutes = (seconds - 3600 * _hours) / 60
-    val _seconds = (seconds - 3600 * _hours - 60 * _minutes)
+    val mHours = seconds / 3600
+    val mMinutes = (seconds - 3600 * mHours) / 60
+    val mSeconds = (seconds - 3600 * mHours - 60 * mMinutes)
 
     return StringBuilder().run {
-        if (_hours > 0L) {
-            append("${_hours}".format("%2d"))
+        if (mHours > 0L) {
+            append("$mHours".format("%2d"))
             append("h")
         }
-        if (_minutes > 0L) {
-            append("${_minutes}".format(" %2d"))
+        if (mMinutes > 0L) {
+            append("$mMinutes".format(" %2d"))
             append("m")
         }
-        if (_hours == 0L && _minutes == 0L) {
-            append("${_seconds}".format(" %2d"))
+        if (mHours == 0L && mMinutes == 0L) {
+            append("$mSeconds".format(" %2d"))
             append("s")
         }
         toString()
