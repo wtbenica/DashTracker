@@ -23,13 +23,13 @@ import org.junit.runner.RunWith
 import java.time.LocalDate
 
 @RunWith(AndroidJUnit4::class)
-internal class StdMileageDeductionTableTest {
+internal class StandardMileageDeductionTableTest {
 
-    private lateinit var stdMileageTable: StdMileageDeductionTable
+    private lateinit var stdMileageTable: StandardMileageDeductionTable
 
     @org.junit.Before
     fun setUp() {
-        stdMileageTable = StdMileageDeductionTable()
+        stdMileageTable = StandardMileageDeductionTable()
     }
 
     @Test

@@ -16,28 +16,15 @@
 
 package com.wtb.dashTracker.database.models
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import java.time.LocalDate
 
-@Entity
-data class StandardMileageDeduction(
-    @PrimaryKey val year: Long,
-    var amount: Float
-) : DataModel() {
-    override val id: Long
-        get() = year
-
-    companion object {
-        val STANDARD_DEDUCTIONS: Map<Long, Float> = mapOf(2021L to 0.56f, 2022L to 0.585f)
-    }
-}
-
-class StdMileageDeductionTable {
+class StandardMileageDeductionTable {
     operator fun get(date: LocalDate): Float {
         val month = RATES[date.year]?.keys?.sorted()?.reversed()?.last { it >= date.month.value }
         return RATES[date.year]?.get(month) ?: 0f
     }
+
+    operator fun get(year: Int): Map<Int, Float>? = RATES[year]
 
     companion object {
         private val RATES: Map<Int, Map<Int, Float>> = mapOf(
