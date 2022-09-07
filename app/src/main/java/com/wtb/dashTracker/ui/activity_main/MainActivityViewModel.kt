@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -67,6 +68,10 @@ class MainActivityViewModel : ViewModel() {
     val lastWeek: LiveData<Float>
         get() = _lastWeek
 
+    private val _cpm = MutableLiveData(0f)
+    val cpm: LiveData<Float>
+        get() = _cpm
+
     init {
         viewModelScope.launch {
             repository.allWeeklies.collectLatest {
@@ -85,6 +90,13 @@ class MainActivityViewModel : ViewModel() {
                 _lastWeek.value = lw?.totalPay
             }
         }
+
+        viewModelScope.launch {
+            repository.getCostPerMileFlow(LocalDate.now(), DeductionType.ALL_EXPENSES)
+                .collectLatest {
+                    _cpm.value = it ?: 0f
+                }
+        }
     }
 
     suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)
@@ -96,7 +108,8 @@ class MainActivityViewModel : ViewModel() {
 
     fun export() = repository.export()
 
-    fun import(activityResultLauncher: ActivityResultLauncher<String>) = repository.import(activityResultLauncher)
+    fun import(activityResultLauncher: ActivityResultLauncher<String>) =
+        repository.import(activityResultLauncher)
 
     fun insertOrReplace(
         entries: List<DashEntry>? = null,

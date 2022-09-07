@@ -13,7 +13,10 @@
         <entry key="app/src/main/res/drawable/anim_close_to_tune.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/anim_fab_collapse.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/anim_fab_expand.xml" value="0.36666666666666664" />
+        <entry key="app/src/main/res/drawable/anim_pause_to_play.xml" value="0.3355" />
         <entry key="app/src/main/res/drawable/anim_play_to_pause.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/anim_play_to_stop.xml" value="0.217" />
+        <entry key="app/src/main/res/drawable/anim_stop_to_play.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/anim_tune_to_close.xml" value="0.1355" />
         <entry key="app/src/main/res/drawable/ante_meridiem.xml" value="0.2415" />
         <entry key="app/src/main/res/drawable/background_edit_text.xml" value="0.175" />
@@ -46,6 +49,7 @@
         <entry key="app/src/main/res/drawable/circle.xml" value="0.3525" />
         <entry key="app/src/main/res/drawable/close_fab.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/corners_left_both.xml" value="0.9" />
+        <entry key="app/src/main/res/drawable/dark_outline.xml" value="0.113" />
         <entry key="app/src/main/res/drawable/day.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable/delete.xml" value="0.15833333333333333" />
         <entry key="app/src/main/res/drawable/diabled_bg.xml" value="0.5" />
@@ -97,12 +101,15 @@
         <entry key="app/src/main/res/drawable/ic_outline_play_arrow_24.xml" value="0.144" />
         <entry key="app/src/main/res/drawable/ic_outline_play_arrow_36.xml" value="0.2185" />
         <entry key="app/src/main/res/drawable/ic_recurring.xml" value="0.157" />
+        <entry key="app/src/main/res/drawable/ic_round_play_arrow_24.xml" value="0.3575" />
+        <entry key="app/src/main/res/drawable/ic_round_stop_48.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_save.xml" value="0.1465" />
         <entry key="app/src/main/res/drawable/ic_stop.xml" value="0.2185" />
         <entry key="app/src/main/res/drawable/ic_twotone_pause_circle_24.xml" value="0.116" />
         <entry key="app/src/main/res/drawable/ic_twotone_play_arrow_24.xml" value="0.132" />
         <entry key="app/src/main/res/drawable/ic_twotone_play_circle_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_twotone_stop_24.xml" value="0.132" />
+        <entry key="app/src/main/res/drawable/ic_twotone_stop_circle_24.xml" value="0.3575" />
         <entry key="app/src/main/res/drawable/ic_weekly.xml" value="0.3365" />
         <entry key="app/src/main/res/drawable/ic_yearly.xml" value="0.3365" />
         <entry key="app/src/main/res/drawable/icon_foreground.xml" value="0.36666666666666664" />
@@ -117,6 +124,7 @@
         <entry key="app/src/main/res/drawable/list_item_recent_bg.xml" value="0.75" />
         <entry key="app/src/main/res/drawable/mode.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/mode2.xml" value="0.36666666666666664" />
+        <entry key="app/src/main/res/drawable/outline.xml" value="0.3565" />
         <entry key="app/src/main/res/drawable/overflow_bg.xml" value="0.23981481481481481" />
         <entry key="app/src/main/res/drawable/pause_to_play.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/play_to_pause.xml" value="0.1" />
@@ -140,8 +148,8 @@
         <entry key="app/src/main/res/font/neucha.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/font/nunito_extralight.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/font/tauri.xml" value="0.1368106028217187" />
-        <entry key="app/src/main/res/layout/active_dash_bar.xml" value="0.6157894736842106" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/active_dash_bar.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.46247464503042596" />
         <entry key="app/src/main/res/layout/activity_main_fab_menu.xml" value="0.5241057542768274" />
         <entry key="app/src/main/res/layout/blank_fragment.xml" value="0.28730226592560926" />
         <entry key="app/src/main/res/layout/bottom_sheet.xml" value="0.5" />
@@ -169,7 +177,7 @@
         <entry key="app/src/main/res/layout/dialog_frag_confirm_edit_purposes.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_export.xml" value="0.43986254295532645" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_import.xml" value="0.49709724238026126" />
-        <entry key="app/src/main/res/layout/dialog_frag_end_dash.xml" value="0.35714285714285715" />
+        <entry key="app/src/main/res/layout/dialog_frag_end_dash.xml" value="0.4543744120413923" />
         <entry key="app/src/main/res/layout/dialog_frag_entry.xml" value="0.31347962382445144" />
         <entry key="app/src/main/res/layout/dialog_frag_expense.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dialog_frag_expense_purpose_dropdown_footer.xml" value="1.0" />
@@ -236,7 +244,7 @@
         <entry key="app/src/main/res/layout/test_subject.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.25" />
         <entry key="app/src/main/res/menu/bottom_nav_menu2.xml" value="0.13697916666666668" />
-        <entry key="app/src/main/res/menu/toolbar_menu.xml" value="0.15677083333333333" />
+        <entry key="app/src/main/res/menu/toolbar_menu.xml" value="0.33" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/gobble.xml" value="0.1" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.17592592592592593" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2140625" />

@@ -16,5 +16,7 @@
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="?attr/colorPrimaryFaded" />
-    <corners android:radius="16dp" />
+    <corners android:radius="?attr/listItemCornerRadius" />
+    <stroke android:color="?attr/colorPrimary"
+        android:width="1dp" />
 </shape>

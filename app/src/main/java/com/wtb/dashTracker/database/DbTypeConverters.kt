@@ -19,11 +19,13 @@ package com.wtb.dashTracker.database
 import androidx.room.TypeConverter
 import com.wtb.dashTracker.extensions.dtfDateTime
 import com.wtb.dashTracker.extensions.dtfDateTimeOld
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeParseException
 
+@ExperimentalCoroutinesApi
 class DbTypeConverters {
     @TypeConverter
     fun toLocalDate(date: String?): LocalDate? {

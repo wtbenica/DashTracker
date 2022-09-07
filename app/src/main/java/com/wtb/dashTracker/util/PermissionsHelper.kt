@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -46,22 +47,23 @@ internal fun hasPermissions(context: Context, vararg permissions: String): Boole
 internal fun AppCompatActivity.registerMultiplePermissionsLauncher(
     onGranted: () -> Unit,
     onNotGranted: (() -> Unit)? = null
-) = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-    it?.let { permissionMap ->
-        val permissionGranted = permissionMap.toList().let { permissions ->
-            permissions.foldRight(true) { p, b ->
-                p.second && b
+): ActivityResultLauncher<Array<String>> =
+    registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        it?.let { permissionMap ->
+            val permissionGranted = permissionMap.toList().let { permissions ->
+                permissions.foldRight(true) { p, b ->
+                    p.second && b
+                }
+            }
+            if (permissionGranted) {
+                Log.d(TAG, "I can haz permission?")
+                onGranted()
+            } else {
+                Log.d(TAG, "Missing permission")
+                onNotGranted?.invoke()
             }
         }
-        if (permissionGranted) {
-            Log.d(TAG, "I can haz permission?")
-            onGranted()
-        } else {
-            Log.d(TAG, "Missing permission")
-            onNotGranted?.invoke()
-        }
     }
-}
 
 /**
  * Registers the [AppCompatActivity] for a request to start an Activity for result that requests a
@@ -72,7 +74,7 @@ internal fun AppCompatActivity.registerMultiplePermissionsLauncher(
  */
 internal fun AppCompatActivity.registerSinglePermissionLauncher(
     onGranted: () -> Unit
-) = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+): ActivityResultLauncher<String> = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
     if (it) {
         onGranted()
     }

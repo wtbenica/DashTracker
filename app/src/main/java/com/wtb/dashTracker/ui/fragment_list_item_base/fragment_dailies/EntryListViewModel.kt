@@ -30,8 +30,6 @@ import java.time.LocalDate
 class EntryListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()
 
-    val entryList: Flow<PagingData<DashEntry>> = repository.allEntriesPaged
-
     val fullEntryList: Flow<PagingData<FullEntry>> = repository.allFullEntriesPaged
 
     fun delete(entry: DashEntry) = repository.deleteModel(entry)

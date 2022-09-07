@@ -24,11 +24,14 @@
     </style>
 
     <style name="ActiveDashTextView.Label">
+        <item name="android:paddingStart">@dimen/margin_default</item>
         <item name="android:layout_columnWeight">0.25</item>
     </style>
 
     <style name="ActiveDashTextView.Value">
+        <item name="android:paddingEnd">@dimen/margin_default</item>
         <item name="android:layout_columnWeight">1</item>
+        <item name="android:textAlignment">textEnd</item>
     </style>
 
     <style name="ActiveDashImageButton" parent="Widget.AppCompat.ImageButton">

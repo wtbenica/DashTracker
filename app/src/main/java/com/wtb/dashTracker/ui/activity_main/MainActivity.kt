@@ -30,12 +30,12 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View.*
 import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
@@ -73,9 +73,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActiveDashBarBinding
 import com.wtb.dashTracker.databinding.ActivityMainBinding
-import com.wtb.dashTracker.extensions.collapse
-import com.wtb.dashTracker.extensions.expand
-import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
@@ -92,7 +90,6 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.*
-import com.wtb.dashTracker.views.FabMenuButtonInfo
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -105,6 +102,7 @@ import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
@@ -139,54 +137,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private lateinit var activeDashBinding: ActiveDashBarBinding
     private lateinit var mAdView: AdView
 
-    private val menuItems: List<FabMenuButtonInfo> = listOf(
-        FabMenuButtonInfo(
-            "Start Dash",
-            R.drawable.ic_play_arrow
-        ) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val id = viewModel.upsertAsync(DashEntry())
-                StartDashDialog.newInstance(id).show(supportFragmentManager, "start_dash_dialog")
-            }
-        },
-        FabMenuButtonInfo(
-            "Add Entry",
-            R.drawable.ic_new_entry
-        ) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val id = viewModel.upsertAsync(DashEntry())
-                EntryDialog.newInstance(id).show(supportFragmentManager, "new_entry_dialog")
-            }
-        },
-        FabMenuButtonInfo(
-            "Add Adjustment",
-            R.drawable.ic_new_adjust
-        ) { WeeklyDialog.newInstance().show(supportFragmentManager, "new_adjust_dialog") },
-        FabMenuButtonInfo(
-            "Add Expense",
-            R.drawable.ic_nav_daily
-        ) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val id = viewModel.upsertAsync(Expense(isNew = true))
-                ExpenseDialog.newInstance(id).show(supportFragmentManager, "new_expense_dialog")
-            }
-        },
-        //        FabMenuButtonInfo(
-        //            "Add Payout",
-        //            R.drawable.chart
-        //        ) { PayoutDialog().show(supportFragmentManager, "new_payout_dialog") }
-    )
-
     // State
     private var expectedExit = false
     private var explicitlyStopped = false
 
-    @DrawableRes
-    private var trackingDrawable: Int = R.drawable.status_tracking
-
     // Active Entry
     private var activeEntry: FullEntry? = null
     private var activeEntryId: Long? = null
+    private var activeCpm: Float? = 0f
 
     // Location Service
     private var locationService: LocationService? = null
@@ -210,12 +168,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             importPacks = convertPacksImport,
             action = this::insertOrReplace,
         )
-
-    private val blinkAnimator: ValueAnimator = ValueAnimator.ofFloat(0.4f, 1f).apply {
-        duration = 800
-        repeatMode = ValueAnimator.REVERSE
-        repeatCount = -1
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -319,11 +271,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     getCurrencyString(it)
             }
 
+            viewModel.cpm.observe(this) {
+                this.activeCpm = it
+            }
+
             lifecycleScope.launch {
                 this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.activeEntry.collectLatest {
                         it.let { entry: FullEntry? ->
-                            Log.d(TAG, "incoming entry | id: ${entry?.entry?.entryId}")
                             activeEntry = it
                             activeEntryId = it?.entry?.entryId
                             activeEntryId?.let { id -> updateLocationServiceNotificationData(id) }
@@ -332,12 +287,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                             it?.let { e ->
                                 activeDashBinding.valMileage.text =
                                     getString(R.string.mileage_fmt, e.distance)
-                                val t: Float = ChronoUnit.MINUTES.between(
-                                    e.entry.startDateTime,
-                                    LocalDateTime.now()
-                                ) / 60f
-                                activeDashBinding.valElapsedTime.text =
-                                    getString(R.string.float_fmt, t)
+
+                                activeDashBinding.valCost.text =
+                                    getCurrencyString(e.distance.toFloat() * (activeCpm ?: 0f))
                             }
                         }
                     }
@@ -347,7 +299,18 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         fun initMainActivityBinding() {
             binding = ActivityMainBinding.inflate(layoutInflater)
-            binding.fab.initialize(menuItems, binding.container)
+
+            binding.fab.setOnClickListener {
+                if (binding.fab.tag == null || binding.fab.tag == R.drawable.anim_stop_to_play) {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        val id = viewModel.upsertAsync(DashEntry())
+                        StartDashDialog.newInstance(id)
+                            .show(supportFragmentManager, "start_dash_dialog")
+                    }
+                } else {
+                    endDash()
+                }
+            }
         }
 
         fun initActiveDashBinding() {
@@ -356,10 +319,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 tag = tag ?: R.drawable.anim_pause_to_play
                 setOnClickListener {
                     locationService?.let {
-                        Log.d(
-                            TAG,
-                            "startButton onClick: Service state = ${it.serviceState.value.name}"
-                        )
                         when (it.serviceState.value) {
                             TRACKING_ACTIVE -> it.pause()
                             TRACKING_INACTIVE -> it.pause()
@@ -368,15 +327,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         }
                     }
                 }
-            }
-
-            activeDashBinding.stopButton.setOnClickListener { endDash() }
-
-            blinkAnimator.apply {
-                addUpdateListener { animation ->
-                    activeDashBinding.statusIndicator.alpha = animation.animatedValue as Float
-                }
-                blinkAnimator.start()
             }
         }
 
@@ -402,33 +352,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             val result = bundle.getBoolean(ARG_RESULT)
             val eid = bundle.getLong(ARG_ENTRY_ID)
 
-            Log.d(TAG, "load entry 2 | $eid")
             viewModel.loadEntry(eid)
 
             if (result) {
                 getLocationPermissions(eid)
-            }
-        }
-    }
-
-    private fun getLocationPermissions(eid: Long) {
-        explicitlyStopped = false
-        when {
-            sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> {}
-            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
-                Log.d(TAG, "Result | loadNewTrip")
-                startLocationService(eid)
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                expectedExit = true
-                showRationaleLocation {
-                    locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                        .also { expectedExit = true }
-                }
-            }
-            else -> {
-                locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                expectedExit = true
             }
         }
     }
@@ -579,13 +506,26 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 showImportConfirmationDialog()
                 true
             }
+            R.id.action_new_entry -> {
+                CoroutineScope(Dispatchers.Default).launch {
+                    val id = viewModel.upsertAsync(DashEntry())
+                    EntryDialog.newInstance(id).show(supportFragmentManager, "new_entry_dialog")
+                }
+                true
+            }
+            R.id.action_new_weekly -> {
+                WeeklyDialog.newInstance().show(supportFragmentManager, "new_adjust_dialog")
+                true
+            }
+            R.id.action_new_expense -> {
+                CoroutineScope(Dispatchers.Default).launch {
+                    val id = viewModel.upsertAsync(Expense(isNew = true))
+                    ExpenseDialog.newInstance(id).show(supportFragmentManager, "new_expense_dialog")
+                }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        binding.fab.interceptTouchEvent(ev)
-        return super.dispatchTouchEvent(ev)
     }
 
     /**
@@ -602,26 +542,43 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         stopLocationService()
     }
 
+    private fun getLocationPermissions(eid: Long) {
+        explicitlyStopped = false
+        when {
+            sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> {}
+            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
+                startLocationService(eid)
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                expectedExit = true
+                showRationaleLocation {
+                    locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        .also { expectedExit = true }
+                }
+            }
+            else -> {
+                locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                expectedExit = true
+            }
+        }
+    }
+
     /**
      * Requests [ACCESS_BACKGROUND_LOCATION], if needed, and  calls [loadNewTrip].
      */
     private fun getBgLocationPermission() {
-        Log.d(TAG, "getBgLocationPermission")
         when {
             sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> {}
             hasPermissions(this, ACCESS_BACKGROUND_LOCATION) -> {
-                Log.d(TAG, "BgLocationPermissions | loadNewTrip")
                 loadNewTrip()
             }
             shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
                 showRationaleBgLocation {
-                    Log.d(TAG, "BgLocationPermissions | onGranted -> loadNewTrip")
                     bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
                         .also { expectedExit = true }
                 }
             }
             else -> {
-                Log.d(TAG, "BgLocationPermissions | onGranted -> loadNewTrip")
                 bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
                 expectedExit = true
             }
@@ -645,32 +602,26 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      * will be updated to match.
      */
     private fun loadNewTrip() {
-        Log.d(TAG, "loadNewTrip")
         val entry: DashEntry? = activeEntry?.entry
         if (entry == null && activeEntryId == null) {
-            Log.d(TAG, "loadNewTrip | new entry")
             CoroutineScope(Dispatchers.Default).launch {
                 withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
                     val newEntry = DashEntry()
                     val newEntryId = viewModel.insertSus(newEntry)
                     newEntryId
                 }.let { newTripId ->
-                    Log.d(TAG, "loc start 3")
                     val currentTripFromService =
                         startLocationService(newTripId) ?: newTripId
 
                     if (currentTripFromService != newTripId) {
-                        Log.d(TAG, "load entry 4 | $currentTripFromService")
                         viewModel.loadEntry(currentTripFromService)
                         viewModel.deleteEntry(newTripId)
                     } else {
-                        Log.d(TAG, "load entry 5 | $newTripId")
                         viewModel.loadEntry(newTripId)
                     }
                 }
             }
         } else {
-            Log.d(TAG, "loc start 4")
             startLocationService(activeEntryId ?: entry!!.id)
         }
     }
@@ -837,83 +788,62 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
+    private fun toggleButtonAnimatedVectorDrawable(
+        btn: ImageButton,
+        @DrawableRes initialDrawable: Int,
+        @DrawableRes otherDrawable: Int
+    ) {
+        btn.run {
+            when (tag ?: otherDrawable) {
+                otherDrawable -> {
+                    setImageResource(initialDrawable)
+                    tag = initialDrawable
+                }
+                initialDrawable -> {
+                    setImageResource(otherDrawable)
+                    tag = otherDrawable
+                }
+            }
+            when (val d = drawable) {
+                is AnimatedVectorDrawableCompat -> d.start()
+                is AnimatedVectorDrawable -> d.start()
+            }
+        }
+    }
+
     /**
      * Monitors [locationService] and updates active entry box, play/pause button,
      * and tracking status indicator to match. Also updates still/in car/on foot confidence
      * numbers (this can/should be removed at some point)
      */
     private fun initLocSvcObservers() {
-        fun togglePlayPauseButton(btn: ImageButton) {
-            btn.run {
-                when (tag ?: R.drawable.anim_play_to_pause) {
-                    R.drawable.anim_pause_to_play -> {
-                        setImageResource(R.drawable.anim_play_to_pause)
-                        tag = R.drawable.anim_play_to_pause
-                    }
-                    R.drawable.anim_play_to_pause -> {
-                        setImageResource(R.drawable.anim_pause_to_play)
-                        tag = R.drawable.anim_pause_to_play
-                    }
-                }
-                when (val d = drawable) {
-                    is AnimatedVectorDrawableCompat -> d.start()
-                    is AnimatedVectorDrawable -> d.start()
-                }
-            }
-        }
-
         lifecycleScope.launchWhenStarted {
             locationService?.serviceState?.collectLatest { state ->
                 when (state) {
-                    TRACKING_ACTIVE -> {
-                        fun toggleIt() {
-                            activeDashBinding.startButton.apply {
-                                if (tag == R.drawable.anim_pause_to_play) {
-                                    togglePlayPauseButton(this)
-                                }
-                            }
-                        }
-
-                        trackingDrawable = R.drawable.status_tracking
-                        blinkAnimator.start()
-
-                        if (activeDashBinding.root.visibility == GONE) {
-                            activeDashBinding.root.expand { toggleIt() }
-                        } else {
-                            toggleIt()
-                        }
-                    }
-
-                    TRACKING_INACTIVE -> {
-                        fun toggleIt() {
-                            activeDashBinding.startButton.apply {
-                                if (tag == R.drawable.anim_pause_to_play) {
-                                    togglePlayPauseButton(this)
-                                }
-                            }
-                        }
-
-                        trackingDrawable = R.drawable.status_inactive
-                        blinkAnimator.pause()
-
-                        if (activeDashBinding.root.visibility == GONE) {
-                            activeDashBinding.root.expand { toggleIt() }
-                        } else {
-                            toggleIt()
-                        }
-                    }
-
                     PAUSED -> {
                         fun toggleIt() {
                             activeDashBinding.startButton.apply {
                                 if (tag == R.drawable.anim_play_to_pause) {
-                                    togglePlayPauseButton(this)
+                                    toggleButtonAnimatedVectorDrawable(
+                                        this,
+                                        R.drawable.anim_pause_to_play,
+                                        R.drawable.anim_play_to_pause
+                                    )
+                                    this.contentDescription =
+                                        getString(R.string.cont_desc_pause_mileage_tracking)
                                 }
                             }
                         }
 
-                        trackingDrawable = R.drawable.status_paused
-                        blinkAnimator.pause()
+                        binding.fab.apply {
+                            if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                                toggleButtonAnimatedVectorDrawable(
+                                    btn = this,
+                                    initialDrawable = R.drawable.anim_play_to_stop,
+                                    otherDrawable = R.drawable.anim_stop_to_play
+                                )
+                            }
+                        }
 
                         if (activeDashBinding.root.visibility == GONE) {
                             activeDashBinding.root.expand { toggleIt() }
@@ -923,42 +853,82 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     }
 
                     STOPPED -> {
-                        trackingDrawable = R.drawable.status_paused
-                        blinkAnimator.pause()
+                        binding.fab.apply {
+                            if (tag == R.drawable.anim_play_to_stop) {
+                                toggleButtonAnimatedVectorDrawable(
+                                    btn = this,
+                                    initialDrawable = R.drawable.anim_stop_to_play,
+                                    otherDrawable = R.drawable.anim_play_to_stop
+                                )
+                            }
+                        }
 
                         if (activeDashBinding.root.visibility == VISIBLE) {
                             activeDashBinding.root.collapse()
                         }
                     }
-                }
 
-                activeDashBinding.statusIndicator.setImageResource(trackingDrawable)
+                    else -> {
+                        fun updateElapsedTime(): () -> Unit {
+                            return setTimer(1000L) {
+                                val start = LocalDateTime.of(
+                                    activeEntry?.entry?.date ?: LocalDate.now(),
+                                    activeEntry?.entry?.startTime ?: LocalTime.now()
+                                )
+                                val end = LocalDateTime.now()
+                                val elapsedSeconds: Long =
+                                    start.until(
+                                        end,
+                                        ChronoUnit.SECONDS
+                                    )
+
+                                Log.d(
+                                    TAG,
+                                    "start: ${start.format(dtfDateTime)} | end: ${
+                                        end.format(dtfDateTime)
+                                    } | elapsed: ${getElapsedHours(elapsedSeconds)}"
+                                )
+
+                                activeDashBinding.valElapsedTime.text =
+                                    getElapsedHours(elapsedSeconds)
+                            }
+                        }
+
+                        fun toggleIt() {
+                            activeDashBinding.startButton.apply {
+                                if (tag == R.drawable.anim_pause_to_play) {
+                                    toggleButtonAnimatedVectorDrawable(
+                                        this,
+                                        R.drawable.anim_pause_to_play,
+                                        R.drawable.anim_play_to_pause
+                                    )
+                                    this.contentDescription =
+                                        getString(R.string.cont_desc_resume_mileage_tracking)
+                                }
+                            }
+                        }
+
+                        updateElapsedTime()
+
+                        binding.fab.apply {
+                            if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                                toggleButtonAnimatedVectorDrawable(
+                                    btn = this,
+                                    initialDrawable = R.drawable.anim_play_to_stop,
+                                    otherDrawable = R.drawable.anim_stop_to_play
+                                )
+                            }
+                        }
+
+                        if (activeDashBinding.root.visibility == GONE) {
+                            activeDashBinding.root.expand { toggleIt() }
+                        } else {
+                            toggleIt()
+                        }
+                    }
+                }
             }
         }
-
-//        lifecycleScope.launchWhenStarted {
-//            locationService?.stillVal?.collectLatest {
-//                activeDashBinding.stillValue.text = it.toString()
-//            }
-//        }
-//
-//        lifecycleScope.launchWhenStarted {
-//            locationService?.carVal?.collectLatest {
-//                activeDashBinding.carValue.text = it.toString()
-//            }
-//        }
-//
-//        lifecycleScope.launchWhenStarted {
-//            locationService?.footVal?.collectLatest {
-//                activeDashBinding.footValue.text = it.toString()
-//            }
-//        }
-//
-//        lifecycleScope.launchWhenStarted {
-//            locationService?.unknownVal?.collectLatest {
-//                activeDashBinding.unknownValue.text = it.toString()
-//            }
-//        }
     }
 
     companion object {
@@ -1032,6 +1002,22 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     )
                 )
             }
+
+        // TODO: I need to be able to stopp/pause, needs a new onTick after onResume
+        private fun setTimer(delay: Long, onTick: () -> Unit): () -> Unit {
+            val handler = android.os.Handler(Looper.getMainLooper())
+
+            val r = object : Runnable {
+                override fun run() {
+                    onTick()
+                    handler.postDelayed(this, delay)
+                }
+            }
+
+            handler.post(r)
+
+            return { handler.removeCallbacks(r) }
+        }
     }
 }
 

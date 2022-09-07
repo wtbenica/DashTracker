@@ -26,14 +26,6 @@ import java.time.format.DateTimeFormatter
 val Any.TAG: String
     get() = "LP2_" + this.javaClass.simpleName
 
-@ExperimentalCoroutinesApi
-fun Location.toText(): String {
-    val epochTime =
-        Instant.ofEpochSecond(this.time / 1000).atZone(ZoneId.systemDefault()).toLocalDateTime()
-            .format(dtf)
-    return "$epochTime | Lat: %.2f | Long: %.2f".format(latitude, longitude)
-}
-
 /**
  * TODO
  *
@@ -70,33 +62,20 @@ class LocationService : Service() {
     /**
      * The service is running
      */
-    val isStarted: StateFlow<Boolean>
+    private val isStarted: StateFlow<Boolean>
         get() = _isStarted
 
     /**
      * The user's detected activity is [DetectedActivity.STILL]
      */
-    val isStill: StateFlow<Boolean>
+    private val isStill: StateFlow<Boolean>
         get() = _isStill
 
     /**
      * The user's detected activity is [DetectedActivity.IN_VEHICLE]
      */
-    val inVehicle: StateFlow<Boolean>
+    private val inVehicle: StateFlow<Boolean>
         get() = _inVehicle
-
-    /**
-     *  The user's detected activity is [DetectedActivity.ON_FOOT]
-     */
-    val onFoot: StateFlow<Boolean>
-        get() = _onFoot
-
-    /**
-     * The service is in testing mode. If true, location updates are always processed, else only
-     * when ![isStill] and [inVehicle]
-     */
-    val isTesting: StateFlow<Boolean>
-        get() = _isTesting
 
     fun setIsTesting(isTesting: Boolean) {
         _isTesting.value = isTesting
@@ -401,15 +380,15 @@ class LocationService : Service() {
         configurationChange = true
     }
 
-    private val _stillVal = MutableStateFlow<Int>(-1)
+    private val _stillVal = MutableStateFlow(-1)
     val stillVal: StateFlow<Int>
         get() = _stillVal
 
-    private val _carVal = MutableStateFlow<Int>(-1)
+    private val _carVal = MutableStateFlow(-1)
     val carVal: StateFlow<Int>
         get() = _carVal
 
-    private val _footVal = MutableStateFlow<Int>(-1)
+    private val _footVal = MutableStateFlow(-1)
     val footVal: StateFlow<Int>
         get() = _footVal
 
@@ -503,8 +482,6 @@ class LocationService : Service() {
         var dtf: DateTimeFormatter =
             DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss:SSS")
 
-        var df: DateTimeFormatter =
-            DateTimeFormatter.ofPattern("dd-MMM-yyyy")
     }
 }
 
