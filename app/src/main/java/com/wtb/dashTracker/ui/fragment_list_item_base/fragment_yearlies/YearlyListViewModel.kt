@@ -17,18 +17,37 @@
 package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies
 
 import androidx.lifecycle.ViewModel
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 
 @ExperimentalCoroutinesApi
 class YearlyListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()
 
-    val allWeeklies: Flow<List<FullWeekly>> = repository.allWeeklies
+    val yearlyBasePayAdjustments: Flow<MutableMap<Int, Float>> =
+        repository.allWeeklies.flatMapLatest { weeklies: List<FullWeekly> ->
+            flow {
+                emit(
+                    mutableMapOf<Int, Float>().apply {
+                        weeklies.forEach {
+                            this[it.weekly.date.year] = (this[it.weekly.date.year] ?: 0f) +
+                                    (it.weekly.basePayAdjustment ?: 0f)
+                        }
+                    }
+                )
+            }
+        }
+
+    val allEntries: Flow<List<DashEntry>> = repository.allEntries
 
     suspend fun getAnnualCostPerMile(year: Int, purpose: DeductionType): Float =
         repository.getAnnualCostPerMile(year, purpose)
+
+    fun standardMileageDeductionTable() = repository.standardMileageDeductionTable
 }

@@ -60,7 +60,7 @@ class Repository private constructor(private val context: Context) {
     private val locationDao: LocationDao
         get() = db.locationDao()
 
-    private val standardMileageDeductionTable: StandardMileageDeductionTable
+    internal val standardMileageDeductionTable: StandardMileageDeductionTable
         get() = StandardMileageDeductionTable()
 
     /**

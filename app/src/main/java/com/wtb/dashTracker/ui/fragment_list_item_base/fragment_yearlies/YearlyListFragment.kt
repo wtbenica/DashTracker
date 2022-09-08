@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -36,7 +37,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.extensions.getCpmString
@@ -45,6 +45,7 @@ import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemListAdapter
@@ -53,11 +54,12 @@ import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
+import java.time.Month
 
 @ExperimentalCoroutinesApi
 class YearlyListFragment : ListItemFragment() {
 
-    private val viewModel: YearlyListViewModel by viewModels()
+    protected val viewModel: YearlyListViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private val yearlies = mutableListOf<Yearly>()
@@ -82,31 +84,6 @@ class YearlyListFragment : ListItemFragment() {
         return view
     }
 
-    data class Yearly(
-        val year: Int,
-        var mileage: Float = 0f,
-        var pay: Float = 0f,
-        var otherPay: Float = 0f,
-        var cashTips: Float = 0f,
-        var adjust: Float = 0f,
-        var hours: Float = 0f
-    ) : ListItemType {
-        val reportedPay: Float
-            get() = pay + otherPay + adjust
-
-        val hourly: Float
-            get() = (reportedPay + cashTips) / hours
-
-        internal val totalPay: Float
-            get() = pay + otherPay + adjust + cashTips
-
-        fun getExpenses(costPerMile: Float): Float = mileage * costPerMile
-
-        fun getNet(cpm: Float): Float = totalPay - getExpenses(cpm)
-
-        fun getHourly(cpm: Float): Float = getNet(cpm) / hours
-    }
-
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -121,7 +98,15 @@ class YearlyListFragment : ListItemFragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.allWeeklies.collectLatest { cwList: List<FullWeekly> ->
+                viewModel.yearlyBasePayAdjustments.collectLatest { bpas: MutableMap<Int, Float> ->
+                    bpaList = bpas
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.allEntries.collectLatest { entries: List<DashEntry> ->
                     // TODO: Something tells me this could be done better with sql
                     yearlies.clear()
                     var numChecked = 0
@@ -129,26 +114,19 @@ class YearlyListFragment : ListItemFragment() {
                     //  it out, and I added a 'isNotEmpty' check for thisYears. If there are issues,
                     //  this is where to look
                     var year =
-                        cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year
-                    while (numChecked < cwList.size) {
-                        val thisYears = cwList.mapNotNull { cw: FullWeekly ->
-                            if (cw.weekly.date.year == year) cw else null
+                        entries.map { it.date.year }.maxOrNull() ?: LocalDate.now().year
+                    Log.d(TAG, "New Entries coming in to yearly list fragment")
+                    while (numChecked < entries.size) {
+                        val thisYears = entries.mapNotNull { entry: DashEntry ->
+                            if (entry.date.year == year) entry else null
                         }
                         numChecked += thisYears.size
-                        val res = Yearly(year)
+                        val res = Yearly(year).apply {
+                            basePayAdjustment = bpaList[year] ?: 0f
+                        }
                         if (thisYears.isNotEmpty()) {
-                            thisYears.forEach { cw: FullWeekly ->
-                                res.adjust += cw.weekly.basePayAdjustment ?: 0f
-                                res.pay += cw.entries.mapNotNull(DashEntry::pay)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                                res.otherPay += cw.entries.mapNotNull(DashEntry::otherPay)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                                res.cashTips += cw.entries.mapNotNull(DashEntry::cashTips)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                                res.mileage += cw.entries.mapNotNull(DashEntry::mileage)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                                res.hours += cw.entries.mapNotNull(DashEntry::totalHours)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
+                            thisYears.forEach { entry: DashEntry ->
+                                res.addEntry(entry)
                             }
                             yearlies.add(res)
                         }
@@ -160,14 +138,20 @@ class YearlyListFragment : ListItemFragment() {
         }
     }
 
+    var bpaList: MutableMap<Int, Float> = mutableMapOf()
+
     interface YearlyListFragmentCallback : DeductionCallback
 
     inner class YearlyAdapter : BaseItemListAdapter<Yearly>(DIFF_CALLBACK) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<Yearly> =
+        override fun getViewHolder(
+            parent: ViewGroup,
+            viewType: Int?
+        ): BaseItemHolder<Yearly> =
             YearlyHolder(parent)
 
         inner class YearlyHolder(parent: ViewGroup) : BaseItemHolder<Yearly>(
-            LayoutInflater.from(parent.context).inflate(R.layout.list_item_yearly, parent, false)
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.list_item_yearly, parent, false)
         ) {
             private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
             private val detailsBinding: ListItemYearlyDetailsTableBinding =
@@ -197,7 +181,10 @@ class YearlyListFragment : ListItemFragment() {
 
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(Dispatchers.Default) {
-                        viewModel.getAnnualCostPerMile(this@YearlyHolder.item.year, deductionType)
+                        viewModel.getAnnualCostPerMile(
+                            this@YearlyHolder.item.year,
+                            deductionType
+                        )
                     }.let { cpm: Float? ->
                         val costPerMile: Float = cpm ?: 0f
                         (context as MainActivity).runOnUiThread {
@@ -212,6 +199,7 @@ class YearlyListFragment : ListItemFragment() {
                                     detailsBinding.listItemYearlyExpenses.text =
                                         getCurrencyString(
                                             this@YearlyHolder.item.getExpenses(
+                                                deductionType,
                                                 costPerMile
                                             )
                                         )
@@ -220,11 +208,17 @@ class YearlyListFragment : ListItemFragment() {
                                         getCpmString(costPerMile)
 
                                     binding.listItemSubtitle2.text =
-                                        getCurrencyString(this@YearlyHolder.item.getNet(costPerMile))
+                                        getCurrencyString(
+                                            this@YearlyHolder.item.getNet(
+                                                costPerMile,
+                                                deductionType
+                                            )
+                                        )
 
-                                    detailsBinding.listItemYearlyHourly.text = getCurrencyString(
-                                        this@YearlyHolder.item.getHourly(costPerMile)
-                                    )
+                                    detailsBinding.listItemYearlyHourly.text =
+                                        getCurrencyString(
+                                            this@YearlyHolder.item.getHourly(costPerMile)
+                                        )
                                 }
                             }
                         }
@@ -247,9 +241,114 @@ class YearlyListFragment : ListItemFragment() {
         }
     }
 
+    data class Monthly(
+        var mileage: Float = 0f,
+        var pay: Float = 0f,
+        var otherPay: Float = 0f,
+        var cashTips: Float = 0f,
+        var hours: Float = 0f
+    ) : ListItemType {
+        val reportedPay: Float
+            get() = pay + otherPay
+
+        internal val totalPay: Float
+            get() = reportedPay + cashTips
+
+        val hourly: Float
+            get() = totalPay / hours
+
+        fun getExpenses(costPerMile: Float): Float = mileage * costPerMile
+
+        fun getNet(cpm: Float): Float = totalPay - getExpenses(cpm)
+
+        fun getHourly(cpm: Float): Float = getNet(cpm) / hours
+
+        fun addEntry(entry: DashEntry) {
+            mileage += entry.totalMileage ?: 0f
+            pay += entry.pay ?: 0f
+            otherPay += entry.otherPay ?: 0f
+            cashTips += entry.cashTips ?: 0f
+            hours += entry.totalHours ?: 0f
+        }
+    }
+
+    inner class Yearly(val year: Int) : ListItemType {
+        val monthlies = mutableMapOf<Month, Monthly>().apply {
+            Month.values().forEach { this[it] = Monthly() }
+        }
+
+        operator fun get(month: Month): Monthly? = monthlies[month]
+
+        var basePayAdjustment: Float = 0f
+
+        // TODO: Need to still add in bpa
+        val reportedPay: Float
+            get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.reportedPay }
+
+        val cashTips: Float
+            get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.cashTips }
+
+        val hourly: Float
+            get() = totalPay / hours
+
+        internal val totalPay: Float
+            get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.totalPay }
+
+        val hours: Float
+            get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.hours }
+
+        val mileage: Float
+            get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.mileage }
+
+        fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f) =
+            when (deductionType) {
+                DeductionType.IRS_STD -> getStandardDeductionExpense()
+                else -> getCalculatedExpenses(costPerMile)
+            }
+
+        fun getCalculatedExpenses(costPerMile: Float): Float = mileage * costPerMile
+
+        fun getStandardDeductionExpense(): Float {
+            val table = viewModel.standardMileageDeductionTable()
+            var res = 0f
+            monthlies.keys.forEach { mon ->
+                val deduction: Float = table[LocalDate.of(year, mon, 1)]
+                res += deduction * (monthlies[mon]?.mileage ?: 0f)
+            }
+            return res
+        }
+
+        fun getNet(cpm: Float, deductionType: DeductionType): Float =
+            totalPay - getExpenses(deductionType, cpm)
+
+        fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / hours
+
+        fun addEntry(entry: DashEntry) {
+            monthlies[entry.date.month]?.addEntry(entry)
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Yearly
+
+            if (year != other.year) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return year
+        }
+    }
+
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Yearly>() {
-            override fun areItemsTheSame(oldItem: Yearly, newItem: Yearly): Boolean =
+            override fun areItemsTheSame(
+                oldItem: Yearly,
+                newItem: Yearly
+            ): Boolean =
                 oldItem.year == newItem.year
 
 
