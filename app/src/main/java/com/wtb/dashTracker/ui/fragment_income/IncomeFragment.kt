@@ -42,9 +42,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * A simple [Fragment] subclass.
- * Use the [IncomeFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * A [Fragment] that contains a [TabLayout] with [EntryListFragment], [WeeklyListFragment], and
+ * [YearlyListFragment] tabs. It contains an option to set [DeductionType] for calculating
+ * expenses in each of the tabs.
+ * Use the [IncomeFragment.newInstance] factory method to create an instance of this fragment.
  */
 @ExperimentalCoroutinesApi
 class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback,

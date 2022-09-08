@@ -18,7 +18,6 @@ package com.wtb.dashTracker.ui.activity_main
 
 import android.Manifest
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-import android.animation.ValueAnimator
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -76,7 +75,6 @@ import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.APP
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
@@ -107,12 +105,18 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 
-const val TESTING = false
+private const val APP = "GT_"
 
-@ExperimentalCoroutinesApi
-val Any.TAG: String
+internal val Any.TAG: String
     get() = APP + this::class.simpleName
 
+/**
+ * Primary [AppCompatActivity] for DashTracker. Contains [BottomNavigationView] for switching
+ * between [IncomeFragment], [ExpenseListFragment], and [ChartsFragment]; [FloatingActionButton]
+ * for starting/stopping [LocationService]; new item menu for [EntryDialog], [WeeklyDialog], and
+ * [ExpenseDialog]; options menu for [ConfirmationDialogImport], [ConfirmationDialogExport],
+ * [OssLicensesMenuActivity].
+ */
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback {
@@ -278,19 +282,17 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             lifecycleScope.launch {
                 this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.activeEntry.collectLatest {
-                        it.let { entry: FullEntry? ->
-                            activeEntry = it
-                            activeEntryId = it?.entry?.entryId
-                            activeEntryId?.let { id -> updateLocationServiceNotificationData(id) }
-                            Log.d(TAG, "Setting activeEntryId: $activeEntryId")
+                        activeEntry = it
+                        activeEntryId = it?.entry?.entryId
+                        activeEntryId?.let { id -> updateLocationServiceNotificationData(id) }
+                        Log.d(TAG, "Setting activeEntryId: $activeEntryId")
 
-                            it?.let { e ->
-                                activeDashBinding.valMileage.text =
-                                    getString(R.string.mileage_fmt, e.distance)
+                        it?.let { e ->
+                            activeDashBinding.valMileage.text =
+                                getString(R.string.mileage_fmt, e.distance)
 
-                                activeDashBinding.valCost.text =
-                                    getCurrencyString(e.distance.toFloat() * (activeCpm ?: 0f))
-                            }
+                            activeDashBinding.valCost.text =
+                                getCurrencyString(e.distance.toFloat() * (activeCpm ?: 0f))
                         }
                     }
                 }
@@ -348,7 +350,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         supportFragmentManager.setFragmentResultListener(
             REQ_KEY_START_DASH,
             this
-        ) { requestKey, bundle ->
+        ) { _, bundle ->
             val result = bundle.getBoolean(ARG_RESULT)
             val eid = bundle.getLong(ARG_ENTRY_ID)
 
@@ -782,9 +784,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 notificationChannel = notificationChannel,
                 notificationText = { "Mileage tracking is on. Background location is in use." }
             )
-
-            if (TESTING)
-                setIsTesting(true)
         }
     }
 
@@ -932,8 +931,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     companion object {
-        const val APP = "GT_"
-        var isAuthenticated = false
+        private var isAuthenticated = false
 
         private const val DT_SHARED_PREFS = "dashtracker_prefs"
         internal const val PREFS_DONT_ASK_LOCATION = "Don't ask | location"
@@ -942,8 +940,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
 
-        private const val EXTRA_NOTIFICATION_CHANNEL =
-            "${BuildConfig.APPLICATION_ID}.NotificationChannel"
         private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"
         private const val EXTRA_TRIP_ID = "${BuildConfig.APPLICATION_ID}.tripId"
 
@@ -959,14 +955,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
 
         @ColorInt
-        fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)
+        internal fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)
 
         @ColorInt
-        fun getColorFabDisabled(context: Context) =
+        internal fun getColorFabDisabled(context: Context) =
             getAttrColor(context, R.attr.colorFabDisabled)
 
         @ColorInt
-        fun getAttrColor(context: Context, @AttrRes id: Int): Int {
+        internal fun getAttrColor(context: Context, @AttrRes id: Int): Int {
             val tv = TypedValue()
             val arr = context.obtainStyledAttributes(tv.data, intArrayOf(id))
             @ColorInt val color = arr.getColor(0, 0)
@@ -1021,6 +1017,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 }
 
+/**
+ * Marker interface for a fragment that adjusts based on [DeductionType]. Does not currently
+ * serve a purpose
+ */
 interface DeductionCallback
 
 
