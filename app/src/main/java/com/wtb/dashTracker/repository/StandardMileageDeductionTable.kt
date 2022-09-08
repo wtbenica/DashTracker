@@ -14,17 +14,32 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.database.models
+package com.wtb.dashTracker.repository
 
 import java.time.LocalDate
 
+/**
+ * A class for getting the IRS standard mileage deduction(s) for a given date or year
+ *
+ */
 class StandardMileageDeductionTable {
+    /**
+     * @return the IRS standard mileage deduction in effect on [date]
+     */
     operator fun get(date: LocalDate): Float {
         val month = RATES[date.year]?.keys?.sorted()?.reversed()?.last { it >= date.month.value }
         return RATES[date.year]?.get(month) ?: 0f
     }
 
-    operator fun get(year: Int): Map<Int, Float>? = RATES[year]
+    /**
+     * @return a [Map] of the IRS standard mileage deduction rates for [year], where a key is the
+     * last month that the rate is in effect, i.e. if the only key is 12, that rate was in effect
+     * for the entire year (through December); if there are two keys, 6 and 12, 6's value was in
+     * effect from January through June, and 12's value was in effect from July through December.
+     */
+    operator fun get(year: Int): Map<Int, Float>? {
+        return RATES[year]
+    }
 
     companion object {
         private val RATES: Map<Int, Map<Int, Float>> = mapOf(
