@@ -659,14 +659,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      * If [locationService] is not null, calls [LocationService.stop] with [id] as the parameter.
      * If [locationService] is null, meaning the service is not currently bound, the service will
      * be stopped once it is bound.
-     *
-     * @param id the tripId to stop using for location tracking
      */
-    fun stopLocationService(id: Long? = null) {
+    fun stopLocationService() {
         locationService.let {
             if (it != null) {
                 Log.d(TAG, "stopLocationService | Connected to service")
-                it.stop(id)
+                it.stop()
             } else {
                 Log.d(TAG, "stopLocationService | No service, set stopped to true")
                 explicitlyStopped = true
@@ -705,13 +703,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 locationService = binder.service
                 locationServiceBound = true
 
+                initLocSvcObserver()
+
                 if (explicitlyStopped) {
                     Log.d(TAG, "onServiceConnected | stopping service bc explicit")
-                    locationService?.stop()
-//                    stopLocationService()
+                    binder.service.stop()
                     explicitlyStopped = false
                 } else {
-                    initLocSvcObserver()
                     syncActiveEntryId()
                 }
 
@@ -857,8 +855,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                             activeDashBinding.root.collapse()
                         }
                     }
-                    TRACKING_ACTIVE,
-                    TRACKING_INACTIVE -> {
+
+                    else -> {
                         fun updateElapsedTime(): () -> Unit {
                             return setTimer(1000L) {
                                 val start = LocalDateTime.of(

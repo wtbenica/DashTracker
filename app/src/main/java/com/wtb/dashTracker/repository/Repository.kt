@@ -162,8 +162,6 @@ class Repository private constructor(private val context: Context) {
                 mapOf(12 to transactionDao.getCostPerMileAnnual(year))
             }
             DeductionType.IRS_STD -> {
-                // TODO: This is the wrong way to do this bc the IRS deduction isn't consistent
-                //  over the year necessarily, and it is not accurate to just average it
                 standardMileageDeductionTable[year]
             }
         }

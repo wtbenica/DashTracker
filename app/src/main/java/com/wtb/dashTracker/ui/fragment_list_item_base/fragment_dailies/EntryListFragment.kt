@@ -90,7 +90,7 @@ class EntryListFragment : ListItemFragment() {
             val result = bundle.getBoolean(ARG_CONFIRM)
             val id = bundle.getLong(ARG_EXTRA)
             if (result) {
-                (activity as MainActivity).stopLocationService(id)
+                (activity as MainActivity).stopLocationService()
                 viewModel.deleteEntryById(id)
             }
         }
