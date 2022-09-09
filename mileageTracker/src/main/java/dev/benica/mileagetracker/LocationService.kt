@@ -15,12 +15,9 @@ import android.util.Log
 import com.google.android.gms.location.*
 import com.google.android.gms.location.ActivityTransition.ACTIVITY_TRANSITION_ENTER
 import com.wtb.notificationutil.NotificationUtils
-import dev.benica.mileagetracker.LocationService.Companion.dtf
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
-import java.time.Instant
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 val Any.TAG: String
@@ -192,11 +189,6 @@ class LocationService : Service() {
             unregisterReceiver(activityUpdateReceiver)
             activityUpdateReceiverRegistered = false
         }
-//
-//        if (activityTransitionReceiverRegistered) {
-//            unregisterReceiver(activityTransitionReceiver)
-//            activityTransitionReceiverRegistered = false
-//        }
 
         try {
             val removeTask = locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }

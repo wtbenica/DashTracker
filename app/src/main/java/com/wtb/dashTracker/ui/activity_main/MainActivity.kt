@@ -299,16 +299,20 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
         }
 
+        fun showStartDashDialog() {
+            CoroutineScope(Dispatchers.Default).launch {
+                val id = viewModel.upsertAsync(DashEntry())
+                StartDashDialog.newInstance(id)
+                    .show(supportFragmentManager, "start_dash_dialog")
+            }
+        }
+
         fun initMainActivityBinding() {
             binding = ActivityMainBinding.inflate(layoutInflater)
 
             binding.fab.setOnClickListener {
                 if (binding.fab.tag == null || binding.fab.tag == R.drawable.anim_stop_to_play) {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        val id = viewModel.upsertAsync(DashEntry())
-                        StartDashDialog.newInstance(id)
-                            .show(supportFragmentManager, "start_dash_dialog")
-                    }
+                    showStartDashDialog()
                 } else {
                     endDash()
                 }
@@ -317,7 +321,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         fun initActiveDashBinding() {
             activeDashBinding = binding.activeDashBar
-            activeDashBinding.startButton.apply {
+            activeDashBinding.pauseButton.apply {
                 tag = tag ?: R.drawable.anim_pause_to_play
                 setOnClickListener {
                     locationService?.let {
@@ -345,7 +349,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         initMobileAds()
         initBottomNavBar()
         initObservers()
-        initLocSvcObservers()
+        initLocSvcObserver()
 
         supportFragmentManager.setFragmentResultListener(
             REQ_KEY_START_DASH,
@@ -357,7 +361,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             viewModel.loadEntry(eid)
 
             if (result) {
-                getLocationPermissions(eid)
+                startDash(eid)
             }
         }
     }
@@ -544,7 +548,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         stopLocationService()
     }
 
-    private fun getLocationPermissions(eid: Long) {
+    /**
+     * Starts [LocationService]. Requests required permissions
+     *
+     * @param eid the [DashEntry.entryId] that is being started
+     */
+    private fun startDash(eid: Long) {
         explicitlyStopped = false
         when {
             sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> {}
@@ -702,7 +711,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 //                    stopLocationService()
                     explicitlyStopped = false
                 } else {
-                    initLocSvcObservers()
+                    initLocSvcObserver()
                     syncActiveEntryId()
                 }
 
@@ -792,6 +801,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         @DrawableRes initialDrawable: Int,
         @DrawableRes otherDrawable: Int
     ) {
+        // TODO: Need to add content description as well
         btn.run {
             when (tag ?: otherDrawable) {
                 otherDrawable -> {
@@ -811,63 +821,44 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     /**
-     * Monitors [locationService] and updates active entry box, play/pause button,
-     * and tracking status indicator to match. Also updates still/in car/on foot confidence
-     * numbers (this can/should be removed at some point)
+     * Monitors [locationService] and expands/collapses active entry bar, updates pause/resume
+     * button and start/stop FAB.
      */
-    private fun initLocSvcObservers() {
+    private fun initLocSvcObserver() {
         lifecycleScope.launchWhenStarted {
             locationService?.serviceState?.collectLatest { state ->
                 when (state) {
                     PAUSED -> {
-                        fun toggleIt() {
-                            activeDashBinding.startButton.apply {
+                        fun togglePauseToPlay() {
+                            activeDashBinding.pauseButton.apply {
                                 if (tag == R.drawable.anim_play_to_pause) {
                                     toggleButtonAnimatedVectorDrawable(
                                         this,
                                         R.drawable.anim_pause_to_play,
                                         R.drawable.anim_play_to_pause
                                     )
-                                    this.contentDescription =
-                                        getString(R.string.cont_desc_pause_mileage_tracking)
                                 }
                             }
                         }
 
-                        binding.fab.apply {
-                            if (tag == null || tag == R.drawable.anim_stop_to_play) {
-                                toggleButtonAnimatedVectorDrawable(
-                                    btn = this,
-                                    initialDrawable = R.drawable.anim_play_to_stop,
-                                    otherDrawable = R.drawable.anim_stop_to_play
-                                )
-                            }
-                        }
+                        toggleFabToStop()
 
                         if (activeDashBinding.root.visibility == GONE) {
-                            activeDashBinding.root.expand { toggleIt() }
+                            activeDashBinding.root.expand { togglePauseToPlay() }
                         } else {
-                            toggleIt()
+                            togglePauseToPlay()
                         }
                     }
 
                     STOPPED -> {
-                        binding.fab.apply {
-                            if (tag == R.drawable.anim_play_to_stop) {
-                                toggleButtonAnimatedVectorDrawable(
-                                    btn = this,
-                                    initialDrawable = R.drawable.anim_stop_to_play,
-                                    otherDrawable = R.drawable.anim_play_to_stop
-                                )
-                            }
-                        }
+                        toggleFabToPlay()
 
                         if (activeDashBinding.root.visibility == VISIBLE) {
                             activeDashBinding.root.collapse()
                         }
                     }
-
-                    else -> {
+                    TRACKING_ACTIVE,
+                    TRACKING_INACTIVE -> {
                         fun updateElapsedTime(): () -> Unit {
                             return setTimer(1000L) {
                                 val start = LocalDateTime.of(
@@ -881,51 +872,57 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                                         ChronoUnit.SECONDS
                                     )
 
-                                Log.d(
-                                    TAG,
-                                    "start: ${start.format(dtfDateTime)} | end: ${
-                                        end.format(dtfDateTime)
-                                    } | elapsed: ${getElapsedHours(elapsedSeconds)}"
-                                )
-
                                 activeDashBinding.valElapsedTime.text =
                                     getElapsedHours(elapsedSeconds)
                             }
                         }
 
-                        fun toggleIt() {
-                            activeDashBinding.startButton.apply {
+                        fun togglePlayToPause() {
+                            activeDashBinding.pauseButton.apply {
                                 if (tag == R.drawable.anim_pause_to_play) {
                                     toggleButtonAnimatedVectorDrawable(
                                         this,
                                         R.drawable.anim_pause_to_play,
                                         R.drawable.anim_play_to_pause
                                     )
-                                    this.contentDescription =
-                                        getString(R.string.cont_desc_resume_mileage_tracking)
                                 }
                             }
                         }
 
                         updateElapsedTime()
-
-                        binding.fab.apply {
-                            if (tag == null || tag == R.drawable.anim_stop_to_play) {
-                                toggleButtonAnimatedVectorDrawable(
-                                    btn = this,
-                                    initialDrawable = R.drawable.anim_play_to_stop,
-                                    otherDrawable = R.drawable.anim_stop_to_play
-                                )
-                            }
-                        }
+                        toggleFabToStop()
 
                         if (activeDashBinding.root.visibility == GONE) {
-                            activeDashBinding.root.expand { toggleIt() }
+                            activeDashBinding.root.expand { togglePlayToPause() }
                         } else {
-                            toggleIt()
+                            togglePlayToPause()
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun toggleFabToPlay() {
+        binding.fab.apply {
+            if (tag == R.drawable.anim_play_to_stop) {
+                toggleButtonAnimatedVectorDrawable(
+                    btn = this,
+                    initialDrawable = R.drawable.anim_stop_to_play,
+                    otherDrawable = R.drawable.anim_play_to_stop
+                )
+            }
+        }
+    }
+
+    private fun toggleFabToStop() {
+        binding.fab.apply {
+            if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                toggleButtonAnimatedVectorDrawable(
+                    btn = this,
+                    initialDrawable = R.drawable.anim_play_to_stop,
+                    otherDrawable = R.drawable.anim_stop_to_play
+                )
             }
         }
     }
