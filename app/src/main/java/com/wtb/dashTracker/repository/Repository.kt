@@ -106,7 +106,6 @@ class Repository private constructor(private val context: Context) {
             DeductionType.NONE -> 0f
             DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDate(date, Purpose.GAS)
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
-//            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year.toLong())?.amount ?: 0f
             DeductionType.IRS_STD -> standardMileageDeductionTable[date]
         }
 

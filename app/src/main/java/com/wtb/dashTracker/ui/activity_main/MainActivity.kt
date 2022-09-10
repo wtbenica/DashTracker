@@ -25,24 +25,20 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.*
-import android.widget.ImageButton
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
-import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
@@ -60,7 +56,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -70,7 +65,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
-import com.wtb.dashTracker.databinding.ActiveDashBarBinding
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
@@ -88,6 +82,7 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.*
+import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -99,11 +94,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.time.temporal.ChronoUnit
 
 private const val APP = "GT_"
 
@@ -119,7 +111,7 @@ internal val Any.TAG: String
  */
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
-    IncomeFragment.IncomeFragmentCallback {
+    IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
 
     internal val sharedPrefs
         get() = getSharedPreferences(DT_SHARED_PREFS, 0)
@@ -138,7 +130,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     // Bindings
     internal lateinit var binding: ActivityMainBinding
-    private lateinit var activeDashBinding: ActiveDashBarBinding
     private lateinit var mAdView: AdView
 
     // State
@@ -285,15 +276,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         activeEntry = it
                         activeEntryId = it?.entry?.entryId
                         activeEntryId?.let { id -> updateLocationServiceNotificationData(id) }
-                        Log.d(TAG, "Setting activeEntryId: $activeEntryId")
-
-                        it?.let { e ->
-                            activeDashBinding.valMileage.text =
-                                getString(R.string.mileage_fmt, e.distance)
-
-                            activeDashBinding.valCost.text =
-                                getCurrencyString(e.distance.toFloat() * (activeCpm ?: 0f))
-                        }
+                        binding.adb.updateEntry(it, activeCpm)
                     }
                 }
             }
@@ -317,23 +300,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     endDash()
                 }
             }
-        }
 
-        fun initActiveDashBinding() {
-            activeDashBinding = binding.activeDashBar
-            activeDashBinding.pauseButton.apply {
-                tag = tag ?: R.drawable.anim_pause_to_play
-                setOnClickListener {
-                    locationService?.let {
-                        when (it.serviceState.value) {
-                            TRACKING_ACTIVE -> it.pause()
-                            TRACKING_INACTIVE -> it.pause()
-                            PAUSED -> it.start(AUTO_ID) { _, _, _, _, _, _ -> }
-                            STOPPED -> {} // Do Nothing
-                        }
-                    }
-                }
-            }
+            binding.adb.initialize(this)
         }
 
         installSplashScreen()
@@ -341,7 +309,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         supportActionBar?.title = "DashTracker"
 
         initMainActivityBinding()
-        initActiveDashBinding()
 
         setContentView(binding.root)
 
@@ -440,11 +407,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
         intent.removeExtra(EXTRA_END_DASH)
-        Log.d(TAG, "Intent ${intent.identifier} | EXTRA_END_DASH: $endDashExtra")
+        val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1L)
+        intent.removeExtra(EXTRA_TRIP_ID)
+
         if (endDashExtra == true) {
-            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1L)
-            intent.removeExtra(EXTRA_TRIP_ID)
-            Log.d(TAG, "Intent ${intent.identifier} | EXTRA_TRIP_ID: $tripId")
             endDash(tripId)
             onUnlock()
         } else {
@@ -534,18 +500,15 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
-    /**
-     * Clears [activeEntry], stops [locationService], and opens [EndDashDialog].
-     *
-     * @param entryId the id o
-     */
-    private fun endDash(entryId: Long? = activeEntryId) {
-        Log.d(TAG, "endDash | load entry 1 | $entryId / null")
-        viewModel.loadEntry(null)
-        EndDashDialog.newInstance(entryId ?: AUTO_ID)
-            .show(supportFragmentManager, "end_dash_dialog")
-
-        stopLocationService()
+    override fun onPauseResumeButtonClicked() {
+        locationService?.let {
+            when (it.serviceState.value) {
+                TRACKING_ACTIVE -> it.pause()
+                TRACKING_INACTIVE -> it.pause()
+                PAUSED -> it.start(AUTO_ID) { _, _, _, _, _, _ -> }
+                STOPPED -> {} // Do Nothing
+            }
+        }
     }
 
     /**
@@ -572,6 +535,20 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 expectedExit = true
             }
         }
+    }
+
+    /**
+     * Clears [activeEntry], stops [locationService], and opens [EndDashDialog].
+     *
+     * @param entryId the id o
+     */
+    private fun endDash(entryId: Long? = activeEntryId) {
+        Log.d(TAG, "endDash | load entry 1 | $entryId")
+        viewModel.loadEntry(null)
+        EndDashDialog.newInstance(entryId ?: AUTO_ID)
+            .show(supportFragmentManager, "end_dash_dialog")
+
+        stopLocationService()
     }
 
     /**
@@ -647,10 +624,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      * that the service was already started with a different id
      */
     private fun startLocationService(tripId: Long): Long? {
-        Log.d(
-            TAG,
-            "startLocationService    | Service is ${if (locationService == null) "not " else ""}connected"
-        )
         return locationService?.start(tripId, saveLocation)
     }
 
@@ -690,7 +663,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     var tripId: Long? = activeEntryId
 
                     locationService?.tripId?.value?.let {
-                        Log.d(TAG, "load entry 6 | $it")
                         viewModel.loadEntry(it)
                         tripId = it
                     }
@@ -706,7 +678,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 initLocSvcObserver()
 
                 if (explicitlyStopped) {
-                    Log.d(TAG, "onServiceConnected | stopping service bc explicit")
                     binder.service.stop()
                     explicitlyStopped = false
                 } else {
@@ -734,7 +705,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             fun getLaunchActivityPendingIntent(): PendingIntent? {
                 val launchActivityIntent = Intent(context, MainActivity::class.java)
                     .putExtra(EXTRA_END_DASH, false)
-                Log.d(TAG, "getLaunchActivityPendingIntent ${launchActivityIntent.identifier}")
 
                 return PendingIntent.getActivity(
                     context,
@@ -756,8 +726,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 val intent = Intent(ctx, MainActivity::class.java)
                     .putExtra(EXTRA_END_DASH, true)
                     .putExtra(EXTRA_TRIP_ID, tripId ?: AUTO_ID)
-
-                Log.d(TAG, "getEndDashPendingIntent ${intent.identifier}")
 
                 return PendingIntent.getActivity(
                     ctx,
@@ -794,133 +762,40 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
     }
 
-    private fun toggleButtonAnimatedVectorDrawable(
-        btn: ImageButton,
-        @DrawableRes initialDrawable: Int,
-        @DrawableRes otherDrawable: Int
-    ) {
-        // TODO: Need to add content description as well
-        btn.run {
-            when (tag ?: otherDrawable) {
-                otherDrawable -> {
-                    setImageResource(initialDrawable)
-                    tag = initialDrawable
-                }
-                initialDrawable -> {
-                    setImageResource(otherDrawable)
-                    tag = otherDrawable
-                }
-            }
-            when (val d = drawable) {
-                is AnimatedVectorDrawableCompat -> d.start()
-                is AnimatedVectorDrawable -> d.start()
-            }
-        }
-    }
-
     /**
      * Monitors [locationService] and expands/collapses active entry bar, updates pause/resume
      * button and start/stop FAB.
      */
     private fun initLocSvcObserver() {
-        lifecycleScope.launchWhenStarted {
-            locationService?.serviceState?.collectLatest { state ->
-                when (state) {
-                    PAUSED -> {
-                        fun togglePauseToPlay() {
-                            activeDashBinding.pauseButton.apply {
-                                if (tag == R.drawable.anim_play_to_pause) {
-                                    toggleButtonAnimatedVectorDrawable(
-                                        this,
-                                        R.drawable.anim_pause_to_play,
-                                        R.drawable.anim_play_to_pause
-                                    )
-                                }
-                            }
-                        }
-
-                        toggleFabToStop()
-
-                        if (activeDashBinding.root.visibility == GONE) {
-                            activeDashBinding.root.expand { togglePauseToPlay() }
-                        } else {
-                            togglePauseToPlay()
-                        }
-                    }
-
-                    STOPPED -> {
-                        toggleFabToPlay()
-
-                        if (activeDashBinding.root.visibility == VISIBLE) {
-                            activeDashBinding.root.collapse()
-                        }
-                    }
-
-                    else -> {
-                        fun updateElapsedTime(): () -> Unit {
-                            return setTimer(1000L) {
-                                val start = LocalDateTime.of(
-                                    activeEntry?.entry?.date ?: LocalDate.now(),
-                                    activeEntry?.entry?.startTime ?: LocalTime.now()
-                                )
-                                val end = LocalDateTime.now()
-                                val elapsedSeconds: Long =
-                                    start.until(
-                                        end,
-                                        ChronoUnit.SECONDS
-                                    )
-
-                                activeDashBinding.valElapsedTime.text =
-                                    getElapsedHours(elapsedSeconds)
-                            }
-                        }
-
-                        fun togglePlayToPause() {
-                            activeDashBinding.pauseButton.apply {
-                                if (tag == R.drawable.anim_pause_to_play) {
-                                    toggleButtonAnimatedVectorDrawable(
-                                        this,
-                                        R.drawable.anim_pause_to_play,
-                                        R.drawable.anim_play_to_pause
-                                    )
-                                }
-                            }
-                        }
-
-                        updateElapsedTime()
-                        toggleFabToStop()
-
-                        if (activeDashBinding.root.visibility == GONE) {
-                            activeDashBinding.root.expand { togglePlayToPause() }
-                        } else {
-                            togglePlayToPause()
-                        }
-                    }
+        fun toggleFabToPlay() {
+            binding.fab.apply {
+                if (tag == R.drawable.anim_play_to_stop) {
+                    toggleButtonAnimatedVectorDrawable(
+                        initialDrawable = R.drawable.anim_stop_to_play,
+                        otherDrawable = R.drawable.anim_play_to_stop
+                    )
                 }
             }
         }
-    }
 
-    private fun toggleFabToPlay() {
-        binding.fab.apply {
-            if (tag == R.drawable.anim_play_to_stop) {
-                toggleButtonAnimatedVectorDrawable(
-                    btn = this,
-                    initialDrawable = R.drawable.anim_stop_to_play,
-                    otherDrawable = R.drawable.anim_play_to_stop
-                )
+        fun toggleFabToStop() {
+            binding.fab.apply {
+                if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                    toggleButtonAnimatedVectorDrawable(
+                        initialDrawable = R.drawable.anim_play_to_stop,
+                        otherDrawable = R.drawable.anim_stop_to_play
+                    )
+                }
             }
         }
-    }
 
-    private fun toggleFabToStop() {
-        binding.fab.apply {
-            if (tag == null || tag == R.drawable.anim_stop_to_play) {
-                toggleButtonAnimatedVectorDrawable(
-                    btn = this,
-                    initialDrawable = R.drawable.anim_play_to_stop,
-                    otherDrawable = R.drawable.anim_stop_to_play
-                )
+        lifecycleScope.launchWhenStarted {
+            locationService?.serviceState?.collectLatest { state ->
+                binding.adb.updateServiceState(state)
+                when (state) {
+                    STOPPED -> toggleFabToPlay()
+                    else -> toggleFabToStop()
+                }
             }
         }
     }
@@ -993,22 +868,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     )
                 )
             }
-
-        // TODO: I need to be able to stopp/pause, needs a new onTick after onResume
-        private fun setTimer(delay: Long, onTick: () -> Unit): () -> Unit {
-            val handler = android.os.Handler(Looper.getMainLooper())
-
-            val r = object : Runnable {
-                override fun run() {
-                    onTick()
-                    handler.postDelayed(this, delay)
-                }
-            }
-
-            handler.post(r)
-
-            return { handler.removeCallbacks(r) }
-        }
     }
 }
 
