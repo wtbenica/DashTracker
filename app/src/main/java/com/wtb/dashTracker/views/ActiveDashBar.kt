@@ -19,6 +19,7 @@ package com.wtb.dashTracker.views
 import android.content.Context
 import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.AttrRes
@@ -26,6 +27,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.activity_main.TAG
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.PAUSED
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
@@ -63,8 +65,8 @@ class ActiveDashBar @JvmOverloads constructor(
         callback = cb
     }
 
-    fun updateServiceState(isPaused: ServiceState) {
-        when (isPaused) {
+    fun updateServiceState(serviceState: ServiceState) {
+        when (serviceState) {
             PAUSED -> {
                 fun togglePauseToPlay() {
                     binding.pauseButton.apply {
@@ -78,14 +80,19 @@ class ActiveDashBar @JvmOverloads constructor(
                 }
 
                 if (binding.root.visibility == GONE) {
+                    Log.d(TAG, "Paused | Expanding ActiveDashBar")
                     binding.root.expand { togglePauseToPlay() }
                 } else {
+                    Log.d(TAG, "Paused | ActiveDashBar Expanded")
                     togglePauseToPlay()
                 }
             }
             STOPPED -> {
                 if (binding.root.visibility == VISIBLE) {
+                    Log.d(TAG, "Stopped | Hiding ActiveDashBar")
                     binding.root.collapse()
+                } else {
+                    Log.d(TAG, "Stopped | ActiveDashBar Hidden")
                 }
             }
             else -> {
@@ -121,8 +128,10 @@ class ActiveDashBar @JvmOverloads constructor(
                 updateElapsedTime()
 
                 if (binding.root.visibility == GONE) {
+                    Log.d(TAG, "Tracking | Expanding ActiveDashBar")
                     binding.root.expand { togglePlayToPause() }
                 } else {
+                    Log.d(TAG, "Tracking | ActiveDashBar already expanded")
                     togglePlayToPause()
                 }
             }

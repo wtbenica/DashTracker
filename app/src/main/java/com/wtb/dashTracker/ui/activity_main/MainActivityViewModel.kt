@@ -36,19 +36,19 @@ import java.time.LocalDate
 class MainActivityViewModel : ViewModel() {
     private val repository = Repository.get()
 
-    private val _entryId = MutableStateFlow(AUTO_ID)
-    internal val entryId: StateFlow<Long>
-        get() = _entryId
+    private val _activeEntryId = MutableStateFlow(AUTO_ID)
+    internal val activeEntryId: StateFlow<Long>
+        get() = _activeEntryId
 
-    fun loadEntry(id: Long?) {
-        _entryId.value = id ?: AUTO_ID
+    fun loadActiveEntry(id: Long?) {
+        _activeEntryId.value = id ?: AUTO_ID
     }
 
     fun deleteEntry(id: Long) {
         repository.deleteEntryById(id)
     }
 
-    internal val activeEntry: StateFlow<FullEntry?> = entryId.flatMapLatest { id ->
+    internal val activeEntry: StateFlow<FullEntry?> = activeEntryId.flatMapLatest { id ->
         repository.getFullEntryFlowById(id)
     }.stateIn(
         scope = viewModelScope,
