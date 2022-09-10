@@ -107,14 +107,22 @@
                     android:layout_columnWeight="1"
                     tools:text="$209.00" />
 
-                <include
-                    android:id="@+id/active_dash_bar"
-                    layout="@layout/active_dash_bar"
+                <com.wtb.dashTracker.views.ActiveDashBar
+                    android:id="@+id/adb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_columnSpan="3"
                     android:visibility="gone"
                     tools:visibility="visible" />
+
+<!--                <include-->
+<!--                    android:id="@+id/active_dash_bar"-->
+<!--                    layout="@layout/active_dash_bar"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_columnSpan="3"-->
+<!--                    android:visibility="gone"-->
+<!--                    tools:visibility="visible" />-->
             </GridLayout>
         </com.google.android.material.appbar.AppBarLayout>
 

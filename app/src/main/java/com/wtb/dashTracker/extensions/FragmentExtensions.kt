@@ -40,6 +40,21 @@ fun Fragment.getCpmString(value: Float?): String =
     else
         getStringOrElse(R.string.cpm_unit, "-", value)
 
+fun Fragment.getCpmIrsStdString(value: Map<Int, Float>?): String =
+    if (value == null) {
+        getString(R.string.blank_currency)
+    } else {
+        val res = StringBuilder()
+        value.keys.sorted().forEach {
+            if (res.isNotEmpty()) {
+                res.append("/")
+            }
+
+            res.append(getStringOrElse(R.string.cpm_unit, "-", value[it]))
+        }
+        res.toString()
+    }
+
 fun Fragment.getFloatString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())
         getString(R.string.blank_float)

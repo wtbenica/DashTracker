@@ -35,10 +35,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
+import com.wtb.dashTracker.extensions.getCpmIrsStdString
 import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getStringOrElse
@@ -49,7 +48,6 @@ import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemListAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
@@ -57,7 +55,7 @@ import java.time.LocalDate
 @ExperimentalCoroutinesApi
 class YearlyListFragment : ListItemFragment() {
 
-    private val viewModel: YearlyListViewModel by viewModels()
+    protected val viewModel: YearlyListViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private val yearlies = mutableListOf<Yearly>()
@@ -82,31 +80,6 @@ class YearlyListFragment : ListItemFragment() {
         return view
     }
 
-    data class Yearly(
-        val year: Int,
-        var mileage: Float = 0f,
-        var pay: Float = 0f,
-        var otherPay: Float = 0f,
-        var cashTips: Float = 0f,
-        var adjust: Float = 0f,
-        var hours: Float = 0f
-    ) : ListItemType {
-        val reportedPay: Float
-            get() = pay + otherPay + adjust
-
-        val hourly: Float
-            get() = (reportedPay + cashTips) / hours
-
-        internal val totalPay: Float
-            get() = pay + otherPay + adjust + cashTips
-
-        fun getExpenses(costPerMile: Float): Float = mileage * costPerMile
-
-        fun getNet(cpm: Float): Float = totalPay - getExpenses(cpm)
-
-        fun getHourly(cpm: Float): Float = getNet(cpm) / hours
-    }
-
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -121,53 +94,27 @@ class YearlyListFragment : ListItemFragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.allWeeklies.collectLatest { cwList: List<FullWeekly> ->
-                    // TODO: Something tells me this could be done better with sql
-                    yearlies.clear()
-                    var numChecked = 0
-                    // TODO: Originally, I added 1 to the default year, and I'm not sure why. I took
-                    //  it out, and I added a 'isNotEmpty' check for thisYears. If there are issues,
-                    //  this is where to look
-                    var year =
-                        cwList.map { it.weekly.date.year }.maxOrNull() ?: LocalDate.now().year
-                    while (numChecked < cwList.size) {
-                        val thisYears = cwList.mapNotNull { cw: FullWeekly ->
-                            if (cw.weekly.date.year == year) cw else null
-                        }
-                        numChecked += thisYears.size
-                        val res = Yearly(year)
-                        if (thisYears.isNotEmpty()) {
-                            thisYears.forEach { cw: FullWeekly ->
-                                res.adjust += cw.weekly.basePayAdjustment ?: 0f
-                                res.pay += cw.entries.mapNotNull(DashEntry::pay)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                                res.otherPay += cw.entries.mapNotNull(DashEntry::otherPay)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                                res.cashTips += cw.entries.mapNotNull(DashEntry::cashTips)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                                res.mileage += cw.entries.mapNotNull(DashEntry::mileage)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                                res.hours += cw.entries.mapNotNull(DashEntry::totalHours)
-                                    .reduceOrNull { acc, fl -> acc + fl } ?: 0f
-                            }
-                            yearlies.add(res)
-                        }
-                        year -= 1
-                    }
+                viewModel.yearlies.collectLatest { yearlies ->
                     entryAdapter.submitList(yearlies)
                 }
             }
         }
     }
 
+    var bpaList: MutableMap<Int, Float> = mutableMapOf()
+
     interface YearlyListFragmentCallback : DeductionCallback
 
     inner class YearlyAdapter : BaseItemListAdapter<Yearly>(DIFF_CALLBACK) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<Yearly> =
+        override fun getViewHolder(
+            parent: ViewGroup,
+            viewType: Int?
+        ): BaseItemHolder<Yearly> =
             YearlyHolder(parent)
 
         inner class YearlyHolder(parent: ViewGroup) : BaseItemHolder<Yearly>(
-            LayoutInflater.from(parent.context).inflate(R.layout.list_item_yearly, parent, false)
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.list_item_yearly, parent, false)
         ) {
             private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
             private val detailsBinding: ListItemYearlyDetailsTableBinding =
@@ -197,13 +144,15 @@ class YearlyListFragment : ListItemFragment() {
 
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(Dispatchers.Default) {
-                        viewModel.getAnnualCostPerMile(this@YearlyHolder.item.year, deductionType)
-                    }.let { cpm: Float? ->
-                        val costPerMile: Float = cpm ?: 0f
+                        viewModel.getAnnualCostPerMile(
+                            this@YearlyHolder.item.year,
+                            deductionType
+                        )
+                    }.let { cpm: Map<Int, Float>? ->
                         (context as MainActivity).runOnUiThread {
                             when (deductionType) {
                                 DeductionType.NONE -> hideExpenseFields()
-                                else -> {
+                                DeductionType.IRS_STD -> {
                                     showExpenseFields()
 
                                     detailsBinding.listItemDeductionType.text =
@@ -211,7 +160,37 @@ class YearlyListFragment : ListItemFragment() {
 
                                     detailsBinding.listItemYearlyExpenses.text =
                                         getCurrencyString(
-                                            this@YearlyHolder.item.getExpenses(
+                                            this@YearlyHolder.getExpenses(
+                                                deductionType,
+                                                0f
+                                            )
+                                        )
+
+                                    detailsBinding.listItemYearlyCpm.text =
+                                        getCpmIrsStdString(cpm)
+
+                                    binding.listItemSubtitle2.text =
+                                        getCurrencyString(
+                                            this@YearlyHolder.getNet(0f, deductionType)
+                                        )
+
+                                    detailsBinding.listItemYearlyHourly.text =
+                                        getCurrencyString(
+                                            this@YearlyHolder.getHourly(0f)
+                                        )
+                                }
+                                else -> {
+                                    showExpenseFields()
+
+                                    val costPerMile: Float = cpm?.get(12) ?: 0f
+
+                                    detailsBinding.listItemDeductionType.text =
+                                        deductionType.fullDesc
+
+                                    detailsBinding.listItemYearlyExpenses.text =
+                                        getCurrencyString(
+                                            this@YearlyHolder.getExpenses(
+                                                deductionType,
                                                 costPerMile
                                             )
                                         )
@@ -220,11 +199,17 @@ class YearlyListFragment : ListItemFragment() {
                                         getCpmString(costPerMile)
 
                                     binding.listItemSubtitle2.text =
-                                        getCurrencyString(this@YearlyHolder.item.getNet(costPerMile))
+                                        getCurrencyString(
+                                            this@YearlyHolder.getNet(
+                                                costPerMile,
+                                                deductionType
+                                            )
+                                        )
 
-                                    detailsBinding.listItemYearlyHourly.text = getCurrencyString(
-                                        this@YearlyHolder.item.getHourly(costPerMile)
-                                    )
+                                    detailsBinding.listItemYearlyHourly.text =
+                                        getCurrencyString(
+                                            this@YearlyHolder.getHourly(costPerMile)
+                                        )
                                 }
                             }
                         }
@@ -244,12 +229,38 @@ class YearlyListFragment : ListItemFragment() {
 
                 setPayloadVisibility(payloads)
             }
+
+            fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f) =
+                when (deductionType) {
+                    DeductionType.IRS_STD -> getStandardDeductionExpense()
+                    else -> getCalculatedExpenses(costPerMile)
+                }
+
+            fun getCalculatedExpenses(costPerMile: Float): Float = item.mileage * costPerMile
+
+            fun getStandardDeductionExpense(): Float {
+                val table = viewModel.standardMileageDeductionTable()
+                var res = 0f
+                item.monthlies.keys.forEach { mon ->
+                    val deduction: Float = table[LocalDate.of(item.year, mon, 1)]
+                    res += deduction * (item.monthlies[mon]?.mileage ?: 0f)
+                }
+                return res
+            }
+
+            fun getNet(cpm: Float, deductionType: DeductionType): Float =
+                item.totalPay - getExpenses(deductionType, cpm)
+
+            fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / item.hours
         }
     }
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Yearly>() {
-            override fun areItemsTheSame(oldItem: Yearly, newItem: Yearly): Boolean =
+            override fun areItemsTheSame(
+                oldItem: Yearly,
+                newItem: Yearly
+            ): Boolean =
                 oldItem.year == newItem.year
 
 

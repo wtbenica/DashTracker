@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.repository
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
@@ -53,14 +54,14 @@ class Repository private constructor(private val context: Context) {
     private val expensePurposeDao: ExpensePurposeDao
         get() = db.expensePurposeDao()
 
-    private val standardMileageDeductionDao: StandardMileageDeductionDao
-        get() = db.standardMileageDeductionDao()
-
     private val transactionDao: TransactionDao
         get() = db.transactionDao()
 
     private val locationDao: LocationDao
         get() = db.locationDao()
+
+    internal val standardMileageDeductionTable: StandardMileageDeductionTable
+        get() = StandardMileageDeductionTable()
 
     /**
      * Dash Entry
@@ -72,18 +73,6 @@ class Repository private constructor(private val context: Context) {
     private var entryPagingSource: PagingSource<Int, DashEntry>? = null
 
     private var fullEntryPagingSource: PagingSource<Int, FullEntry>? = null
-
-    val allEntriesPaged: Flow<PagingData<DashEntry>> = Pager(
-        config = PagingConfig(
-            pageSize = 20,
-            enablePlaceholders = true
-        ),
-        pagingSourceFactory = {
-            val ps = entryDao.getAllPagingSource()
-            entryPagingSource = ps
-            ps
-        }
-    ).flow
 
     val allFullEntriesPaged: Flow<PagingData<FullEntry>> = Pager(
         config = PagingConfig(
@@ -117,8 +106,7 @@ class Repository private constructor(private val context: Context) {
             DeductionType.NONE -> 0f
             DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDate(date, Purpose.GAS)
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDate(date)
-            DeductionType.IRS_STD -> standardMileageDeductionDao.get(date.year.toLong())?.amount
-                ?: 0f
+            DeductionType.IRS_STD -> standardMileageDeductionTable[date]
         }
 
     fun getCostPerMileFlow(date: LocalDate, purpose: DeductionType): Flow<Float?> =
@@ -127,9 +115,8 @@ class Repository private constructor(private val context: Context) {
             DeductionType.GAS_ONLY -> transactionDao.getCostPerMileByDateFlow(date, Purpose.GAS)
             DeductionType.ALL_EXPENSES -> transactionDao.getCostPerMileByDateFlow(date)
             DeductionType.IRS_STD -> flow {
-                emit(standardMileageDeductionDao.get(date.year.toLong())?.amount ?: 0f)
+                emit(standardMileageDeductionTable[date])
             }
-
         }
 
 
@@ -162,19 +149,19 @@ class Repository private constructor(private val context: Context) {
     /**
      * Yearly
      */
-    suspend fun getAnnualCostPerMile(year: Int, purpose: DeductionType): Float =
+    suspend fun getAnnualCostPerMile(year: Int, purpose: DeductionType): Map<Int, Float>? =
         when (purpose) {
             DeductionType.NONE -> {
-                0f
+                mapOf(12 to 0f)
             }
             DeductionType.GAS_ONLY -> {
-                transactionDao.getCostPerMileAnnual(year, Purpose.GAS)
+                mapOf(12 to transactionDao.getCostPerMileAnnual(year, Purpose.GAS))
             }
             DeductionType.ALL_EXPENSES -> {
-                transactionDao.getCostPerMileAnnual(year)
+                mapOf(12 to transactionDao.getCostPerMileAnnual(year))
             }
             DeductionType.IRS_STD -> {
-                standardMileageDeductionDao.get(year.toLong())?.amount ?: 0f
+                standardMileageDeductionTable[year]
             }
         }
 
@@ -245,7 +232,6 @@ class Repository private constructor(private val context: Context) {
             is Weekly -> weeklyDao.upsert(model)
             is Expense -> expenseDao.upsert(model)
             is ExpensePurpose -> expensePurposeDao.upsert(model)
-            is StandardMileageDeduction -> standardMileageDeductionDao.upsert(model)
             is LocationData -> locationDao.upsert(model)
         }
 
@@ -256,7 +242,6 @@ class Repository private constructor(private val context: Context) {
                 is Weekly -> weeklyDao.insert(model)
                 is Expense -> expenseDao.insert(model)
                 is ExpensePurpose -> expensePurposeDao.insert(model)
-                is StandardMileageDeduction -> standardMileageDeductionDao.insert(model)
                 is LocationData -> locationDao.insert(model)
             }
         }
@@ -268,7 +253,6 @@ class Repository private constructor(private val context: Context) {
             is Weekly -> weeklyDao.insertSus(model)
             is Expense -> expenseDao.insertSus(model)
             is ExpensePurpose -> expensePurposeDao.insertSus(model)
-            is StandardMileageDeduction -> standardMileageDeductionDao.insertSus(model)
             is LocationData -> locationDao.insertSus(model)
         }
 
@@ -280,7 +264,6 @@ class Repository private constructor(private val context: Context) {
                 is Weekly -> weeklyDao.delete(model)
                 is Expense -> expenseDao.delete(model)
                 is ExpensePurpose -> expensePurposeDao.delete(model)
-                is StandardMileageDeduction -> standardMileageDeductionDao.delete(model)
                 is LocationData -> locationDao.delete(model)
             }
         }
@@ -340,6 +323,7 @@ class Repository private constructor(private val context: Context) {
     }
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         private var INSTANCE: Repository? = null
 
         fun initialize(context: Context) {
