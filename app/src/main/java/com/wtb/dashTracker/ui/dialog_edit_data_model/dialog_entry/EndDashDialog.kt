@@ -143,6 +143,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
 
                     tempEntry.startTime?.let { st ->
                         fragEndDashStartTime.text = st.format(dtfTime)
+                        fragEndDashStartTime.tag = st
                     }
 
                     fragEndDashTrackedMileage.text = fullEntry?.distance?.let {
@@ -151,6 +152,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
 
                     tempEntry.endTime?.let { et ->
                         fragEndDashEndTime.text = et.format(dtfTime)
+                        fragEndDashEndTime.tag = et
                     }
 
                     fragEndDashCheckEndsNextDay.isChecked =
@@ -166,7 +168,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                         getString(
                             R.string.odometer_fmt,
                             tempEntry.endOdometer ?: ((tempEntry.startOdometer ?: 0f) +
-                                    (tempEntry.mileage ?: fullEntry?.distance?.toFloat() ?: 0f))
+                                    (tempEntry.mileage ?: fullEntry?.totalDistance?.toFloat() ?: 0f))
                         )
                     )
 
@@ -204,8 +206,8 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             date = currDate ?: LocalDate.now(),
             endDate = (if (binding.fragEndDashCheckEndsNextDay.isChecked) currDate?.plusDays(1) else currDate)
                 ?: LocalDate.now(),
-            startTime = binding.fragEndDashStartTime.text.toTimeOrNull(),
-            endTime = binding.fragEndDashEndTime.text.toTimeOrNull(),
+            startTime = binding.fragEndDashStartTime.tag as LocalTime?,
+            endTime = binding.fragEndDashEndTime.tag as LocalTime?,
             startOdometer = binding.fragEndDashStartMileage.text.toFloatOrNull(),
             endOdometer = binding.fragEndDashEndMileage.text.toFloatOrNull(),
             totalMileage = totalMileage,
@@ -223,6 +225,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             fragEndDashDate.text = item?.date?.format(dtfDate) ?: LocalDate.now().format(dtfDate)
             fragEndDashStartTime.text =
                 item?.startTime?.format(dtfTime) ?: LocalDateTime.now().format(dtfTime)
+            fragEndDashStartTime.tag = item?.startTime ?: LocalDateTime.now()
             fragEndDashStartMileage.setText(
                 item?.startOdometer?.let {
                     getString(R.string.odometer_fmt, it)
@@ -232,6 +235,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                 getString(R.string.mileage_fmt, it)
             } ?: ""
             fragEndDashEndTime.text = LocalDateTime.now().format(dtfTime)
+            fragEndDashEndTime.tag = LocalTime.now()
             fragEndDashEndMileage.setText(
                 item?.startOdometer?.let { so ->
                     fullEntry?.distance?.let { dist ->

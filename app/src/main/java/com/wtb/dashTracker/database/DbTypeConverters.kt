@@ -18,6 +18,7 @@ package com.wtb.dashTracker.database
 
 import androidx.room.TypeConverter
 import com.wtb.dashTracker.extensions.dtfDateTime
+import com.wtb.dashTracker.extensions.dtfDateTime2
 import com.wtb.dashTracker.extensions.dtfDateTimeOld
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -49,7 +50,11 @@ class DbTypeConverters {
             try {
                 LocalDateTime.parse(date, dtfDateTime)
             } catch (e: DateTimeParseException) {
-                LocalDateTime.parse(date, dtfDateTimeOld)
+                try {
+                    LocalDateTime.parse(date, dtfDateTimeOld)
+                } catch (e: DateTimeParseException) {
+                    LocalDateTime.parse(date, dtfDateTime2)
+                }
             }
         }
     }

@@ -701,7 +701,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     pauseId = viewModel.upsertAsync(Pause(entry = it, start = LocalDateTime.now()))
                 }
             }
-            locationService.pause()
+//            locationService.pause()
         }
 
         var startingService = false

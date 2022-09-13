@@ -293,21 +293,56 @@ data class FullEntry(
     @Relation(parentColumn = "entryId", entityColumn = "entry")
     val pauses: List<Pause>
 ) : ListItemType {
-    val distance: Double
+    val totalDistance: Double
         get() {
             var prevLoc: LocationData? = null
-            val res = locations.fold(0.0) { f, loc ->
+
+            val pauseQueue: MutableList<Pause> = pauses.sortedBy { it.start }.toMutableList()
+            Log.d("POPO", "PauseQueue: ${pauseQueue.size}")
+            val res = locations.sortedBy { it.time }.fold(0.0) { f, loc ->
                 val tempPrev = prevLoc
                 prevLoc = loc
 
-                f + if (tempPrev != null) {
-                    val dist = loc.distanceTo(tempPrev)
-                    // includes locations where still == 100, but it seems like there's motion
-                    if (loc.still != 100 || dist > 0.002) dist else 0.0
+                val dist = tempPrev?.let { loc.distanceTo(it) }
+
+                f + if (dist != null && (loc.still != 100 || dist > 0.002)) {
+                    dist
                 } else {
                     0.0
                 }
             }
+
+            return res
+        }
+
+    val distance: Double
+        get() {
+            var prevLoc: LocationData? = null
+
+            val pauseQueue: MutableList<Pause> = pauses.sortedBy { it.start }.toMutableList()
+            Log.d("POPO", "PauseQueue: ${pauseQueue.size}")
+            val res = locations.sortedBy { it.time }.fold(0.0) { f, loc ->
+                val tempPrev = prevLoc
+                prevLoc = loc
+
+                while (pauseQueue.isNotEmpty() && loc.time != null && loc.time > pauseQueue.first().end) {
+                    pauseQueue.removeFirst()
+                }
+
+                val isDuringPause = pauseQueue.isNotEmpty()
+                        && loc.time != null
+                        && loc.time > pauseQueue.first().start
+                        && loc.time < pauseQueue.first().end
+
+                val dist = tempPrev?.let { loc.distanceTo(it) }
+
+                f + if (dist != null && !isDuringPause && (loc.still != 100 || dist > 0.002)) {
+                    dist
+                } else {
+                    0.0
+                }
+            }
+
             return res
         }
 
