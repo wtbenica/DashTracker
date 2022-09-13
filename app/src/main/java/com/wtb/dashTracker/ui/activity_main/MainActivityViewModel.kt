@@ -44,12 +44,24 @@ class MainActivityViewModel : ViewModel() {
         _activeEntryId.value = id ?: AUTO_ID
     }
 
-    fun deleteEntry(id: Long) {
-        repository.deleteEntryById(id)
-    }
-
     internal val activeEntry: StateFlow<FullEntry?> = activeEntryId.flatMapLatest { id ->
         repository.getFullEntryFlowById(id)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
+
+    private val _currentPauseId = MutableStateFlow(AUTO_ID)
+    internal val currentPauseId: StateFlow<Long>
+        get() = _currentPauseId
+
+    fun loadcurrentPause(id: Long?) {
+        _currentPauseId.value = id ?: AUTO_ID
+    }
+
+    internal val currentPause: StateFlow<Pause?> = currentPauseId.flatMapLatest { id ->
+        repository.getPauseFlowById(id)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -97,6 +109,10 @@ class MainActivityViewModel : ViewModel() {
                     _cpm.value = it ?: 0f
                 }
         }
+    }
+
+    fun deleteEntry(id: Long) {
+        repository.deleteEntryById(id)
     }
 
     suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)

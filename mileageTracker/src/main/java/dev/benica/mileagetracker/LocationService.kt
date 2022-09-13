@@ -21,7 +21,7 @@ import kotlinx.parcelize.Parcelize
 import java.time.format.DateTimeFormatter
 
 val Any.TAG: String
-    get() = "LP2_" + this.javaClass.simpleName
+    get() = "GT_" + this.javaClass.simpleName
 
 /**
  * TODO
@@ -119,6 +119,7 @@ class LocationService : Service() {
         notificationText: (Location?) -> String,
         updateNotificationText: ((Location?) -> String)? = null
     ) {
+        Log.d(TAG, "EBLOW: Updating notificationData")
         this.nd = notificationData
         this.notificationChannel = notificationChannel
         this.getNotificationText = notificationText
@@ -244,8 +245,9 @@ class LocationService : Service() {
             override fun onLocationResult(loc: LocationResult) {
                 super.onLocationResult(loc)
                 val lastLoc = loc.lastLocation
-                if (lastLoc == null || !lastLoc.hasAccuracy() || lastLoc.accuracy > 20f  ||
-                    serviceState.value == ServiceState.PAUSED) {
+                if (lastLoc == null || !lastLoc.hasAccuracy() || lastLoc.accuracy > 20f ||
+                    serviceState.value == ServiceState.PAUSED
+                ) {
                     return
                 }
 
@@ -296,8 +298,12 @@ class LocationService : Service() {
             }
 
             _isStarted.value = !sharedPrefs.getBoolean(PREFS_IS_PAUSED, false)
-            Log.d(TAG, "onStartCommand: isStarted: ${isStarted.value} | locHandler ${if 
-                    (locHandler != null) "is not" else "is"} null")
+            Log.d(
+                TAG, "onStartCommand: isStarted: ${isStarted.value} | locHandler ${
+                    if
+                            (locHandler != null) "is not" else "is"
+                } null"
+            )
 
             locHandler?.handleLocation?.let { lh ->
                 registerReceiver(

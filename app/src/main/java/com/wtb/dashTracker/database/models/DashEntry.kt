@@ -16,9 +16,11 @@
 
 package com.wtb.dashTracker.database.models
 
+import android.util.Log
 import androidx.room.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.toIntOrNull
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import dev.benica.csvutil.CSVConvertible
 import dev.benica.csvutil.CSVConvertible.Column
@@ -27,6 +29,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import kotlin.reflect.KProperty1
 
 const val AUTO_ID = 0L
@@ -70,7 +73,7 @@ data class DashEntry(
     val startDateTime
         get() = startTime?.let { st -> LocalDateTime.of(date, st) }
 
-    private val endDateTime
+    val endDateTime
         get() = endTime?.let { et -> LocalDateTime.of(endDate, et) }
 
     val totalHours: Float?
@@ -285,7 +288,10 @@ data class FullEntry(
     val entry: DashEntry,
 
     @Relation(parentColumn = "entryId", entityColumn = "entry")
-    val locations: List<LocationData>
+    val locations: List<LocationData>,
+
+    @Relation(parentColumn = "entryId", entityColumn = "entry")
+    val pauses: List<Pause>
 ) : ListItemType {
     val distance: Double
         get() {
@@ -303,6 +309,26 @@ data class FullEntry(
                 }
             }
             return res
+        }
+
+    val pauseTime: Long
+        get() = pauses.fold(0L) { acc: Long, pause: Pause ->
+            acc + pause.duration
+        }
+
+    val netTime: Long
+        get() {
+            val start = entry.startDateTime
+            val end = entry.endDateTime ?: LocalDateTime.now()
+            Log.d(TAG, "netTime: $start $end $pauseTime")
+            return start?.let { st ->
+                end?.let { et ->
+                    val duration = st.until(et, ChronoUnit.SECONDS)
+                    val net = duration - pauseTime
+                    Log.d(TAG, "Entry | duration: $duration | pause: $pauseTime | Net ${net}")
+                    net
+                }
+            } ?: 0L
         }
 
     override fun equals(other: Any?): Boolean {

@@ -60,6 +60,9 @@ class Repository private constructor(private val context: Context) {
     private val locationDao: LocationDao
         get() = db.locationDao()
 
+    private val pauseDao: PauseDao
+        get() = db.pauseDao()
+
     internal val standardMileageDeductionTable: StandardMileageDeductionTable
         get() = StandardMileageDeductionTable()
 
@@ -217,6 +220,11 @@ class Repository private constructor(private val context: Context) {
         expensePurposeDao.getFlow(id)
 
     /**
+     * Pause
+     */
+    fun getPauseFlowById(id: Long) = pauseDao.getFlow(id)
+
+    /**
      * Generic<DataModel> functions
      */
     fun upsertModel(model: DataModel): Long =
@@ -233,6 +241,7 @@ class Repository private constructor(private val context: Context) {
             is Expense -> expenseDao.upsert(model)
             is ExpensePurpose -> expensePurposeDao.upsert(model)
             is LocationData -> locationDao.upsert(model)
+            is Pause -> pauseDao.upsert(model)
         }
 
     fun saveModel(model: DataModel) {
@@ -243,6 +252,7 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.insert(model)
                 is ExpensePurpose -> expensePurposeDao.insert(model)
                 is LocationData -> locationDao.insert(model)
+                is Pause -> pauseDao.insert(model)
             }
         }
     }
@@ -254,6 +264,7 @@ class Repository private constructor(private val context: Context) {
             is Expense -> expenseDao.insertSus(model)
             is ExpensePurpose -> expensePurposeDao.insertSus(model)
             is LocationData -> locationDao.insertSus(model)
+            is Pause -> pauseDao.insertSus(model)
         }
 
 
@@ -265,6 +276,7 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.delete(model)
                 is ExpensePurpose -> expensePurposeDao.delete(model)
                 is LocationData -> locationDao.delete(model)
+                is Pause -> pauseDao.delete(model)
             }
         }
     }

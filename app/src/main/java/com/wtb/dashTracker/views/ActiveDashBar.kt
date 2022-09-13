@@ -32,10 +32,6 @@ import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.PAUSED
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.temporal.ChronoUnit
 
 @ExperimentalCoroutinesApi
 class ActiveDashBar @JvmOverloads constructor(
@@ -96,24 +92,28 @@ class ActiveDashBar @JvmOverloads constructor(
                 }
             }
             else -> {
-                fun updateElapsedTime(): () -> Unit {
-                    return setTimer(1000L) {
-                        val start = LocalDateTime.of(
-                            activeEntry?.entry?.date ?: LocalDate.now(),
-                            activeEntry?.entry?.startTime ?: LocalTime.now()
-                        )
-                        val end = LocalDateTime.now()
-                        val elapsedSeconds: Long =
-                            start.until(
-                                end,
-                                ChronoUnit.SECONDS
-                            )
-
-                        binding.valElapsedTime.text =
-                            getElapsedHours(elapsedSeconds)
-                    }
-                }
-
+//                fun updateElapsedTime(): () -> Unit {
+//                    return setTimer(1000L) {
+//                        val start = LocalDateTime.of(
+//                            activeEntry?.entry?.date ?: LocalDate.now(),
+//                            activeEntry?.entry?.startTime ?: LocalTime.now()
+//                        )
+//                        val end = LocalDateTime.now()
+//                        val elapsedSeconds: Long =
+//                            start.until(
+//                                end,
+//                                ChronoUnit.SECONDS
+//                            )
+//
+//                        val pausedSeconds = activeEntry?.pauseTime
+//
+//                        val activeSeconds = elapsedSeconds - (pausedSeconds ?: 0L)
+//
+//                        binding.valElapsedTime.text =
+//                            getElapsedHours(activeSeconds)
+//                    }
+//                }
+//
                 fun togglePlayToPause() {
                     binding.pauseButton.apply {
                         if (tag == R.drawable.anim_pause_to_play) {
@@ -125,7 +125,7 @@ class ActiveDashBar @JvmOverloads constructor(
                     }
                 }
 
-                updateElapsedTime()
+//                updateElapsedTime()
 
                 if (binding.root.visibility == GONE) {
                     Log.d(TAG, "Tracking | Expanding ActiveDashBar")
@@ -139,6 +139,7 @@ class ActiveDashBar @JvmOverloads constructor(
     }
 
     fun updateEntry(fullEntry: FullEntry?, activeCpm: Float?) {
+        Log.d(TAG, "update entry: $fullEntry")
         fullEntry?.let { it ->
             activeEntry = it
             binding.valMileage.text =
@@ -146,6 +147,9 @@ class ActiveDashBar @JvmOverloads constructor(
 
             binding.valCost.text =
                 context.getCurrencyString(it.distance.toFloat() * (activeCpm ?: 0f))
+
+            binding.valElapsedTime.text =
+                getElapsedHours(it.netTime)
         }
     }
 

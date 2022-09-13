@@ -142,9 +142,7 @@ class ActivityUpdateReceiver : BroadcastReceiver() {
     var action: ((event: ActivityRecognitionResult) -> Unit)? = null
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "ActivityUpdate received")
         if (ActivityRecognitionResult.hasResult(intent)) {
-            Log.d(TAG, "And it has a result")
             val result = ActivityRecognitionResult.extractResult(intent)!!
 
             action?.invoke(result)

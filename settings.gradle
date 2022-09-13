@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "DashTracker"
 include ':app'
 include ':mileageTracker'
+include ':notificationutil'
