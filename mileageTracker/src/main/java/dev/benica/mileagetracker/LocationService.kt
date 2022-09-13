@@ -123,6 +123,7 @@ class LocationService : Service() {
         this.notificationChannel = notificationChannel
         this.getNotificationText = notificationText
         this.getUpdateNotificationText = updateNotificationText
+        notificationUtil.updateNotificationData(notificationData)
     }
 
     /**
