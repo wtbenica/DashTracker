@@ -326,7 +326,7 @@ data class FullEntry(
                 prevLoc = loc
 
                 while (pauseQueue.isNotEmpty() && (loc.time != null) && (loc.time > (pauseQueue.first().end
-                        ?: LocalDateTime.MIN))
+                        ?: LocalDateTime.MAX))
                 ) {
                     pauseQueue.removeFirst()
                 }
