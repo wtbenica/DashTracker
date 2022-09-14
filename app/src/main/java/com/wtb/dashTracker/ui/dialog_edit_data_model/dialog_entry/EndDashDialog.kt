@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.widget.doOnTextChanged
@@ -60,6 +61,24 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.fullDash.collectLatest {
                     fullEntry = it
+                    Log.d(
+                        "AGOOO", "fullEntry? ${fullEntry != null} | endTime? " +
+                                "${fullEntry?.entry?.endDateTime != null}"
+                    )
+                    fullEntry?.let { fe ->
+                        (fe.entry.endDateTime
+                            ?: ((binding.fragEndDashEndTime.tag as LocalTime?)?.let {
+                                LocalDateTime.of(fe.entry.endDate, it)
+                            }))?.let { edt ->
+                            fe.pauses.forEach { p ->
+                                Log.d("AGOOO", "pause end? ${p.end == null}")
+                                if (p.end == null) {
+                                    p.end = edt
+                                    viewModel.upsert(p)
+                                }
+                            }
+                        }
+                    }
                     updateUI()
                 }
             }
@@ -141,7 +160,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                 binding.apply {
                     fragEndDashDate.text = tempEntry.date.format(dtfDate)
 
-                    tempEntry.startTime?.let { st ->
+                    tempEntry.startTime?.let { st: LocalTime ->
                         fragEndDashStartTime.text = st.format(dtfTime)
                         fragEndDashStartTime.tag = st
                     }
@@ -150,7 +169,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                         getString(R.string.mileage_fmt, it)
                     } ?: "0.0"
 
-                    tempEntry.endTime?.let { et ->
+                    tempEntry.endTime?.let { et: LocalTime ->
                         fragEndDashEndTime.text = et.format(dtfTime)
                         fragEndDashEndTime.tag = et
                     }
@@ -168,7 +187,8 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                         getString(
                             R.string.odometer_fmt,
                             tempEntry.endOdometer ?: ((tempEntry.startOdometer ?: 0f) +
-                                    (tempEntry.mileage ?: fullEntry?.totalDistance?.toFloat() ?: 0f))
+                                    (tempEntry.mileage ?: fullEntry?.totalDistance?.toFloat()
+                                    ?: 0f))
                         )
                     )
 
@@ -216,7 +236,6 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             cashTips = binding.fragEndDashCashTips.text.toFloatOrNull(),
             numDeliveries = binding.fragEndDashNumDeliveries.text.toIntOrNull(),
         )
-
         viewModel.upsert(e)
     }
 
@@ -225,7 +244,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             fragEndDashDate.text = item?.date?.format(dtfDate) ?: LocalDate.now().format(dtfDate)
             fragEndDashStartTime.text =
                 item?.startTime?.format(dtfTime) ?: LocalDateTime.now().format(dtfTime)
-            fragEndDashStartTime.tag = item?.startTime ?: LocalDateTime.now()
+            fragEndDashStartTime.tag = item?.startTime ?: LocalTime.now()
             fragEndDashStartMileage.setText(
                 item?.startOdometer?.let {
                     getString(R.string.odometer_fmt, it)

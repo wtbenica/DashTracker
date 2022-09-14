@@ -202,7 +202,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                             ExpensePurpose(
                                 purposeId = id,
                                 name = purposeName
-                            ), false
+                            )
                         )
                         binding.fragExpensePurpose.apply {
                             setSelection((adapter as PurposeAdapter).getPositionByName(purposeName))

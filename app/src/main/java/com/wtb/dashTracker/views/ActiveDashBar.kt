@@ -29,7 +29,6 @@ import com.wtb.dashTracker.databinding.ActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.TAG
 import dev.benica.mileagetracker.LocationService.ServiceState
-import dev.benica.mileagetracker.LocationService.ServiceState.PAUSED
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -61,28 +60,46 @@ class ActiveDashBar @JvmOverloads constructor(
         callback = cb
     }
 
-    fun updateServiceState(serviceState: ServiceState) {
-        when (serviceState) {
-            PAUSED -> {
-                fun togglePauseToPlay() {
-                    binding.pauseButton.apply {
-                        if (tag == R.drawable.anim_play_to_pause) {
-                            toggleButtonAnimatedVectorDrawable(
-                                R.drawable.anim_pause_to_play,
-                                R.drawable.anim_play_to_pause
-                            )
-                        }
-                    }
-                }
+    var isPaused = false
+        set(value) {
+            field = value
+            toto()
+        }
 
-                if (binding.root.visibility == GONE) {
-                    Log.d(TAG, "Paused | Expanding ActiveDashBar")
-                    binding.root.expand { togglePauseToPlay() }
-                } else {
-                    Log.d(TAG, "Paused | ActiveDashBar Expanded")
-                    togglePauseToPlay()
+    fun toto() {
+        fun togglePlayToPause() {
+            binding.pauseButton.apply {
+                if (tag == R.drawable.anim_pause_to_play) {
+                    toggleButtonAnimatedVectorDrawable(
+                        R.drawable.anim_pause_to_play,
+                        R.drawable.anim_play_to_pause
+                    )
                 }
             }
+        }
+
+        fun togglePauseToPlay() {
+            binding.pauseButton.apply {
+                if (tag == R.drawable.anim_play_to_pause) {
+                    toggleButtonAnimatedVectorDrawable(
+                        R.drawable.anim_pause_to_play,
+                        R.drawable.anim_play_to_pause
+                    )
+                }
+            }
+        }
+
+        if (isPaused) {
+            Log.d(TAG, "IS PAUSED")
+            togglePauseToPlay()
+        } else {
+            Log.d(TAG, "IS NOT PAUSED")
+            togglePlayToPause()
+        }
+    }
+
+    fun updateServiceState(serviceState: ServiceState) {
+        when (serviceState) {
             STOPPED -> {
                 if (binding.root.visibility == VISIBLE) {
                     Log.d(TAG, "Stopped | Hiding ActiveDashBar")
@@ -92,47 +109,12 @@ class ActiveDashBar @JvmOverloads constructor(
                 }
             }
             else -> {
-//                fun updateElapsedTime(): () -> Unit {
-//                    return setTimer(1000L) {
-//                        val start = LocalDateTime.of(
-//                            activeEntry?.entry?.date ?: LocalDate.now(),
-//                            activeEntry?.entry?.startTime ?: LocalTime.now()
-//                        )
-//                        val end = LocalDateTime.now()
-//                        val elapsedSeconds: Long =
-//                            start.until(
-//                                end,
-//                                ChronoUnit.SECONDS
-//                            )
-//
-//                        val pausedSeconds = activeEntry?.pauseTime
-//
-//                        val activeSeconds = elapsedSeconds - (pausedSeconds ?: 0L)
-//
-//                        binding.valElapsedTime.text =
-//                            getElapsedHours(activeSeconds)
-//                    }
-//                }
-//
-                fun togglePlayToPause() {
-                    binding.pauseButton.apply {
-                        if (tag == R.drawable.anim_pause_to_play) {
-                            toggleButtonAnimatedVectorDrawable(
-                                R.drawable.anim_pause_to_play,
-                                R.drawable.anim_play_to_pause
-                            )
-                        }
-                    }
-                }
-
-//                updateElapsedTime()
-
                 if (binding.root.visibility == GONE) {
                     Log.d(TAG, "Tracking | Expanding ActiveDashBar")
-                    binding.root.expand { togglePlayToPause() }
+                    binding.root.expand { toto() }
                 } else {
                     Log.d(TAG, "Tracking | ActiveDashBar already expanded")
-                    togglePlayToPause()
+                    toto()
                 }
             }
         }

@@ -56,7 +56,7 @@ class MainActivityViewModel : ViewModel() {
     internal val currentPauseId: StateFlow<Long>
         get() = _currentPauseId
 
-    fun loadcurrentPause(id: Long?) {
+    fun loadCurrentPause(id: Long?) {
         _currentPauseId.value = id ?: AUTO_ID
     }
 

@@ -325,14 +325,16 @@ data class FullEntry(
                 val tempPrev = prevLoc
                 prevLoc = loc
 
-                while (pauseQueue.isNotEmpty() && loc.time != null && loc.time > pauseQueue.first().end) {
+                while (pauseQueue.isNotEmpty() && (loc.time != null) && (loc.time > (pauseQueue.first().end
+                        ?: LocalDateTime.MIN))
+                ) {
                     pauseQueue.removeFirst()
                 }
 
                 val isDuringPause = pauseQueue.isNotEmpty()
                         && loc.time != null
                         && loc.time > pauseQueue.first().start
-                        && loc.time < pauseQueue.first().end
+                        && loc.time < (pauseQueue.first().end ?: LocalDateTime.MAX)
 
                 val dist = tempPrev?.let { loc.distanceTo(it) }
 
