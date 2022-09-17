@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2022 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/margin_default"
+    tools:keep="@layout/dialog_frag_confirm_add_purpose">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorDialogSecondary"
+            android:paddingBottom="@dimen/margin_half">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/new_expense_toolbar"
+                style="@style/DialogToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:title="@string/dialog_title_new_expense_type" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/frag_confirm_card"
+                style="@style/DialogContentCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/new_expense_toolbar">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorDialogContentBg">
+
+                    <include
+                        android:id="@+id/mileage_stuff"
+                        layout="@layout/pause_stuff" />
+
+                    <View
+                        android:id="@+id/divider_hor"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/margin_default"
+                        android:background="?attr/colorDialogItemOutline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/mileage_stuff" />
+
+                    <Button
+                        android:id="@+id/no_button"
+                        style="@style/ConfirmDialogButton"
+                        android:text="@string/cancel"
+                        app:layout_constraintEnd_toStartOf="@id/divider_vert"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+
+                    <View
+                        android:id="@+id/divider_vert"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="?attr/colorDialogItemOutline"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/yes_button_1"
+                        app:layout_constraintStart_toEndOf="@id/no_button"
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+
+                    <Button
+                        android:id="@+id/yes_button_1"
+                        style="@style/ConfirmDialogButton.Default"
+                        android:enabled="false"
+                        android:text="@string/save"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/divider_vert"
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

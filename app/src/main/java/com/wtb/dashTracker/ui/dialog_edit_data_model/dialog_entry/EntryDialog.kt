@@ -139,6 +139,15 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             fragEntryBtnSave.apply {
                 setOnSavePressed()
             }
+
+            fragEntryTotalMileage.apply {
+                isClickable = true
+                setOnClickListener {
+                    Log.d(TAG, "TOTAL MILEAGE CLICKED")
+                    ConfirmationDialogMileageStuff.newInstance(item?.entryId ?: AUTO_ID)
+                        .show(parentFragmentManager, null)
+                }
+            }
         }
 
     override fun updateUI() {
@@ -205,7 +214,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             fragEntryEndTime.text = ""
             fragEntryStartMileage.text.clear()
             fragEntryEndMileage.text.clear()
-            fragEntryTotalMileage.text.clear()
+            fragEntryTotalMileage.text = ""
             fragEntryPay.text.clear()
             fragEntryPayOther.text.clear()
             fragEntryCashTips.text.clear()
