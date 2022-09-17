@@ -18,6 +18,7 @@ package com.wtb.dashTracker.database.models
 
 import android.util.Log
 import androidx.room.*
+import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.toIntOrNull
 import com.wtb.dashTracker.ui.activity_main.TAG
@@ -30,6 +31,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
+import kotlin.math.roundToInt
 import kotlin.reflect.KProperty1
 
 const val AUTO_ID = 0L
@@ -325,20 +327,25 @@ data class FullEntry(
                 val tempPrev = prevLoc
                 prevLoc = loc
 
-                while (pauseQueue.isNotEmpty() && (loc.time != null) && (loc.time > (pauseQueue.first().end
-                        ?: LocalDateTime.MAX))
+                while (pauseQueue.isNotEmpty()
+                    && (loc.time != null)
+                    && (loc.time > (pauseQueue.first().end ?: LocalDateTime.MAX))
                 ) {
                     pauseQueue.removeFirst()
                 }
 
-                val isDuringPause = pauseQueue.isNotEmpty()
-                        && loc.time != null
-                        && loc.time > pauseQueue.first().start
-                        && loc.time < (pauseQueue.first().end ?: LocalDateTime.MAX)
+                val isDuringPause =
+                    pauseQueue.isNotEmpty()
+                            && loc.time != null
+                            && loc.time > pauseQueue.first().start
+                            && loc.time < (pauseQueue.first().end ?: LocalDateTime.MAX)
 
                 val dist = tempPrev?.let { loc.distanceTo(it) }
 
-                f + if (dist != null && !isDuringPause && (loc.still != 100 || dist > 0.002)) {
+                f + if (dist != null
+                    && !isDuringPause
+                    && (loc.still != 100 || dist > 0.002)
+                ) {
                     dist
                 } else {
                     0.0

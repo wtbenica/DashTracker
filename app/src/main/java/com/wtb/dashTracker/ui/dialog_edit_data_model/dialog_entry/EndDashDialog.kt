@@ -310,6 +310,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
         ) { _, bundle ->
             val hour = bundle.getInt(TimePickerFragment.ARG_NEW_HOUR)
             val minute = bundle.getInt(TimePickerFragment.ARG_NEW_MINUTE)
+
             when (bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
                     binding.fragEndDashStartTime.text =
