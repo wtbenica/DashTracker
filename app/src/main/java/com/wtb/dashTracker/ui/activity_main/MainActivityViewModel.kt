@@ -68,6 +68,22 @@ class MainActivityViewModel : ViewModel() {
         initialValue = null
     )
 
+    private val _currentDriveId = MutableStateFlow(AUTO_ID)
+    internal val currentDriveId: StateFlow<Long>
+        get() = _currentDriveId
+
+    fun loadCurrentDrive(id: Long?) {
+        _currentDriveId.value = id ?: AUTO_ID
+    }
+
+    internal val currentDrive: StateFlow<Drive?> = currentDriveId.flatMapLatest { id ->
+        repository.getDriveFlowById(id)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
+
     private val _hourly = MutableLiveData(0f)
     val hourly: LiveData<Float>
         get() = _hourly

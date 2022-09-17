@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.widget.doOnTextChanged
@@ -60,25 +59,52 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.fullDash.collectLatest {
-                    fullEntry = it
-                    Log.d(
-                        "AGOOO", "fullEntry? ${fullEntry != null} | endTime? " +
-                                "${fullEntry?.entry?.endDateTime != null}"
-                    )
-                    fullEntry?.let { fe ->
-                        (fe.entry.endDateTime
-                            ?: ((binding.fragEndDashEndTime.tag as LocalTime?)?.let {
-                                LocalDateTime.of(fe.entry.endDate, it)
-                            }))?.let { edt ->
-                            fe.pauses.forEach { p ->
-                                Log.d("AGOOO", "pause end? ${p.end == null}")
-                                if (p.end == null) {
-                                    p.end = edt
-                                    viewModel.upsert(p)
+                    // TODO: This should be done even if EndDashDialog doesn't get instantiated
+                    fun updatePauseEndTimes() {
+                        fullEntry?.let { fe ->
+                            val endTime: LocalDateTime? =
+                                fe.entry.endDateTime
+                                    ?: (binding.fragEndDashEndTime.tag as LocalTime?)?.let {
+                                        LocalDateTime.of(fe.entry.endDate, it)
+                                    }
+                            endTime?.let { edt ->
+                                fe.pauses.forEach { p ->
+                                    if (p.end == null) {
+                                        p.end = edt
+                                        viewModel.upsert(p)
+                                    }
                                 }
                             }
                         }
                     }
+
+                    fun updateDriveEndTimes() {
+                        fullEntry?.let { fe ->
+                            val endTime: LocalDateTime? =
+                                fe.entry.endDateTime
+                                    ?: (binding.fragEndDashEndTime.tag as LocalTime?)?.let {
+                                        LocalDateTime.of(fe.entry.endDate, it)
+                                    }
+                            endTime?.let { edt ->
+                                fe.drivesNew.forEach { drive ->
+                                    if (drive.end == null) {
+                                        drive.end = edt
+                                    }
+                                    if (drive.endOdometer == null) {
+                                        drive.endOdometer = fe.entry.endOdometer?.toInt()
+                                            ?: fe.entry.startOdometer?.let {
+                                                it + fe.distance
+                                            }?.toInt() ?: drive.startOdometer
+                                    }
+                                    viewModel.upsert(drive)
+                                }
+                            }
+                        }
+                    }
+
+                    fullEntry = it
+                    updatePauseEndTimes()
+                    updateDriveEndTimes()
                     updateUI()
                 }
             }

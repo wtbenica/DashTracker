@@ -31,7 +31,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
-import com.wtb.dashTracker.database.models.FullEntry.Drive
+import com.wtb.dashTracker.database.models.FullEntry.DriveOld
 import com.wtb.dashTracker.databinding.DialogFragConfirmDashActivityBinding
 import com.wtb.dashTracker.databinding.PauseRowBinding
 import com.wtb.dashTracker.ui.activity_main.MainActivity
@@ -110,7 +110,7 @@ class ConfirmationDialogMileageStuff private constructor() : FullWidthDialogFrag
                 this.binding.mileageStuff.spookyTomato.apply {
                     removeAllViews()
 
-                    it.drives.forEach { drive: Drive ->
+                    it.drives.forEach { drive: DriveOld ->
                         val newPauseRow = PauseRow.newInstance(requireContext(), drive)
                         addView(newPauseRow)
                     }
@@ -164,7 +164,7 @@ private class PauseRow(context: Context) : TableRow(context) {
         binding = PauseRowBinding.bind(view)
     }
 
-    fun updateUI(drive: Drive) {
+    fun updateUI(drive: DriveOld) {
         binding.pauseRowTime.text = drive.getTimeRange()
 
         binding.pauseRowOdometers.text =
@@ -183,7 +183,7 @@ private class PauseRow(context: Context) : TableRow(context) {
     }
 
     companion object {
-        fun newInstance(context: Context, entry: Drive): PauseRow {
+        fun newInstance(context: Context, entry: DriveOld): PauseRow {
             return PauseRow(context).apply {
                 updateUI(entry)
             }

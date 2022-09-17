@@ -293,7 +293,10 @@ data class FullEntry(
     val locations: List<LocationData>,
 
     @Relation(parentColumn = "entryId", entityColumn = "entry")
-    val pauses: List<Pause>
+    val pauses: List<Pause>,
+
+    @Relation(parentColumn = "entryId", entityColumn = "entry")
+    val drivesNew: List<Drive>
 ) : ListItemType {
     val totalDistance: Double
         get() {
@@ -317,7 +320,7 @@ data class FullEntry(
             return res
         }
 
-    internal class Drive(
+    internal class DriveOld(
         var startTime: LocalDateTime,
         var endTime: LocalDateTime? = null,
         var startOdometer: Int? = null,
@@ -344,10 +347,10 @@ data class FullEntry(
         }
     }
 
-    internal val drives: List<Drive>
+    internal val drives: List<DriveOld>
         get() {
             val bibi = "DRIVER8"
-            val res = mutableListOf<Drive>()
+            val res = mutableListOf<DriveOld>()
             val pauseQueue: MutableList<Pause> = pauses.sortedBy { it.start }.toMutableList()
             val entryStartDateTime = entry.startDateTime
             val pauseStart = pauseQueue.firstOrNull()?.start
@@ -360,7 +363,7 @@ data class FullEntry(
                 bibi,
                 "entry start: $entryStartDateTime | pause start: $pauseStart | pause end: $pauseEnd | isPaused: $isPaused"
             )
-            var currentDrive = Drive(
+            var currentDrive = DriveOld(
                 startTime = entry.startDateTime ?: LocalDateTime.now(),
                 startOdometer = entry.startOdometer?.toInt() ?: 0,
                 isPaused = isPaused
@@ -397,7 +400,7 @@ data class FullEntry(
                         bibi,
                         "driveStart: $startTime | pauseStart: $start | isPaused: $isPaused1"
                     )
-                    val tempDrive = Drive(
+                    val tempDrive = DriveOld(
                         startTime = currentDrive.endTime ?: loc.time,
                         startOdometer = currentDrive.startOdometer,
                         isPaused = isPaused1
@@ -413,7 +416,7 @@ data class FullEntry(
                     && currentDrive.endOdometer != null
                 ) {
                     Log.d(bibi, "enter pause")
-                    val tempDrive = Drive(
+                    val tempDrive = DriveOld(
                         startTime = loc.time,
                         startOdometer = currentDrive.endOdometer!! + currentDistance.toInt(),
                         isPaused = true
@@ -513,6 +516,4 @@ data class FullEntry(
         result = 31 * result + locations.hashCode()
         return result
     }
-
-
 }
