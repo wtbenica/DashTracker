@@ -16,11 +16,9 @@
 
 package com.wtb.dashTracker.database.models
 
-import android.util.Log
 import androidx.room.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.toIntOrNull
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import dev.benica.csvutil.CSVConvertible
 import dev.benica.csvutil.CSVConvertible.Column
@@ -29,7 +27,6 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.temporal.ChronoUnit
 import kotlin.reflect.KProperty1
 
 const val AUTO_ID = 0L
@@ -291,81 +288,29 @@ data class FullEntry(
     val locations: List<LocationData>,
 
     @Relation(parentColumn = "entryId", entityColumn = "entry")
-    val pauses: List<Pause>
+    val drives: List<Drive>
 ) : ListItemType {
-    val totalDistance: Double
+    /**
+     * Total distance from beginning to end of dash, including pauses.
+     */
+    val totalTrackedDistance: Double
+        get() = locations.distance
+
+    /**
+     * Distance while not paused
+     */
+    val activeDistance: Double
         get() {
-            var prevLoc: LocationData? = null
-
-            val pauseQueue: MutableList<Pause> = pauses.sortedBy { it.start }.toMutableList()
-            Log.d("POPO", "PauseQueue: ${pauseQueue.size}")
-            val res = locations.sortedBy { it.time }.fold(0.0) { f, loc ->
-                val tempPrev = prevLoc
-                prevLoc = loc
-
-                val dist = tempPrev?.let { loc.distanceTo(it) }
-
-                f + if (dist != null && (loc.still != 100 || dist > 0.002)) {
-                    dist
-                } else {
-                    0.0
-                }
+            return drives.fold(0.0) { acc, drive ->
+                val start = drive.start ?: entry.startDateTime ?: LocalDateTime.MIN
+                val end = drive.end ?: entry.endDateTime ?: LocalDateTime.MAX
+                acc + locations.distanceDuring(start, end)
             }
-
-            return res
-        }
-
-    val distance: Double
-        get() {
-            var prevLoc: LocationData? = null
-
-            val pauseQueue: MutableList<Pause> = pauses.sortedBy { it.start }.toMutableList()
-            Log.d("POPO", "PauseQueue: ${pauseQueue.size}")
-            val res = locations.sortedBy { it.time }.fold(0.0) { f, loc ->
-                val tempPrev = prevLoc
-                prevLoc = loc
-
-                while (pauseQueue.isNotEmpty() && (loc.time != null) && (loc.time > (pauseQueue.first().end
-                        ?: LocalDateTime.MAX))
-                ) {
-                    pauseQueue.removeFirst()
-                }
-
-                val isDuringPause = pauseQueue.isNotEmpty()
-                        && loc.time != null
-                        && loc.time > pauseQueue.first().start
-                        && loc.time < (pauseQueue.first().end ?: LocalDateTime.MAX)
-
-                val dist = tempPrev?.let { loc.distanceTo(it) }
-
-                f + if (dist != null && !isDuringPause && (loc.still != 100 || dist > 0.002)) {
-                    dist
-                } else {
-                    0.0
-                }
-            }
-
-            return res
-        }
-
-    val pauseTime: Long
-        get() = pauses.fold(0L) { acc: Long, pause: Pause ->
-            acc + pause.duration
         }
 
     val netTime: Long
-        get() {
-            val start = entry.startDateTime
-            val end = entry.endDateTime ?: LocalDateTime.now()
-            Log.d(TAG, "netTime: $start $end $pauseTime")
-            return start?.let { st ->
-                end?.let { et ->
-                    val duration = st.until(et, ChronoUnit.SECONDS)
-                    val net = duration - pauseTime
-                    Log.d(TAG, "Entry | duration: $duration | pause: $pauseTime | Net ${net}")
-                    net
-                }
-            } ?: 0L
+        get() = drives.fold(0L) { acc: Long, drive: Drive ->
+            acc + (drive.duration ?: 0L)
         }
 
     override fun equals(other: Any?): Boolean {
@@ -385,6 +330,4 @@ data class FullEntry(
         result = 31 * result + locations.hashCode()
         return result
     }
-
-
 }

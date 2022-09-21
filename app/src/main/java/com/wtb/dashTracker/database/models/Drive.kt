@@ -21,6 +21,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.wtb.dashTracker.extensions.dtfTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -39,15 +40,32 @@ import java.time.temporal.ChronoUnit
         Index(value = ["entry"])
     ]
 )
-data class Pause(
-    @PrimaryKey(autoGenerate = true) val pauseId: Long = AUTO_ID,
+data class Drive(
+    @PrimaryKey(autoGenerate = true) val driveId: Long = AUTO_ID,
     val entry: Long?,
-    var start: LocalDateTime,
-    var end: LocalDateTime? = null
+    var start: LocalDateTime? = null,
+    var end: LocalDateTime? = null,
+    var startOdometer: Int? = null,
+    var endOdometer: Int? = null
 ) : DataModel() {
     override val id: Long
-        get() = pauseId
+        get() = driveId
 
-    val duration: Long
-        get() = start.until(end ?: LocalDateTime.now(), ChronoUnit.SECONDS)
+    val duration: Long?
+        get() = start?.let { st -> end?.let { e -> st.until(e, ChronoUnit.SECONDS) } }
+
+    fun getTimeRange(): String {
+        val startTime = start?.toLocalTime()?.format(dtfTime) ?: ""
+        val endTime = end?.toLocalTime()?.format(dtfTime) ?: ""
+
+        val nextDay =
+            if (end == null || end == start) {
+                ""
+            } else {
+                " (next day)"
+            }
+
+        return "$startTime - $endTime$nextDay"
+    }
 }
+

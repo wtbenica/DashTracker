@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.views
 
 import android.content.Context
-import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -125,10 +124,10 @@ class ActiveDashBar @JvmOverloads constructor(
         fullEntry?.let { it ->
             activeEntry = it
             binding.valMileage.text =
-                context.getString(R.string.mileage_fmt, it.distance)
+                context.getString(R.string.mileage_fmt, it.activeDistance)
 
             binding.valCost.text =
-                context.getCurrencyString(it.distance.toFloat() * (activeCpm ?: 0f))
+                context.getCurrencyString(it.activeDistance.toFloat() * (activeCpm ?: 0f))
 
             binding.valElapsedTime.text =
                 getElapsedHours(it.netTime)
@@ -137,24 +136,6 @@ class ActiveDashBar @JvmOverloads constructor(
 
     interface ActiveDashBarCallback {
         fun onPauseResumeButtonClicked()
-    }
-
-    companion object {
-        // TODO: I need to be able to stopp/pause, needs a new onTick after onResume
-        private fun setTimer(delay: Long, onTick: () -> Unit): () -> Unit {
-            val handler = android.os.Handler(Looper.getMainLooper())
-
-            val r = object : Runnable {
-                override fun run() {
-                    onTick()
-                    handler.postDelayed(this, delay)
-                }
-            }
-
-            handler.post(r)
-
-            return { handler.removeCallbacks(r) }
-        }
     }
 }
 

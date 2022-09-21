@@ -102,15 +102,6 @@ class NotificationUtils(private val context: Context, private var nd: Notificati
                 }
             }
     }
-
-    /**
-     * TODO
-     *
-     * @property contentTitle the text that will appear as the first line of the notification. see [NotificationCompat.Builder.setContentTitle]
-     * @property bigContentTitle the text that will appear as the first line of the notification when the notification is expanded. see [NotificationCompat.BigTextStyle.setBigContentTitle]
-     * @property icon the small icon to be used in notification layouts. see [NotificationCompat.Builder.setSmallIcon]
-     * @property actions actions that will be available from the notification. see [NotificationCompat.Builder.addAction]
-     */
     data class NotificationData(
         @StringRes val contentTitle: Int,
         @StringRes val bigContentTitle: Int,
@@ -118,13 +109,6 @@ class NotificationUtils(private val context: Context, private var nd: Notificati
         val actions: List<KFunction1<Context, NotificationCompat.Action>> = listOf()
     )
 
-    /**
-     * TODO
-     *
-     * @property icon
-     * @property label
-     * @property pendingIntent
-     */
     data class NotificationAction(
         @DrawableRes val icon: Int,
         val label: String,

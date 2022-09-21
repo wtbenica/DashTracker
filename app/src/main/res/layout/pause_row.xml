@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2022 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:columnCount="2"
+    android:rowCount="2">
+
+    <TextView
+        android:id="@+id/pause_row_time"
+        android:layout_width="0dp"
+        android:layout_columnWeight="1"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="2"
+        android:layout_marginTop="@dimen/margin_default"
+        android:background="@drawable/bottom_bord"
+        android:textSize="@dimen/text_size_sm"
+        tools:text="11:15 AM - 12:45PM" />
+
+    <TextView
+        android:id="@+id/pause_row_odometers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="@dimen/margin_default"
+        android:textAlignment="textStart"
+        android:textSize="@dimen/text_size_med"
+        tools:text="0 - 0" />
+
+    <TextView
+        android:id="@+id/pause_row_mileage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="@dimen/margin_default"
+        android:textAlignment="textEnd"
+        android:textSize="@dimen/text_size_med"
+        tools:text="0" />
+</GridLayout>

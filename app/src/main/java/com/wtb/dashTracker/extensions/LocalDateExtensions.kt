@@ -20,15 +20,43 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * format: Mon Jan 01, 2022
+ */
 val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd, yyyy")
+/**
+ * format: Mon Jan 01
+ */
 val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd")
+/**
+ * format: Jan 1, 2022
+ */
 val dtfShortDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
+/**
+ * format: Jan 1
+ */
 val dtfMini: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
+
+/**
+ * format: Jan 1
+ */
 val dtfShortDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
+/**
+ * format: 1:12 PM
+ */
 val dtfTime: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
+/**
+ * format: 01/01/2022 01:12:23
+ */
 val dtfDateTime: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
+/**
+ * format: 01/01/2022 01:12 PM
+ */
 val dtfDateTimeOld: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm a")
-val dtfDateTime2 = DateTimeFormatter.ofPattern("MM/dd/yy HH:mm:ss")
+
+/**
+ * format: if current year: Mon, Jan 01 else: Mon, Jan 01, 2021<
+ */
 val LocalDate.formatted: String
     get() = if (year == LocalDate.now().year) {
         format(dtfDateThisYear)
@@ -36,6 +64,9 @@ val LocalDate.formatted: String
         format(dtfDate)
     }
 
+/**
+ * format: if current year: Jan 1 else: Jan 1, 2021<
+ */
 val LocalDate.shortFormat: String
     get() = if (year == LocalDate.now().year) {
         format(dtfShortDateThisYear)
@@ -43,16 +74,24 @@ val LocalDate.shortFormat: String
         format(dtfShortDate)
     }
 
-fun LocalDate.getNextDateFor(untilDay: DayOfWeek): LocalDate {
+/**
+ * the [LocalDate] of the next [DayOfWeek]. It will return the same date if today is [untilDay]
+ */
+fun LocalDate.dateOfNextDayOfWeek(untilDay: DayOfWeek): LocalDate {
     val daysUntil = (untilDay.value + 7 - dayOfWeek.value) % 7
     return plusDays(daysUntil.toLong())
 }
 
-val LocalDate.endOfWeek: LocalDate
-    get() = getNextDateFor(DayOfWeek.SUNDAY)
+/**
+ * The date of the next Sunday or today, if today is Sunday
+ */
+val LocalDate.endOfWeek: LocalDate get() = dateOfNextDayOfWeek(DayOfWeek.SUNDAY)
 
-val LocalDate.weekOfYear: Int
-    get() = endOfWeek.dayOfYear / 7 + 1
+/**
+ * The week number [1-53] where week 1 is the M-Su week containing January 1. This means that in
+ * some cases, a date from the end of December could be in week 1 of the following year
+ */
+val LocalDate.weekOfYear: Int get() = endOfWeek.dayOfYear / 7 + 1
 
 
 

@@ -113,14 +113,6 @@ class EntryListFragment : ListItemFragment() {
             deductionType = it
             entryAdapter.notifyItemRangeChanged(0, entryAdapter.itemCount)
         }
-//
-//        lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                viewModel.entryList.collectLatest {
-//                    entryAdapter.submitData(it)
-//                }
-//            }
-//        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -234,7 +226,7 @@ class EntryListFragment : ListItemFragment() {
                     getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)
                 binding.listItemAlert.visibility =
                     toVisibleIfTrueElseGone(this.item.entry.isIncomplete)
-                val mileageString = getMileageString(item.distance.toFloat())
+                val mileageString = getMileageString(item.activeDistance.toFloat())
                 binding.trackedValue.text = mileageString
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.entry.pay)
@@ -282,7 +274,7 @@ class EntryListFragment : ListItemFragment() {
                 newItem: FullEntry
             ): Boolean =
                 oldItem.entry.equals(newItem.entry) &&
-                        oldItem.distance == newItem.distance
+                        oldItem.activeDistance == newItem.activeDistance
         }
 
         fun toVisibleIfTrueElseGone(boolean: Boolean) = if (boolean) VISIBLE else GONE

@@ -1,0 +1,557 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 10,
+    "identityHash": "5f5dda21988346c108f008b1671d6dea",
+    "entities": [
+      {
+        "tableName": "DashEntry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `endDate` TEXT NOT NULL, `startTime` TEXT, `endTime` TEXT, `startOdometer` REAL, `endOdometer` REAL, `totalMileage` REAL, `pay` REAL, `otherPay` REAL, `cashTips` REAL, `numDeliveries` INTEGER, `week` TEXT, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`week`) REFERENCES `Weekly`(`date`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "entryId",
+            "columnName": "entryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endDate",
+            "columnName": "endDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTime",
+            "columnName": "startTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "endTime",
+            "columnName": "endTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "startOdometer",
+            "columnName": "startOdometer",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "endOdometer",
+            "columnName": "endOdometer",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "totalMileage",
+            "columnName": "totalMileage",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pay",
+            "columnName": "pay",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "otherPay",
+            "columnName": "otherPay",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cashTips",
+            "columnName": "cashTips",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "numDeliveries",
+            "columnName": "numDeliveries",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "week",
+            "columnName": "week",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "entryId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_DashEntry_week",
+            "unique": false,
+            "columnNames": [
+              "week"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_DashEntry_week` ON `${TABLE_NAME}` (`week`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Weekly",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "week"
+            ],
+            "referencedColumns": [
+              "date"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Weekly",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `basePayAdjustment` REAL, `weekNumber` INTEGER NOT NULL, `isNew` INTEGER NOT NULL, `lastUpdated` TEXT NOT NULL, PRIMARY KEY(`date`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "basePayAdjustment",
+            "columnName": "basePayAdjustment",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weekNumber",
+            "columnName": "weekNumber",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isNew",
+            "columnName": "isNew",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "date"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Expense",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expenseId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `amount` REAL, `purpose` INTEGER NOT NULL, `pricePerGal` REAL, `isNew` INTEGER NOT NULL DEFAULT 0, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`purpose`) REFERENCES `ExpensePurpose`(`purposeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "expenseId",
+            "columnName": "expenseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "amount",
+            "columnName": "amount",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "purpose",
+            "columnName": "purpose",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pricePerGal",
+            "columnName": "pricePerGal",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isNew",
+            "columnName": "isNew",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "expenseId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Expense_purpose",
+            "unique": false,
+            "columnNames": [
+              "purpose"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Expense_purpose` ON `${TABLE_NAME}` (`purpose`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ExpensePurpose",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "purpose"
+            ],
+            "referencedColumns": [
+              "purposeId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ExpensePurpose",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`purposeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `lastUpdated` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "purposeId",
+            "columnName": "purposeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "purposeId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_ExpensePurpose_name",
+            "unique": true,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ExpensePurpose_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "LocationData",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`locationId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` TEXT, `latitude` REAL, `longitude` REAL, `accuracy` REAL, `bearing` REAL, `bearingAccuracy` REAL, `entry` INTEGER NOT NULL, `still` INTEGER, `car` INTEGER, `foot` INTEGER, `unknown` INTEGER, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`entry`) REFERENCES `DashEntry`(`entryId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "locationId",
+            "columnName": "locationId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accuracy",
+            "columnName": "accuracy",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "bearing",
+            "columnName": "bearing",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "bearingAccuracy",
+            "columnName": "bearingAccuracy",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "entry",
+            "columnName": "entry",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "still",
+            "columnName": "still",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "car",
+            "columnName": "car",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "foot",
+            "columnName": "foot",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "unknown",
+            "columnName": "unknown",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "locationId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_LocationData_entry",
+            "unique": false,
+            "columnNames": [
+              "entry"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LocationData_entry` ON `${TABLE_NAME}` (`entry`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DashEntry",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "entry"
+            ],
+            "referencedColumns": [
+              "entryId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Pause",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pauseId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entry` INTEGER, `start` TEXT NOT NULL, `end` TEXT, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`entry`) REFERENCES `DashEntry`(`entryId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "pauseId",
+            "columnName": "pauseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entry",
+            "columnName": "entry",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "start",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "end",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "pauseId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Pause_entry",
+            "unique": false,
+            "columnNames": [
+              "entry"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Pause_entry` ON `${TABLE_NAME}` (`entry`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DashEntry",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "entry"
+            ],
+            "referencedColumns": [
+              "entryId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Drive",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`driveId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entry` INTEGER, `start` TEXT, `end` TEXT, `startOdometer` INTEGER, `endOdometer` INTEGER, `lastUpdated` TEXT NOT NULL, FOREIGN KEY(`entry`) REFERENCES `DashEntry`(`entryId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "driveId",
+            "columnName": "driveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entry",
+            "columnName": "entry",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "start",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "end",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "startOdometer",
+            "columnName": "startOdometer",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "endOdometer",
+            "columnName": "endOdometer",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "driveId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Drive_entry",
+            "unique": false,
+            "columnNames": [
+              "entry"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Drive_entry` ON `${TABLE_NAME}` (`entry`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DashEntry",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "entry"
+            ],
+            "referencedColumns": [
+              "entryId"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5f5dda21988346c108f008b1671d6dea')"
+    ]
+  }
+}

@@ -60,8 +60,8 @@ class Repository private constructor(private val context: Context) {
     private val locationDao: LocationDao
         get() = db.locationDao()
 
-    private val pauseDao: PauseDao
-        get() = db.pauseDao()
+    private val driveDao: DriveDao
+        get() = db.driveDao()
 
     internal val standardMileageDeductionTable: StandardMileageDeductionTable
         get() = StandardMileageDeductionTable()
@@ -220,9 +220,9 @@ class Repository private constructor(private val context: Context) {
         expensePurposeDao.getFlow(id)
 
     /**
-     * Pause
+     * Drive
      */
-    fun getPauseFlowById(id: Long) = pauseDao.getFlow(id)
+    fun getDriveFlowById(id: Long): Flow<Drive?> = driveDao.getFlow(id)
 
     /**
      * Generic<DataModel> functions
@@ -241,7 +241,7 @@ class Repository private constructor(private val context: Context) {
             is Expense -> expenseDao.upsert(model)
             is ExpensePurpose -> expensePurposeDao.upsert(model)
             is LocationData -> locationDao.upsert(model)
-            is Pause -> pauseDao.upsert(model)
+            is Drive -> driveDao.upsert(model)
         }
 
     fun saveModel(model: DataModel) {
@@ -252,7 +252,7 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.insert(model)
                 is ExpensePurpose -> expensePurposeDao.insert(model)
                 is LocationData -> locationDao.insert(model)
-                is Pause -> pauseDao.insert(model)
+                is Drive -> driveDao.insert(model)
             }
         }
     }
@@ -264,7 +264,7 @@ class Repository private constructor(private val context: Context) {
             is Expense -> expenseDao.insertSus(model)
             is ExpensePurpose -> expensePurposeDao.insertSus(model)
             is LocationData -> locationDao.insertSus(model)
-            is Pause -> pauseDao.insertSus(model)
+            is Drive -> driveDao.insertSus(model)
         }
 
 
@@ -276,7 +276,7 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.delete(model)
                 is ExpensePurpose -> expensePurposeDao.delete(model)
                 is LocationData -> locationDao.delete(model)
-                is Pause -> pauseDao.delete(model)
+                is Drive -> driveDao.delete(model)
             }
         }
     }
@@ -296,6 +296,12 @@ class Repository private constructor(private val context: Context) {
     fun import(activityResultLauncher: ActivityResultLauncher<String>) =
         csvUtil.import(activityResultLauncher)
 
+    /**
+     * For only the parameters that are passed arguments, the corresponding database table's 
+     * records will be deleted and replaced with the items in the passed list. The default 
+     * argument, null, will not make any changes to the corresponding table. An empty list will 
+     * delete all records from the table.
+     */
     fun insertOrReplace(
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,

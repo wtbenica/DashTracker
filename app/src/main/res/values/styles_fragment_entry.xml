@@ -22,15 +22,16 @@
         <item name="android:singleLine">true</item>
         <item name="android:textSize">?attr/textSizeItemHeader</item>
         <item name="android:textColor">?attr/colorDialogText</item>
+        <item name="android:layout_columnWeight">0.3</item>
     </style>
 
     <style name="FragEntryValueTextView" parent="Widget.AppCompat.TextView">
         <item name="android:layout_height">@dimen/min_touch_target</item>
-        <item name="android:layout_weight">1</item>
         <item name="android:layout_marginTop">@dimen/margin_narrow</item>
         <item name="android:layout_marginBottom">@dimen/margin_narrow</item>
         <item name="android:paddingHorizontal">16dp</item>
         <item name="android:singleLine">true</item>
+        <item name="android:layout_columnWeight">0.7</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:background">@drawable/bg_edit_text</item>
         <item name="android:textSize">?attr/textSizeItemValue</item>

@@ -175,6 +175,7 @@
         <entry key="app/src/main/res/layout/dialog_frag_confirm_2_button.xml" value="0.5" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_3_button.xml" value="0.6134585289514867" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_add_purpose.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/dialog_frag_confirm_dash_activity.xml" value="0.29243266353142366" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_edit_purposes.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_export.xml" value="0.43986254295532645" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_import.xml" value="0.49709724238026126" />
@@ -238,9 +239,12 @@
         <entry key="app/src/main/res/layout/list_item_yearly.xml" value="0.28649789029535866" />
         <entry key="app/src/main/res/layout/list_item_yearly_details_table.xml" value="0.3141025641025641" />
         <entry key="app/src/main/res/layout/main_fragment.xml" value="0.28730226592560926" />
+        <entry key="app/src/main/res/layout/pause_row.xml" value="0.29200513039760584" />
+        <entry key="app/src/main/res/layout/pause_stuff.xml" value="0.29286019666524155" />
         <entry key="app/src/main/res/layout/practice.xml" value="0.5" />
         <entry key="app/src/main/res/layout/sample_chart_card.xml" value="0.5" />
         <entry key="app/src/main/res/layout/sample_daily_stats_row.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/sample_dash_activity_table.xml" value="0.29200513039760584" />
         <entry key="app/src/main/res/layout/screenshot_daily.xml" value="0.22" />
         <entry key="app/src/main/res/layout/test_subject.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.25" />
