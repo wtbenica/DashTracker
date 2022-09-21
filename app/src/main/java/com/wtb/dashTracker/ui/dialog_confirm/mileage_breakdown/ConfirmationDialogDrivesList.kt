@@ -16,28 +16,25 @@
 
 @file:Suppress("RedundantNullableReturnType", "RedundantNullableReturnType")
 
-package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
+package com.wtb.dashTracker.ui.dialog_confirm.mileage_breakdown
 
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TableRow
-import androidx.fragment.app.setFragmentResult
+import android.widget.GridLayout
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.AUTO_ID
+import com.wtb.dashTracker.database.models.Drive
 import com.wtb.dashTracker.database.models.FullEntry
-import com.wtb.dashTracker.database.models.FullEntry.DriveOld
 import com.wtb.dashTracker.databinding.DialogFragConfirmDashActivityBinding
 import com.wtb.dashTracker.databinding.PauseRowBinding
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.TAG
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm.mileage_breakdown.ConfirmationDialogMileageStuffViewModel
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_drive.DriveDialog
 import com.wtb.dashTracker.views.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,9 +42,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
 @ExperimentalCoroutinesApi
-class ConfirmationDialogMileageStuff private constructor() : FullWidthDialogFragment() {
+class ConfirmationDialogDrivesList private constructor() : FullWidthDialogFragment() {
 
     private val viewModel: ConfirmationDialogMileageStuffViewModel by viewModels()
     private var entry: FullEntry? = null
@@ -55,12 +51,10 @@ class ConfirmationDialogMileageStuff private constructor() : FullWidthDialogFrag
     private lateinit var binding: DialogFragConfirmDashActivityBinding
     private var deleteButtonPressed = false
 
-    private val prevPurpose: Int? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val id = arguments?.getLong(ARG_PURPOSE_ID)
+        val id = arguments?.getLong(ARG_ENTRY_ID)
         viewModel.loadEntry(id)
     }
 
@@ -75,12 +69,7 @@ class ConfirmationDialogMileageStuff private constructor() : FullWidthDialogFrag
             DialogFragConfirmDashActivityBinding.inflate(inflater)
 
         binding.noButton.setOnClickListener {
-            Log.d(TAG, "Cancelling, reverting to old purposeId: $prevPurpose")
             deleteButtonPressed = true
-            setFragmentResult(RK_ADD_PURPOSE, Bundle().apply {
-                putBoolean(ARG_CONFIRM, true)
-                prevPurpose?.let { purpose -> putInt(ARG_PURPOSE_ID, purpose) }
-            })
             dismiss()
         }
 
@@ -110,7 +99,7 @@ class ConfirmationDialogMileageStuff private constructor() : FullWidthDialogFrag
                 this.binding.mileageStuff.spookyTomato.apply {
                     removeAllViews()
 
-                    it.drives.forEach { drive: DriveOld ->
+                    it.drives.forEach { drive: Drive ->
                         val newPauseRow = PauseRow.newInstance(requireContext(), drive)
                         addView(newPauseRow)
                     }
@@ -119,36 +108,15 @@ class ConfirmationDialogMileageStuff private constructor() : FullWidthDialogFrag
         }
     }
 
-    //    private fun saveValues() {
-//        val name = binding.dialogPurposeEditText.text
-//        if (!deleteButtonPressed && !name.isNullOrBlank()) {
-//            entry?.let { ep ->
-//                ep.name = name.toString().replaceFirstChar { it.uppercase() }
-//                viewModel.upsert(ep)
-//            }
-//        } else {
-//            entry?.let { viewModel.delete(it) }
-//        }
-//    }
-//
-    override fun onDestroy() {
-//        saveValues()
-
-        super.onDestroy()
-    }
-
     companion object {
-        const val ARG_PURPOSE_NAME = "arg_purpose_name"
-        const val ARG_PURPOSE_ID = "arg_purpose_id"
-        const val RK_ADD_PURPOSE = "add_purpose"
+        private const val ARG_ENTRY_ID = "arg_purpose_id"
 
         fun newInstance(
-            purposeId: Long
-        ): ConfirmationDialogMileageStuff {
-            Log.d(TAG, "Making a new mileage stuff")
-            return ConfirmationDialogMileageStuff().apply {
+            entryId: Long
+        ): ConfirmationDialogDrivesList {
+            return ConfirmationDialogDrivesList().apply {
                 arguments = Bundle().apply {
-                    putLong(ARG_PURPOSE_ID, purposeId)
+                    putLong(ARG_ENTRY_ID, entryId)
                 }
             }
         }
@@ -156,36 +124,42 @@ class ConfirmationDialogMileageStuff private constructor() : FullWidthDialogFrag
 }
 
 @ExperimentalCoroutinesApi
-private class PauseRow(context: Context) : TableRow(context) {
+private class PauseRow(context: Context) : GridLayout(context) {
     private val binding: PauseRowBinding
+    private var drive: Drive? = null
 
     init {
         val view = inflate(context, R.layout.pause_row, this)
         binding = PauseRowBinding.bind(view)
+        isClickable = true
+        setOnClickListener {
+            DriveDialog.newInstance(drive?.driveId ?: AUTO_ID)
+                .show((context as MainActivity).supportFragmentManager, null)
+        }
     }
 
-    fun updateUI(drive: DriveOld) {
-        binding.pauseRowTime.text = drive.getTimeRange()
+    fun updateUI() {
+        binding.pauseRowTime.text = drive?.getTimeRange()
 
         binding.pauseRowOdometers.text =
             context.getString(
                 R.string.odometer_range,
-                drive.startOdometer?.toFloat(),
-                drive.endOdometer?.toFloat()
+                drive?.startOdometer?.toFloat(),
+                drive?.endOdometer?.toFloat()
             )
 
         binding.pauseRowMileage.text = context.getString(
             R.string.odometer_fmt,
-            ((drive.endOdometer ?: drive.startOdometer ?: 0) - (drive.startOdometer ?: 0)).toFloat()
+            ((drive?.endOdometer ?: drive?.startOdometer ?: 0)
+                    - (drive?.startOdometer ?: 0)).toFloat()
         )
-
-        binding.pauseRowIsPaused.text = if (drive.isPaused) "paused" else "driving"
     }
 
     companion object {
-        fun newInstance(context: Context, entry: DriveOld): PauseRow {
+        fun newInstance(context: Context, entry: Drive): PauseRow {
             return PauseRow(context).apply {
-                updateUI(entry)
+                drive = entry
+                updateUI()
             }
         }
     }

@@ -59,7 +59,12 @@
 
                     <include
                         android:id="@+id/mileage_stuff"
-                        layout="@layout/pause_stuff" />
+                        layout="@layout/pause_stuff"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <View
                         android:id="@+id/divider_hor"

@@ -18,6 +18,7 @@ package com.wtb.dashTracker.database.models
 
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
+import com.wtb.dashTracker.extensions.dtfTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -49,6 +50,20 @@ data class Drive(
 
     val duration: Long?
         get() = start?.let { st -> end?.let { e -> st.until(e, ChronoUnit.SECONDS) } }
+
+    fun getTimeRange(): String {
+        val startTime = start?.toLocalTime()?.format(dtfTime) ?: ""
+        val endTime = end?.let { it.toLocalTime().format(dtfTime) } ?: ""
+
+        val nextDay =
+            if (end == null || end == start) {
+                ""
+            } else {
+                " (next day)"
+            }
+
+        return "$startTime - $endTime$nextDay"
+    }
 }
 
 @ExperimentalCoroutinesApi

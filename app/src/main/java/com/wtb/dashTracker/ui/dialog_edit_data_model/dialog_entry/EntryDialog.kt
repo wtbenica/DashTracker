@@ -41,7 +41,7 @@ import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogMileageStuff
+import com.wtb.dashTracker.ui.dialog_confirm.mileage_breakdown.ConfirmationDialogDrivesList
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -144,7 +144,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                 isClickable = true
                 setOnClickListener {
                     Log.d(TAG, "TOTAL MILEAGE CLICKED")
-                    ConfirmationDialogMileageStuff.newInstance(item?.entryId ?: AUTO_ID)
+                    ConfirmationDialogDrivesList.newInstance(item?.entryId ?: AUTO_ID)
                         .show(parentFragmentManager, null)
                 }
             }

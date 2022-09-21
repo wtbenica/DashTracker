@@ -18,7 +18,6 @@ package com.wtb.dashTracker.database.models
 
 import android.util.Log
 import androidx.room.*
-import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.toIntOrNull
 import com.wtb.dashTracker.ui.activity_main.TAG
@@ -31,7 +30,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
-import kotlin.math.roundToInt
 import kotlin.reflect.KProperty1
 
 const val AUTO_ID = 0L
@@ -296,14 +294,15 @@ data class FullEntry(
     val pauses: List<Pause>,
 
     @Relation(parentColumn = "entryId", entityColumn = "entry")
-    val drivesNew: List<Drive>
+    val drives: List<Drive>
 ) : ListItemType {
-    val totalDistance: Double
+    /**
+     * Total distance from beginning to end of dash, including pauses.
+     */
+    val totalTrackedDistance: Double
         get() {
             var prevLoc: LocationData? = null
 
-            val pauseQueue: MutableList<Pause> = pauses.sortedBy { it.start }.toMutableList()
-            Log.d("POPO", "PauseQueue: ${pauseQueue.size}")
             val res = locations.sortedBy { it.time }.fold(0.0) { f, loc ->
                 val tempPrev = prevLoc
                 prevLoc = loc
@@ -320,128 +319,11 @@ data class FullEntry(
             return res
         }
 
-    internal class DriveOld(
-        var startTime: LocalDateTime,
-        var endTime: LocalDateTime? = null,
-        var startOdometer: Int? = null,
-        var endOdometer: Int? = null,
-        var isPaused: Boolean = false
-    ) {
-        fun getTimeRange(): String {
-            val start = startTime.toLocalTime().format(dtfTime)
-            val end = endTime.let {
-                if (it != null) {
-                    it.toLocalTime().format(dtfTime)
-                } else {
-                    ""
-                }
-            }
-            val nextDay =
-                if (endTime != null && endTime?.toLocalDate() == startTime.toLocalDate()) {
-                    ""
-                } else {
-                    " (next day)"
-                }
-
-            return "$start - $end$nextDay"
-        }
-    }
-
-    internal val drives: List<DriveOld>
-        get() {
-            val bibi = "DRIVER8"
-            val res = mutableListOf<DriveOld>()
-            val pauseQueue: MutableList<Pause> = pauses.sortedBy { it.start }.toMutableList()
-            val entryStartDateTime = entry.startDateTime
-            val pauseStart = pauseQueue.firstOrNull()?.start
-            val pauseEnd = pauseQueue.firstOrNull()?.end
-            val isPaused = pauseQueue.isNotEmpty()
-                    && (entryStartDateTime != null)
-                    && (entryStartDateTime >= pauseStart)
-                    && (entryStartDateTime <= pauseEnd)
-            Log.d(
-                bibi,
-                "entry start: $entryStartDateTime | pause start: $pauseStart | pause end: $pauseEnd | isPaused: $isPaused"
-            )
-            var currentDrive = DriveOld(
-                startTime = entry.startDateTime ?: LocalDateTime.now(),
-                startOdometer = entry.startOdometer?.toInt() ?: 0,
-                isPaused = isPaused
-            )
-
-            var prevLoc: LocationData? = null
-
-            var currentDistance = 0.0
-
-            Log.d(bibi, "entry: ${entry.entryId} | ")
-            locations.sortedBy { it.time }.forEach { loc ->
-                val tempPrev = prevLoc
-                prevLoc = loc
-
-                // Exit pause state
-                if (pauseQueue.isNotEmpty()
-                    && (loc.time != null)
-                    && (loc.time >= (pauseQueue.first().end ?: LocalDateTime.MAX))
-                ) {
-                    Log.d(bibi, "exit pause")
-                    pauseQueue.removeFirst()
-
-                    currentDrive.apply {
-                        endOdometer = (startOdometer ?: 0) + currentDistance.roundToInt()
-                        endTime = loc.time
-                    }
-                    res.add(currentDrive)
-
-                    val startTime = currentDrive.endTime ?: loc.time
-                    val start = pauseQueue.firstOrNull()?.start
-                    val isPaused1 = pauseQueue.isNotEmpty()
-                            && (startTime >= start)
-                    Log.d(
-                        bibi,
-                        "driveStart: $startTime | pauseStart: $start | isPaused: $isPaused1"
-                    )
-                    val tempDrive = DriveOld(
-                        startTime = currentDrive.endTime ?: loc.time,
-                        startOdometer = currentDrive.startOdometer,
-                        isPaused = isPaused1
-                    )
-                    currentDrive = tempDrive
-                    currentDistance = 0.0
-                }
-
-                // Enter pause state
-                if (pauseQueue.isNotEmpty()
-                    && (loc.time != null)
-                    && (loc.time >= (pauseQueue.first().start))
-                    && currentDrive.endOdometer != null
-                ) {
-                    Log.d(bibi, "enter pause")
-                    val tempDrive = DriveOld(
-                        startTime = loc.time,
-                        startOdometer = currentDrive.endOdometer!! + currentDistance.toInt(),
-                        isPaused = true
-                    )
-                    res.add(currentDrive)
-                    currentDrive = tempDrive
-                    currentDistance = 0.0
-                }
-
-                currentDistance += tempPrev?.let { loc.distanceTo(it) } ?: 0.0
-            }
-
-            Log.d(bibi, "complete final drive")
-            currentDrive.apply {
-                if (endOdometer == null) {
-                    endOdometer = (startOdometer ?: 0) + currentDistance.toInt()
-                    endTime = entry.endDateTime
-                }
-                res.add(this)
-            }
-
-            return res
-        }
-
-    val distance: Double
+    /**
+     * Distance while not paused
+     */
+    // TODO: Get rid of pauses, get into drives
+    val activeDistance: Double
         get() {
             var prevLoc: LocationData? = null
 

@@ -225,12 +225,12 @@ class Repository private constructor(private val context: Context) {
     /**
      * Pause
      */
-    fun getPauseFlowById(id: Long) = pauseDao.getFlow(id)
+    fun getPauseFlowById(id: Long): Flow<Pause?> = pauseDao.getFlow(id)
 
     /**
      * Drive
      */
-    fun getDriveFlowById(id: Long) = driveDao.getFlow(id)
+    fun getDriveFlowById(id: Long): Flow<Drive?> = driveDao.getFlow(id)
 
     /**
      * Generic<DataModel> functions

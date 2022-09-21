@@ -23,10 +23,6 @@ import java.time.format.DateTimeFormatter
 val Any.TAG: String
     get() = "GT_" + this.javaClass.simpleName
 
-/**
- * TODO
- *
- */
 @ExperimentalCoroutinesApi
 class LocationService : Service() {
     // Private properties

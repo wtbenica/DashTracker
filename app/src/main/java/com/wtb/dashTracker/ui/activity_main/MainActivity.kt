@@ -73,6 +73,7 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_drive.DriveDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -110,7 +111,7 @@ internal val Any.TAG: String
  * between [IncomeFragment], [com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment], and
  * [com.wtb.dashTracker.ui.fragment_trends.ChartsFragment];
  * [FloatingActionButton] for starting/stopping [LocationService]; new item menu for
- * [EntryDialog], [WeeklyDialog], and [ExpenseDialog]; options menu for
+ * [EntryDialog], [WeeklyDialog], and [DriveDialog]; options menu for
  * [ConfirmationDialogImport], [ConfirmationDialogExport],
  * [OssLicensesMenuActivity].
  */
@@ -446,13 +447,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         Log.d("PAUSE", "onResume    | activeDash? ${activeDash != null}")
         cleanupFiles()
 
-//        if (activeDash == null) {
-//            Log.d("PAUSE", "I'm getting a new activeDash")
-//            activeDash = ActiveDash()
-//        } else {
-//            Log.d("PAUSE", "I've already got an activeDash you idiot")
-//        }
-//
         val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
         intent.removeExtra(EXTRA_END_DASH)
         val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
@@ -615,6 +609,15 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     updateLocationServiceNotificationData(id)
                 }
                 binding.adb.updateEntry(value, activeCpm)
+                currentDrive?.let { drive ->
+                    if (drive.start == null) {
+                        drive.start = field?.entry?.startDateTime
+                        drive.startOdometer = field?.entry?.startOdometer?.toInt()
+                    }
+                    CoroutineScope(Dispatchers.Default).launch {
+                        viewModel.upsertAsync(drive)
+                    }
+                }
             }
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
@@ -706,6 +709,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
          * it is bound.
          */
         fun stopLocationService() {
+            endCurrentDrive()
             locationService.let {
                 if (it != null) {
                     it.stop()
@@ -825,7 +829,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             activeEntry?.let {
                 CoroutineScope(Dispatchers.Default).launch {
                     val startOdometer = it.entry.startOdometer
-                    val distance = it.distance
+                    val distance = it.activeDistance
                     Log.d(
                         TAG,
                         "pauseadalia | resume | newDrive | startOdo: $startOdometer | " +
@@ -854,17 +858,19 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }
             }
 
-            Log.d(TAG, "pauseadalia | currentDrive? ${currentDrive != null}")
+            endCurrentDrive()
+        }
+
+        private fun endCurrentDrive() {
             currentDrive?.apply {
                 start = start ?: activeEntry?.entry?.startDateTime
                 startOdometer = startOdometer ?: activeEntry?.entry?.startOdometer?.toInt()
                 end = LocalDateTime.now()
-                endOdometer = startOdometer?.let { stOdo ->
-                    activeEntry?.distance?.let { dist ->
+                endOdometer = activeEntry?.entry?.startOdometer?.let { stOdo ->
+                    activeEntry?.activeDistance?.let { dist ->
                         stOdo + dist
                     }
                 }?.toInt()
-                Log.d(TAG, "pauseadalia | end: $end | endOdometer: $endOdometer")
             }?.also {
                 CoroutineScope(Dispatchers.Default).launch {
                     Log.d(TAG, "pauseadalia | upsert $it")

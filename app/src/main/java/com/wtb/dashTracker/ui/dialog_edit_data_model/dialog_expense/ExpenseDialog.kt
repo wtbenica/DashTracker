@@ -46,10 +46,11 @@ import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQ
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogEditPurposes
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogMileageStuff.Companion.ARG_PURPOSE_ID
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogMileageStuff.Companion.ARG_PURPOSE_NAME
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogMileageStuff.Companion.RK_ADD_PURPOSE
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_drive.DriveDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.ARG_ENTRY_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -195,7 +196,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             RK_ADD_PURPOSE
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
-            bundle.getLong(ARG_PURPOSE_ID).let { id ->
+            bundle.getLong(ARG_ENTRY_ID).let { id ->
                 if (result) {
                     bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
                         viewModel.upsert(
@@ -254,8 +255,8 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     companion object {
-        fun newInstance(expenseId: Long): ExpenseDialog =
-            ExpenseDialog().apply {
+        fun newInstance(expenseId: Long): DriveDialog =
+            DriveDialog().apply {
                 arguments = Bundle().apply {
                     putLong(ARG_ITEM_ID, expenseId)
                 }

@@ -105,6 +105,7 @@ class Yearly(val year: Int) : ListItemType {
     var basePayAdjustment: Float = 0f
 
     // TODO: Need to still add in bpa
+    // TODO: Figure out what the above TODO means
     val reportedPay: Float
         get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.reportedPay } + basePayAdjustment
 
