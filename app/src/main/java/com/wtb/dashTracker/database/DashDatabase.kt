@@ -75,7 +75,7 @@ abstract class DashDatabase : RoomDatabase() {
                 )
                     .addMigrations(MIGRATION_4_5)
                     .addCallback(
-                        object : RoomDatabase.Callback() {
+                        object : Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {
                                 super.onCreate(db)
 

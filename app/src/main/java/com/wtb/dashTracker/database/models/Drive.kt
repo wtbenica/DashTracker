@@ -56,7 +56,7 @@ data class Drive(
 
     fun getTimeRange(): String {
         val startTime = start?.toLocalTime()?.format(dtfTime) ?: ""
-        val endTime = end?.let { it.toLocalTime().format(dtfTime) } ?: ""
+        val endTime = end?.toLocalTime()?.format(dtfTime) ?: ""
 
         val nextDay =
             if (end == null || end == start) {
