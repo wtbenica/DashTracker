@@ -14,18 +14,19 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/spooky_tomato"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingHorizontal="@dimen/margin_default">
-
-    <include layout="@layout/pause_row" />
-
-    <include layout="@layout/pause_row" />
-
-    <include layout="@layout/pause_row" />
-
-    <include layout="@layout/pause_row" />
-</LinearLayout>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid
+                android:color="?attr/colorPrimary" />
+            <padding
+                android:bottom="1dp" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid
+                android:color="?attr/colorDialogContentBg" />
+        </shape>
+    </item>
+</layer-list>

@@ -14,41 +14,41 @@
   ~ limitations under the License.
   -->
 
-<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:minHeight="@dimen/min_touch_target"
-    android:padding="@dimen/margin_default">
+    android:columnCount="2"
+    android:rowCount="2">
 
     <TextView
         android:id="@+id/pause_row_time"
         android:layout_width="0dp"
+        android:layout_columnWeight="1"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_columnSpan="2"
+        android:layout_marginTop="@dimen/margin_default"
+        android:background="@drawable/bottom_bord"
+        android:textSize="@dimen/text_size_sm"
         tools:text="11:15 AM - 12:45PM" />
-
-    <TextView
-        android:id="@+id/pause_row_mileage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/margin_default"
-        android:textAlignment="textEnd"
-        tools:text="0" />
 
     <TextView
         android:id="@+id/pause_row_odometers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/margin_default"
-        android:textAlignment="textEnd"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="@dimen/margin_default"
+        android:textAlignment="textStart"
+        android:textSize="@dimen/text_size_med"
         tools:text="0 - 0" />
 
     <TextView
-        android:id="@+id/pause_row_is_paused"
+        android:id="@+id/pause_row_mileage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_marginBottom="@dimen/margin_default"
         android:textAlignment="textEnd"
-        tools:text="driving" />
-</TableRow>
+        android:textSize="@dimen/text_size_med"
+        tools:text="0" />
+</GridLayout>

@@ -137,9 +137,9 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
     companion object {
         const val ARG_PURPOSE_NAME = "arg_purpose_name"
         const val ARG_PURPOSE_ID = "arg_purpose_id"
-        private const val ARG_PREV_PURPOSE = "arg_prev_purpose"
-        const val ARG_IS_NEW = "arg_is_new"
         const val RK_ADD_PURPOSE = "add_purpose"
+        private const val ARG_IS_NEW = "arg_is_new"
+        private const val ARG_PREV_PURPOSE = "arg_prev_purpose"
 
         fun newInstance(
             purposeId: Long,
