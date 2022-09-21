@@ -500,6 +500,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         return when (item.itemId) {
             R.id.action_licenses -> {
+                expectedExit = true
                 startActivity(Intent(this, OssLicensesMenuActivity::class.java))
                 true
             }

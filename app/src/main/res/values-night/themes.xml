@@ -15,6 +15,11 @@
   -->
 
 <resources>
+    <!-- Splash screen theme -->
+    <style name="SplashScreen" parent="SplashScreenBase">
+        <item name="colorOnSecondary">@color/on_regular_light</item>
+    </style>
+
     <!-- Licenses Activities Theme -->
     <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
         <item name="android:windowLightStatusBar">false</item>
