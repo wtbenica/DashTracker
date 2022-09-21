@@ -295,14 +295,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
             lifecycleScope.launch {
                 this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.currentPause.collectLatest {
-                        activeDash?.currentPause = it
-                    }
-                }
-            }
-
-            lifecycleScope.launch {
-                this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.currentDrive.collectLatest {
                         activeDash?.currentDrive = it
                     }
@@ -623,15 +615,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
 
-        internal var currentPause: Pause? = null
+        internal var currentDrive: Drive? = null
             set(value) {
                 field = value
                 binding.adb.isPaused = isPaused
             }
-        internal var currentDrive: Drive? = null
 
         private val isPaused: Boolean
-            get() = currentPause != null
+            get() = currentDrive == null
 
 
         // Location Service
@@ -817,31 +808,18 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         // Private methods
         private fun resume() {
-            currentPause?.apply {
-                end = LocalDateTime.now()
-            }?.also {
-                CoroutineScope(Dispatchers.Default).launch {
-                    viewModel.upsertAsync(it)
-                }
-            }
-            viewModel.loadCurrentPause(null)
-
             activeEntry?.let {
                 CoroutineScope(Dispatchers.Default).launch {
-                    val startOdometer = it.entry.startOdometer
-                    val distance = it.activeDistance
-                    Log.d(
-                        TAG,
-                        "pauseadalia | resume | newDrive | startOdo: $startOdometer | " +
-                                "dist:$distance"
-                    )
+                    val startOdometer = it.entry.startOdometer ?: 0f
+                    val distance = it.totalTrackedDistance
                     val driveId = viewModel.upsertAsync(
                         Drive(
                             entry = it.entry.entryId,
                             start = LocalDateTime.now(),
-                            startOdometer = ((startOdometer ?: 0f) + distance).toInt()
+                            startOdometer = (startOdometer + distance).toInt()
                         )
                     )
+
                     viewModel.loadCurrentDrive(driveId)
                 }
             }
@@ -849,15 +827,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         private fun pause() {
             Log.d("PAUSE", "pause")
-            activeEntryId?.let {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val pauseId = viewModel.upsertAsync(
-                        Pause(entry = it, start = LocalDateTime.now())
-                    )
-                    viewModel.loadCurrentPause(pauseId)
-                }
-            }
-
             endCurrentDrive()
         }
 

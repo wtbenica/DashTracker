@@ -16,8 +16,11 @@
 
 package com.wtb.dashTracker.database.models
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.wtb.dashTracker.extensions.dtfTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDateTime
@@ -64,34 +67,5 @@ data class Drive(
 
         return "$startTime - $endTime$nextDay"
     }
-}
-
-@ExperimentalCoroutinesApi
-class FullDrive(
-    @Embedded
-    val drive: Drive,
-
-    @Relation(parentColumn = "driveId", entityColumn = "drive")
-    val locations: List<LocationData>
-) {
-    val distance: Double
-        get() {
-            var prevLoc: LocationData? = null
-
-            val res = locations.sortedBy { it.time }.fold(0.0) { f, loc ->
-                val tempPrev = prevLoc
-                prevLoc = loc
-
-                val dist = tempPrev?.let { loc.distanceTo(it) }
-
-                f + if (dist != null && (loc.still != 100 || dist > 0.002)) {
-                    dist
-                } else {
-                    0.0
-                }
-            }
-
-            return res
-        }
 }
 

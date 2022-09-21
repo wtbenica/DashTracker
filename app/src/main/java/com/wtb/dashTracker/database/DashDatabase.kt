@@ -21,6 +21,8 @@ import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.wtb.dashTracker.database.DashDatabase.Companion.autoMigrateSpec_10_11
+import com.wtb.dashTracker.database.DashDatabase.Companion.autoMigrateSpec_7_8
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,18 +31,19 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 10,
+    version = 11,
     entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class,
-        LocationData::class, Pause::class, Drive::class],
+        LocationData::class, Drive::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
-        AutoMigration(from = 7, to = 8, spec = DashDatabase.Companion.autoMigrateSpec_7_8::class),
+        AutoMigration(from = 7, to = 8, spec = autoMigrateSpec_7_8::class),
         AutoMigration(from = 8, to = 9),
         AutoMigration(from = 9, to = 10),
+        AutoMigration(from = 10, to = 11, spec = autoMigrateSpec_10_11::class),
     ],
     exportSchema = true,
 )
@@ -54,7 +57,6 @@ abstract class DashDatabase : RoomDatabase() {
     abstract fun expensePurposeDao(): ExpensePurposeDao
     abstract fun transactionDao(): TransactionDao
     abstract fun locationDao(): LocationDao
-    abstract fun pauseDao(): PauseDao
     abstract fun driveDao(): DriveDao
 
     companion object {
@@ -113,6 +115,9 @@ abstract class DashDatabase : RoomDatabase() {
 
         @DeleteTable.Entries(DeleteTable(tableName = "StandardMileageDeduction"))
         class autoMigrateSpec_7_8 : AutoMigrationSpec
+
+        @DeleteTable.Entries(DeleteTable(tableName = "Pause"))
+        class autoMigrateSpec_10_11 : AutoMigrationSpec
 
 //
 //        @DeleteColumn(

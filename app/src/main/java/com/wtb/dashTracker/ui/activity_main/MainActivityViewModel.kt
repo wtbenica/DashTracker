@@ -52,22 +52,6 @@ class MainActivityViewModel : ViewModel() {
         initialValue = null
     )
 
-    private val _currentPauseId = MutableStateFlow(AUTO_ID)
-    internal val currentPauseId: StateFlow<Long>
-        get() = _currentPauseId
-
-    fun loadCurrentPause(id: Long?) {
-        _currentPauseId.value = id ?: AUTO_ID
-    }
-
-    internal val currentPause: StateFlow<Pause?> = currentPauseId.flatMapLatest { id ->
-        repository.getPauseFlowById(id)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = null
-    )
-
     private val _currentDriveId = MutableStateFlow(AUTO_ID)
     internal val currentDriveId: StateFlow<Long>
         get() = _currentDriveId
