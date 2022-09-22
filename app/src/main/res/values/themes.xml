@@ -147,8 +147,14 @@
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
+        <!-- active_dash_bar -->
+        <item name="colorActiveDashBarStroke">?attr/colorPrimaryDark</item>
+        <item name="colorActiveDashBarBg">?attr/colorPrimaryFaded</item>
+        <item name="colorActiveDashBarDetailsStroke">?attr/colorPrimary</item>
+        <item name="colorActiveDashBarDetailsBg">?attr/colorSurface</item>
+
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorSecondaryDark</item>
+        <item name="colorTabIndicator">?attr/colorSecondary</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorGroupButton">?attr/colorSecondary</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>

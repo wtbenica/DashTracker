@@ -60,9 +60,6 @@ class Repository private constructor(private val context: Context) {
     private val locationDao: LocationDao
         get() = db.locationDao()
 
-    private val driveDao: DriveDao
-        get() = db.driveDao()
-
     internal val standardMileageDeductionTable: StandardMileageDeductionTable
         get() = StandardMileageDeductionTable()
 
@@ -220,11 +217,6 @@ class Repository private constructor(private val context: Context) {
         expensePurposeDao.getFlow(id)
 
     /**
-     * Drive
-     */
-    fun getDriveFlowById(id: Long): Flow<Drive?> = driveDao.getFlow(id)
-
-    /**
      * Generic<DataModel> functions
      */
     fun upsertModel(model: DataModel): Long =
@@ -241,7 +233,6 @@ class Repository private constructor(private val context: Context) {
             is Expense -> expenseDao.upsert(model)
             is ExpensePurpose -> expensePurposeDao.upsert(model)
             is LocationData -> locationDao.upsert(model)
-            is Drive -> driveDao.upsert(model)
         }
 
     fun saveModel(model: DataModel) {
@@ -252,7 +243,6 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.insert(model)
                 is ExpensePurpose -> expensePurposeDao.insert(model)
                 is LocationData -> locationDao.insert(model)
-                is Drive -> driveDao.insert(model)
             }
         }
     }
@@ -264,7 +254,6 @@ class Repository private constructor(private val context: Context) {
             is Expense -> expenseDao.insertSus(model)
             is ExpensePurpose -> expensePurposeDao.insertSus(model)
             is LocationData -> locationDao.insertSus(model)
-            is Drive -> driveDao.insertSus(model)
         }
 
 
@@ -276,7 +265,6 @@ class Repository private constructor(private val context: Context) {
                 is Expense -> expenseDao.delete(model)
                 is ExpensePurpose -> expensePurposeDao.delete(model)
                 is LocationData -> locationDao.delete(model)
-                is Drive -> driveDao.delete(model)
             }
         }
     }

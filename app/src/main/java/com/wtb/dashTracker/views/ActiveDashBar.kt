@@ -20,12 +20,15 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.widget.FrameLayout
+import android.widget.GridLayout
 import androidx.annotation.AttrRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActiveDashBarBinding
-import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.extensions.collapse
+import com.wtb.dashTracker.extensions.expand
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getElapsedHours
 import com.wtb.dashTracker.ui.activity_main.TAG
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
@@ -36,7 +39,7 @@ class ActiveDashBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : GridLayout(context, attrs, defStyleAttr) {
 
     private var binding: ActiveDashBarBinding
     private var callback: ActiveDashBarCallback? = null
@@ -46,55 +49,10 @@ class ActiveDashBar @JvmOverloads constructor(
         val view: View = inflate(context, R.layout.active_dash_bar, this)
 
         binding = ActiveDashBarBinding.bind(view)
-
-        binding.pauseButton.apply {
-            tag = tag ?: R.drawable.anim_pause_to_play
-            setOnClickListener {
-                callback?.onPauseResumeButtonClicked()
-            }
-        }
     }
 
     fun initialize(cb: ActiveDashBarCallback) {
         callback = cb
-    }
-
-    var isPaused = false
-        set(value) {
-            field = value
-            toto()
-        }
-
-    fun toto() {
-        fun togglePlayToPause() {
-            binding.pauseButton.apply {
-                if (tag == R.drawable.anim_pause_to_play) {
-                    toggleButtonAnimatedVectorDrawable(
-                        R.drawable.anim_pause_to_play,
-                        R.drawable.anim_play_to_pause
-                    )
-                }
-            }
-        }
-
-        fun togglePauseToPlay() {
-            binding.pauseButton.apply {
-                if (tag == R.drawable.anim_play_to_pause) {
-                    toggleButtonAnimatedVectorDrawable(
-                        R.drawable.anim_pause_to_play,
-                        R.drawable.anim_play_to_pause
-                    )
-                }
-            }
-        }
-
-        if (isPaused) {
-            Log.d(TAG, "IS PAUSED")
-            togglePauseToPlay()
-        } else {
-            Log.d(TAG, "IS NOT PAUSED")
-            togglePlayToPause()
-        }
     }
 
     fun updateServiceState(serviceState: ServiceState) {
@@ -110,10 +68,7 @@ class ActiveDashBar @JvmOverloads constructor(
             else -> {
                 if (binding.root.visibility == GONE) {
                     Log.d(TAG, "Tracking | Expanding ActiveDashBar")
-                    binding.root.expand { toto() }
-                } else {
-                    Log.d(TAG, "Tracking | ActiveDashBar already expanded")
-                    toto()
+                    binding.root.expand()
                 }
             }
         }
@@ -124,18 +79,16 @@ class ActiveDashBar @JvmOverloads constructor(
         fullEntry?.let { it ->
             activeEntry = it
             binding.valMileage.text =
-                context.getString(R.string.mileage_fmt, it.activeDistance)
+                context.getString(R.string.mileage_fmt, it.distance)
 
             binding.valCost.text =
-                context.getCurrencyString(it.activeDistance.toFloat() * (activeCpm ?: 0f))
+                context.getCurrencyString(it.distance.toFloat() * (activeCpm ?: 0f))
 
             binding.valElapsedTime.text =
                 getElapsedHours(it.netTime)
         }
     }
 
-    interface ActiveDashBarCallback {
-        fun onPauseResumeButtonClicked()
-    }
+    interface ActiveDashBarCallback
 }
 

@@ -73,7 +73,6 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
-import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_drive.DriveDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -97,7 +96,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
@@ -289,14 +287,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     viewModel.activeEntry.collectLatest {
                         if (activeDash == null) activeDash = ActiveDash()
                         activeDash?.activeEntry = it
-                    }
-                }
-            }
-
-            lifecycleScope.launch {
-                this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.currentDrive.collectLatest {
-                        activeDash?.currentDrive = it
                     }
                 }
             }
@@ -543,13 +533,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     /**
-     * Calls [ActiveDash.togglePauseLocationService] on [activeDash]
-     */
-    override fun onPauseResumeButtonClicked() {
-        activeDash?.togglePauseLocationService()
-    }
-
-    /**
      * Stops current dash by calling [ActiveDash.stopDash] on [entryId]
      */
     private fun endDash(entryId: Long? = null) {
@@ -602,28 +585,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     updateLocationServiceNotificationData(id)
                 }
                 binding.adb.updateEntry(value, activeCpm)
-                currentDrive?.let { drive ->
-                    if (drive.start == null) {
-                        drive.start = field?.entry?.startDateTime
-                        drive.startOdometer = field?.entry?.startOdometer?.toInt()
-                    }
-                    CoroutineScope(Dispatchers.Default).launch {
-                        viewModel.upsertAsync(drive)
-                    }
-                }
             }
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
-
-        internal var currentDrive: Drive? = null
-            set(value) {
-                field = value
-                binding.adb.isPaused = isPaused
-            }
-
-        private val isPaused: Boolean
-            get() = currentDrive == null
 
 
         // Location Service
@@ -701,7 +666,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
          * it is bound.
          */
         fun stopLocationService() {
-            endCurrentDrive()
             locationService.let {
                 if (it != null) {
                     it.stop()
@@ -782,17 +746,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
         /**
-         * If [isPaused], calls [resume], else [pause]
-         */
-        fun togglePauseLocationService() {
-            if (isPaused) {
-                resume()
-            } else {
-                pause()
-            }
-        }
-
-        /**
          * Calls [unbindService] on [locationServiceConnection], sets [locationServiceBound] to
          * false, [locationServiceConnection] to null, and [locationService] to null.
          */
@@ -805,49 +758,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 locationService = null
 //            }
             }
-        }
-
-        // Private methods
-        private fun resume() {
-            activeEntry?.let {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val startOdometer = it.entry.startOdometer ?: 0f
-                    val distance = it.totalTrackedDistance
-                    val driveId = viewModel.upsertAsync(
-                        Drive(
-                            entry = it.entry.entryId,
-                            start = LocalDateTime.now(),
-                            startOdometer = (startOdometer + distance).toInt()
-                        )
-                    )
-
-                    viewModel.loadCurrentDrive(driveId)
-                }
-            }
-        }
-
-        private fun pause() {
-            Log.d("PAUSE", "pause")
-            endCurrentDrive()
-        }
-
-        private fun endCurrentDrive() {
-            currentDrive?.apply {
-                start = start ?: activeEntry?.entry?.startDateTime
-                startOdometer = startOdometer ?: activeEntry?.entry?.startOdometer?.toInt()
-                end = LocalDateTime.now()
-                endOdometer = activeEntry?.entry?.startOdometer?.let { stOdo ->
-                    activeEntry?.activeDistance?.let { dist ->
-                        stOdo + dist
-                    }
-                }?.toInt()
-            }?.also {
-                CoroutineScope(Dispatchers.Default).launch {
-                    Log.d(TAG, "pauseadalia | upsert $it")
-                    viewModel.upsertAsync(it)
-                }
-            }
-            viewModel.loadCurrentDrive(null)
         }
 
         private fun bindLocationService() {
@@ -889,28 +799,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             startOnBindId = tripId
             startingService = false
 
-            val id = locationService?.start(tripId, saveLocation)
-
-            if (id == tripId) {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val entry = activeEntry?.entry
-                    val startOdometer = entry?.startOdometer
-                    Log.d(
-                        TAG,
-                        "pauseadalia | startLocationService | newDrive | entry? ${entry != null} " +
-                                "| startOdo:$startOdometer"
-                    )
-                    val driveId = viewModel.upsertAsync(
-                        Drive(
-                            entry = id,
-                            start = activeEntry?.entry?.startDateTime,
-                            startOdometer = startOdometer?.toInt()
-                        )
-                    )
-                    viewModel.loadCurrentDrive(driveId)
-                }
-            }
-            return id
+            return locationService?.start(tripId, saveLocation)
         }
 
         /**

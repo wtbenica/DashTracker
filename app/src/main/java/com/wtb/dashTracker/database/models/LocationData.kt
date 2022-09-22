@@ -163,10 +163,3 @@ val List<LocationData>.distance: Double
 
         return res
     }
-
-@ExperimentalCoroutinesApi
-fun List<LocationData>.distanceDuring(start: LocalDateTime, end: LocalDateTime) =
-    filter { ld ->
-        ld.time != null && ld.time >= start && ld.time <= end
-    }.distance
-
