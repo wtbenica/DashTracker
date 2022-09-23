@@ -71,8 +71,10 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
+import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -100,6 +102,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 private const val APP = "GT_"
+private const val IS_TESTING = true
 
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
@@ -383,13 +386,31 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
         }
 
+        fun onFirstRun() {
+            if (IS_TESTING || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
+                // run intro: initial settings
+                //      - Use authentication?
+                //      - Use mileage tracking
+                //          - ask for permissions
+                ConfirmationDialog.newInstance(
+                    text = R.string.app_name,
+                    requestKey = "Wubba Wubba",
+                    title = "For the virgins",
+                    posAction = LambdaWrapper {
+                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
+                    }
+                ).show(supportFragmentManager, null)
+            }
+        }
+
         /**
          * Sets content to visible
          */
         fun onUnlock() {
             Log.d(TAG, "login | onUnlock")
             isAuthenticated = true
-            this@MainActivity.binding.container.visibility = VISIBLE
+            unlockScreen()
+            onFirstRun()
         }
 
         /**
@@ -427,6 +448,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         super.onResume()
         Log.d("PAUSE", "onResume    | activeDash? ${activeDash != null}")
+
         cleanupFiles()
 
         val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
@@ -457,12 +479,20 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         if (!expectedExit) {
             isAuthenticated = false
-            binding.container.visibility = INVISIBLE
+            lockScreen()
         }
 
         activeDash = null
 
         super.onPause()
+    }
+
+    private fun lockScreen() {
+        binding.container.visibility = INVISIBLE
+    }
+
+    fun unlockScreen() {
+        binding.container.visibility = VISIBLE
     }
 
     override fun onDestroy() {
@@ -937,6 +967,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val DT_SHARED_PREFS = "dashtracker_prefs"
         internal const val PREFS_DONT_ASK_LOCATION = "Don't ask | location"
         internal const val PREFS_DONT_ASK_BG_LOCATION = "Don't ask | bg location"
+        internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
