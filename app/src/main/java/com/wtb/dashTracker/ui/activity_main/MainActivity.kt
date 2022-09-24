@@ -102,7 +102,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 private const val APP = "GT_"
-private const val IS_TESTING = true
+private const val IS_TESTING = false
 
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
@@ -153,17 +153,23 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
     /**
-     * An [ActivityResultLauncher] that calls [getBgLocationPermission] if the requested
+     * An [ActivityResultLauncher] that calls [getBgLocationPermResumeTracking] if the requested
      * permissions are granted
      */
+    private val locationPermResumeTrackingLauncher: ActivityResultLauncher<Array<String>> =
+        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermResumeTracking)
+
     private val locationPermLauncher: ActivityResultLauncher<Array<String>> =
-        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermission)
+        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPerm)
+
+    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
+        registerSinglePermissionLauncher()
 
     /**
      * An [ActivityResultLauncher] that calls [ActiveDash.resumeOrStartNewTrip] if the requested
      * permission is granted
      */
-    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
+    private val bgLocationPermResumeTrackingLauncher: ActivityResultLauncher<String> =
         registerSinglePermissionLauncher(onGranted = ::resumeMileageTracking)
 
     /**
@@ -387,16 +393,40 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
         fun onFirstRun() {
+            fun getPermissions() {
+                when {
+                    sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> { }
+                    hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> { }
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                        showRationaleLocation {
+                            locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        }
+                        expectedExit = true
+                    }
+                    else -> {
+                        locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        expectedExit = true
+                    }
+                }
+            }
+
             if (IS_TESTING || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
                 // run intro: initial settings
                 //      - Use authentication?
                 //      - Use mileage tracking
                 //          - ask for permissions
                 ConfirmationDialog.newInstance(
-                    text = R.string.app_name,
+                    text = R.string.whats_new,
                     requestKey = "Wubba Wubba",
-                    title = "For the virgins",
+                    title = "What's new",
+                    posButton = R.string.enable,
                     posAction = LambdaWrapper {
+                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
+                        getPermissions()
+                    },
+                    negButton = R.string.decline,
+                    negAction = LambdaWrapper {
+                        sharedPrefs.edit().putBoolean(PREFS_DONT_ASK_LOCATION, true).apply()
                         sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
                     }
                 ).show(supportFragmentManager, null)
@@ -583,12 +613,29 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     /**
      * Requests [ACCESS_BACKGROUND_LOCATION], if needed, and  calls [resumeMileageTracking].
      */
-    private fun getBgLocationPermission() {
+    private fun getBgLocationPermResumeTracking() {
         when {
             sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> {}
             hasPermissions(this@MainActivity, ACCESS_BACKGROUND_LOCATION) -> {
                 resumeMileageTracking()
             }
+            shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
+                showRationaleBgLocation {
+                    bgLocationPermResumeTrackingLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+                        .also { expectedExit = true }
+                }
+            }
+            else -> {
+                bgLocationPermResumeTrackingLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+                expectedExit = true
+            }
+        }
+    }
+
+    private fun getBgLocationPerm() {
+        when {
+            sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> {}
+            hasPermissions(this@MainActivity, ACCESS_BACKGROUND_LOCATION) -> {}
             shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
                 showRationaleBgLocation {
                     bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
@@ -652,7 +699,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         /**
          * Checks for [REQUIRED_PERMISSIONS]. If they have already been granted, calls
          * [startLocationService] on [entryId], otherwise it requests the permissions using
-         * [locationPermLauncher]
+         * [locationPermResumeTrackingLauncher]
          *
          * @param entryId passed as the argument to [startLocationService] if permissions have
          * already been granted
@@ -664,14 +711,17 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> {
                     startLocationService(entryId)
                 }
+//                hasPermissions(this@MainActivity, *LOCATION_PERMISSIONS) -> {
+//                    getBgLocationPermission()
+//                }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showRationaleLocation {
-                        locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        locationPermResumeTrackingLauncher.launch(LOCATION_PERMISSIONS)
                     }
                     expectedExit = true
                 }
                 else -> {
-                    locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                    locationPermResumeTrackingLauncher.launch(LOCATION_PERMISSIONS)
                     expectedExit = true
                 }
             }

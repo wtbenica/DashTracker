@@ -95,6 +95,7 @@ class YearlyListViewModel : ViewModel() {
     internal fun standardMileageDeductionTable() = repository.standardMileageDeductionTable
 }
 
+@ExperimentalCoroutinesApi
 class Yearly(val year: Int) : ListItemType {
     val monthlies = mutableMapOf<Month, Monthly>().apply {
         Month.values().forEach { this[it] = Monthly() }

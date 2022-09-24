@@ -160,7 +160,8 @@
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
         <item name="colorGroupStroke">?attr/colorSecondary</item>
         <item name="colorOptionsMenu">?attr/colorSecondaryFaded</item>
-        <item name="colorTabLayoutBg">?attr/colorPrimaryFaded</item>
+        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
+        <item name="colorOptionsButton">?attr/colorTabIndicator</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>

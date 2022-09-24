@@ -37,6 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/filter_btn"
+        app:layout_constraintHorizontal_weight=".75"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider">
 
@@ -67,11 +68,13 @@
         android:minWidth="@dimen/min_touch_target"
         android:text="@string/lbl_cpm"
         android:textColor="?attr/colorTextPrimary"
-        app:backgroundTint="?attr/colorTabIndicator"
+        app:backgroundTint="?attr/colorOptionsButton"
         app:cornerRadius="0dp"
         app:icon="@drawable/ic_arrow_expand"
         app:iconTint="?attr/colorTextPrimary"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight=".25"
+        app:layout_constraintStart_toEndOf="@id/frag_income_tab_layout"
         app:layout_constraintTop_toBottomOf="@id/divider" />
 
     <View
@@ -95,7 +98,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <TextView
             android:layout_width="wrap_content"
