@@ -51,7 +51,13 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
 
     suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)
 
-    fun upsert(dataModel: DataModel, loadItem: Boolean = true) {
+    fun upsert(dataModel: DataModel) {
+        CoroutineScope(Dispatchers.Default).launch {
+            repository.upsertModel(dataModel)
+        }
+    }
+
+    fun upsert(dataModel: T, loadItem: Boolean = true) {
         CoroutineScope(Dispatchers.Default).launch {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {

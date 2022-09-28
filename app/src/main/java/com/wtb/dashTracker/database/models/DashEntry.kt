@@ -27,6 +27,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import kotlin.reflect.KProperty1
 
 const val AUTO_ID = 0L
@@ -70,7 +71,7 @@ data class DashEntry(
     val startDateTime
         get() = startTime?.let { st -> LocalDateTime.of(date, st) }
 
-    private val endDateTime
+    val endDateTime
         get() = endTime?.let { et -> LocalDateTime.of(endDate, et) }
 
     val totalHours: Float?
@@ -285,25 +286,17 @@ data class FullEntry(
     val entry: DashEntry,
 
     @Relation(parentColumn = "entryId", entityColumn = "entry")
-    val locations: List<LocationData>
+    val locations: List<LocationData>,
 ) : ListItemType {
-    val distance: Double
-        get() {
-            var prevLoc: LocationData? = null
-            val res = locations.fold(0.0) { f, loc ->
-                val tempPrev = prevLoc
-                prevLoc = loc
+    val netTime: Long?
+        get() = entry.startDateTime?.until(LocalDateTime.now(), ChronoUnit.SECONDS)
 
-                f + if (tempPrev != null) {
-                    val dist = loc.distanceTo(tempPrev)
-                    // includes locations where still == 100, but it seems like there's motion
-                    if (loc.still != 100 || dist > 0.002) dist else 0.0
-                } else {
-                    0.0
-                }
-            }
-            return res
-        }
+
+    /**
+     * Total distance from beginning to end of dash.
+     */
+    val distance: Double
+        get() = locations.distance
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -322,6 +315,4 @@ data class FullEntry(
         result = 31 * result + locations.hashCode()
         return result
     }
-
-
 }

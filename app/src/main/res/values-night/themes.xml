@@ -15,6 +15,11 @@
   -->
 
 <resources>
+    <!-- Splash screen theme -->
+    <style name="SplashScreen" parent="SplashScreenBase">
+        <item name="colorOnSecondary">@color/on_regular_light</item>
+    </style>
+
     <!-- Licenses Activities Theme -->
     <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
         <item name="android:windowLightStatusBar">false</item>
@@ -37,7 +42,7 @@
         <item name="android:textColorSecondary">@color/secondary_text_color</item>
 
         <item name="colorTextPrimary">?attr/colorOnSecondary</item>
-        <item name="colorTextPrimaryDisabled">?attr/colorSecondary</item>
+        <item name="colorTextPrimaryDisabled">?attr/colorOnSecondaryVariant</item>
         <item name="colorTextSecondary">?attr/colorOnPrimary</item>
         <item name="colorTextSecondaryDisabled">?attr/colorSecondaryFaded</item>
 
@@ -65,11 +70,12 @@
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
-        <item name="colorGroupButton">?attr/colorSecondaryDark</item>
+        <item name="colorGroupButton">?attr/colorSecondary</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
         <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
-        <item name="colorOptionsMenu">?attr/colorSecondary</item>
-        <item name="colorTabLayoutBg">?attr/colorPrimaryVariant</item>
+        <item name="colorOptionsMenu">?attr/colorSecondaryDark</item>
+        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
+        <item name="colorOptionsButton">?attr/colorTabIndicator</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnPrimary</item>
@@ -111,7 +117,7 @@
         <item name="colorDialogItemOutline">?attr/colorPrimaryFaded</item>
         <item name="colorDialogContentBg">?attr/colorOnPrimary</item>
         <item name="colorDialogItem">?attr/colorOnPrimaryVariant</item>
-        <item name="colorDialogItemDisabled">?attr/colorPrimary</item>
+        <item name="colorDialogItemDisabled">?attr/colorPrimaryDark</item>
         <item name="colorDialogButtonIcon">?attr/colorSecondaryFaded</item>
         <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
 

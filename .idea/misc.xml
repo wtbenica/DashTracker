@@ -150,7 +150,7 @@
         <entry key="app/src/main/res/font/tauri.xml" value="0.1368106028217187" />
         <entry key="app/src/main/res/layout/active_dash_bar.xml" value="0.5" />
         <entry key="app/src/main/res/layout/active_dash_bar2.xml" value="0.10218041898247114" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.36072144288577157" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.29286019666524155" />
         <entry key="app/src/main/res/layout/activity_main_fab_menu.xml" value="0.5241057542768274" />
         <entry key="app/src/main/res/layout/blank_fragment.xml" value="0.28730226592560926" />
         <entry key="app/src/main/res/layout/bottom_sheet.xml" value="0.5" />
@@ -175,6 +175,7 @@
         <entry key="app/src/main/res/layout/dialog_frag_confirm_2_button.xml" value="0.5" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_3_button.xml" value="0.6134585289514867" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_add_purpose.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/dialog_frag_confirm_dash_activity.xml" value="0.29243266353142366" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_edit_purposes.xml" value="0.67" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_export.xml" value="0.43986254295532645" />
         <entry key="app/src/main/res/layout/dialog_frag_confirm_import.xml" value="0.49709724238026126" />
@@ -238,9 +239,12 @@
         <entry key="app/src/main/res/layout/list_item_yearly.xml" value="0.28649789029535866" />
         <entry key="app/src/main/res/layout/list_item_yearly_details_table.xml" value="0.3141025641025641" />
         <entry key="app/src/main/res/layout/main_fragment.xml" value="0.28730226592560926" />
+        <entry key="app/src/main/res/layout/pause_row.xml" value="0.29200513039760584" />
+        <entry key="app/src/main/res/layout/pause_stuff.xml" value="0.29286019666524155" />
         <entry key="app/src/main/res/layout/practice.xml" value="0.5" />
         <entry key="app/src/main/res/layout/sample_chart_card.xml" value="0.5" />
         <entry key="app/src/main/res/layout/sample_daily_stats_row.xml" value="0.35052083333333334" />
+        <entry key="app/src/main/res/layout/sample_dash_activity_table.xml" value="0.29200513039760584" />
         <entry key="app/src/main/res/layout/screenshot_daily.xml" value="0.22" />
         <entry key="app/src/main/res/layout/test_subject.xml" value="0.2877297990594271" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.25" />
@@ -257,7 +261,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="18 (2)" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

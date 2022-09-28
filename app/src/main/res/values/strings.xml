@@ -181,4 +181,15 @@
     <string name="action_add_expense">Add Expense</string>
     <string name="cont_desc_pause_mileage_tracking">Pause Mileage Tracking</string>
     <string name="cont_desc_resume_mileage_tracking">Resume Mileage Tracking</string>
+    <string name="whats_new">Welcome to DashTracker!
+        \n\nThis update brings automatic mileage tracking to the app. Starting a new dash has been
+        simplified—when you\'re ready to start your dash, just press the start button, enter your
+        starting mileage and DashTracker takes care of the rest for you. When your dash is over,
+        verify the mileage is correct and enter your earnings.
+        \n\nAutomatic mileage tracking requires some permissions to work, so if you\'d like to take
+        advantage of its benefits, select "Enable" below. If you\'d prefer not to use automatic
+        mileage tracking, select "Decline," and you can continue to enter start and end odometer
+        values manually. You can always switch at any time by going to settings.</string>
+    <string name="enable">Enable</string>
+    <string name="decline">Decline</string>
 </resources>

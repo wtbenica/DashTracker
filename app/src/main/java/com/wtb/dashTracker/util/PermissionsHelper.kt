@@ -72,13 +72,13 @@ internal fun AppCompatActivity.registerMultiplePermissionsLauncher(
  * @param onGranted the function to call if permission is granted
  * @return an [ActivityResultLauncher]
  */
-internal fun AppCompatActivity.registerSinglePermissionLauncher(
-    onGranted: () -> Unit
-): ActivityResultLauncher<String> = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-    if (it) {
-        onGranted()
+internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: (() -> Unit)? = null):
+        ActivityResultLauncher<String> =
+    registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        if (it) {
+            onGranted?.invoke()
+        }
     }
-}
 
 
 @OptIn(ExperimentalCoroutinesApi::class)

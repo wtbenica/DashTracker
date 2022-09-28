@@ -18,15 +18,20 @@ package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
@@ -36,6 +41,8 @@ import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -47,8 +54,21 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
     override var item: DashEntry? = null
     override val viewModel: EntryViewModel by viewModels()
     override lateinit var binding: DialogFragEntryBinding
+    var fullEntry: FullEntry? = null
 
     private var startTimeChanged = false
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.fullDash.collectLatest {
+                    fullEntry = it
+                }
+            }
+        }
+    }
 
     override fun getViewBinding(inflater: LayoutInflater): DialogFragEntryBinding =
         DialogFragEntryBinding.inflate(layoutInflater).apply {
@@ -127,7 +147,8 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                     binding.fragEntryStartTime.text = st.format(dtfTime)
                 }
                 tempEntry.endTime?.let { et -> binding.fragEntryEndTime.text = et.format(dtfTime) }
-                binding.fragEntryCheckEndsNextDay.isChecked = tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
+                binding.fragEntryCheckEndsNextDay.isChecked =
+                    tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
                 tempEntry.startOdometer?.let { so ->
                     binding.fragEntryStartMileage.setText(getString(R.string.odometer_fmt, so))
                 }
@@ -181,7 +202,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             fragEntryEndTime.text = ""
             fragEntryStartMileage.text.clear()
             fragEntryEndMileage.text.clear()
-            fragEntryTotalMileage.text.clear()
+            fragEntryTotalMileage.text = ""
             fragEntryPay.text.clear()
             fragEntryPayOther.text.clear()
             fragEntryCashTips.text.clear()

@@ -44,10 +44,6 @@ class MainActivityViewModel : ViewModel() {
         _activeEntryId.value = id ?: AUTO_ID
     }
 
-    fun deleteEntry(id: Long) {
-        repository.deleteEntryById(id)
-    }
-
     internal val activeEntry: StateFlow<FullEntry?> = activeEntryId.flatMapLatest { id ->
         repository.getFullEntryFlowById(id)
     }.stateIn(
@@ -97,6 +93,10 @@ class MainActivityViewModel : ViewModel() {
                     _cpm.value = it ?: 0f
                 }
         }
+    }
+
+    fun deleteEntry(id: Long) {
+        repository.deleteEntryById(id)
     }
 
     suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)

@@ -284,6 +284,12 @@ class Repository private constructor(private val context: Context) {
     fun import(activityResultLauncher: ActivityResultLauncher<String>) =
         csvUtil.import(activityResultLauncher)
 
+    /**
+     * For only the parameters that are passed arguments, the corresponding database table's 
+     * records will be deleted and replaced with the items in the passed list. The default 
+     * argument, null, will not make any changes to the corresponding table. An empty list will 
+     * delete all records from the table.
+     */
     fun insertOrReplace(
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,

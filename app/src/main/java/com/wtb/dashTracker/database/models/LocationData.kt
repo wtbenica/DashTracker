@@ -142,3 +142,24 @@ class LocationData constructor(
             Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
     }
 }
+
+@ExperimentalCoroutinesApi
+val List<LocationData>.distance: Double
+    get() {
+        var prevLoc: LocationData? = null
+
+        val res = sortedBy { it.time }.fold(0.0) { f, loc ->
+            val tempPrev = prevLoc
+            prevLoc = loc
+
+            val dist = tempPrev?.let { loc.distanceTo(it) }
+
+            f + if (dist != null && (loc.still != 100 || dist > 0.002)) {
+                dist
+            } else {
+                0.0
+            }
+        }
+
+        return res
+    }

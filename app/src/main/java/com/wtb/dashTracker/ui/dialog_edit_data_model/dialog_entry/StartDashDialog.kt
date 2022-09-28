@@ -131,6 +131,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
         binding.apply {
             fragStartDashDate.text = LocalDate.now().format(dtfDate)
             fragStartDashStartTime.text = LocalDateTime.now().format(dtfTime)
+            fragStartDashStartTime.tag = LocalDateTime.now()
             fragStartDashStartMileage.text.clear()
         }
     }

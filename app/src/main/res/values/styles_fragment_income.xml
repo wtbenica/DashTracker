@@ -21,6 +21,7 @@
         <item name="tabTextColor">?attr/colorTabText</item>
         <item name="tabIndicatorFullWidth">false</item>
         <item name="tabIndicatorHeight">@dimen/margin_narrow</item>
+        <item name="android:backgroundTint">?attr/colorTabLayoutBg</item>
     </style>
 
 

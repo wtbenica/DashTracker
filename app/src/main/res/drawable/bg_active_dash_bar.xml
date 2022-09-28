@@ -15,8 +15,8 @@
   -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?attr/colorPrimaryFaded" />
+    <solid android:color="?attr/colorActiveDashBarBg" />
     <corners android:radius="?attr/listItemCornerRadius" />
-    <stroke android:color="?attr/colorPrimary"
+    <stroke android:color="?attr/colorActiveDashBarStroke"
         android:width="1dp" />
 </shape>

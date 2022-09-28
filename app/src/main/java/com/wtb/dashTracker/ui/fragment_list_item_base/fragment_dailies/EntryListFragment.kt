@@ -113,14 +113,6 @@ class EntryListFragment : ListItemFragment() {
             deductionType = it
             entryAdapter.notifyItemRangeChanged(0, entryAdapter.itemCount)
         }
-//
-//        lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                viewModel.entryList.collectLatest {
-//                    entryAdapter.submitData(it)
-//                }
-//            }
-//        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
