@@ -5,8 +5,8 @@ plugins {
 
 android {
     namespace = 'com.wtb.notificationUtil'
+    compileSdk 33
 
-    compileSdk 32
 
     defaultConfig {
         minSdk 30
