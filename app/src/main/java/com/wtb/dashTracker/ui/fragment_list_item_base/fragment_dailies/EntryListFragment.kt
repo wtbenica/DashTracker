@@ -226,7 +226,7 @@ class EntryListFragment : ListItemFragment() {
                     getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)
                 binding.listItemAlert.visibility =
                     toVisibleIfTrueElseGone(this.item.entry.isIncomplete)
-                val mileageString = getMileageString(item.activeDistance.toFloat())
+                val mileageString = getMileageString(item.distance.toFloat())
                 binding.trackedValue.text = mileageString
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.entry.pay)
@@ -274,7 +274,7 @@ class EntryListFragment : ListItemFragment() {
                 newItem: FullEntry
             ): Boolean =
                 oldItem.entry.equals(newItem.entry) &&
-                        oldItem.activeDistance == newItem.activeDistance
+                        oldItem.distance == newItem.distance
         }
 
         fun toVisibleIfTrueElseGone(boolean: Boolean) = if (boolean) VISIBLE else GONE

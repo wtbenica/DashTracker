@@ -14,18 +14,9 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/spooky_tomato"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingHorizontal="@dimen/margin_default">
-
-    <include layout="@layout/pause_row" />
-
-    <include layout="@layout/pause_row" />
-
-    <include layout="@layout/pause_row" />
-
-    <include layout="@layout/pause_row" />
-</LinearLayout>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="?attr/colorActiveDashBarBg" />
+    <corners android:radius="?attr/listItemCornerRadius" />
+    <stroke android:color="?attr/colorActiveDashBarStroke"
+        android:width="1dp" />
+</shape>

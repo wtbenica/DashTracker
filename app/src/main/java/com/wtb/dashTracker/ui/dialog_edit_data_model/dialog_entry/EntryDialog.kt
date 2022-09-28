@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
@@ -36,12 +35,10 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
-import com.wtb.dashTracker.ui.dialog_confirm.mileage_breakdown.ConfirmationDialogDrivesList
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -138,15 +135,6 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
             fragEntryBtnSave.apply {
                 setOnSavePressed()
-            }
-
-            fragEntryTotalMileage.apply {
-                isClickable = true
-                setOnClickListener {
-                    Log.d(TAG, "TOTAL MILEAGE CLICKED")
-                    ConfirmationDialogDrivesList.newInstance(item?.entryId ?: AUTO_ID)
-                        .show(parentFragmentManager, null)
-                }
             }
         }
 

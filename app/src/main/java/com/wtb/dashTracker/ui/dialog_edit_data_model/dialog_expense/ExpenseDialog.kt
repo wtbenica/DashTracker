@@ -49,7 +49,6 @@ import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDial
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
-import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_drive.DriveDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.ARG_ENTRY_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -255,8 +254,8 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     companion object {
-        fun newInstance(expenseId: Long): DriveDialog =
-            DriveDialog().apply {
+        fun newInstance(expenseId: Long): ExpenseDialog =
+            ExpenseDialog().apply {
                 arguments = Bundle().apply {
                     putLong(ARG_ITEM_ID, expenseId)
                 }

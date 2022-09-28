@@ -31,9 +31,9 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 11,
+    version = 12,
     entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class,
-        LocationData::class, Drive::class],
+        LocationData::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -44,6 +44,7 @@ import java.util.concurrent.Executors
         AutoMigration(from = 8, to = 9),
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11, spec = autoMigrateSpec_10_11::class),
+        AutoMigration(from = 11, to = 12, spec = DashDatabase.Companion.autoMigrateSpec_11_12::class),
     ],
     exportSchema = true,
 )
@@ -57,7 +58,6 @@ abstract class DashDatabase : RoomDatabase() {
     abstract fun expensePurposeDao(): ExpensePurposeDao
     abstract fun transactionDao(): TransactionDao
     abstract fun locationDao(): LocationDao
-    abstract fun driveDao(): DriveDao
 
     companion object {
         @Volatile
@@ -118,6 +118,9 @@ abstract class DashDatabase : RoomDatabase() {
 
         @DeleteTable.Entries(DeleteTable(tableName = "Pause"))
         class autoMigrateSpec_10_11 : AutoMigrationSpec
+
+        @DeleteTable.Entries(DeleteTable(tableName = "Drive"))
+        class autoMigrateSpec_11_12 : AutoMigrationSpec
 
 //
 //        @DeleteColumn(

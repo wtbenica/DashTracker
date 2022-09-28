@@ -71,9 +71,10 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
-import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_drive.DriveDialog
+import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -97,11 +98,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 private const val APP = "GT_"
+private const val IS_TESTING = false
 
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
@@ -152,17 +153,23 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
     /**
-     * An [ActivityResultLauncher] that calls [getBgLocationPermission] if the requested
+     * An [ActivityResultLauncher] that calls [getBgLocationPermResumeTracking] if the requested
      * permissions are granted
      */
+    private val locationPermResumeTrackingLauncher: ActivityResultLauncher<Array<String>> =
+        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermResumeTracking)
+
     private val locationPermLauncher: ActivityResultLauncher<Array<String>> =
-        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermission)
+        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPerm)
+
+    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
+        registerSinglePermissionLauncher()
 
     /**
      * An [ActivityResultLauncher] that calls [ActiveDash.resumeOrStartNewTrip] if the requested
      * permission is granted
      */
-    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
+    private val bgLocationPermResumeTrackingLauncher: ActivityResultLauncher<String> =
         registerSinglePermissionLauncher(onGranted = ::resumeMileageTracking)
 
     /**
@@ -292,14 +299,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     }
                 }
             }
-
-            lifecycleScope.launch {
-                this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.currentDrive.collectLatest {
-                        activeDash?.currentDrive = it
-                    }
-                }
-            }
         }
 
         /**
@@ -393,13 +392,55 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
         }
 
+        fun onFirstRun() {
+            fun getPermissions() {
+                when {
+                    sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> { }
+                    hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> { }
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                        showRationaleLocation {
+                            locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        }
+                        expectedExit = true
+                    }
+                    else -> {
+                        locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        expectedExit = true
+                    }
+                }
+            }
+
+            if (IS_TESTING || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
+                // run intro: initial settings
+                //      - Use authentication?
+                //      - Use mileage tracking
+                //          - ask for permissions
+                ConfirmationDialog.newInstance(
+                    text = R.string.whats_new,
+                    requestKey = "Wubba Wubba",
+                    title = "What's new",
+                    posButton = R.string.enable,
+                    posAction = LambdaWrapper {
+                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
+                        getPermissions()
+                    },
+                    negButton = R.string.decline,
+                    negAction = LambdaWrapper {
+                        sharedPrefs.edit().putBoolean(PREFS_DONT_ASK_LOCATION, true).apply()
+                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
+                    }
+                ).show(supportFragmentManager, null)
+            }
+        }
+
         /**
          * Sets content to visible
          */
         fun onUnlock() {
             Log.d(TAG, "login | onUnlock")
             isAuthenticated = true
-            this@MainActivity.binding.container.visibility = VISIBLE
+            unlockScreen()
+            onFirstRun()
         }
 
         /**
@@ -437,6 +478,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         super.onResume()
         Log.d("PAUSE", "onResume    | activeDash? ${activeDash != null}")
+
         cleanupFiles()
 
         val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
@@ -467,12 +509,20 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         if (!expectedExit) {
             isAuthenticated = false
-            binding.container.visibility = INVISIBLE
+            lockScreen()
         }
 
         activeDash = null
 
         super.onPause()
+    }
+
+    private fun lockScreen() {
+        binding.container.visibility = INVISIBLE
+    }
+
+    fun unlockScreen() {
+        binding.container.visibility = VISIBLE
     }
 
     override fun onDestroy() {
@@ -543,13 +593,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     /**
-     * Calls [ActiveDash.togglePauseLocationService] on [activeDash]
-     */
-    override fun onPauseResumeButtonClicked() {
-        activeDash?.togglePauseLocationService()
-    }
-
-    /**
      * Stops current dash by calling [ActiveDash.stopDash] on [entryId]
      */
     private fun endDash(entryId: Long? = null) {
@@ -570,12 +613,29 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     /**
      * Requests [ACCESS_BACKGROUND_LOCATION], if needed, and  calls [resumeMileageTracking].
      */
-    private fun getBgLocationPermission() {
+    private fun getBgLocationPermResumeTracking() {
         when {
             sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> {}
             hasPermissions(this@MainActivity, ACCESS_BACKGROUND_LOCATION) -> {
                 resumeMileageTracking()
             }
+            shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
+                showRationaleBgLocation {
+                    bgLocationPermResumeTrackingLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+                        .also { expectedExit = true }
+                }
+            }
+            else -> {
+                bgLocationPermResumeTrackingLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+                expectedExit = true
+            }
+        }
+    }
+
+    private fun getBgLocationPerm() {
+        when {
+            sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> {}
+            hasPermissions(this@MainActivity, ACCESS_BACKGROUND_LOCATION) -> {}
             shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
                 showRationaleBgLocation {
                     bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
@@ -602,28 +662,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     updateLocationServiceNotificationData(id)
                 }
                 binding.adb.updateEntry(value, activeCpm)
-                currentDrive?.let { drive ->
-                    if (drive.start == null) {
-                        drive.start = field?.entry?.startDateTime
-                        drive.startOdometer = field?.entry?.startOdometer?.toInt()
-                    }
-                    CoroutineScope(Dispatchers.Default).launch {
-                        viewModel.upsertAsync(drive)
-                    }
-                }
             }
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
-
-        internal var currentDrive: Drive? = null
-            set(value) {
-                field = value
-                binding.adb.isPaused = isPaused
-            }
-
-        private val isPaused: Boolean
-            get() = currentDrive == null
 
 
         // Location Service
@@ -657,7 +699,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         /**
          * Checks for [REQUIRED_PERMISSIONS]. If they have already been granted, calls
          * [startLocationService] on [entryId], otherwise it requests the permissions using
-         * [locationPermLauncher]
+         * [locationPermResumeTrackingLauncher]
          *
          * @param entryId passed as the argument to [startLocationService] if permissions have
          * already been granted
@@ -669,14 +711,17 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> {
                     startLocationService(entryId)
                 }
+//                hasPermissions(this@MainActivity, *LOCATION_PERMISSIONS) -> {
+//                    getBgLocationPermission()
+//                }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showRationaleLocation {
-                        locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        locationPermResumeTrackingLauncher.launch(LOCATION_PERMISSIONS)
                     }
                     expectedExit = true
                 }
                 else -> {
-                    locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                    locationPermResumeTrackingLauncher.launch(LOCATION_PERMISSIONS)
                     expectedExit = true
                 }
             }
@@ -701,7 +746,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
          * it is bound.
          */
         fun stopLocationService() {
-            endCurrentDrive()
             locationService.let {
                 if (it != null) {
                     it.stop()
@@ -782,17 +826,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
         /**
-         * If [isPaused], calls [resume], else [pause]
-         */
-        fun togglePauseLocationService() {
-            if (isPaused) {
-                resume()
-            } else {
-                pause()
-            }
-        }
-
-        /**
          * Calls [unbindService] on [locationServiceConnection], sets [locationServiceBound] to
          * false, [locationServiceConnection] to null, and [locationService] to null.
          */
@@ -805,49 +838,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 locationService = null
 //            }
             }
-        }
-
-        // Private methods
-        private fun resume() {
-            activeEntry?.let {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val startOdometer = it.entry.startOdometer ?: 0f
-                    val distance = it.totalTrackedDistance
-                    val driveId = viewModel.upsertAsync(
-                        Drive(
-                            entry = it.entry.entryId,
-                            start = LocalDateTime.now(),
-                            startOdometer = (startOdometer + distance).toInt()
-                        )
-                    )
-
-                    viewModel.loadCurrentDrive(driveId)
-                }
-            }
-        }
-
-        private fun pause() {
-            Log.d("PAUSE", "pause")
-            endCurrentDrive()
-        }
-
-        private fun endCurrentDrive() {
-            currentDrive?.apply {
-                start = start ?: activeEntry?.entry?.startDateTime
-                startOdometer = startOdometer ?: activeEntry?.entry?.startOdometer?.toInt()
-                end = LocalDateTime.now()
-                endOdometer = activeEntry?.entry?.startOdometer?.let { stOdo ->
-                    activeEntry?.activeDistance?.let { dist ->
-                        stOdo + dist
-                    }
-                }?.toInt()
-            }?.also {
-                CoroutineScope(Dispatchers.Default).launch {
-                    Log.d(TAG, "pauseadalia | upsert $it")
-                    viewModel.upsertAsync(it)
-                }
-            }
-            viewModel.loadCurrentDrive(null)
         }
 
         private fun bindLocationService() {
@@ -889,28 +879,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             startOnBindId = tripId
             startingService = false
 
-            val id = locationService?.start(tripId, saveLocation)
-
-            if (id == tripId) {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val entry = activeEntry?.entry
-                    val startOdometer = entry?.startOdometer
-                    Log.d(
-                        TAG,
-                        "pauseadalia | startLocationService | newDrive | entry? ${entry != null} " +
-                                "| startOdo:$startOdometer"
-                    )
-                    val driveId = viewModel.upsertAsync(
-                        Drive(
-                            entry = id,
-                            start = activeEntry?.entry?.startDateTime,
-                            startOdometer = startOdometer?.toInt()
-                        )
-                    )
-                    viewModel.loadCurrentDrive(driveId)
-                }
-            }
-            return id
+            return locationService?.start(tripId, saveLocation)
         }
 
         /**
@@ -1048,6 +1017,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val DT_SHARED_PREFS = "dashtracker_prefs"
         internal const val PREFS_DONT_ASK_LOCATION = "Don't ask | location"
         internal const val PREFS_DONT_ASK_BG_LOCATION = "Don't ask | bg location"
+        internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"

@@ -27,6 +27,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import kotlin.reflect.KProperty1
 
 const val AUTO_ID = 0L
@@ -286,32 +287,16 @@ data class FullEntry(
 
     @Relation(parentColumn = "entryId", entityColumn = "entry")
     val locations: List<LocationData>,
-
-    @Relation(parentColumn = "entryId", entityColumn = "entry")
-    val drives: List<Drive>
 ) : ListItemType {
+    val netTime: Long?
+        get() = entry.startDateTime?.until(LocalDateTime.now(), ChronoUnit.SECONDS)
+
+
     /**
-     * Total distance from beginning to end of dash, including pauses.
+     * Total distance from beginning to end of dash.
      */
-    val totalTrackedDistance: Double
+    val distance: Double
         get() = locations.distance
-
-    /**
-     * Distance while not paused
-     */
-    val activeDistance: Double
-        get() {
-            return drives.fold(0.0) { acc, drive ->
-                val start = drive.start ?: entry.startDateTime ?: LocalDateTime.MIN
-                val end = drive.end ?: entry.endDateTime ?: LocalDateTime.MAX
-                acc + locations.distanceDuring(start, end)
-            }
-        }
-
-    val netTime: Long
-        get() = drives.fold(0L) { acc: Long, drive: Drive ->
-            acc + (drive.duration ?: 0L)
-        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
