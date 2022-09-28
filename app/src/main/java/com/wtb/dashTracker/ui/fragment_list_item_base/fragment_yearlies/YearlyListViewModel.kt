@@ -55,18 +55,17 @@ class YearlyListViewModel : ViewModel() {
             yearlyBasePayAdjustments,
             allEntries
         ) { bpas: MutableMap<Int, Float>, entries: List<DashEntry> ->
-            val bpaList = bpas
 
             val yearlies = mutableListOf<Yearly>()
 
             yearlies.forEach {
-                it.basePayAdjustment = bpaList[it.year] ?: 0f
+                it.basePayAdjustment = bpas[it.year] ?: 0f
             }
 
             var numChecked = 0
 
             var year: Int =
-                entries.map { it.date.year }.maxOrNull() ?: LocalDate.now().year
+                entries.maxOfOrNull { it.date.year } ?: LocalDate.now().year
 
             while (numChecked < entries.size) {
                 val thisYears: List<DashEntry> = entries.mapNotNull { entry: DashEntry ->
@@ -74,7 +73,7 @@ class YearlyListViewModel : ViewModel() {
                 }
                 numChecked += thisYears.size
                 val res = Yearly(year).apply {
-                    basePayAdjustment = bpaList[year] ?: 0f
+                    basePayAdjustment = bpas[year] ?: 0f
                 }
 
                 if (thisYears.isNotEmpty()) {
@@ -156,15 +155,15 @@ data class Monthly(
     val reportedPay: Float
         get() = pay + otherPay
 
-    internal val totalPay: Float
+    private val totalPay: Float
         get() = reportedPay + cashTips
 
     val hourly: Float
         get() = totalPay / hours
 
-    fun getExpenses(costPerMile: Float): Float = mileage * costPerMile
+    private fun getExpenses(costPerMile: Float): Float = mileage * costPerMile
 
-    fun getNet(cpm: Float): Float = totalPay - getExpenses(cpm)
+    private fun getNet(cpm: Float): Float = totalPay - getExpenses(cpm)
 
     fun getHourly(cpm: Float): Float = getNet(cpm) / hours
 

@@ -96,7 +96,7 @@ internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
             this.sharedPrefs
                 .edit()
                 .putBoolean(PREFS_DONT_ASK_LOCATION, true)
-                .commit()
+                .apply()
         }
     ).show(supportFragmentManager, null)
 }
@@ -116,7 +116,7 @@ internal fun MainActivity.showRationaleBgLocation(onGranted: () -> Unit) {
             this.sharedPrefs
                 .edit()
                 .putBoolean(PREFS_DONT_ASK_BG_LOCATION, true)
-                .commit()
+                .apply()
         }
     ).show(supportFragmentManager, null)
 }

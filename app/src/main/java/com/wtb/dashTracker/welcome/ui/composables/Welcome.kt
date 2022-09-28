@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.twotone.AttachMoney
+import androidx.compose.material.icons.twotone.Circle
 import androidx.compose.material.icons.twotone.DirectionsCar
 import androidx.compose.material.icons.twotone.MoneyOff
 import androidx.compose.material3.*
@@ -69,7 +70,7 @@ fun Welcome() {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = CenterVertically,
                 ) {
                     Card(
                         modifier = Modifier
@@ -108,11 +109,7 @@ fun Welcome() {
                     icon = Icons.TwoTone.AttachMoney,
                     iconTint = up,
                 ) {
-                    Text(
-                        "Look at me now",
-                        fontFamily = FontFamily(Font(R.font.lalezar)),
-                        fontSize = 14.sp
-                    )
+                    ListRow("Look at me now")
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -136,11 +133,30 @@ fun Welcome() {
 }
 
 @Composable
+fun ListRow(text: String) {
+    Row(verticalAlignment = CenterVertically) {
+        Icon(
+            Icons.TwoTone.Circle,
+            contentDescription = "Bulleted item",
+            modifier = Modifier.size(8.dp)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text,
+            fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.lalezar)),
+        )
+    }
+}
+
+@Composable
 fun HeaderText(
     text: String, icon: ImageVector, iconTint: Color, content: @Composable (() ->
     Unit)? = null
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(true) }
 
     Card(
         modifier = Modifier
@@ -150,8 +166,10 @@ fun HeaderText(
     ) {
         Column {
             Row(
-                modifier = Modifier
-                    .padding(16.dp)
+                modifier = if (content == null)
+                    Modifier.padding(all = 16.dp)
+                else
+                    Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
             ) {
                 Text(
                     text = text,
@@ -182,22 +200,28 @@ fun HeaderText(
                         content()
                     }
                 }
+            }
+        }
 
-                Crossfade(
-                    targetState = isExpanded,
-                ) {
-                    when (it) {
-                        true -> Icon(
-                            Icons.Filled.KeyboardArrowUp,
-                            contentDescription = "Show less",
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        false -> Icon(
-                            Icons.Filled.KeyboardArrowDown,
-                            contentDescription = "Show more",
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+        if (content != null) {
+            Crossfade(
+                targetState = isExpanded,
+            ) {
+                when (it) {
+                    true -> Icon(
+                        Icons.Filled.KeyboardArrowUp,
+                        contentDescription = "Show less",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                    )
+                    false -> Icon(
+                        Icons.Filled.KeyboardArrowDown,
+                        contentDescription = "Show more",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                    )
                 }
             }
         }

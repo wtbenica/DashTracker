@@ -71,7 +71,7 @@ data class DashEntry(
     val startDateTime
         get() = startTime?.let { st -> LocalDateTime.of(date, st) }
 
-    val endDateTime
+    private val endDateTime
         get() = endTime?.let { et -> LocalDateTime.of(endDate, et) }
 
     val totalHours: Float?

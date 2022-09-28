@@ -112,7 +112,7 @@ internal val Any.TAG: String
  * between [IncomeFragment], [com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment], and
  * [com.wtb.dashTracker.ui.fragment_trends.ChartsFragment];
  * [FloatingActionButton] for starting/stopping [LocationService]; new item menu for
- * [EntryDialog], [WeeklyDialog], and [DriveDialog]; options menu for
+ * [EntryDialog], [WeeklyDialog], and [ExpenseDialog]; options menu for
  * [ConfirmationDialogImport], [ConfirmationDialogExport],
  * [OssLicensesMenuActivity].
  */
@@ -521,7 +521,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         binding.container.visibility = INVISIBLE
     }
 
-    fun unlockScreen() {
+    private fun unlockScreen() {
         binding.container.visibility = VISIBLE
     }
 
@@ -689,9 +689,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private var startOnBind = false
         private var startOnBindId: Long? = null
 
-        /**
-         * Calls [bindLocationService].
-         */
         init {
             bindLocationService()
         }

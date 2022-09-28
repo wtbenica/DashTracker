@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * A [Fragment] that contains a [TabLayout] with [EntryListFragment], [WeeklyListFragment], and
+ * A [Fragment] that contains a [com.google.android.material.tabs.TabLayout] with [EntryListFragment], [WeeklyListFragment], and
  * [YearlyListFragment] tabs. It contains an option to set [DeductionType] for calculating
  * expenses in each of the tabs.
  * Use the [IncomeFragment.newInstance] factory method to create an instance of this fragment.
