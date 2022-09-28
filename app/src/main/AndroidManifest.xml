@@ -18,6 +18,31 @@
         android:supportsRtl="true"
         android:theme="@style/SplashScreen">
 
+        <activity
+            android:name=".ui.activity_main.MainActivity"
+            android:exported="true"
+            android:theme="@style/Base.DasherCompanion">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.WelcomeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_welcome">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+
         <service
             android:name="dev.benica.mileagetracker.LocationService"
             android:description="@string/location_service_desc"
@@ -25,16 +50,6 @@
             android:exported="false"
             android:foregroundServiceType="location"
             android:permission="android.permissions.FOREGROUND_SERVICE" />
-
-        <activity
-            android:name=".ui.activity_main.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
@@ -57,9 +72,9 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-2598018805199505~7756228217" />
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
 </manifest>

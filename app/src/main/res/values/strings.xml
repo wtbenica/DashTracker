@@ -192,4 +192,5 @@
         values manually. You can always switch at any time by going to settings.</string>
     <string name="enable">Enable</string>
     <string name="decline">Decline</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
 </resources>
