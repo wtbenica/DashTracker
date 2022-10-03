@@ -17,16 +17,17 @@
         android:roundIcon="@mipmap/icon_c"
         android:supportsRtl="true"
         android:theme="@style/SplashScreen">
+
         <activity
             android:name=".welcome.WelcomeActivity"
-            android:exported="false"
-            android:label="@string/title_activity_welcome">
-<!--            android:theme="@style/SplashScreen">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+            android:exported="true"
+            android:label="@string/title_activity_welcome"
+            android:theme="@style/SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service
@@ -39,13 +40,14 @@
 
         <activity
             android:name=".ui.activity_main.MainActivity"
-            android:exported="true"
-            android:theme="@style/SplashScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="false"
+            android:theme="@style/Base.DasherCompanion">
+<!--            android:theme="@style/SplashScreen">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <activity

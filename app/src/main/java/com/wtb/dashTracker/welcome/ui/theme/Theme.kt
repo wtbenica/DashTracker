@@ -17,26 +17,41 @@
 package com.wtb.dashTracker.welcome.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = darkPrimary,
+    secondary = darkPrimaryLight,
+    tertiary = darkPrimaryFaded,
+    onPrimary = darkOnPrimary,
+    primaryContainer = darkOnPrimary,
+    secondaryContainer = darkOnPrimary,
+    tertiaryContainer = darkOnPrimary
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = primary,
+    secondary = primaryDark,
+    tertiary = primaryFaded,
+    onPrimary = onPrimary,
+    primaryContainer = Color.Red,
+    secondaryContainer = Color.Blue,
+    tertiaryContainer = Color.Green,
+//    surface = Color.Cyan,
+//    onSurface = Color.Magenta,
+    background = Color.Yellow,
+    outline = primaryDark,
+    onBackground = onPrimary,
+    onSecondary = onSecondary
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -57,10 +72,10 @@ fun DashTrackerTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+//            val context = LocalContext.current
+//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+//        }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

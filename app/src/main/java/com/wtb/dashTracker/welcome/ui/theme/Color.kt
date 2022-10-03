@@ -1,21 +1,20 @@
 package com.wtb.dashTracker.welcome.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import com.wtb.dashTracker.R
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
-
-val primary = Color(R.color.regular)
-val primaryDark = Color(R.color.dark)
-val primaryLight = Color(R.color.light)
-val primaryFaded = Color(R.color.faded)
+val primary = Color(0xFFB0F0A0)
+val primaryDark = Color(0xFF70B850)
+val primaryLight = Color(0xFFD0F8C0)
+val primaryFaded = Color(0xFFF0FFE0)
+val onPrimary = Color(0xFF454556)
+val onSecondary = Color(0xFFF8F8FF)
 
 val up = primaryDark
 val down = Color(0xFFC85070)
 val car = Color(0xFF3090C8)
+
+val darkPrimary = Color(0xFF405040)
+val darkPrimaryDark = Color(0xFF304030)
+val darkPrimaryLight = Color(0xFF607060)
+val darkPrimaryFaded = Color(0xFF809080)
+val darkOnPrimary = Color(0xFFF7F7FF)

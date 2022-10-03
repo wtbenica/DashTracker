@@ -193,4 +193,6 @@
     <string name="enable">Enable</string>
     <string name="decline">Decline</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="route_welcome">route_welcome</string>
+    <string name="route_whats_new">route_whats_new</string>
 </resources>

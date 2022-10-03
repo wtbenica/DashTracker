@@ -16,44 +16,35 @@
 
 package com.wtb.dashTracker.welcome
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import com.wtb.dashTracker.welcome.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.welcome.ui.composables.WelcomeNavHost
+import com.wtb.dashTracker.welcome.ui.composables.WelcomeNavHostPreview
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 class WelcomeActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        actionBar?.hide()
+
         setContent {
-            DashTrackerTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
-            }
+            WelcomeNavHost()
         }
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    DashTrackerTheme {
-        Greeting("Android")
-    }
+    WelcomeNavHostPreview()
 }
