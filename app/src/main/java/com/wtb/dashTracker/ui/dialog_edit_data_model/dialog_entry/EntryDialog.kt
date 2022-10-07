@@ -22,6 +22,8 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -48,6 +50,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.math.max
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 

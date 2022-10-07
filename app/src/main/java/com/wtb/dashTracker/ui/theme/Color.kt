@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.welcome.ui.theme
+package com.wtb.dashTracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -9,9 +9,11 @@ val primaryFaded = Color(0xFFF0FFE0)
 val onPrimary = Color(0xFF454556)
 val onSecondary = Color(0xFFF8F8FF)
 
-val up = primaryDark
-val down = Color(0xFFC85070)
-val car = Color(0xFF3090C8)
+val up = primary
+val down = Color(0xFFF0A0B0)
+val car = Color(0xFF60E0FF)
+//val down = Color(0xFFC85070)
+//val car = Color(0xFF3090C8)
 
 val darkPrimary = Color(0xFF405040)
 val darkPrimaryDark = Color(0xFF304030)

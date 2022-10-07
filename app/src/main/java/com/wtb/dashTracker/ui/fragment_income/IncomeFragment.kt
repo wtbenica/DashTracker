@@ -21,6 +21,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -47,6 +49,8 @@ import kotlinx.coroutines.launch
  * expenses in each of the tabs.
  * Use the [IncomeFragment.newInstance] factory method to create an instance of this fragment.
  */
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback,
     EntryListFragment.EntryListFragmentCallback,

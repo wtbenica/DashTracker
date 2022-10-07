@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.welcome.ui.composables
+package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -40,24 +38,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.wtb.dashTracker.welcome.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.welcome.ui.theme.primaryDark
-import com.wtb.dashTracker.welcome.ui.theme.up
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.cardShape
+import com.wtb.dashTracker.ui.theme.primaryDark
+import com.wtb.dashTracker.ui.theme.up
 
 @ExperimentalTextApi
 @Composable
 fun ExpandableCard(
-    text: String, icon: ImageVector, iconTint: Color, content: @Composable (() -> Unit)? = null
+    text: String,
+    icon: ImageVector,
+    iconTint: Color,
+    iconDescription: String,
+    content: @Composable() (() -> Unit)? = null
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-
-    val interactionSource = remember { MutableInteractionSource() }
-    val rippleColor = MaterialTheme.colorScheme.secondary
-    val cardShape = RoundedCornerShape(24.dp)
 
     DashTrackerTheme {
         OutlinedCard(
@@ -84,7 +86,7 @@ fun ExpandableCard(
                     Text(
                         text = text,
                         modifier = Modifier.align(Alignment.CenterVertically),
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         textAlign = TextAlign.Start,
                     )
 
@@ -92,7 +94,7 @@ fun ExpandableCard(
 
                     Icon(
                         icon,
-                        contentDescription = "Drawing of a car",
+                        contentDescription = iconDescription,
                         modifier = Modifier
                             .width(48.dp)
                             .height(48.dp),
@@ -138,25 +140,113 @@ fun ExpandableCard(
     }
 }
 
+@ExperimentalTextApi
+@Composable
+fun ContentCard(
+    text: String,
+    icon: ImageVector,
+    iconTint: Color,
+    iconDescription: String,
+    content: @Composable() (() -> Unit)? = null
+) {
+    DashTrackerTheme {
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(cardShape),
+            shape = cardShape,
+            colors = cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContainerColor = MaterialTheme.colorScheme.primary,
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
+        ) {
+            Column {
+                Row(
+                    modifier = if (content == null)
+                        Modifier.padding(all = 16.dp)
+                    else
+                        Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                ) {
+                    Text(
+                        text = text,
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Start,
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        icon,
+                        contentDescription = iconDescription,
+                        modifier = Modifier
+                            .width(48.dp)
+                            .height(48.dp),
+                        tint = iconTint
+                    )
+                }
+
+                if (content != null) {
+                        Row(
+                            modifier = Modifier
+                                .padding(16.dp)
+                        ) {
+                            content()
+                        }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalTextApi::class)
 @Composable
 @Preview
 fun PreviewExpandableCard() {
-    ExpandableCard(
-        text = "Track your income",
-        icon = Icons.TwoTone.AttachMoney,
-        iconTint = up,
-    )
+    Column {
+        ContentCard(
+            text = "Track your income",
+            icon = Icons.TwoTone.AttachMoney,
+            iconTint = up,
+            iconDescription = "Drawing of a car",
+        ) {
+            ListRow("Eat your potato salad, dearie")
+        }
+
+        DefaultSpacer()
+
+        ExpandableCard(
+            text = "Track your income",
+            icon = Icons.TwoTone.AttachMoney,
+            iconTint = up,
+            iconDescription = "Drawing of a car",
+        ) {
+            ListRow("Eat your potato salad, dearie")
+        }
+    }
 }
 
 @ExperimentalTextApi
 @Composable
-fun ListRow(text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+fun ListRow(
+    text: String,
+    rowModifier: Modifier = Modifier,
+    fontSize: TextUnit = 16.sp,
+    iconSize: Dp = 18.dp,
+    fontFamily: FontFamily? = MaterialTheme.typography.bodyLarge.fontFamily,
+    icon: ImageVector = Icons.TwoTone.Circle
+) {
+    Row(
+        modifier = rowModifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(
-            Icons.TwoTone.Circle,
+            icon,
             contentDescription = "Bulleted item",
-            modifier = Modifier.size(10.dp),
+            modifier = Modifier.size(iconSize),
             tint = primaryDark
         )
 
@@ -164,7 +254,19 @@ fun ListRow(text: String) {
 
         Text(
             text,
-            fontSize = 15.sp,
+            fontSize = fontSize,
+            fontFamily = fontFamily
         )
     }
 }
+
+@ExperimentalTextApi
+@Composable
+fun HeaderRow(text: String, rowModifier: Modifier = Modifier, icon: ImageVector) =
+    ListRow(
+        text = text,
+        rowModifier = rowModifier,
+        fontSize = 18.sp,
+        iconSize = 18.dp,
+        icon = icon
+    )

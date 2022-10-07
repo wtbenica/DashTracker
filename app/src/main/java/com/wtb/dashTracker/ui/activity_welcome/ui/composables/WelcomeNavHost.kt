@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.welcome.ui.composables
+package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -27,42 +26,44 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.wtb.dashTracker.welcome.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun WelcomeNavHost() {
+fun WelcomeNavHost(activity: WelcomeActivity? = null) {
     val navController = rememberNavController()
 
     DashTrackerTheme {
         Surface {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
                 NavHost(
                     navController = navController,
                     startDestination = Screen.WelcomeScreen.route,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                 ) {
-                    composable(Screen.WelcomeScreen.route) { Welcome() }
-                    composable(Screen.WhatsNewScreen.route) { WhatsNew() }
+                    composable(Screen.WelcomeScreen.route) { WelcomeScreen() }
+                    composable(Screen.WhatsNewScreen.route) { WhatsNewScreen() }
                 }
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val route = navBackStackEntry?.destination?.route
 
-                Row(modifier = Modifier.padding(8.dp)) {
+                Row {
                     when (route) {
                         Screen.WelcomeScreen.route -> WelcomeNav(navController)
-                        Screen.WhatsNewScreen.route -> WhatsNewNav()
+                        Screen.WhatsNewScreen.route -> WhatsNewNav(activity)
                     }
                 }
             }

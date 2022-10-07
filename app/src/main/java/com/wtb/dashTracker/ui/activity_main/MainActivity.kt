@@ -26,6 +26,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
@@ -44,6 +45,8 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -71,10 +74,14 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
+import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.MileageTrackingOptIn
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.MileageTrackingOptIn.OPT_IN
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.MileageTrackingOptIn.OPT_OUT
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
-import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -103,6 +110,7 @@ import java.time.format.DateTimeParseException
 
 private const val APP = "GT_"
 private const val IS_TESTING = false
+private var IS_FIRST = true
 
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
@@ -116,6 +124,8 @@ internal val Any.TAG: String
  * [ConfirmationDialogImport], [ConfirmationDialogExport],
  * [OssLicensesMenuActivity].
  */
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
@@ -172,6 +182,60 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private val bgLocationPermResumeTrackingLauncher: ActivityResultLauncher<String> =
         registerSinglePermissionLauncher(onGranted = ::resumeMileageTracking)
 
+    private val permissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+
+            @Suppress("DEPRECATION")
+            val optInExtra =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    activityResult?.data?.getSerializableExtra(
+                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
+                        MileageTrackingOptIn::class.java
+                    )
+                } else {
+                    activityResult?.data?.getSerializableExtra(
+                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
+                    ) as MileageTrackingOptIn?
+                }
+
+            if (activityResult?.resultCode == RESULT_OK) {
+                sharedPrefs.edit().putBoolean(PREFS_OPT_OUT_LOCATION, optInExtra == OPT_OUT).apply()
+            }
+        }
+
+    private val welcomeLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+            onUnlock()
+
+            @Suppress("DEPRECATION")
+            val optInExtra =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    activityResult?.data?.getSerializableExtra(
+                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
+                        MileageTrackingOptIn::class.java
+                    )
+                } else {
+                    activityResult?.data?.getSerializableExtra(
+                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
+                    ) as MileageTrackingOptIn?
+                }
+
+            Log.d(
+                TAG,
+                "resultCode: ${activityResult?.resultCode == RESULT_OK} | optInExtra: ${optInExtra?.name}"
+            )
+            if (activityResult?.resultCode == RESULT_OK) {
+                sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
+                sharedPrefs.edit().putBoolean(PREFS_OPT_OUT_LOCATION, optInExtra == OPT_OUT).apply()
+
+                if (optInExtra == OPT_IN) {
+                    permissionsLauncher.launch(
+                        Intent(this, GetPermissionsActivity::class.java)
+                    )
+                }
+            }
+        }
+
     /**
      * Calls [ActiveDash.resumeOrStartNewTrip] on [activeDash]
      *
@@ -201,7 +265,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     }
                     registerForActivityResult(
                         ActivityResultContracts.StartActivityForResult()
-                    ) {}.launch(enrollIntent)
+                    ) { }.launch(enrollIntent)
                 }
                 BiometricManager.BIOMETRIC_SUCCESS -> {
                     // "App can authenticate using biometrics.")
@@ -395,8 +459,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         fun onFirstRun() {
             fun getPermissions() {
                 when {
-                    sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> { }
-                    hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> { }
+                    sharedPrefs.getBoolean(PREFS_OPT_OUT_LOCATION, false) -> {}
+                    hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> {}
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                         showRationaleLocation {
                             locationPermLauncher.launch(LOCATION_PERMISSIONS)
@@ -410,43 +474,39 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }
             }
 
-            if (IS_TESTING || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
-                // run intro: initial settings
-                //      - Use authentication?
-                //      - Use mileage tracking
-                //          - ask for permissions
-                ConfirmationDialog.newInstance(
-                    text = R.string.whats_new,
-                    requestKey = "Wubba Wubba",
-                    title = "What's new",
-                    posButton = R.string.enable,
-                    posAction = LambdaWrapper {
-                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
-                        getPermissions()
-                    },
-                    negButton = R.string.decline,
-                    negAction = LambdaWrapper {
-                        sharedPrefs.edit().putBoolean(PREFS_DONT_ASK_LOCATION, true).apply()
-                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
-                    }
-                ).show(supportFragmentManager, null)
-            }
+            welcomeLauncher.launch(Intent(this, WelcomeActivity::class.java))
+
+//                // run intro: initial settings
+//                //      - Use authentication?
+//                //      - Use mileage tracking
+//                //          - ask for permissions
+//                ConfirmationDialog.newInstance(
+//                    text = R.string.whats_new,
+//                    requestKey = "Wubba Wubba",
+//                    title = "What's new",
+//                    posButton = R.string.enable,
+//                    posAction = LambdaWrapper {
+//                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
+//                        getPermissions()
+//                    },
+//                    negButton = R.string.decline,
+//                    negAction = LambdaWrapper {
+//                        sharedPrefs.edit().putBoolean(PREFS_DONT_ASK_LOCATION, true).apply()
+//                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
+//                    }
+//                ).show(supportFragmentManager, null)
         }
 
-        /**
-         * Sets content to visible
-         */
-        fun onUnlock() {
-            Log.d(TAG, "login | onUnlock")
-            isAuthenticated = true
-            unlockScreen()
-            onFirstRun()
+        fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
+            endDash(tripId)
+            onUnlock()
         }
+
 
         /**
          * Authenticates user using [BiometricPrompt]
          */
-        fun authenticate() {
+        fun authenticate(onSuccess: () -> Unit) {
             Log.d(TAG, "login | authenticate")
             val executor = ContextCompat.getMainExecutor(this)
 
@@ -454,7 +514,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-                        onUnlock()
+                        onSuccess()
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
@@ -479,23 +539,37 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         super.onResume()
         Log.d("PAUSE", "onResume    | activeDash? ${activeDash != null}")
 
-        cleanupFiles()
+        if ((IS_TESTING && IS_FIRST) || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
+            IS_FIRST = false
 
-        val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
-        intent.removeExtra(EXTRA_END_DASH)
-        val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
-        intent.removeExtra(EXTRA_TRIP_ID)
-
-        if (endDashExtra == true) {
-            endDash(tripId)
-            onUnlock()
+            onFirstRun()
         } else {
-            expectedExit = false
+            cleanupFiles()
+
+            val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
+            intent.removeExtra(EXTRA_END_DASH)
+            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
+            intent.removeExtra(EXTRA_TRIP_ID)
 
             if (!isAuthenticated) {
-                authenticate()
+
+                val onSuccess: () -> Unit =
+                    if (endDashExtra == true) {
+                        onEndDashIntent(tripId)
+                    } else {
+                        ::onUnlock
+                    }
+
+                authenticate(onSuccess)
+
             } else {
-                onUnlock()
+
+                if (endDashExtra == true) {
+                    onEndDashIntent(tripId)
+                } else {
+                    onUnlock()
+                }
+
             }
         }
     }
@@ -515,6 +589,16 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         activeDash = null
 
         super.onPause()
+    }
+
+    /**
+     * Sets content to visible
+     */
+    private fun onUnlock() {
+        Log.d(TAG, "login | onUnlock")
+        isAuthenticated = true
+        expectedExit = false
+        unlockScreen()
     }
 
     private fun lockScreen() {
@@ -704,7 +788,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         fun startTracking(entryId: Long) {
             stopOnBind = false
             when {
-                sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> {}
+                sharedPrefs.getBoolean(PREFS_OPT_OUT_LOCATION, false) -> {}
                 hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> {
                     startLocationService(entryId)
                 }
@@ -1011,9 +1095,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     companion object {
         private var isAuthenticated = false
 
-        private const val DT_SHARED_PREFS = "dashtracker_prefs"
-        internal const val PREFS_DONT_ASK_LOCATION = "Don't ask | location"
+        internal const val DT_SHARED_PREFS = "dashtracker_prefs"
+        internal const val PREFS_OPT_OUT_LOCATION = "Don't ask | location"
         internal const val PREFS_DONT_ASK_BG_LOCATION = "Don't ask | bg location"
+        internal const val PREFS_OPT_OUT_NOTIFICATION = "Don't ask | notifications"
         internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"

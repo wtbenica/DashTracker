@@ -19,15 +19,15 @@
         android:theme="@style/SplashScreen">
 
         <activity
-            android:name=".welcome.WelcomeActivity"
-            android:exported="true"
-            android:label="@string/title_activity_welcome"
-            android:theme="@style/SplashScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:name=".ui.activity_get_permissions.GetPermissionsActivity"
+            android:exported="false"
+            android:theme="@style/Base.DasherCompanion">
+        </activity>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity
+            android:name=".ui.activity_welcome.WelcomeActivity"
+            android:exported="false"
+            android:theme="@style/Base.DasherCompanion">
         </activity>
 
         <service
@@ -40,16 +40,16 @@
 
         <activity
             android:name=".ui.activity_main.MainActivity"
-            android:exported="false"
-            android:theme="@style/Base.DasherCompanion">
-<!--            android:theme="@style/SplashScreen">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+            android:exported="true"
+            android:theme="@style/SplashScreen">
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <!-- android:theme="@style/Base.DasherCompanion"> -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
             android:theme="@style/LicensesActivitiesTheme" />

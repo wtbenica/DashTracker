@@ -1,4 +1,4 @@
-package com.wtb.dashTracker.welcome.ui.composables
+package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope

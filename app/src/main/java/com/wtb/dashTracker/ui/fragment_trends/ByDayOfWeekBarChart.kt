@@ -22,6 +22,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.res.ResourcesCompat
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.components.AxisBase
@@ -45,6 +47,8 @@ import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class ByDayOfWeekBarChart(
     context: Context,
@@ -254,6 +258,8 @@ class ByDayOfWeekBarChart(
 }
 
 
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 data class DailyStats(
     val day: DayOfWeek? = null,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.welcome
+package com.wtb.dashTracker.ui.activity_welcome
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -24,8 +24,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import com.wtb.dashTracker.welcome.ui.composables.WelcomeNavHost
-import com.wtb.dashTracker.welcome.ui.composables.WelcomeNavHostPreview
+import com.wtb.dashTracker.BuildConfig
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeNavHost
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeNavHostPreview
 
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
@@ -36,7 +37,16 @@ class WelcomeActivity : ComponentActivity() {
         actionBar?.hide()
 
         setContent {
-            WelcomeNavHost()
+            WelcomeNavHost(this)
+        }
+    }
+
+    companion object {
+        val ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN =
+            "${BuildConfig.APPLICATION_ID}.result_mileage_opt_in"
+
+        enum class MileageTrackingOptIn {
+            OPT_IN, DECIDE_LATER, OPT_OUT
         }
     }
 }

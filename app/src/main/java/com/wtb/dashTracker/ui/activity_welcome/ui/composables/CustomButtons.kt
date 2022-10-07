@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.welcome.ui.composables
+package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -26,63 +26,74 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.wtb.dashTracker.welcome.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 
+@ExperimentalTextApi
 @Composable
 fun CustomButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    Button(
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        onClick = onClick,
-        modifier = modifier,
-        content = content
-    )
+    DashTrackerTheme {
+        Button(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary,
+            ),
+            onClick = onClick,
+            modifier = modifier,
+            content = content
+        )
+    }
 }
 
+@ExperimentalTextApi
 @Composable
 fun CustomTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    TextButton(
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        onClick = onClick,
-        modifier = modifier,
-        content = content
-    )
+    DashTrackerTheme {
+        TextButton(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.secondary,
+            ),
+            onClick = onClick,
+            modifier = modifier,
+            content = content
+        )
+    }
 }
 
 
+@ExperimentalTextApi
 @Composable
 fun CustomOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    OutlinedButton(
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
-        onClick = onClick,
-        modifier = modifier,
-        content = content
-    )
+    DashTrackerTheme {
+        OutlinedButton(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary),
+            onClick = onClick,
+            modifier = modifier,
+            content = content
+        )
+    }
 }
 
+@ExperimentalTextApi
 @Preview
 @Composable
 fun PreviewButtons() {

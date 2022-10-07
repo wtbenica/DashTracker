@@ -24,10 +24,14 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import com.wtb.dashTracker.ui.activity_main.MainActivity
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import com.wtb.dashTracker.databinding.FabFlyoutButtonBinding
+import com.wtb.dashTracker.ui.activity_main.MainActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class FabMenuButton @JvmOverloads constructor(
     context: Context,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.welcome.ui.composables
+package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

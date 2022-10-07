@@ -3,26 +3,23 @@ package com.wtb.dashTracker.util
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.ContextCompat
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.PREFS_DONT_ASK_BG_LOCATION
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.PREFS_DONT_ASK_LOCATION
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.PREFS_OPT_OUT_LOCATION
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-internal val REQUIRED_PERMISSIONS = arrayOf(
-    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-    Manifest.permission.ACCESS_COARSE_LOCATION,
-    Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.ACTIVITY_RECOGNITION
-)
 
 internal val LOCATION_PERMISSIONS =
     arrayOf(
@@ -30,6 +27,20 @@ internal val LOCATION_PERMISSIONS =
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACTIVITY_RECOGNITION
     )
+
+internal val REQUIRED_PERMISSIONS =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            Manifest.permission.POST_NOTIFICATIONS,
+            *LOCATION_PERMISSIONS,
+        )
+    } else {
+        arrayOf(
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            *LOCATION_PERMISSIONS,
+        )
+    }
 
 internal fun hasPermissions(context: Context, vararg permissions: String): Boolean =
     permissions.all {
@@ -81,6 +92,8 @@ internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: (() -
     }
 
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
     ConfirmationDialog.newInstance(
@@ -95,12 +108,14 @@ internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
         posAction2 = LambdaWrapper {
             this.sharedPrefs
                 .edit()
-                .putBoolean(PREFS_DONT_ASK_LOCATION, true)
+                .putBoolean(PREFS_OPT_OUT_LOCATION, true)
                 .apply()
         }
     ).show(supportFragmentManager, null)
 }
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun MainActivity.showRationaleBgLocation(onGranted: () -> Unit) {
     ConfirmationDialog.newInstance(
