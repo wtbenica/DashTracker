@@ -1,13 +1,16 @@
 package com.wtb.dashTracker.util
 
-import android.Manifest
+import android.Manifest.permission.*
 import android.content.Context
+import android.content.Context.POWER_SERVICE
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.ContextCompat
@@ -20,24 +23,30 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-
+/**
+ * Location Permissions: [ACCESS_FINE_LOCATION], [ACCESS_COARSE_LOCATION], [ACTIVITY_RECOGNITION]
+ */
 internal val LOCATION_PERMISSIONS =
     arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACTIVITY_RECOGNITION
+        ACCESS_FINE_LOCATION,
+        ACCESS_COARSE_LOCATION,
+        ACTIVITY_RECOGNITION
     )
 
+/**
+ * Required Permissions: [ACCESS_BACKGROUND_LOCATION], [LOCATION_PERMISSIONS], and, if SDK >=
+ * TIRAMISU, [POST_NOTIFICATIONS]
+ */
 internal val REQUIRED_PERMISSIONS =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-            Manifest.permission.POST_NOTIFICATIONS,
+            ACCESS_BACKGROUND_LOCATION,
+            POST_NOTIFICATIONS,
             *LOCATION_PERMISSIONS,
         )
     } else {
         arrayOf(
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            ACCESS_BACKGROUND_LOCATION,
             *LOCATION_PERMISSIONS,
         )
     }
@@ -46,6 +55,49 @@ internal fun hasPermissions(context: Context, vararg permissions: String): Boole
     permissions.all {
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
+
+internal fun AppCompatActivity.hasBatteryPermission(): Boolean {
+    val pm = getSystemService(POWER_SERVICE) as PowerManager
+    return pm.isIgnoringBatteryOptimizations(packageName)
+}
+
+/**
+ *  wraps a when expression that checks for missing permissions in this order:
+ *  none > battery > notification > bg location > location & activity > all
+ *
+ * @param T return type
+ * @param hasAllPermissions Has [REQUIRED_PERMISSIONS] + [AppCompatActivity.hasBatteryPermission]
+ * @param missingBatteryPerm Has [REQUIRED_PERMISSIONS]
+ * @param missingNotificationPerm SDK_INT >= TIRAMISU and has [ACCESS_BACKGROUND_LOCATION] and
+ * [LOCATION_PERMISSIONS]
+ * @param missingBgLocation Has [LOCATION_PERMISSIONS]
+ * @param hasNoPermissions also the default return value
+ * @return the matching parameter
+ */
+fun <T : Any> AppCompatActivity.whenPermissions(
+    hasAllPermissions: T?,
+    missingBatteryPerm: T?,
+    missingNotificationPerm: T?,
+    missingBgLocation: T?,
+    hasNoPermissions: T?
+): T? = when {
+    hasBatteryPermission() && hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
+        hasAllPermissions
+    }
+    hasPermissions(this, *REQUIRED_PERMISSIONS) -> {
+        missingBatteryPerm
+    }
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            hasPermissions(this, *LOCATION_PERMISSIONS, ACCESS_BACKGROUND_LOCATION) -> {
+        missingNotificationPerm
+    }
+    hasPermissions(this, *LOCATION_PERMISSIONS) -> {
+        missingBgLocation
+    }
+    else -> {
+        hasNoPermissions
+    }
+}
 
 /**
  * Registers the [AppCompatActivity] for a request to start an Activity for result that requests
@@ -92,6 +144,7 @@ internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: (() -
     }
 
 
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -114,6 +167,7 @@ internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
     ).show(supportFragmentManager, null)
 }
 
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @OptIn(ExperimentalCoroutinesApi::class)

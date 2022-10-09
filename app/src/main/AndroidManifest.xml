@@ -21,14 +21,12 @@
         <activity
             android:name=".ui.activity_get_permissions.GetPermissionsActivity"
             android:exported="false"
-            android:theme="@style/Base.DasherCompanion">
-        </activity>
+            android:theme="@style/Base.DasherCompanion" />
 
         <activity
             android:name=".ui.activity_welcome.WelcomeActivity"
             android:exported="false"
-            android:theme="@style/Base.DasherCompanion">
-        </activity>
+            android:theme="@style/Base.DasherCompanion" />
 
         <service
             android:name="dev.benica.mileagetracker.LocationService"

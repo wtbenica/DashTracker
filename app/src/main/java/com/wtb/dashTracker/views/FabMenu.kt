@@ -29,6 +29,7 @@ import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -39,6 +40,7 @@ import com.wtb.dashTracker.extensions.isTouchTarget
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi

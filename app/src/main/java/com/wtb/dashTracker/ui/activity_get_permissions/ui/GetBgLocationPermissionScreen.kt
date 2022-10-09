@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.activity_get_permissions
 
 import android.app.Activity
 import android.content.Intent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -107,6 +108,7 @@ fun GetBgLocationPermissionScreen(modifier: Modifier = Modifier) =
 //        }
 
 
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
@@ -115,7 +117,7 @@ fun GetBgLocationPermissionNav(activity: GetPermissionsActivity? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp, 0.dp, 8.dp, 8.dp)
+            .padding(8.dp)
     ) {
         LocalContext.current
         FillSpacer()
@@ -171,6 +173,7 @@ fun GetBgLocationPermissionNav(activity: GetPermissionsActivity? = null) {
 }
 
 
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi

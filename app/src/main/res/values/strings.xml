@@ -185,6 +185,33 @@
         your starting and ending odometer readings.
     </string>
 
+    <string name="dialog_location_permission_1">DashTracker needs permission to access your location
+        and physical activity (on foot, in car, still or moving).
+
+        \n\nAfter you select\ </string>
+
+    <string name="dialog_location_permission_2_ital">Allow\ </string>
+
+    <string name="dialog_location_permission_3">below, two dialog windows will open. The first will
+        ask you to allow location access; select\ </string>
+
+    <string name="dialog_location_permission_4_ital">While using the app</string>
+
+    <string name="dialog_location_permission_5">. The second dialog will ask you to
+        allow physical activity access; select\ </string>
+
+    <string name="dialog_location_permission_6_ital">Allow</string>
+
+    <string name="dialog_location_permission_7">.
+
+        \n\nDashTracker will only access your location and physical activity while mileage tracking
+        is active. Your data is not accessible to anyone but you. For more details, see our privacy
+        policy.
+
+        \n\nIf you choose not to allow location access, you can still track your mileage by entering
+        your starting and ending odometer readings.
+    </string>
+
     <string name="dialog_bg_location_text"><b>DashTracker needs additional permission to access
         your location while it is running in the background.</b> Without this permission,
         DashTracker cannot provide accurate mileage tracking.
@@ -192,6 +219,12 @@
         your starting and ending odometer readings.
         \n\nIf you would like to use automatic mileage tracking, select "Allow," and on the
         next screen, select "Always Allow."
+    </string>
+
+    <string name="dialog_notification_permission">
+    </string>
+
+    <string name="dialog_battery_permission">
     </string>
 
     <string name="action_menu_new_item">New Item</string>
@@ -218,4 +251,5 @@
     <string name="route_location_permission">route_location_permission</string>
     <string name="route_bg_location_permission">route_bg_location_permission</string>
     <string name="route_notification_permission">route_notification_permission</string>
+    <string name="route_battery_permission">route_batter_permission</string>
 </resources>

@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.fragment.app.setFragmentResultListener
@@ -50,6 +51,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
@@ -119,6 +121,7 @@ class ExpenseListFragment : ListItemFragment() {
 
     interface ExpenseListFragmentCallback
 
+    @ExperimentalAnimationApi
     inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense>(
         DIFF_CALLBACK
     ) {
@@ -136,6 +139,7 @@ class ExpenseListFragment : ListItemFragment() {
 
         abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView)
 
+        @ExperimentalAnimationApi
         inner class GasExpenseHolder(parent: ViewGroup) : ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense, parent, false)
         ), View.OnClickListener {
@@ -188,6 +192,7 @@ class ExpenseListFragment : ListItemFragment() {
             }
         }
 
+        @ExperimentalAnimationApi
         inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseAdapter.ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense_non_gas, parent, false)
         ), View.OnClickListener {

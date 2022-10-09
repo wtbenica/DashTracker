@@ -45,6 +45,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.app.NotificationCompat
@@ -124,6 +125,7 @@ internal val Any.TAG: String
  * [ConfirmationDialogImport], [ConfirmationDialogExport],
  * [OssLicensesMenuActivity].
  */
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
@@ -1099,7 +1101,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         internal const val PREFS_OPT_OUT_LOCATION = "Don't ask | location"
         internal const val PREFS_DONT_ASK_BG_LOCATION = "Don't ask | bg location"
         internal const val PREFS_OPT_OUT_NOTIFICATION = "Don't ask | notifications"
+        internal const val PREFS_OPT_OUT_BATTERY_OPTIM = "Don't ask | battery optimization"
         internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
+
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"

@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.app.Activity
 import android.content.Intent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -31,6 +32,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
@@ -76,9 +82,35 @@ fun GetLocationPermissionsScreen(modifier: Modifier = Modifier) =
                     color = MaterialTheme.colorScheme.primary
                 )
             ) {
+                val str = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontFamily = FontFamily.SansSerif)) {
+                        append(stringResource(id = R.string.dialog_location_permission_1))
+
+                        withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
+                            append(stringResource(id = R.string.dialog_location_permission_2_ital))
+                        }
+
+                        append(stringResource(id = R.string.dialog_location_permission_3))
+
+                        withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
+                            append(stringResource(id = R.string.dialog_location_permission_4_ital))
+                        }
+
+                        append(stringResource(id = R.string.dialog_location_permission_5))
+
+                        withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
+                            append(stringResource(id = R.string.dialog_location_permission_6_ital))
+                        }
+
+                        append(stringResource(id = R.string.dialog_location_permission_7))
+                    }
+                }
+
                 Text(
-                    stringResource(id = R.string.dialog_location_permission),
-                    modifier = Modifier.padding(16.dp)
+                    str,
+//                    stringResource(id = R.string.dialog_location_permission),
+                    modifier = Modifier.padding(16.dp),
+                    fontFamily = FontFamily.SansSerif
                 )
             }
         }
@@ -94,93 +126,7 @@ fun GetLocationPermissionsScreen(modifier: Modifier = Modifier) =
         }
     }
 
-//@ExperimentalCoroutinesApi
-//@ExperimentalMaterial3Api
-//@ExperimentalTextApi
-//@Composable
-//fun GetLocationPermissions(modifier: Modifier = Modifier) {
-//
-//    DashTrackerTheme {
-//        Column(
-//            modifier = modifier
-//                .fillMaxWidth()
-//                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
-//        ) {
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//            ) {
-//                Text(
-//                    text = "Location Permissions",
-//                    modifier = Modifier
-//                        .padding(16.dp)
-//                        .wrapContentHeight()
-//                        .weight(1f),
-//                    fontSize = 20.sp,
-//                )
-//
-//                DefaultSpacer()
-//
-//                OutlinedCard(
-//                    shape = cardShape,
-//                    modifier = Modifier
-//                        .height(96.dp)
-//                        .width(96.dp)
-//                        .align(Alignment.CenterVertically),
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.TwoTone.LocationOn,
-//                        contentDescription = "My Location",
-//                        modifier = Modifier.size(96.dp),
-//                        tint = car
-//                    )
-//                }
-//            }
-//
-//            DefaultSpacer()
-//
-//            LazyColumn(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//            ) {
-//                item {
-//                    OutlinedCard(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .clip(cardShape),
-//                        shape = cardShape,
-//                        colors = CardDefaults.cardColors(
-//                            containerColor = MaterialTheme.colorScheme.tertiary,
-//                            contentColor = MaterialTheme.colorScheme.onPrimary,
-//                            disabledContainerColor = MaterialTheme.colorScheme.primary,
-//                            disabledContentColor = MaterialTheme.colorScheme.onPrimary
-//                        ),
-//                        border = BorderStroke(
-//                            width = 1.dp,
-//                            color = MaterialTheme.colorScheme.primary
-//                        )
-//                    ) {
-//                        Text(
-//                            stringResource(id = R.string.dialog_location_permission),
-//                            modifier = Modifier.padding(16.dp)
-//                        )
-//                    }
-//                }
-//
-//                item {
-//                    val uriHandler = LocalUriHandler.current
-//
-//                    CustomTextButton(onClick = {
-//                        uriHandler.openUri("https://www.benica.dev")
-//                    }) {
-//                        Text("Privacy Policy")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//
-
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
@@ -189,7 +135,7 @@ fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp, 0.dp, 8.dp, 8.dp)
+            .padding(8.dp)
     ) {
         LocalContext.current
         FillSpacer()
@@ -230,7 +176,7 @@ fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
 
         CustomOutlinedButton(
             onClick = {
-                activity?.getPermissions()
+                activity?.getLocationPermissions()
             },
         ) {
             HalfSpacer()
@@ -244,6 +190,7 @@ fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi

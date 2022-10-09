@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.res.ResourcesCompat
@@ -47,6 +48,7 @@ import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
@@ -258,6 +260,7 @@ class ByDayOfWeekBarChart(
 }
 
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi

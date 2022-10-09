@@ -18,15 +18,12 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
-import android.os.Build.VERSION_CODES.TIRAMISU
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
-import androidx.compose.material.icons.twotone.Notifications
+import androidx.compose.material.icons.twotone.BatterySaver
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -47,17 +44,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalTextApi
 @Composable
-fun GetNotificationPermissionScreen(modifier: Modifier = Modifier) =
+fun GetBatteryPermission(modifier: Modifier = Modifier) =
     ScreenTemplate(
         modifier = modifier,
-        headerText = "Notifications Permission",
+        headerText = "Battery Optimization",
         iconImage = {
             Icon(
-                imageVector = Icons.TwoTone.Notifications,
-                contentDescription = "Notifications Icon",
-                modifier = Modifier.size(96.dp)
+                imageVector = Icons.TwoTone.BatterySaver,
+                contentDescription = "Battery Saver Icon",
+                modifier = Modifier.size(96.dp),
+                tint = MaterialTheme.colorScheme.secondary
             )
-        },
+        }
     ) {
         item {
             OutlinedCard(
@@ -77,7 +75,7 @@ fun GetNotificationPermissionScreen(modifier: Modifier = Modifier) =
                 )
             ) {
                 Text(
-                    stringResource(id = R.string.dialog_notification_permission),
+                    stringResource(id = R.string.dialog_battery_permission),
                     modifier = Modifier.padding(16.dp)
                 )
             }
@@ -99,8 +97,7 @@ fun GetNotificationPermissionScreen(modifier: Modifier = Modifier) =
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-@RequiresApi(TIRAMISU)
-fun GetNotificationsPermissionNav(activity: GetPermissionsActivity? = null) {
+fun GetBatteryPermissionNav(activity: GetPermissionsActivity? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -145,11 +142,7 @@ fun GetNotificationsPermissionNav(activity: GetPermissionsActivity? = null) {
 
         CustomOutlinedButton(
             onClick = {
-                if (Build.VERSION.SDK_INT >= TIRAMISU) {
-                    activity?.getNotificationPermission()
-                } else {
-                    activity?.finish()
-                }
+                activity?.getBatteryPermission()
             },
         ) {
             HalfSpacer()
@@ -163,19 +156,20 @@ fun GetNotificationsPermissionNav(activity: GetPermissionsActivity? = null) {
     }
 }
 
-@ExperimentalCoroutinesApi
-@RequiresApi(TIRAMISU)
 @ExperimentalAnimationApi
+@ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewGetNotificationPermissionScreen() {
+fun GetBatteryPermissionPreview() {
     DashTrackerTheme {
-        Surface {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
             Column {
-                GetNotificationPermissionScreen(modifier = Modifier.weight(1f, true))
-                GetNotificationsPermissionNav()
+                GetBatteryPermission(modifier = Modifier.weight(1f))
+                GetBatteryPermissionNav()
             }
         }
     }
