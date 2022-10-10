@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,20 +27,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
 fun WelcomeNavHost(activity: WelcomeActivity? = null) {
-    val navController = rememberNavController()
+    val navController = rememberAnimatedNavController()
 
     DashTrackerTheme {
         Surface {
@@ -47,11 +49,13 @@ fun WelcomeNavHost(activity: WelcomeActivity? = null) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                NavHost(
+                AnimatedNavHost(
                     navController = navController,
                     startDestination = Screen.WelcomeScreen.route,
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(1f),
+                    enterTransition = { slideInHorizontally { it / 2 } + fadeIn() },
+                    exitTransition = { slideOutHorizontally { -it / 2 } + fadeOut() }
                 ) {
                     composable(Screen.WelcomeScreen.route) { WelcomeScreen() }
                     composable(Screen.WhatsNewScreen.route) { WhatsNewScreen() }
@@ -61,9 +65,17 @@ fun WelcomeNavHost(activity: WelcomeActivity? = null) {
                 val route = navBackStackEntry?.destination?.route
 
                 Row {
-                    when (route) {
-                        Screen.WelcomeScreen.route -> WelcomeNav(navController)
-                        Screen.WhatsNewScreen.route -> WhatsNewNav(activity)
+                    AnimatedContent(
+                        targetState = route,
+                        transitionSpec = {
+                            slideInHorizontally { it / 2 } + fadeIn() with
+                                    slideOutHorizontally { -it / 2 } + fadeOut()
+                        }
+                    ) { target ->
+                        when (target) {
+                            Screen.WelcomeScreen.route -> WelcomeNav(navController)
+                            Screen.WhatsNewScreen.route -> WhatsNewNav(activity)
+                        }
                     }
                 }
             }
@@ -71,6 +83,7 @@ fun WelcomeNavHost(activity: WelcomeActivity? = null) {
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Preview(showBackground = true)

@@ -76,11 +76,9 @@ import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
+import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.MileageTrackingOptIn
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.MileageTrackingOptIn.OPT_IN
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.MileageTrackingOptIn.OPT_OUT
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
@@ -201,7 +199,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }
 
             if (activityResult?.resultCode == RESULT_OK) {
-                sharedPrefs.edit().putBoolean(PREFS_OPT_OUT_LOCATION, optInExtra == OPT_OUT).apply()
+                sharedPrefs.edit().putBoolean(PREFS_OPT_OUT_LOCATION, optInExtra == MileageTrackingOptIn.OPT_OUT).apply()
             }
         }
 
@@ -228,9 +226,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             )
             if (activityResult?.resultCode == RESULT_OK) {
                 sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
-                sharedPrefs.edit().putBoolean(PREFS_OPT_OUT_LOCATION, optInExtra == OPT_OUT).apply()
+                sharedPrefs.edit().putBoolean(PREFS_OPT_OUT_LOCATION, optInExtra == MileageTrackingOptIn.OPT_OUT).apply()
 
-                if (optInExtra == OPT_IN) {
+                if (optInExtra == MileageTrackingOptIn.OPT_IN) {
                     permissionsLauncher.launch(
                         Intent(this, GetPermissionsActivity::class.java)
                     )

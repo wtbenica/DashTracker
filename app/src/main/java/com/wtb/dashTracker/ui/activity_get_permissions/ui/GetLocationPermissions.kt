@@ -41,7 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
+import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
+import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.car
@@ -145,8 +146,8 @@ fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
                 activity?.setResult(
                     Activity.RESULT_OK,
                     Intent().putExtra(
-                        WelcomeActivity.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        WelcomeActivity.Companion.MileageTrackingOptIn.OPT_OUT
+                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
+                        MileageTrackingOptIn.OPT_OUT
                     )
                 )
                 activity?.finish()
@@ -162,8 +163,8 @@ fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
                 activity?.setResult(
                     Activity.RESULT_OK,
                     Intent().putExtra(
-                        WelcomeActivity.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        WelcomeActivity.Companion.MileageTrackingOptIn.DECIDE_LATER
+                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
+                        MileageTrackingOptIn.DECIDE_LATER
                     )
                 )
                 activity?.finish()

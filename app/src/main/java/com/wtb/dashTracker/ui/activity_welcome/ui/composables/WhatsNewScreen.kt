@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,6 +39,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
+import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -73,6 +76,7 @@ fun WhatsNewScreen(modifier: Modifier = Modifier) =
         }
     }
 
+@ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
@@ -92,8 +96,8 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
                     activity?.setResult(
                         RESULT_OK,
                         Intent().putExtra(
-                            WelcomeActivity.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                            WelcomeActivity.Companion.MileageTrackingOptIn.OPT_OUT
+                            ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
+                            MileageTrackingOptIn.OPT_OUT
                         )
                     )
                     activity?.finish()
@@ -109,8 +113,8 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
                     activity?.setResult(
                         RESULT_OK,
                         Intent().putExtra(
-                            WelcomeActivity.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                            WelcomeActivity.Companion.MileageTrackingOptIn.DECIDE_LATER
+                            ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
+                            MileageTrackingOptIn.DECIDE_LATER
                         )
                     )
                     activity?.finish()
@@ -126,8 +130,8 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
                     activity?.setResult(
                         RESULT_OK,
                         Intent().putExtra(
-                            WelcomeActivity.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                            WelcomeActivity.Companion.MileageTrackingOptIn.OPT_IN
+                            ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
+                            MileageTrackingOptIn.OPT_IN
                         )
                     )
                     activity?.finish()
@@ -145,6 +149,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
