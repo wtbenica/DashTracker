@@ -66,7 +66,7 @@ fun CustomTextButton(
             ),
             onClick = onClick,
             modifier = modifier,
-            content = content
+            content = content,
         )
     }
 }

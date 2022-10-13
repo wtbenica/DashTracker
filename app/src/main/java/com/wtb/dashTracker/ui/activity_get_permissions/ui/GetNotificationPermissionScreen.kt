@@ -18,40 +18,47 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.Notifications
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
 import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.cardShape
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@RequiresApi(TIRAMISU)
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetNotificationPermissionScreen(modifier: Modifier = Modifier) =
+fun GetNotificationPermissionScreen(
+    modifier: Modifier = Modifier,
+    activity: GetPermissionsActivity? = null
+) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Notifications Permission",
+        subtitleText = "Optional",
         iconImage = {
             Icon(
                 imageVector = Icons.TwoTone.Notifications,
@@ -59,41 +66,18 @@ fun GetNotificationPermissionScreen(modifier: Modifier = Modifier) =
                 modifier = Modifier.size(96.dp)
             )
         },
-    ) {
-        item {
-            OutlinedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(cardShape),
-                shape = cardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            ) {
+        mainContent = {
+            CustomOutlinedCard {
                 Text(
-                    stringResource(id = R.string.dialog_notification_permission),
-                    modifier = Modifier.padding(16.dp)
+                    text = stringResource(id = R.string.dialog_notification_permission),
+                    fontSize = 18.sp
                 )
             }
+        },
+        navContent = {
+            GetNotificationsPermissionNav(activity = activity)
         }
-
-        item {
-            val uriHandler = LocalUriHandler.current
-
-            CustomTextButton(onClick = {
-                uriHandler.openUri("https://www.benica.dev")
-            }) {
-                Text("Privacy Policy")
-            }
-        }
-    }
+    )
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
@@ -101,13 +85,14 @@ fun GetNotificationPermissionScreen(modifier: Modifier = Modifier) =
 @ExperimentalTextApi
 @Composable
 @RequiresApi(TIRAMISU)
-fun GetNotificationsPermissionNav(activity: GetPermissionsActivity? = null) {
+fun GetNotificationsPermissionNav(
+    modifier: Modifier = Modifier,
+    activity: GetPermissionsActivity? = null
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
     ) {
-        LocalContext.current
         FillSpacer()
 
         CustomTextButton(
@@ -125,7 +110,7 @@ fun GetNotificationsPermissionNav(activity: GetPermissionsActivity? = null) {
             Text("No thanks")
         }
 
-        HalfSpacer()
+        DefaultSpacer()
 
         CustomTextButton(
             onClick = {
@@ -142,19 +127,15 @@ fun GetNotificationsPermissionNav(activity: GetPermissionsActivity? = null) {
             Text("Maybe later")
         }
 
-        HalfSpacer()
+        DefaultSpacer()
 
         CustomOutlinedButton(
             onClick = {
-                if (Build.VERSION.SDK_INT >= TIRAMISU) {
-                    activity?.getNotificationPermission()
-                } else {
-                    activity?.finish()
-                }
+                activity?.getNotificationPermission()
             },
         ) {
             HalfSpacer()
-            Text("Allow")
+            Text("OK")
             Icon(
                 Icons.Rounded.NavigateNext,
                 contentDescription = "Next screen",
@@ -175,8 +156,12 @@ fun PreviewGetNotificationPermissionScreen() {
     DashTrackerTheme {
         Surface {
             Column {
-                GetNotificationPermissionScreen(modifier = Modifier.weight(1f, true))
-                GetNotificationsPermissionNav()
+                GetNotificationPermissionScreen()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 3
+                )
             }
         }
     }

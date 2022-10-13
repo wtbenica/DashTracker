@@ -150,7 +150,7 @@ internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: (() -
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
     ConfirmationDialog.newInstance(
-        text = R.string.dialog_location_permission,
+        text = R.string.dialog_location_permission_1,
         requestKey = "Thrust",
         title = "Allow location access",
         posButton = R.string.allow,

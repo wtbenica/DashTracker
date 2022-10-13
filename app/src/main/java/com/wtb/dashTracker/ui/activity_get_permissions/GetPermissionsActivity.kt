@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.activity_get_permissions
 
 import android.Manifest.permission.*
 import android.content.Intent
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
@@ -26,7 +27,6 @@ import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
@@ -42,41 +42,39 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.*
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetBatteryPermission
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetLocationPermissionsScreen
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetNotificationPermissionScreen
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-sealed class PermissionScreen(val route: String, @StringRes val resourceId: Int, val page: Int) {
+sealed class PermissionScreen(val route: String, val page: Int) {
     object LocationScreen : PermissionScreen(
         route = "location",
-        resourceId = R.string.route_location_permission,
         page = 0
     )
 
     object BgLocationScreen : PermissionScreen(
         route = "bg_location",
-        resourceId = R.string.route_bg_location_permission,
         page = 1
     )
 
     object NotificationScreen : PermissionScreen(
         route = "notification",
-        resourceId = R.string.route_notification_permission,
         page = 2
     )
 
     object BatteryOptimizationScreen : PermissionScreen(
         route = "battery",
-        resourceId = R.string.route_battery_permission,
         page = 3
     )
 
@@ -115,10 +113,8 @@ class GetPermissionsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
-        Log.d(TAG, "onCreate")
 
-
-        val missingPermissions = listOf<Boolean>(
+        val missingPermissions = listOf(
             !hasPermissions(this, *LOCATION_PERMISSIONS),
             !hasPermissions(this, ACCESS_BACKGROUND_LOCATION),
             SDK_INT >= TIRAMISU && !hasPermissions(this, POST_NOTIFICATIONS),
@@ -155,54 +151,37 @@ class GetPermissionsActivity : AppCompatActivity() {
                                 startDestination = startDest,
                                 modifier = Modifier
                                     .weight(1f),
-                                enterTransition = { slideInHorizontally { it / 2 } + fadeIn() },
-                                exitTransition = { slideOutHorizontally { -it / 2 } + fadeOut() }
+                                enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                                exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
+                                popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                                popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
                             ) {
                                 composable(PermissionScreen.LocationScreen.route) {
-                                    GetLocationPermissionsScreen()
+                                    GetLocationPermissionsScreen(activity = this@GetPermissionsActivity)
                                 }
                                 composable(PermissionScreen.BgLocationScreen.route) {
-                                    GetBgLocationPermissionScreen()
+                                    GetBgLocationPermissionScreen(activity = this@GetPermissionsActivity)
                                 }
                                 composable(PermissionScreen.NotificationScreen.route) {
-                                    GetNotificationPermissionScreen()
+                                    if (SDK_INT >= TIRAMISU) {
+                                        GetNotificationPermissionScreen(activity = this@GetPermissionsActivity)
+                                    }
                                 }
                                 composable(PermissionScreen.BatteryOptimizationScreen.route) {
-                                    GetBatteryPermission()
+                                    GetBatteryPermission(activity = this@GetPermissionsActivity)
                                 }
                             }
 
                             val absoluteScreenNumber = PermissionScreen.getScreenByRoute(route)
 
                             val currentPage = missingPermissions.subList(0, absoluteScreenNumber)
-                                        .count { it } + 1
-
-                            Log.d(TAG, "Screen: $absoluteScreenNumber | Page: $currentPage")
-
-                            PageIndicator(numPages = numPages, selectedPage = currentPage)
-
-                            Row {
-                                AnimatedContent(
-                                    targetState = route,
-                                    transitionSpec = {
-                                        slideInHorizontally { it / 2 } + fadeIn() with
-                                                slideOutHorizontally { -it / 2 } + fadeOut()
-                                    }
-                                ) { target ->
-                                    when (target) {
-                                        PermissionScreen.LocationScreen.route ->
-                                            GetLocationPermissionsNav(this@GetPermissionsActivity)
-                                        PermissionScreen.BgLocationScreen.route ->
-                                            GetBgLocationPermissionNav(this@GetPermissionsActivity)
-                                        PermissionScreen.NotificationScreen.route ->
-                                            if (SDK_INT >= TIRAMISU) {
-                                                GetNotificationsPermissionNav(this@GetPermissionsActivity)
-                                            }
-                                        PermissionScreen.BatteryOptimizationScreen.route ->
-                                            GetBatteryPermissionNav(this@GetPermissionsActivity)
-                                    }
-                                }
-                            }
+                                .count { it } + 1
+//
+                            PageIndicator(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
+                                numPages = numPages,
+                                selectedPage = currentPage
+                            )
                         }
                     }
                 }
@@ -291,8 +270,8 @@ class GetPermissionsActivity : AppCompatActivity() {
             sharedPrefs.getBoolean(MainActivity.PREFS_OPT_OUT_BATTERY_OPTIM, false) -> {}
             hasBatteryPermission() -> {}
             else -> {
-                val intent = Intent().apply {
-                    setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
                 }
                 startActivity(intent)
             }
@@ -307,10 +286,12 @@ class GetPermissionsActivity : AppCompatActivity() {
 }
 
 @Composable
-fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selectedPage: Int = 1) =
+internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selectedPage: Int = 1) =
     Row(
         horizontalArrangement = Arrangement.Center,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
     ) {
         Log.d(TAG, "Selected Page: $selectedPage")
         for (i in 0 until numPages) {
@@ -334,9 +315,8 @@ fun GetPermissionsActivityPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetLocationPermissionsScreen(modifier = Modifier.weight(1f))
+                GetLocationPermissionsScreen()
                 PageIndicator(numPages = 4, selectedPage = 0)
-                GetLocationPermissionsNav()
             }
         }
     }

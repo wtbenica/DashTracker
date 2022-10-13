@@ -17,14 +17,18 @@
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.AccessAlarm
+import androidx.compose.material.icons.twotone.Dangerous
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -35,49 +39,102 @@ import com.wtb.dashTracker.ui.theme.cardShape
 fun ScreenTemplate(
     modifier: Modifier = Modifier,
     headerText: String,
-    iconImage: @Composable ColumnScope.() -> Unit,
-    mainContent: LazyListScope.() -> Unit
+    subtitleText: String? = null,
+    iconImage: @Composable() (ColumnScope.() -> Unit),
+    mainContent: @Composable() (ColumnScope.() -> Unit),
+    navContent: @Composable() (ColumnScope.() -> Unit)? = null
 ) {
     DashTrackerTheme {
         Column(
             modifier = modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
+                .fillMaxSize()
+                .padding(16.dp, 16.dp, 16.dp, 0.dp)
         ) {
             Row(
                 modifier = Modifier.padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = headerText,
-                    modifier = Modifier
-                        .padding(start = 16.dp)
-                        .wrapContentHeight()
-                        .weight(1f),
-                    fontSize = 20.sp,
-                )
+                Column {
+                    Text(
+                        text = headerText,
+                        modifier = Modifier.padding(0.dp),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                DefaultSpacer()
+                    subtitleText?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier.padding(top = 8.dp),
+                            fontSize = 16.sp,
+                        )
+                    }
+                }
+
+                FillSpacer()
 
                 OutlinedCard(
                     shape = cardShape,
                     modifier = Modifier
-                        .height(96.dp)
-                        .width(96.dp)
+                        .size(96.dp)
                         .align(Alignment.CenterVertically),
                 ) {
                     iconImage()
                 }
             }
 
-            DefaultSpacer()
-
-            LazyColumn(
+            Column(
                 modifier = modifier
-                    .fillMaxWidth(),
-            ) {
-                mainContent()
+                    .fillMaxWidth()
+                    .weight(1f, true),
+                content = {
+                    mainContent()
+                }
+            )
+
+            navContent?.let {
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    content = {
+                        it()
+                    }
+                )
             }
         }
     }
 }
+
+@ExperimentalTextApi
+@Preview(showBackground = true)
+@Composable
+fun PreviewScreenTemplate() {
+    DashTrackerTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            ScreenTemplate(
+                headerText = "ScreenTemplate",
+                subtitleText = "Subtitle",
+                iconImage = {
+                    Icon(
+                        imageVector = Icons.TwoTone.Dangerous,
+                        contentDescription = "Dangerous",
+                        modifier = Modifier.size(96.dp),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                },
+                mainContent = {
+                    ContentCard(
+                        text = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconTint = MaterialTheme.colorScheme.secondary,
+                        iconDescription = "Access Alarm"
+                    )
+                }
+            )
+        }
+    }
+}
+
+val styleBoldItalic =
+    SpanStyle(fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold)

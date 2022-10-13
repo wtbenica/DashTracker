@@ -161,14 +161,11 @@
     <string name="chart_title_avg_per_hour">Average per hour</string>
     <string name="lbl_tracked_mileage">Tracked Mileage</string>
 
-    <string name="whats_new_mileage_tracking">Spend less time entering your mileage with
-        automatic tracking and get a real-time estimate of your expenses while you\'re dashing.
-        \n\nJust press the <i>Start Dash</i> button, enter your starting odometer reading, and DashTracker
-        takes care of it for you from there. When your dash is over, press <i>Stop</i>, enter your
-        earnings and number of deliveries, and you\'re done!
-        \n\nIf you choose not to use automatic mileage tracking, you can still track your mileage by
-        entering your starting and ending odometer readings manually.
-    </string>
+    <string-array name="list_whats_new_mileage_tracking">
+        <item>Spend less time entering mileage information</item>
+        <item>Get a real-time estimate of your expenses while you\'re dashing</item>
+        <item>We do not sell or share your location data, nor can we access it ourselves</item>
+    </string-array>
 
     <string name="dialog_location_permission">DashTracker needs permission to access your location
         and physical activity (on foot, in car, still or moving).
@@ -185,47 +182,65 @@
         your starting and ending odometer readings.
     </string>
 
+<!--    ANNOTATED STRING: dialog_location_permission-->
     <string name="dialog_location_permission_1">DashTracker needs permission to access your location
         and physical activity (on foot, in car, still or moving).
 
-        \n\nAfter you select\ </string>
+        \n\nOn the next screen, allow location access\ </string>
 
-    <string name="dialog_location_permission_2_ital">Allow\ </string>
+    <string name="dialog_location_permission_2_ital">While using the app</string>
 
-    <string name="dialog_location_permission_3">below, two dialog windows will open. The first will
-        ask you to allow location access; select\ </string>
+    <string name="dialog_location_permission_3">, then\ </string>
 
-    <string name="dialog_location_permission_4_ital">While using the app</string>
+    <string name="dialog_location_permission_4_ital">Allow</string>
 
-    <string name="dialog_location_permission_5">. The second dialog will ask you to
-        allow physical activity access; select\ </string>
-
-    <string name="dialog_location_permission_6_ital">Allow</string>
-
-    <string name="dialog_location_permission_7">.
+    <string name="dialog_location_permission_5">\ physical activity access.
 
         \n\nDashTracker will only access your location and physical activity while mileage tracking
-        is active. Your data is not accessible to anyone but you. For more details, see our privacy
-        policy.
-
-        \n\nIf you choose not to allow location access, you can still track your mileage by entering
-        your starting and ending odometer readings.
+        is active.
     </string>
 
-    <string name="dialog_bg_location_text"><b>DashTracker needs additional permission to access
-        your location while it is running in the background.</b> Without this permission,
-        DashTracker cannot provide accurate mileage tracking.
-        \n\nIf you choose not to allow location access, you can still track your mileage by entering
-        your starting and ending odometer readings.
+    <!--    ANNOTATED STRING: dialog_bg_location_text-->
+    <string name="dialog_bg_location_text_1">DashTracker needs permission to access your location
+        while it is running in the background. Without this permission, DashTracker cannot
+        provide accurate mileage tracking.
+
+        \n\nOn the next screen, set location access to\ </string>
+
+    <string name="dialog_bg_location_text_2_ital">Allow all the time</string>
+
+    <string name="dialog_bg_location_text_3">.</string>
+
+    <string name="dialog_bg_location_text">DashTracker needs permission to access your location
+        while it is running in the background. Without this permission, DashTracker cannot
+        provide accurate mileage tracking.
+
         \n\nIf you would like to use automatic mileage tracking, select "Allow," and on the
-        next screen, select "Always Allow."
+        next screen, select "Always all the time."
     </string>
 
-    <string name="dialog_notification_permission">
+    <string name="dialog_notification_permission">You can have DashTracker show a notification when
+        mileage tracking is active while the app is running in the background.
     </string>
 
-    <string name="dialog_battery_permission">
-    </string>
+    <string name="dialog_battery_permission_1">Android\'s battery optimizer may interfere with
+        DashTracker\'s mileage tracking, especially if the battery is low. In order for mileage
+        tracking to work as expected, it is recommended that you all DashTracker unrestricted
+        background battery use.
+
+        \n\nPressing\ </string>
+
+    <string name="dialog_battery_permission_2_ital">OK</string>
+
+    <string name="dialog_battery_permission_3">\ will open Android\'s DashTracker settings. Select\ </string>
+
+    <string name="dialog_battery_permission_4_ital">Battery</string>
+
+    <string name="dialog_battery_permission_5">\ then\ </string>
+
+    <string name="dialog_battery_permission_6_ital">Unrestricted</string>
+
+    <string name="dialog_battery_permission_7">, then return to DashTracker.</string>
 
     <string name="action_menu_new_item">New Item</string>
     <string name="action_add_dash">Add Dash</string>

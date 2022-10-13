@@ -17,20 +17,18 @@
 
 <resources>
     <string-array name="track_income">
-        <item>Look at me now</item>
-        <item>I don\'t like you</item>
-        <item>Philistine!</item>
+        <item>Check your hourly earnings</item>
+        <item>Find out what days you earn the most money</item>
     </string-array>
 
     <string-array name="track_expense">
-        <item>Frantic running around</item>
-        <item>Tasty master</item>
-        <item>Fresh!</item>
+        <item>Calculate your cost-per-mile</item>
+        <item>Compare your expenses over time</item>
+        <item>Get your hourly earnings after expenses</item>
     </string-array>
 
     <string-array name="track_mileage">
-        <item>Leopards are nice</item>
-        <item>Great fantastic</item>
-        <item>Junk!</item>
+        <item>Claim mileage-based business expenses on your taxes</item>
+        <item>Get per-dash estimates of your costs</item>
     </string-array>
 </resources>

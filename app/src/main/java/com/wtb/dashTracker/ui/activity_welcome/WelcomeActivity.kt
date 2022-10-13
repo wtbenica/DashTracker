@@ -40,6 +40,7 @@ val ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN =
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 class WelcomeActivity : ComponentActivity() {
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
