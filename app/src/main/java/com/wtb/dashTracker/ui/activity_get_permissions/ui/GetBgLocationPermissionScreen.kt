@@ -19,36 +19,46 @@ package com.wtb.dashTracker.ui.activity_get_permissions
 import android.app.Activity
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.PinDrop
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
 import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.car
-import com.wtb.dashTracker.ui.theme.cardShape
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetBgLocationPermissionScreen(modifier: Modifier = Modifier) =
+fun GetBgLocationPermissionScreen(
+    modifier: Modifier = Modifier,
+    activity: GetPermissionsActivity? = null
+) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Background Location Permission",
+        subtitleText = "Required for automatic mileage tracking",
         iconImage = {
             Icon(
                 imageVector = Icons.TwoTone.PinDrop,
@@ -57,33 +67,25 @@ fun GetBgLocationPermissionScreen(modifier: Modifier = Modifier) =
                     .size(96.dp),
                 tint = car
             )
-        }
-    ) {
-        item {
-            OutlinedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(cardShape),
-                shape = cardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            ) {
+        },
+        mainContent = {
+            val str = buildAnnotatedString {
+                append(stringResource(R.string.dialog_bg_location_text_1))
+
+                withStyle(style = styleBoldItalic) {
+                    append(stringResource(R.string.dialog_bg_location_text_2_ital))
+                }
+
+                append(stringResource(R.string.dialog_bg_location_text_3))
+            }
+
+            CustomOutlinedCard() {
                 Text(
-                    stringResource(id = R.string.dialog_bg_location_text),
-                    modifier = Modifier.padding(16.dp)
+                    text = str,
+                    fontSize = 18.sp
                 )
             }
-        }
 
-        item {
             val uriHandler = LocalUriHandler.current
 
             CustomTextButton(onClick = {
@@ -91,34 +93,24 @@ fun GetBgLocationPermissionScreen(modifier: Modifier = Modifier) =
             }) {
                 Text("Privacy Policy")
             }
+        },
+        navContent = {
+            GetBgLocationPermissionNav(activity = activity)
         }
-    }
-
-
-//        when {
-//            sharedPrefs.getBoolean(MainActivity.PREFS_DONT_ASK_BG_LOCATION, false) -> {}
-//            hasPermissions(this, ACCESS_BACKGROUND_LOCATION) -> {}
-//            shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
-////                showRationaleBgLocation {
-//                bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-////                }
-//            }
-//            else -> {
-//                bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-//            }
-//        }
-
+    )
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetBgLocationPermissionNav(activity: GetPermissionsActivity? = null) {
+fun GetBgLocationPermissionNav(
+    modifier: Modifier = Modifier,
+    activity: GetPermissionsActivity? = null
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
     ) {
         LocalContext.current
         FillSpacer()
@@ -138,7 +130,7 @@ fun GetBgLocationPermissionNav(activity: GetPermissionsActivity? = null) {
             Text("No thanks")
         }
 
-        HalfSpacer()
+        DefaultSpacer()
 
         CustomTextButton(
             onClick = {
@@ -155,7 +147,7 @@ fun GetBgLocationPermissionNav(activity: GetPermissionsActivity? = null) {
             Text("Maybe later")
         }
 
-        HalfSpacer()
+        DefaultSpacer()
 
         CustomOutlinedButton(
             onClick = {
@@ -163,7 +155,7 @@ fun GetBgLocationPermissionNav(activity: GetPermissionsActivity? = null) {
             },
         ) {
             HalfSpacer()
-            Text("Allow")
+            Text("OK")
             Icon(
                 Icons.Rounded.NavigateNext,
                 contentDescription = "Next screen",
@@ -186,8 +178,12 @@ fun GetBgLocationPermissionPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetBgLocationPermissionScreen(modifier = Modifier.weight(1f))
-                GetBgLocationPermissionNav()
+                GetBgLocationPermissionScreen()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 2
+                )
             }
         }
     }

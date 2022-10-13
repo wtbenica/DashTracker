@@ -19,7 +19,6 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 import android.app.Activity
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
@@ -27,28 +26,33 @@ import androidx.compose.material.icons.twotone.BatterySaver
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
 import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.cardShape
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetBatteryPermission(modifier: Modifier = Modifier) =
+fun GetBatteryPermission(modifier: Modifier = Modifier, activity: GetPermissionsActivity? = null) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Battery Optimization",
+        subtitleText = "Optional",
         iconImage = {
             Icon(
                 imageVector = Icons.TwoTone.BatterySaver,
@@ -56,53 +60,56 @@ fun GetBatteryPermission(modifier: Modifier = Modifier) =
                 modifier = Modifier.size(96.dp),
                 tint = MaterialTheme.colorScheme.secondary
             )
-        }
-    ) {
-        item {
-            OutlinedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(cardShape),
-                shape = cardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            ) {
+        },
+        mainContent = {
+            CustomOutlinedCard {
+                val str = buildAnnotatedString {
+                    append(stringResource(id = R.string.dialog_battery_permission_1))
+
+                    withStyle(style = styleBoldItalic) {
+                        append(stringResource(id = R.string.dialog_battery_permission_2_ital))
+                    }
+
+                    append(stringResource(id = R.string.dialog_battery_permission_3))
+
+                    withStyle(style = styleBoldItalic) {
+                        append(stringResource(id = R.string.dialog_battery_permission_4_ital))
+                    }
+
+                    append(stringResource(id = R.string.dialog_battery_permission_5))
+
+                    withStyle(style = styleBoldItalic) {
+                        append(stringResource(id = R.string.dialog_battery_permission_6_ital))
+                    }
+
+                    append(stringResource(id = R.string.dialog_battery_permission_7))
+                }
+
+
                 Text(
-                    stringResource(id = R.string.dialog_battery_permission),
-                    modifier = Modifier.padding(16.dp)
+                    text = str,
+                    fontSize = 18.sp
                 )
             }
+        },
+        navContent = {
+            GetBatteryPermissionNav(activity = activity)
         }
+    )
 
-        item {
-            val uriHandler = LocalUriHandler.current
-
-            CustomTextButton(onClick = {
-                uriHandler.openUri("https://www.benica.dev")
-            }) {
-                Text("Privacy Policy")
-            }
-        }
-    }
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetBatteryPermissionNav(activity: GetPermissionsActivity? = null) {
+fun GetBatteryPermissionNav(
+    modifier: Modifier = Modifier,
+    activity: GetPermissionsActivity? = null
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
     ) {
         LocalContext.current
         FillSpacer()
@@ -122,7 +129,7 @@ fun GetBatteryPermissionNav(activity: GetPermissionsActivity? = null) {
             Text("No thanks")
         }
 
-        HalfSpacer()
+        DefaultSpacer()
 
         CustomTextButton(
             onClick = {
@@ -139,7 +146,7 @@ fun GetBatteryPermissionNav(activity: GetPermissionsActivity? = null) {
             Text("Maybe later")
         }
 
-        HalfSpacer()
+        DefaultSpacer()
 
         CustomOutlinedButton(
             onClick = {
@@ -147,7 +154,7 @@ fun GetBatteryPermissionNav(activity: GetPermissionsActivity? = null) {
             },
         ) {
             HalfSpacer()
-            Text("Allow")
+            Text("OK")
             Icon(
                 Icons.Rounded.NavigateNext,
                 contentDescription = "Next screen",
@@ -169,8 +176,12 @@ fun GetBatteryPermissionPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetBatteryPermission(modifier = Modifier.weight(1f))
-                GetBatteryPermissionNav()
+                GetBatteryPermission()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 4
+                )
             }
         }
     }

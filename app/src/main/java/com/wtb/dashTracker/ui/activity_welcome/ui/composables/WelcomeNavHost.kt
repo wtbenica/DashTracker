@@ -18,16 +18,15 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -48,33 +47,24 @@ fun WelcomeNavHost(activity: WelcomeActivity? = null) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(bottom = 16.dp)
             ) {
                 AnimatedNavHost(
                     navController = navController,
                     startDestination = Screen.WelcomeScreen.route,
                     modifier = Modifier
                         .weight(1f),
-                    enterTransition = { slideInHorizontally { it / 2 } + fadeIn() },
-                    exitTransition = { slideOutHorizontally { -it / 2 } + fadeOut() }
+                    enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                    exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
                 ) {
-                    composable(Screen.WelcomeScreen.route) { WelcomeScreen() }
-                    composable(Screen.WhatsNewScreen.route) { WhatsNewScreen() }
-                }
-
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val route = navBackStackEntry?.destination?.route
-
-                Row {
-                    AnimatedContent(
-                        targetState = route,
-                        transitionSpec = {
-                            slideInHorizontally { it / 2 } + fadeIn() with
-                                    slideOutHorizontally { -it / 2 } + fadeOut()
+                    composable(Screen.WelcomeScreen.route) {
+                        Column {
+                            WelcomeScreen(navHostController = navController)
                         }
-                    ) { target ->
-                        when (target) {
-                            Screen.WelcomeScreen.route -> WelcomeNav(navController)
-                            Screen.WhatsNewScreen.route -> WhatsNewNav(activity)
+                    }
+                    composable(Screen.WhatsNewScreen.route) {
+                        Column {
+                            WhatsNewScreen(activity = activity)
                         }
                     }
                 }

@@ -142,6 +142,31 @@ fun ExpandableCard(
 
 @ExperimentalTextApi
 @Composable
+fun CustomOutlinedCard(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) = DashTrackerTheme {
+    OutlinedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(cardShape),
+        shape = cardShape,
+        colors = cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.primary,
+            disabledContentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
+    ) {
+        Column(modifier = Modifier.padding(32.dp)) {
+            content()
+        }
+    }
+}
+
+@ExperimentalTextApi
+@Composable
 fun ContentCard(
     text: String,
     icon: ImageVector,
@@ -190,12 +215,12 @@ fun ContentCard(
                 }
 
                 if (content != null) {
-                        Row(
-                            modifier = Modifier
-                                .padding(16.dp)
-                        ) {
-                            content()
-                        }
+                    Row(
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        content()
+                    }
                 }
             }
         }
@@ -213,7 +238,13 @@ fun PreviewExpandableCard() {
             iconTint = up,
             iconDescription = "Drawing of a car",
         ) {
-            ListRow("Eat your potato salad, dearie")
+            Column {
+                ListRow("Is today Monday?")
+                ListRow(
+                    "\"Eat your potato salad, dearie,\" said the wolf to the crow, as the night " +
+                            "melody played of whistles and skeetleburrs."
+                )
+            }
         }
 
         DefaultSpacer()
@@ -225,6 +256,12 @@ fun PreviewExpandableCard() {
             iconDescription = "Drawing of a car",
         ) {
             ListRow("Eat your potato salad, dearie")
+        }
+
+        DefaultSpacer()
+
+        CustomOutlinedCard {
+            Text("This is just an outlined card")
         }
     }
 }
@@ -241,12 +278,13 @@ fun ListRow(
 ) {
     Row(
         modifier = rowModifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         Icon(
             icon,
             contentDescription = "Bulleted item",
-            modifier = Modifier.size(iconSize),
+            modifier = Modifier.size(iconSize + 6.dp)
+                .padding(start = 0.dp, top = 6.dp, end = 0.dp, bottom = 0.dp),
             tint = primaryDark
         )
 

@@ -19,10 +19,7 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.LocationOn
@@ -32,12 +29,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
 import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
@@ -45,36 +41,41 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun WhatsNewScreen(modifier: Modifier = Modifier) =
+fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = null) =
     ScreenTemplate(
         modifier = modifier,
-        headerText = "What's New",
+        headerText = "Automatic Mileage Tracking",
         iconImage = {
-            Logo()
-        }
-    ) {
-        item {
-            ContentCard(
-                text = "Automatic Mileage Tracking",
-                icon = Icons.TwoTone.LocationOn,
-                iconTint = MaterialTheme.colorScheme.secondary,
-                iconDescription = "Location On"
-            ) {
-                Text(
-                    text = stringResource(R.string.whats_new_mileage_tracking),
-                    modifier = Modifier.padding(32.dp, 16.dp, 32.dp, 32.dp),
-                    fontFamily = FontFamily.SansSerif
-                )
-            }
-        }
+            Icon(
+                imageVector = Icons.TwoTone.LocationOn,
+                contentDescription = "",
+                modifier = Modifier.size(96.dp),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        },
+        mainContent = {
+            stringArrayResource(id = R.array.list_whats_new_mileage_tracking)
+                .forEachIndexed { i, it ->
+                    if (i != 0) {
+                        HalfSpacer()
+                    }
 
-        item {
-            DefaultSpacer()
+                    CustomOutlinedCard {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .defaultMinSize(minHeight = 50.dp),
+                            fontSize = 18.sp,
+                        )
+                    }
+                }
         }
-    }
+    ) { WhatsNewNav(activity) }
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -86,9 +87,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp, 0.dp, 8.dp, 8.dp)
         ) {
-            val context = LocalContext.current
             FillSpacer()
 
             CustomTextButton(
@@ -106,7 +105,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
                 Text("No thanks")
             }
 
-            HalfSpacer()
+            DefaultSpacer()
 
             CustomTextButton(
                 onClick = {
@@ -123,7 +122,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
                 Text("Maybe later")
             }
 
-            HalfSpacer()
+            DefaultSpacer()
 
             CustomOutlinedButton(
                 onClick = {
@@ -159,7 +158,6 @@ fun PreviewWhatsNew() {
     DashTrackerTheme {
         Column {
             WhatsNewScreen(modifier = Modifier.weight(1f))
-            WhatsNewNav()
         }
     }
 }

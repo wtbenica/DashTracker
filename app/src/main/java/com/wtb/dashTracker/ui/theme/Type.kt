@@ -34,6 +34,14 @@ val FontFamilyOswald = FontFamily(
     Font(FontOswald, provider)
 )
 
+@ExperimentalTextApi
+val FontNotoSans = GoogleFont(name = "Voltaire")
+
+@ExperimentalTextApi
+val FontFamilyNotoSans = FontFamily(
+    Font(FontNotoSans, provider)
+)
+
 // Set of Material typography styles to start with
 @ExperimentalTextApi
 val Typography = Typography(

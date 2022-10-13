@@ -19,44 +19,48 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 import android.app.Activity
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.LocationOn
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
 import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.car
-import com.wtb.dashTracker.ui.theme.cardShape
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetLocationPermissionsScreen(modifier: Modifier = Modifier) =
+fun GetLocationPermissionsScreen(
+    modifier: Modifier = Modifier,
+    activity: GetPermissionsActivity? = null
+) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Location and Activity Permissions",
+        subtitleText = "Required for automatic mileage tracking",
         iconImage = {
             Icon(
                 imageVector = Icons.TwoTone.LocationOn,
@@ -64,79 +68,55 @@ fun GetLocationPermissionsScreen(modifier: Modifier = Modifier) =
                 modifier = Modifier.size(96.dp),
                 tint = car
             )
-        }
-    ) {
-        item {
-            OutlinedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(cardShape),
-                shape = cardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            ) {
+        },
+        mainContent = {
+            CustomOutlinedCard {
                 val str = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontFamily = FontFamily.SansSerif)) {
-                        append(stringResource(id = R.string.dialog_location_permission_1))
+                    append(stringResource(id = R.string.dialog_location_permission_1))
 
-                        withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
-                            append(stringResource(id = R.string.dialog_location_permission_2_ital))
-                        }
-
-                        append(stringResource(id = R.string.dialog_location_permission_3))
-
-                        withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
-                            append(stringResource(id = R.string.dialog_location_permission_4_ital))
-                        }
-
-                        append(stringResource(id = R.string.dialog_location_permission_5))
-
-                        withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
-                            append(stringResource(id = R.string.dialog_location_permission_6_ital))
-                        }
-
-                        append(stringResource(id = R.string.dialog_location_permission_7))
+                    withStyle(style = styleBoldItalic) {
+                        append(stringResource(id = R.string.dialog_location_permission_2_ital))
                     }
+
+                    append(stringResource(id = R.string.dialog_location_permission_3))
+
+                    withStyle(style = styleBoldItalic) {
+                        append(stringResource(id = R.string.dialog_location_permission_4_ital))
+                    }
+
+                    append(stringResource(id = R.string.dialog_location_permission_5))
                 }
 
                 Text(
-                    str,
-//                    stringResource(id = R.string.dialog_location_permission),
-                    modifier = Modifier.padding(16.dp),
-                    fontFamily = FontFamily.SansSerif
+                    text = str,
+                    fontSize = 18.sp,
                 )
             }
-        }
 
-        item {
             val uriHandler = LocalUriHandler.current
 
-            CustomTextButton(onClick = {
-                uriHandler.openUri("https://www.benica.dev")
-            }) {
+            CustomTextButton(
+                onClick = { uriHandler.openUri("https://www.benica.dev/privacy") }
+            ) {
                 Text("Privacy Policy")
             }
+        },
+        navContent = {
+            GetLocationPermissionsNav(activity = activity)
         }
-    }
+    )
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
+fun GetLocationPermissionsNav(
+    activity: GetPermissionsActivity? = null
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
     ) {
         LocalContext.current
         FillSpacer()
@@ -156,7 +136,7 @@ fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
             Text("No thanks")
         }
 
-        HalfSpacer()
+        DefaultSpacer()
 
         CustomTextButton(
             onClick = {
@@ -173,7 +153,7 @@ fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
             Text("Maybe later")
         }
 
-        HalfSpacer()
+        DefaultSpacer()
 
         CustomOutlinedButton(
             onClick = {
@@ -181,7 +161,7 @@ fun GetLocationPermissionsNav(activity: GetPermissionsActivity? = null) {
             },
         ) {
             HalfSpacer()
-            Text("Allow")
+            Text("OK")
             Icon(
                 Icons.Rounded.NavigateNext,
                 contentDescription = "Next screen",
@@ -203,8 +183,12 @@ fun GetLocationPermissionsPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetLocationPermissionsScreen(modifier = Modifier.weight(1f))
-                GetLocationPermissionsNav()
+                GetLocationPermissionsScreen()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 1
+                )
             }
         }
     }

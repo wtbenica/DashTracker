@@ -108,7 +108,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 private const val APP = "GT_"
-private const val IS_TESTING = false
+private const val IS_TESTING = true
 private var IS_FIRST = true
 
 internal val Any.TAG: String

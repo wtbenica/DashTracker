@@ -50,15 +50,14 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int) {
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun WelcomeScreen(modifier: Modifier = Modifier) =
+fun WelcomeScreen(modifier: Modifier = Modifier, navHostController: NavHostController) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Welcome to DashTracker",
-        iconImage = { Logo() }
-    ) {
-        val rowSpacing = 8.dp
+        iconImage = { Logo() },
+        mainContent = {
+            val rowSpacing = 8.dp
 
-        item {
             ExpandableCard(
                 text = "Track your income",
                 icon = Icons.TwoTone.AttachMoney,
@@ -74,13 +73,9 @@ fun WelcomeScreen(modifier: Modifier = Modifier) =
                     }
                 }
             }
-        }
 
-        item {
             Spacer(modifier = Modifier.height(rowSpacing))
-        }
 
-        item {
             ExpandableCard(
                 text = "Track your expenses",
                 icon = Icons.TwoTone.Wallet,
@@ -96,13 +91,9 @@ fun WelcomeScreen(modifier: Modifier = Modifier) =
                     }
                 }
             }
-        }
 
-        item {
             Spacer(modifier = Modifier.height(rowSpacing))
-        }
 
-        item {
             ExpandableCard(
                 text = "Track your mileage",
                 icon = Icons.TwoTone.DirectionsCar,
@@ -118,134 +109,17 @@ fun WelcomeScreen(modifier: Modifier = Modifier) =
                     }
                 }
             }
-        }
 
-        item {
             DefaultSpacer()
         }
-    }
+    ) { WelcomeNav(navHostController = navHostController) }
 
-//@ExperimentalTextApi
-//@ExperimentalMaterial3Api
-//@Composable
-//fun Welcome(modifier: Modifier = Modifier) {
-//    DashTrackerTheme {
-//        Column(
-//            modifier = modifier
-//                .fillMaxWidth()
-//                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
-//        ) {
-//            Row(
-//                modifier = Modifier.padding(vertical = 16.dp),
-//                verticalAlignment = CenterVertically,
-//            ) {
-//                Text(
-//                    text = "Welcome to DashTracker",
-//                    modifier = Modifier
-//                        .padding(start = 16.dp)
-//                        .wrapContentHeight()
-//                        .weight(1f),
-//                    fontSize = 20.sp,
-//                )
-//
-//                DefaultSpacer()
-//
-//                OutlinedCard(
-//                    shape = cardShape,
-//                    modifier = Modifier
-//                        .height(96.dp)
-//                        .width(96.dp)
-//                        .align(CenterVertically),
-//                ) {
-//                    Logo()
-//                }
-//            }
-//
-//            DefaultSpacer()
-//
-//            LazyColumn(
-//                modifier = modifier
-//                    .fillMaxWidth()
-//            ) {
-//                val rowSpacing = 8.dp
-//
-//                item {
-//                    ExpandableCard(
-//                        text = "Track your income",
-//                        icon = Icons.TwoTone.AttachMoney,
-//                        iconTint = up,
-//                        "Drawing of a car",
-//                    ) {
-//                        Column {
-//                            stringArrayResource(id = R.array.track_income).forEach {
-//                                ListRow(
-//                                    it,
-//                                    icon = Icons.TwoTone.Circle
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                item {
-//                    Spacer(modifier = Modifier.height(rowSpacing))
-//                }
-//
-//                item {
-//                    ExpandableCard(
-//                        text = "Track your expenses",
-//                        icon = Icons.TwoTone.Wallet,
-//                        iconTint = down,
-//                        "Drawing of a car",
-//                    ) {
-//                        Column {
-//                            stringArrayResource(id = R.array.track_expense).forEach {
-//                                ListRow(
-//                                    it,
-//                                    icon = Icons.TwoTone.Circle
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                item {
-//                    Spacer(modifier = Modifier.height(rowSpacing))
-//                }
-//
-//                item {
-//                    ExpandableCard(
-//                        text = "Track your mileage",
-//                        icon = Icons.TwoTone.DirectionsCar,
-//                        iconTint = car,
-//                        "Drawing of a car",
-//                    ) {
-//                        Column {
-//                            stringArrayResource(id = R.array.track_mileage).forEach {
-//                                ListRow(
-//                                    it,
-//                                    icon = Icons.TwoTone.Circle
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                item {
-//                    DefaultSpacer()
-//                }
-//            }
-//        }
-//    }
-//}
-//
 @ExperimentalTextApi
 @Composable
 fun WelcomeNav(navHostController: NavHostController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp, 0.dp, 8.dp, 8.dp)
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
@@ -275,8 +149,7 @@ fun PreviewWelcome() {
     DashTrackerTheme {
         Surface {
             Column {
-                WelcomeScreen(modifier = Modifier.weight(1f))
-                WelcomeNav(navHostController = navController)
+                WelcomeScreen(modifier = Modifier.weight(1f), navController)
             }
         }
     }
