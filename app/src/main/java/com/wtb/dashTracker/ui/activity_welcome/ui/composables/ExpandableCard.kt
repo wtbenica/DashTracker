@@ -190,10 +190,15 @@ fun ContentCard(
         ) {
             Column {
                 Row(
-                    modifier = if (content == null)
-                        Modifier.padding(all = 16.dp)
-                    else
-                        Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    modifier = if (content == null) {
+                        Modifier
+                            .padding(all = 16.dp)
+                    } else {
+                        Modifier
+                            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    }
+
+
                 ) {
                     Text(
                         text = text,
@@ -202,14 +207,13 @@ fun ContentCard(
                         textAlign = TextAlign.Start,
                     )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                    FillSpacer()
 
                     Icon(
                         icon,
                         contentDescription = iconDescription,
                         modifier = Modifier
-                            .width(48.dp)
-                            .height(48.dp),
+                            .size(48.dp),
                         tint = iconTint
                     )
                 }
@@ -233,7 +237,8 @@ fun ContentCard(
 fun PreviewExpandableCard() {
     Column {
         ContentCard(
-            text = "Track your income",
+            text = "Track your income as if your life depended on it i'm trying to see what " +
+                    "happens when the text is long",
             icon = Icons.TwoTone.AttachMoney,
             iconTint = up,
             iconDescription = "Drawing of a car",
@@ -283,7 +288,8 @@ fun ListRow(
         Icon(
             icon,
             contentDescription = "Bulleted item",
-            modifier = Modifier.size(iconSize + 6.dp)
+            modifier = Modifier
+                .size(iconSize + 6.dp)
                 .padding(start = 0.dp, top = 6.dp, end = 0.dp, bottom = 0.dp),
             tint = primaryDark
         )

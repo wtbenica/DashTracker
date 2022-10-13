@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.LocationOn
+import androidx.compose.material.icons.twotone.PunchClock
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +34,6 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
 import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
@@ -65,14 +65,20 @@ fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = n
                         HalfSpacer()
                     }
 
-                    CustomOutlinedCard {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .defaultMinSize(minHeight = 50.dp),
-                            fontSize = 18.sp,
-                        )
-                    }
+                    ExpandableCard(
+                        text = it,
+                        icon = Icons.TwoTone.PunchClock,
+                        iconTint = MaterialTheme.colorScheme.secondary,
+                        iconDescription = "Punch Clock",
+                    )
+//                    CustomOutlinedCard {
+//                        Text(
+//                            text = it,
+//                            modifier = Modifier
+//                                .defaultMinSize(minHeight = 50.dp),
+//                            fontSize = 18.sp,
+//                        )
+//                    }
                 }
         }
     ) { WhatsNewNav(activity) }

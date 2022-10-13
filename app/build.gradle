@@ -88,7 +88,7 @@ dependencies {
 
     implementation "androidx.compose.compiler:compiler:$compose_compiler_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation "androidx.compose.material3:material3:1.0.0-beta03"
+    implementation 'androidx.compose.material3:material3:1.0.0-rc01'
     implementation "androidx.compose.runtime:runtime:$compose_version"
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
@@ -127,12 +127,12 @@ dependencies {
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
-    implementation 'com.google.android.gms:play-services-ads:21.2.0'
+    implementation 'com.google.android.gms:play-services-ads:21.3.0'
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 
     implementation 'com.google.android.material:material:1.6.1'
 
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.10'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.20'
     implementation 'com.google.android.gms:play-services-location:20.0.0'
 
     implementation files('../../MyLibraries/CsvUtil-release.aar')

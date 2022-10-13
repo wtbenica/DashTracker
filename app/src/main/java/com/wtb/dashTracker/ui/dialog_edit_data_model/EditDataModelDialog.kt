@@ -99,6 +99,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         object : Dialog(requireContext(), theme) {
+            @Deprecated("Deprecated in Java")
             override fun onBackPressed() {
                 if (isEmpty() && !saveConfirmed) {
                     ConfirmSaveDialog.newInstance(

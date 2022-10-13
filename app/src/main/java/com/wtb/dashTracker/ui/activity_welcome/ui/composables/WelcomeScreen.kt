@@ -62,7 +62,7 @@ fun WelcomeScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
                 text = "Track your income",
                 icon = Icons.TwoTone.AttachMoney,
                 iconTint = up,
-                "Drawing of a car",
+                iconDescription = "Drawing of a car",
             ) {
                 Column {
                     stringArrayResource(id = R.array.track_income).forEach {
@@ -80,7 +80,7 @@ fun WelcomeScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
                 text = "Track your expenses",
                 icon = Icons.TwoTone.Wallet,
                 iconTint = down,
-                "Drawing of a car",
+                iconDescription = "Drawing of a car",
             ) {
                 Column {
                     stringArrayResource(id = R.array.track_expense).forEach {
@@ -98,7 +98,7 @@ fun WelcomeScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
                 text = "Track your mileage",
                 icon = Icons.TwoTone.DirectionsCar,
                 iconTint = car,
-                "Drawing of a car",
+                iconDescription = "Drawing of a car",
             ) {
                 Column {
                     stringArrayResource(id = R.array.track_mileage).forEach {
