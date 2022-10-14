@@ -14,8 +14,8 @@ fun RowScope.FillSpacer() {
 }
 
 @Composable
-fun ColumnScope.FillSpacer() {
-    Spacer(modifier = Modifier.weight(1f, true))
+fun ColumnScope.FillSpacer(modifier: Modifier = Modifier) {
+    Spacer(modifier = modifier.weight(1f, true))
 }
 
 @Composable

@@ -78,14 +78,19 @@ fun ExpandableCard(
         ) {
             Column {
                 Row(
-                    modifier = if (content == null)
-                        Modifier.padding(all = 16.dp)
-                    else
-                        Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    modifier = if (content == null) {
+                        Modifier
+                            .padding(all = 16.dp)
+                    } else {
+                        Modifier
+                            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    }
                 ) {
                     Text(
                         text = text,
-                        modifier = Modifier.align(Alignment.CenterVertically),
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .weight(1f),
                         fontSize = 18.sp,
                         textAlign = TextAlign.Start,
                     )
@@ -188,85 +193,41 @@ fun ContentCard(
             ),
             border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
         ) {
-            Column {
-                Row(
-                    modifier = if (content == null) {
-                        Modifier
-                            .padding(all = 16.dp)
-                    } else {
-                        Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                    }
-
-
-                ) {
-                    Text(
-                        text = text,
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Start,
-                    )
-
-                    FillSpacer()
-
-                    Icon(
-                        icon,
-                        contentDescription = iconDescription,
-                        modifier = Modifier
-                            .size(48.dp),
-                        tint = iconTint
-                    )
+            Row(
+                modifier = if (content == null) {
+                    Modifier.padding(all = 16.dp)
+                } else {
+                    Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
                 }
+            ) {
+                Text(
+                    text = text,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f),
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Start,
+                )
 
-                if (content != null) {
-                    Row(
-                        modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        content()
-                    }
-                }
-            }
-        }
-    }
-}
+                HalfSpacer()
 
-@OptIn(ExperimentalTextApi::class)
-@Composable
-@Preview
-fun PreviewExpandableCard() {
-    Column {
-        ContentCard(
-            text = "Track your income as if your life depended on it i'm trying to see what " +
-                    "happens when the text is long",
-            icon = Icons.TwoTone.AttachMoney,
-            iconTint = up,
-            iconDescription = "Drawing of a car",
-        ) {
-            Column {
-                ListRow("Is today Monday?")
-                ListRow(
-                    "\"Eat your potato salad, dearie,\" said the wolf to the crow, as the night " +
-                            "melody played of whistles and skeetleburrs."
+                Icon(
+                    icon,
+                    contentDescription = iconDescription,
+                    modifier = Modifier
+                        .size(48.dp),
+                    tint = iconTint
                 )
             }
-        }
 
-        DefaultSpacer()
-
-        ExpandableCard(
-            text = "Track your income",
-            icon = Icons.TwoTone.AttachMoney,
-            iconTint = up,
-            iconDescription = "Drawing of a car",
-        ) {
-            ListRow("Eat your potato salad, dearie")
-        }
-
-        DefaultSpacer()
-
-        CustomOutlinedCard {
-            Text("This is just an outlined card")
+            if (content != null) {
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                ) {
+                    content()
+                }
+            }
         }
     }
 }
@@ -314,3 +275,47 @@ fun HeaderRow(text: String, rowModifier: Modifier = Modifier, icon: ImageVector)
         iconSize = 18.dp,
         icon = icon
     )
+
+@ExperimentalTextApi
+@Composable
+@Preview
+fun PreviewExpandableCard() {
+    ExpandableCard(
+        text = "Track your income",
+        icon = Icons.TwoTone.AttachMoney,
+        iconTint = up,
+        iconDescription = "Drawing of a car",
+    ) {
+        ListRow("Eat your potato salad, dearie")
+    }
+}
+
+@ExperimentalTextApi
+@Composable
+@Preview
+fun PreviewContentCard() {
+    ContentCard(
+        text = "Track your income as if your life depended on it i'm trying to see what " +
+                "happens when the text is long and I want to see if it is limited to nope",
+        icon = Icons.TwoTone.AttachMoney,
+        iconTint = up,
+        iconDescription = "Drawing of a car",
+    ) {
+        Column {
+            ListRow("Is today Monday?")
+            ListRow(
+                "\"Eat your potato salad, dearie,\" said the wolf to the crow, as the night " +
+                        "melody played of whistles and skeetleburrs."
+            )
+        }
+    }
+}
+
+@ExperimentalTextApi
+@Composable
+@Preview
+fun PreviewCustomOutlined() {
+    CustomOutlinedCard {
+        Text("This is just an outlined card")
+    }
+}

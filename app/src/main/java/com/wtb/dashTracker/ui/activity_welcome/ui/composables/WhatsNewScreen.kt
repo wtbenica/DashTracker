@@ -21,9 +21,11 @@ import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.PriceCheck
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.LocationOn
-import androidx.compose.material.icons.twotone.PunchClock
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -59,15 +61,20 @@ fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = n
             )
         },
         mainContent = {
+            val icons = listOf(
+                Icons.Outlined.AccessTime,
+                Icons.Outlined.PriceCheck,
+                Icons.Outlined.VisibilityOff
+            )
             stringArrayResource(id = R.array.list_whats_new_mileage_tracking)
                 .forEachIndexed { i, it ->
                     if (i != 0) {
                         HalfSpacer()
                     }
 
-                    ExpandableCard(
+                    ContentCard(
                         text = it,
-                        icon = Icons.TwoTone.PunchClock,
+                        icon = icons[i],
                         iconTint = MaterialTheme.colorScheme.secondary,
                         iconDescription = "Punch Clock",
                     )
