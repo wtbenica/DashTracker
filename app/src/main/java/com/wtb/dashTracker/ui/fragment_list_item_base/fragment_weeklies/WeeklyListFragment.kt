@@ -25,6 +25,9 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -53,6 +56,9 @@ import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryList
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class WeeklyListFragment : ListItemFragment() {
     private val viewModel: WeeklyViewModel by viewModels()
@@ -110,10 +116,12 @@ class WeeklyListFragment : ListItemFragment() {
 
     interface WeeklyListFragmentCallback : DeductionCallback
 
+    @ExperimentalAnimationApi
     inner class FullWeeklyAdapter : BaseItemPagingDataAdapter<FullWeekly>(DIFF_CALLBACK) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullWeekly> =
             WeeklyHolder(parent)
 
+        @ExperimentalAnimationApi
         inner class WeeklyHolder(parent: ViewGroup) : BaseItemHolder<FullWeekly>(
             LayoutInflater.from(parent.context).inflate(R.layout.list_item_weekly, parent, false)
         ) {

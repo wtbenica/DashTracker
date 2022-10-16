@@ -63,6 +63,7 @@
                         style="@style/ConfirmImportPrimaryTextStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/noto_sans"
                         android:text="@string/dialog_text_import" />
 
                     <LinearLayout
@@ -81,6 +82,7 @@
                             style="@style/NotesStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/noto_sans"
                             android:text="@string/dialog_notes_import"
                             android:visibility="visible" />
                     </LinearLayout>

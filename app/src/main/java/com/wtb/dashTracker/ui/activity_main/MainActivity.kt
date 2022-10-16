@@ -44,6 +44,9 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -63,6 +66,7 @@ import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
@@ -71,10 +75,9 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
-import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -86,6 +89,9 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.*
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.DT_SHARED_PREFS
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BG_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
 import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
@@ -103,6 +109,7 @@ import java.time.format.DateTimeParseException
 
 private const val APP = "GT_"
 private const val IS_TESTING = false
+private var IS_FIRST = true
 
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
@@ -112,13 +119,18 @@ internal val Any.TAG: String
  * between [IncomeFragment], [com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment], and
  * [com.wtb.dashTracker.ui.fragment_trends.ChartsFragment];
  * [FloatingActionButton] for starting/stopping [LocationService]; new item menu for
- * [EntryDialog], [WeeklyDialog], and [DriveDialog]; options menu for
+ * [EntryDialog], [WeeklyDialog], and [ExpenseDialog]; options menu for
  * [ConfirmationDialogImport], [ConfirmationDialogExport],
  * [OssLicensesMenuActivity].
  */
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
+
+    internal val permissionsHelper = PermissionsHelper(this)
 
     internal val sharedPrefs
         get() = getSharedPreferences(DT_SHARED_PREFS, 0)
@@ -156,20 +168,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      * An [ActivityResultLauncher] that calls [getBgLocationPermResumeTracking] if the requested
      * permissions are granted
      */
-    private val locationPermResumeTrackingLauncher: ActivityResultLauncher<Array<String>> =
-        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermResumeTracking)
-
     private val locationPermLauncher: ActivityResultLauncher<Array<String>> =
-        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPerm)
-
-    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
-        registerSinglePermissionLauncher()
+        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermResumeTracking)
 
     /**
      * An [ActivityResultLauncher] that calls [ActiveDash.resumeOrStartNewTrip] if the requested
      * permission is granted
      */
-    private val bgLocationPermResumeTrackingLauncher: ActivityResultLauncher<String> =
+    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
         registerSinglePermissionLauncher(onGranted = ::resumeMileageTracking)
 
     /**
@@ -201,7 +207,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     }
                     registerForActivityResult(
                         ActivityResultContracts.StartActivityForResult()
-                    ) {}.launch(enrollIntent)
+                    ) { }.launch(enrollIntent)
                 }
                 BiometricManager.BIOMETRIC_SUCCESS -> {
                     // "App can authenticate using biometrics.")
@@ -393,60 +399,18 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
         fun onFirstRun() {
-            fun getPermissions() {
-                when {
-                    sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> { }
-                    hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> { }
-                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                        showRationaleLocation {
-                            locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                        }
-                        expectedExit = true
-                    }
-                    else -> {
-                        locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                        expectedExit = true
-                    }
-                }
-            }
-
-            if (IS_TESTING || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
-                // run intro: initial settings
-                //      - Use authentication?
-                //      - Use mileage tracking
-                //          - ask for permissions
-                ConfirmationDialog.newInstance(
-                    text = R.string.whats_new,
-                    requestKey = "Wubba Wubba",
-                    title = "What's new",
-                    posButton = R.string.enable,
-                    posAction = LambdaWrapper {
-                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
-                        getPermissions()
-                    },
-                    negButton = R.string.decline,
-                    negAction = LambdaWrapper {
-                        sharedPrefs.edit().putBoolean(PREFS_DONT_ASK_LOCATION, true).apply()
-                        sharedPrefs.edit().putBoolean(PREFS_SHOULD_SHOW_INTRO, false).apply()
-                    }
-                ).show(supportFragmentManager, null)
-            }
+            startActivity((Intent(this, WelcomeActivity::class.java)))
         }
 
-        /**
-         * Sets content to visible
-         */
-        fun onUnlock() {
-            Log.d(TAG, "login | onUnlock")
-            isAuthenticated = true
-            unlockScreen()
-            onFirstRun()
+        fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
+            endDash(tripId)
+            onUnlock()
         }
 
         /**
          * Authenticates user using [BiometricPrompt]
          */
-        fun authenticate() {
+        fun authenticate(onSuccess: () -> Unit) {
             Log.d(TAG, "login | authenticate")
             val executor = ContextCompat.getMainExecutor(this)
 
@@ -454,7 +418,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-                        onUnlock()
+                        onSuccess()
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
@@ -479,23 +443,37 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         super.onResume()
         Log.d("PAUSE", "onResume    | activeDash? ${activeDash != null}")
 
-        cleanupFiles()
+        if ((IS_TESTING && IS_FIRST) || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
+            IS_FIRST = false
 
-        val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
-        intent.removeExtra(EXTRA_END_DASH)
-        val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
-        intent.removeExtra(EXTRA_TRIP_ID)
-
-        if (endDashExtra == true) {
-            endDash(tripId)
-            onUnlock()
+            onFirstRun()
         } else {
-            expectedExit = false
+            cleanupFiles()
+
+            val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
+            intent.removeExtra(EXTRA_END_DASH)
+            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
+            intent.removeExtra(EXTRA_TRIP_ID)
 
             if (!isAuthenticated) {
-                authenticate()
+
+                val onSuccess: () -> Unit =
+                    if (endDashExtra == true) {
+                        onEndDashIntent(tripId)
+                    } else {
+                        ::onUnlock
+                    }
+
+                authenticate(onSuccess)
+
             } else {
-                onUnlock()
+
+                if (endDashExtra == true) {
+                    onEndDashIntent(tripId)
+                } else {
+                    onUnlock()
+                }
+
             }
         }
     }
@@ -517,11 +495,21 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         super.onPause()
     }
 
+    /**
+     * Sets content to visible
+     */
+    private fun onUnlock() {
+        Log.d(TAG, "login | onUnlock")
+        isAuthenticated = true
+        expectedExit = false
+        unlockScreen()
+    }
+
     private fun lockScreen() {
         binding.container.visibility = INVISIBLE
     }
 
-    fun unlockScreen() {
+    private fun unlockScreen() {
         binding.container.visibility = VISIBLE
     }
 
@@ -615,27 +603,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      */
     private fun getBgLocationPermResumeTracking() {
         when {
-            sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> {}
+            sharedPrefs.getBoolean(PREFS_OPT_OUT_BG_LOCATION, false) -> {}
             hasPermissions(this@MainActivity, ACCESS_BACKGROUND_LOCATION) -> {
                 resumeMileageTracking()
             }
-            shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
-                showRationaleBgLocation {
-                    bgLocationPermResumeTrackingLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-                        .also { expectedExit = true }
-                }
-            }
-            else -> {
-                bgLocationPermResumeTrackingLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-                expectedExit = true
-            }
-        }
-    }
-
-    private fun getBgLocationPerm() {
-        when {
-            sharedPrefs.getBoolean(PREFS_DONT_ASK_BG_LOCATION, false) -> {}
-            hasPermissions(this@MainActivity, ACCESS_BACKGROUND_LOCATION) -> {}
             shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
                 showRationaleBgLocation {
                     bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
@@ -689,9 +660,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private var startOnBind = false
         private var startOnBindId: Long? = null
 
-        /**
-         * Calls [bindLocationService].
-         */
         init {
             bindLocationService()
         }
@@ -699,32 +667,69 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         /**
          * Checks for [REQUIRED_PERMISSIONS]. If they have already been granted, calls
          * [startLocationService] on [entryId], otherwise it requests the permissions using
-         * [locationPermResumeTrackingLauncher]
+         * [locationPermLauncher]
          *
          * @param entryId passed as the argument to [startLocationService] if permissions have
          * already been granted
          */
         fun startTracking(entryId: Long) {
             stopOnBind = false
-            when {
-                sharedPrefs.getBoolean(PREFS_DONT_ASK_LOCATION, false) -> {}
-                hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS) -> {
+
+            permissionsHelper.whenPermissions(
+                optOutLocation = {
+                    Snackbar.make(
+                        /* context = */ this@MainActivity,
+                        /* view = */ binding.root,
+                        /* text = */ "Opted out",
+                        /* duration = */ Snackbar.LENGTH_LONG
+                    ).show()
+                },
+                hasAllPermissions = {
                     startLocationService(entryId)
-                }
-//                hasPermissions(this@MainActivity, *LOCATION_PERMISSIONS) -> {
-//                    getBgLocationPermission()
-//                }
-                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    showRationaleLocation {
-                        locationPermResumeTrackingLauncher.launch(LOCATION_PERMISSIONS)
+                },
+                missingBatteryPermission = {
+                    Snackbar.make(
+                        /* context = */ this@MainActivity,
+                        /* view = */ binding.root,
+                        /* text = */ "Missing battery permissions",
+                        /* duration = */ Snackbar.LENGTH_LONG
+                    ).show()
+                },
+                missingNotificationPermission = {
+                    Snackbar.make(
+                        /* context = */ this@MainActivity,
+                        /* view = */ binding.root,
+                        /* text = */ "Missing notification permissions",
+                        /* duration = */ Snackbar.LENGTH_LONG
+                    ).show()
+                },
+                missingBgLocationPermission = {
+                    expectedExit = true
+                    when {
+                        shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
+                            showRationaleBgLocation {
+                                bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+                            }
+                        }
+                        else -> {
+                            locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        }
                     }
+                },
+                missingAllPermissions = {
                     expectedExit = true
-                }
-                else -> {
-                    locationPermResumeTrackingLauncher.launch(LOCATION_PERMISSIONS)
-                    expectedExit = true
-                }
-            }
+                    when {
+                        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                            showRationaleLocation {
+                                locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                            }
+                        }
+                        else -> {
+                            locationPermLauncher.launch(LOCATION_PERMISSIONS)
+                        }
+                    }
+                },
+            )?.invoke()
         }
 
         /**
@@ -860,7 +865,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         BIND_AUTO_CREATE
                     )
                 } else {
-                    Log.d(TAG, "bindLocationService | pretending to bind the service")
+                    Log.d(TAG, "bindLocationService | missing permissions")
                 }
             }
         }
@@ -1014,10 +1019,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     companion object {
         private var isAuthenticated = false
 
-        private const val DT_SHARED_PREFS = "dashtracker_prefs"
-        internal const val PREFS_DONT_ASK_LOCATION = "Don't ask | location"
-        internal const val PREFS_DONT_ASK_BG_LOCATION = "Don't ask | bg location"
-        internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"

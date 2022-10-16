@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_main.TAG
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 abstract class ListItemFragment : Fragment()
 
@@ -167,7 +166,6 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
         itemView.setOnClickListener(this)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onClick(v: View?) {
         if (bindingAdapter is ExpandableAdapter) {
             val adapter: ExpandableAdapter? = when (bindingAdapter) {

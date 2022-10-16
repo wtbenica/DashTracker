@@ -26,6 +26,9 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -56,6 +59,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
@@ -191,9 +197,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     override fun setDialogListeners() {
         super.setDialogListeners()
 
-        setFragmentResultListener(
-            RK_ADD_PURPOSE
-        ) { _, bundle ->
+        setFragmentResultListener(RK_ADD_PURPOSE) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
             bundle.getLong(ARG_ENTRY_ID).let { id ->
                 if (result) {
@@ -262,6 +266,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             }
     }
 
+    @ExperimentalAnimationApi
     inner class PurposeAdapter(
         context: Context,
         private val itemList: Array<ExpensePurpose>

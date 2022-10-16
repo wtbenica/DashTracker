@@ -35,7 +35,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.ui.dialog_confirm.*
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
-import com.wtb.dashTracker.views.FullWidthDialogFragment
+import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -99,6 +99,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         object : Dialog(requireContext(), theme) {
+            @Deprecated("Deprecated in Java")
             override fun onBackPressed() {
                 if (isEmpty() && !saveConfirmed) {
                     ConfirmSaveDialog.newInstance(

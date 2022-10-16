@@ -27,7 +27,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmExportBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
-import com.wtb.dashTracker.views.FullWidthDialogFragment
+import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 
 
 open class ConfirmationDialogExport(

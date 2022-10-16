@@ -7,10 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.location.Location
-import android.os.Binder
-import android.os.IBinder
-import android.os.Looper
-import android.os.Parcelable
+import android.os.*
 import android.util.Log
 import com.google.android.gms.location.*
 import com.google.android.gms.location.ActivityTransition.ACTIVITY_TRANSITION_ENTER
@@ -286,20 +283,19 @@ class LocationService : Service() {
                 stop()
             }
 
-            val locHandler = it.getParcelableExtra<LocationHandler>(EXTRA_LOCATION_HANDLER)
+            val locHandler = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getParcelableExtra(EXTRA_LOCATION_HANDLER, LocationHandler::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.getParcelableExtra(EXTRA_LOCATION_HANDLER)
+            }
             val tripId: Long = it.getLongExtra(EXTRA_TRIP_ID, -1L)
-            Log.d(TAG, "onStartCommand: tripId: $tripId")
+
             if (tripId != -1L) {
                 _tripId.value = tripId
             }
 
             _isStarted.value = !sharedPrefs.getBoolean(PREFS_IS_PAUSED, false)
-            Log.d(
-                TAG, "onStartCommand: isStarted: ${isStarted.value} | locHandler ${
-                    if
-                            (locHandler != null) "is not" else "is"
-                } null"
-            )
 
             locHandler?.handleLocation?.let { lh ->
                 registerReceiver(
@@ -340,14 +336,14 @@ class LocationService : Service() {
 
     override fun onBind(intent: Intent): IBinder {
         Log.d(TAG, "onBind")
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         serviceRunningInForeground = false
         configurationChange = false
         return localBinder
     }
 
     override fun onRebind(intent: Intent?) {
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         serviceRunningInForeground = false
         configurationChange = false
 

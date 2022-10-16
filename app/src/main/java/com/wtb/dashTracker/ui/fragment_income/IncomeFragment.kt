@@ -21,6 +21,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -42,11 +45,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * A [Fragment] that contains a [TabLayout] with [EntryListFragment], [WeeklyListFragment], and
+ * A [Fragment] that contains a [com.google.android.material.tabs.TabLayout] with [EntryListFragment], [WeeklyListFragment], and
  * [YearlyListFragment] tabs. It contains an option to set [DeductionType] for calculating
  * expenses in each of the tabs.
  * Use the [IncomeFragment.newInstance] factory method to create an instance of this fragment.
  */
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback,
     EntryListFragment.EntryListFragmentCallback,

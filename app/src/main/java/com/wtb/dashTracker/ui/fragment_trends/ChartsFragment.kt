@@ -21,6 +21,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -38,6 +41,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
     private val viewModel: ChartsViewModel by viewModels()
@@ -71,6 +77,7 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
 
     }
 
+    @ExperimentalAnimationApi
     inner class ChartAdapter : RecyclerView.Adapter<ChartHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChartHolder {
             return ChartHolder(DTChartHolder(requireContext()).apply {

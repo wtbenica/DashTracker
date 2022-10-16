@@ -25,6 +25,9 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -52,10 +55,13 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class YearlyListFragment : ListItemFragment() {
 
-    protected val viewModel: YearlyListViewModel by viewModels()
+    private val viewModel: YearlyListViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private val yearlies = mutableListOf<Yearly>()
@@ -230,15 +236,15 @@ class YearlyListFragment : ListItemFragment() {
                 setPayloadVisibility(payloads)
             }
 
-            fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f) =
+            private fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f) =
                 when (deductionType) {
                     DeductionType.IRS_STD -> getStandardDeductionExpense()
                     else -> getCalculatedExpenses(costPerMile)
                 }
 
-            fun getCalculatedExpenses(costPerMile: Float): Float = item.mileage * costPerMile
+            private fun getCalculatedExpenses(costPerMile: Float): Float = item.mileage * costPerMile
 
-            fun getStandardDeductionExpense(): Float {
+            private fun getStandardDeductionExpense(): Float {
                 val table = viewModel.standardMileageDeductionTable()
                 var res = 0f
                 item.monthlies.keys.forEach { mon ->
@@ -248,10 +254,10 @@ class YearlyListFragment : ListItemFragment() {
                 return res
             }
 
-            fun getNet(cpm: Float, deductionType: DeductionType): Float =
+            private fun getNet(cpm: Float, deductionType: DeductionType): Float =
                 item.totalPay - getExpenses(deductionType, cpm)
 
-            fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / item.hours
+            private fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / item.hours
         }
     }
 

@@ -18,6 +18,16 @@
         android:supportsRtl="true"
         android:theme="@style/SplashScreen">
 
+        <activity
+            android:name=".ui.activity_get_permissions.GetPermissionsActivity"
+            android:exported="false"
+            android:theme="@style/Base.DasherCompanion" />
+
+        <activity
+            android:name=".ui.activity_welcome.WelcomeActivity"
+            android:exported="false"
+            android:theme="@style/Base.DasherCompanion" />
+
         <service
             android:name="dev.benica.mileagetracker.LocationService"
             android:description="@string/location_service_desc"
@@ -28,18 +38,19 @@
 
         <activity
             android:name=".ui.activity_main.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/SplashScreen">
+
+            <!-- android:theme="@style/Base.DasherCompanion"> -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
             android:theme="@style/LicensesActivitiesTheme" />
-
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/LicensesActivitiesTheme" />
@@ -57,9 +68,9 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-2598018805199505~7756228217" />
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
 </manifest>

@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.dialog_confirm
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -30,7 +31,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirm2ButtonBinding
 import com.wtb.dashTracker.databinding.DialogFragConfirm3ButtonBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
-import com.wtb.dashTracker.views.FullWidthDialogFragment
+import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.parcelize.Parcelize
 
 
@@ -79,11 +80,27 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
             confirmId = getLongNotZero(ARG_CONFIRM_ID)
             getString(ARG_MESSAGE)?.let { message = it }
             posButton = getIntNotZero(ARG_POS_TEXT) ?: R.string.yes
-            posAction = getParcelable<LambdaWrapper?>(ARG_POS_ACTION)?.action
+            posAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getParcelable(ARG_POS_ACTION, LambdaWrapper::class.java)?.action
+            } else {
+                @Suppress("DEPRECATION")
+                getParcelable<LambdaWrapper?>(ARG_POS_ACTION)?.action
+            }
+
             negButton = getIntNotZero(ARG_NEG_TEXT) ?: R.string.cancel
-            negAction = getParcelable<LambdaWrapper?>(ARG_NEG_ACTION)?.action
+            negAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getParcelable(ARG_NEG_ACTION, LambdaWrapper::class.java)?.action
+            } else {
+                @Suppress("DEPRECATION")
+                getParcelable<LambdaWrapper?>(ARG_NEG_ACTION)?.action
+            }
             posButton2 = getIntNotZero(ARG_POS_TEXT_2)
-            posAction2 = getParcelable<LambdaWrapper?>(ARG_POS_ACTION_2)?.action
+            posAction2 = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getParcelable(ARG_POS_ACTION_2, LambdaWrapper::class.java)?.action
+            } else {
+                @Suppress("DEPRECATION")
+                getParcelable<LambdaWrapper?>(ARG_POS_ACTION_2)?.action
+            }
         }
     }
 
@@ -108,7 +125,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             if (negButton != null) {
                 val mNegAction = negAction ?: {
-                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_CONFIRM to false)
+                    )
                 }
 
                 binding.noButton.apply {
@@ -128,7 +148,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
                 bundlePairs.putBoolean(ARG_CONFIRM, true)
                 confirmId?.let { bundlePairs.putLong(ARG_EXTRA, it) }
                 if (confirmId == null) {
-                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_CONFIRM to true)
+                    )
                 } else {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
@@ -156,7 +179,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             if (negButton != null) {
                 val mNegAction = negAction ?: {
-                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_CONFIRM to false)
+                    )
                 }
 
                 binding.noButton.apply {
@@ -173,7 +199,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             val mPosAction = posAction ?: {
                 if (confirmId == null) {
-                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_CONFIRM to true)
+                    )
                 } else {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
@@ -200,7 +229,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
                         it()
 
                         if (confirmId == null) {
-                            parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                            parentFragmentManager.setFragmentResult(
+                                requestKey,
+                                bundleOf(ARG_CONFIRM to true)
+                            )
                         } else {
                             parentFragmentManager.setFragmentResult(
                                 requestKey,
