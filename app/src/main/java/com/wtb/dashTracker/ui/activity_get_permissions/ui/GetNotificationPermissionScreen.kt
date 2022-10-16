@@ -16,8 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -39,10 +37,11 @@ import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
-import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_NOTIFICATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @RequiresApi(TIRAMISU)
@@ -70,7 +69,8 @@ fun GetNotificationPermissionScreen(
             CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_notification_permission),
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    fontFamily = FontFamilyFiraSans
                 )
             }
         },
@@ -97,14 +97,8 @@ fun GetNotificationsPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(
-                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        MileageTrackingOptIn.OPT_OUT
-                    )
-                )
-                activity?.finish()
+                activity?.setOptOutPref(PREFS_OPT_OUT_NOTIFICATION, true)
+                activity?.setOptOutPref(PREFS_ASK_AGAIN_NOTIFICATION, false)
             },
         ) {
             Text("No thanks")
@@ -114,14 +108,8 @@ fun GetNotificationsPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(
-                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        MileageTrackingOptIn.DECIDE_LATER
-                    )
-                )
-                activity?.finish()
+                activity?.setOptOutPref(PREFS_OPT_OUT_NOTIFICATION, false)
+                activity?.setOptOutPref(PREFS_ASK_AGAIN_NOTIFICATION, true)
             },
         ) {
             Text("Maybe later")
@@ -131,6 +119,8 @@ fun GetNotificationsPermissionNav(
 
         CustomOutlinedButton(
             onClick = {
+                activity?.setOptOutPref(PREFS_OPT_OUT_NOTIFICATION, false)
+                activity?.setOptOutPref(PREFS_ASK_AGAIN_NOTIFICATION, false)
                 activity?.getNotificationPermission()
             },
         ) {

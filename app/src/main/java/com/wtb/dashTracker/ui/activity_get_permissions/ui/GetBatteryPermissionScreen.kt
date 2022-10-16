@@ -16,8 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.app.Activity
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -37,10 +35,11 @@ import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
-import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BATTERY_OPTIMIZER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -66,19 +65,19 @@ fun GetBatteryPermission(modifier: Modifier = Modifier, activity: GetPermissions
                 val str = buildAnnotatedString {
                     append(stringResource(id = R.string.dialog_battery_permission_1))
 
-                    withStyle(style = styleBoldItalic) {
+                    withStyle(style = styleBold) {
                         append(stringResource(id = R.string.dialog_battery_permission_2_ital))
                     }
 
                     append(stringResource(id = R.string.dialog_battery_permission_3))
 
-                    withStyle(style = styleBoldItalic) {
+                    withStyle(style = styleBold) {
                         append(stringResource(id = R.string.dialog_battery_permission_4_ital))
                     }
 
                     append(stringResource(id = R.string.dialog_battery_permission_5))
 
-                    withStyle(style = styleBoldItalic) {
+                    withStyle(style = styleBold) {
                         append(stringResource(id = R.string.dialog_battery_permission_6_ital))
                     }
 
@@ -88,7 +87,8 @@ fun GetBatteryPermission(modifier: Modifier = Modifier, activity: GetPermissions
 
                 Text(
                     text = str,
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    fontFamily = FontFamilyFiraSans
                 )
             }
         },
@@ -116,14 +116,8 @@ fun GetBatteryPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(
-                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        MileageTrackingOptIn.OPT_OUT
-                    )
-                )
-                activity?.finish()
+                activity?.setOptOutPref(PREFS_OPT_OUT_BATTERY_OPTIMIZER, true)
+                activity?.setOptOutPref(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false)
             },
         ) {
             Text("No thanks")
@@ -133,14 +127,8 @@ fun GetBatteryPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(
-                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        MileageTrackingOptIn.DECIDE_LATER
-                    )
-                )
-                activity?.finish()
+                activity?.setOptOutPref(PREFS_OPT_OUT_BATTERY_OPTIMIZER, false)
+                activity?.setOptOutPref(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, true)
             },
         ) {
             Text("Maybe later")
@@ -150,6 +138,8 @@ fun GetBatteryPermissionNav(
 
         CustomOutlinedButton(
             onClick = {
+                activity?.setOptOutPref(PREFS_OPT_OUT_BATTERY_OPTIMIZER, false)
+                activity?.setOptOutPref(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false)
                 activity?.getBatteryPermission()
             },
         ) {

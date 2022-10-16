@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -37,10 +36,10 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
-import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
+import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.util.PermissionsHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -78,18 +77,14 @@ fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = n
                         iconTint = MaterialTheme.colorScheme.secondary,
                         iconDescription = "Punch Clock",
                     )
-//                    CustomOutlinedCard {
-//                        Text(
-//                            text = it,
-//                            modifier = Modifier
-//                                .defaultMinSize(minHeight = 50.dp),
-//                            fontSize = 18.sp,
-//                        )
-//                    }
                 }
         }
     ) { WhatsNewNav(activity) }
 
+/**
+ * Provides buttons for opting-in or -out to automatic mileage tracking: opt out, opt in, or
+ * decide later. Sets the result for [activity] and calls [WelcomeActivity.finish]
+ */
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
@@ -105,14 +100,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomTextButton(
                 onClick = {
-                    activity?.setResult(
-                        RESULT_OK,
-                        Intent().putExtra(
-                            ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                            MileageTrackingOptIn.OPT_OUT
-                        )
-                    )
-                    activity?.finish()
+                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
                 },
             ) {
                 Text("No thanks")
@@ -122,14 +110,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomTextButton(
                 onClick = {
-                    activity?.setResult(
-                        RESULT_OK,
-                        Intent().putExtra(
-                            ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                            MileageTrackingOptIn.DECIDE_LATER
-                        )
-                    )
-                    activity?.finish()
+                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
                 },
             ) {
                 Text("Maybe later")
@@ -139,14 +120,9 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomOutlinedButton(
                 onClick = {
-                    activity?.setResult(
-                        RESULT_OK,
-                        Intent().putExtra(
-                            ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                            MileageTrackingOptIn.OPT_IN
-                        )
-                    )
-                    activity?.finish()
+                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false) {
+                        activity.startActivity(Intent(activity, GetPermissionsActivity::class.java))
+                    }
                 },
             ) {
                 HalfSpacer()

@@ -51,11 +51,15 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetBatteryPermission
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetLocationPermissionsScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetNotificationPermissionScreen
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_NOTIFICATION
+import kotlinx.coroutines.*
 
 sealed class PermissionScreen(val route: String, val page: Int) {
     object LocationScreen : PermissionScreen(
@@ -93,17 +97,27 @@ sealed class PermissionScreen(val route: String, val page: Int) {
     }
 }
 
-
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 class GetPermissionsActivity : AppCompatActivity() {
+    fun setOptOutPref(prefKey: String, optedOut: Boolean) {
+        Log.d(TAG, "whenPermissions | setOptOutPref: $prefKey $optedOut")
+        permissionsHelper.setBooleanPref(
+            prefKey,
+            optedOut,
+            ::onPermissionsUpdated
+        )
+    }
+
+    private val permissionsHelper = PermissionsHelper(this)
+
     private val sharedPrefs
-        get() = getSharedPreferences(MainActivity.DT_SHARED_PREFS, 0)
+        get() = permissionsHelper.sharedPrefs
 
     private val multiplePermissionsLauncher: ActivityResultLauncher<Array<String>> =
-        registerMultiplePermissionsLauncher(onGranted = ::navigateToBgLocationScreen)
+        registerMultiplePermissionsLauncher()
 
     private val singlePermissionLauncher: ActivityResultLauncher<String> =
         registerSinglePermissionLauncher()
@@ -123,12 +137,13 @@ class GetPermissionsActivity : AppCompatActivity() {
 
         val numPages = missingPermissions.count { it }
 
-        val startDest: String? = whenPermissions(
+        val startDest: String? = permissionsHelper.whenPermissions(
+            optOutLocation = null,
             hasAllPermissions = null,
-            missingBatteryPerm = PermissionScreen.BatteryOptimizationScreen.route,
-            missingNotificationPerm = PermissionScreen.NotificationScreen.route,
-            missingBgLocation = PermissionScreen.BgLocationScreen.route,
-            hasNoPermissions = PermissionScreen.LocationScreen.route
+            missingBatteryPermission = PermissionScreen.BatteryOptimizationScreen.route,
+            missingNotificationPermission = PermissionScreen.NotificationScreen.route,
+            missingBgLocationPermission = PermissionScreen.BgLocationScreen.route,
+            missingAllPermissions = PermissionScreen.LocationScreen.route
         )
 
         setContent {
@@ -176,7 +191,7 @@ class GetPermissionsActivity : AppCompatActivity() {
 
                             val currentPage = missingPermissions.subList(0, absoluteScreenNumber)
                                 .count { it } + 1
-//
+
                             PageIndicator(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
                                 numPages = numPages,
@@ -192,42 +207,51 @@ class GetPermissionsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        whenPermissions(
+        onPermissionsUpdated()
+    }
+
+    override fun onDestroy() {
+        permissionsHelper.sharedPrefs.edit()
+            .putBoolean(PREFS_ASK_AGAIN_NOTIFICATION, false)
+            .putBoolean(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false).commit()
+        super.onDestroy()
+    }
+
+
+    private fun onPermissionsUpdated() {
+        permissionsHelper.whenPermissions(
+            optOutLocation = {
+                finish()
+            },
             hasAllPermissions = {
                 finish()
             },
-            missingBatteryPerm = {
+            missingBatteryPermission = {
                 navController?.navigate(PermissionScreen.BatteryOptimizationScreen.route) {
                     launchSingleTop = true
                 }
             },
-            missingNotificationPerm = {
+            missingNotificationPermission = {
                 navController?.navigate(PermissionScreen.NotificationScreen.route) {
                     launchSingleTop = true
                 }
             },
-            missingBgLocation = {
+            missingBgLocationPermission = {
                 navController?.navigate(PermissionScreen.BgLocationScreen.route) {
                     launchSingleTop = true
                 }
-            },
-            hasNoPermissions = {
-                navController?.navigate(PermissionScreen.LocationScreen.route) {
-                    launchSingleTop = true
-                }
             }
-        )?.invoke()
+        ) {
+            navController?.navigate(PermissionScreen.LocationScreen.route) {
+                launchSingleTop = true
+            }
+        }?.invoke()
     }
 
     fun getLocationPermissions() {
         when {
-            sharedPrefs.getBoolean(MainActivity.PREFS_OPT_OUT_LOCATION, false) -> {}
+            sharedPrefs.getBoolean(PREFS_OPT_OUT_LOCATION, false) -> {}
             hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
-            shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION) -> {
-//                showRationaleLocation {
-                multiplePermissionsLauncher.launch(LOCATION_PERMISSIONS)
-//                }
-            }
             else -> {
                 multiplePermissionsLauncher.launch(LOCATION_PERMISSIONS)
             }
@@ -236,13 +260,8 @@ class GetPermissionsActivity : AppCompatActivity() {
 
     fun getBgPermission() {
         when {
-            sharedPrefs.getBoolean(MainActivity.PREFS_OPT_OUT_LOCATION, false) -> {}
+            sharedPrefs.getBoolean(PREFS_OPT_OUT_LOCATION, false) -> {}
             hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
-            shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION) -> {
-//                showRationaleLocation {
-                singlePermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-//                }
-            }
             else -> {
                 singlePermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
             }
@@ -252,13 +271,8 @@ class GetPermissionsActivity : AppCompatActivity() {
     @RequiresApi(TIRAMISU)
     fun getNotificationPermission() {
         when {
-            sharedPrefs.getBoolean(MainActivity.PREFS_OPT_OUT_NOTIFICATION, false) -> {}
-            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
-            shouldShowRequestPermissionRationale(POST_NOTIFICATIONS) -> {
-//                showRationaleLocation {
-                singlePermissionLauncher.launch(POST_NOTIFICATIONS)
-//                }
-            }
+            sharedPrefs.getBoolean(PREFS_OPT_OUT_NOTIFICATION, false) -> {}
+            hasPermissions(this, POST_NOTIFICATIONS) -> {}
             else -> {
                 singlePermissionLauncher.launch(POST_NOTIFICATIONS)
             }
@@ -267,7 +281,7 @@ class GetPermissionsActivity : AppCompatActivity() {
 
     fun getBatteryPermission() {
         when {
-            sharedPrefs.getBoolean(MainActivity.PREFS_OPT_OUT_BATTERY_OPTIM, false) -> {}
+            sharedPrefs.getBoolean(PREFS_OPT_OUT_BATTERY_OPTIMIZER, false) -> {}
             hasBatteryPermission() -> {}
             else -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -277,31 +291,28 @@ class GetPermissionsActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun navigateToBgLocationScreen() {
-        navController?.navigate(PermissionScreen.BgLocationScreen.route) {
-            launchSingleTop = true
-        }
-    }
 }
 
 @Composable
-internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selectedPage: Int = 1) =
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Log.d(TAG, "Selected Page: $selectedPage")
-        for (i in 0 until numPages) {
-            Icon(
-                if (i == selectedPage - 1) Icons.Filled.Circle else Icons.TwoTone.Circle,
-                contentDescription = "circle",
-                tint = MaterialTheme.colorScheme.primary
-            )
+internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selectedPage: Int = 1) {
+    if (numPages > 1) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Log.d(TAG, "Selected Page: $selectedPage")
+            for (i in 0 until numPages) {
+                Icon(
+                    if (i == selectedPage - 1) Icons.Filled.Circle else Icons.TwoTone.Circle,
+                    contentDescription = "circle",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
+}
 
 @ExperimentalCoroutinesApi
 @ExperimentalAnimationApi

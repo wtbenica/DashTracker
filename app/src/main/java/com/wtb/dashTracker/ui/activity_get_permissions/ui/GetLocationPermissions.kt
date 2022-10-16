@@ -16,8 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.app.Activity
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -41,11 +39,11 @@ import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
-import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.car
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalAnimationApi
@@ -74,13 +72,13 @@ fun GetLocationPermissionsScreen(
                 val str = buildAnnotatedString {
                     append(stringResource(id = R.string.dialog_location_permission_1))
 
-                    withStyle(style = styleBoldItalic) {
+                    withStyle(style = styleBold) {
                         append(stringResource(id = R.string.dialog_location_permission_2_ital))
                     }
 
                     append(stringResource(id = R.string.dialog_location_permission_3))
 
-                    withStyle(style = styleBoldItalic) {
+                    withStyle(style = styleBold) {
                         append(stringResource(id = R.string.dialog_location_permission_4_ital))
                     }
 
@@ -90,6 +88,7 @@ fun GetLocationPermissionsScreen(
                 Text(
                     text = str,
                     fontSize = 18.sp,
+                    fontFamily = FontFamilyFiraSans
                 )
             }
 
@@ -123,14 +122,7 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(
-                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        MileageTrackingOptIn.OPT_OUT
-                    )
-                )
-                activity?.finish()
+                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, true)
             },
         ) {
             Text("No thanks")
@@ -140,13 +132,7 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(
-                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        MileageTrackingOptIn.DECIDE_LATER
-                    )
-                )
+                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, false)
                 activity?.finish()
             },
         ) {
@@ -157,6 +143,7 @@ fun GetLocationPermissionsNav(
 
         CustomOutlinedButton(
             onClick = {
+                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, false)
                 activity?.getLocationPermissions()
             },
         ) {
