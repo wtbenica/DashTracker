@@ -865,10 +865,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         BIND_AUTO_CREATE
                     )
                 } else {
-                    Log.d(
-                        TAG,
-                        "bindLocationService | missing permissions, pretending to bind the service"
-                    )
+                    Log.d(TAG, "bindLocationService | missing permissions")
                 }
             }
         }
