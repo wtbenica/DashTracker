@@ -45,18 +45,19 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = primary,
-    secondary = primaryDark,
-    tertiary = primaryFaded,
     onPrimary = onPrimary,
-    primaryContainer = Color.Red,
-    secondaryContainer = Color.Blue,
+    primaryContainer = primaryFaded,
+    onPrimaryContainer = onPrimary,
+    secondary = primaryDark,
+    onSecondary = onSecondary,
+    secondaryContainer = primaryFaded,
+    onSecondaryContainer = onSecondary,
+    tertiary = primaryFaded,
     tertiaryContainer = Color.Green,
-//    surface = Color.Cyan,
-//    onSurface = Color.Magenta,
     background = Color.Yellow,
-    outline = primaryDark,
     onBackground = onPrimary,
-    onSecondary = onSecondary
+    onSurface = onPrimary,
+    outline = primaryDark
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

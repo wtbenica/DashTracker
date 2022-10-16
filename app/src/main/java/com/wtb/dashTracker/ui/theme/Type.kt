@@ -35,10 +35,10 @@ val FontFamilyOswald = FontFamily(
 )
 
 @ExperimentalTextApi
-val FontNotoSans = GoogleFont(name = "Voltaire")
+val FontNotoSans = GoogleFont(name = "Fira Sans")
 
 @ExperimentalTextApi
-val FontFamilyNotoSans = FontFamily(
+val FontFamilyFiraSans = FontFamily(
     Font(FontNotoSans, provider)
 )
 

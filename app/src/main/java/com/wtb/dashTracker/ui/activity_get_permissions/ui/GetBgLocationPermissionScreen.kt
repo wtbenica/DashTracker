@@ -16,8 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions
 
-import android.app.Activity
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -39,11 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_welcome.ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN
-import com.wtb.dashTracker.ui.activity_welcome.MileageTrackingOptIn
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.car
+import com.wtb.dashTracker.util.PermissionsHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -72,7 +70,7 @@ fun GetBgLocationPermissionScreen(
             val str = buildAnnotatedString {
                 append(stringResource(R.string.dialog_bg_location_text_1))
 
-                withStyle(style = styleBoldItalic) {
+                withStyle(style = styleBold) {
                     append(stringResource(R.string.dialog_bg_location_text_2_ital))
                 }
 
@@ -82,7 +80,8 @@ fun GetBgLocationPermissionScreen(
             CustomOutlinedCard() {
                 Text(
                     text = str,
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    fontFamily = FontFamilyFiraSans
                 )
             }
 
@@ -117,14 +116,7 @@ fun GetBgLocationPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(
-                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        MileageTrackingOptIn.OPT_OUT
-                    )
-                )
-                activity?.finish()
+                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
             },
         ) {
             Text("No thanks")
@@ -134,13 +126,7 @@ fun GetBgLocationPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(
-                        ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN,
-                        MileageTrackingOptIn.DECIDE_LATER
-                    )
-                )
+                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
                 activity?.finish()
             },
         ) {
@@ -151,6 +137,7 @@ fun GetBgLocationPermissionNav(
 
         CustomOutlinedButton(
             onClick = {
+                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
                 activity?.getBgPermission()
             },
         ) {

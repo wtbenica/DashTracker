@@ -25,21 +25,26 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeNavHost
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeNavHostPreview
-
-enum class MileageTrackingOptIn {
-    OPT_IN, DECIDE_LATER, OPT_OUT
-}
-
-val ACTIVITY_RESULT_MILEAGE_TRACKING_OPT_IN =
-    "${BuildConfig.APPLICATION_ID}.result_mileage_opt_in"
+import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
 
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 class WelcomeActivity : ComponentActivity() {
+    fun setOptOutPref(prefKey: String, optedOut: Boolean, onPrefSet: (() -> Unit)? = null) =
+        permissionsHelper.setBooleanPref(
+            prefKey,
+            optedOut,
+        ) {
+            onPrefSet?.invoke()
+            permissionsHelper.setBooleanPref(PREFS_SHOULD_SHOW_INTRO, false)
+            finish()
+        }
+
+    private val permissionsHelper = PermissionsHelper(this)
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +55,6 @@ class WelcomeActivity : ComponentActivity() {
             WelcomeNavHost(this)
         }
     }
-
 }
 
 @ExperimentalAnimationApi
