@@ -15,6 +15,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
@@ -161,8 +162,11 @@ internal fun MainActivity.showRationaleBgLocation(onGranted: () -> Unit) {
 
 class PermissionsHelper(val activity: Activity) {
 
-    internal val sharedPrefs
+    internal val sharedPrefsOld
         get() = activity.getSharedPreferences(DT_SHARED_PREFS, 0)
+
+    internal val sharedPrefs
+        get() = PreferenceManager.getDefaultSharedPreferences(activity)
 
     internal fun hasPermissions(ctx: Context, vararg permissions: String): Boolean =
         permissions.all {
@@ -276,12 +280,18 @@ class PermissionsHelper(val activity: Activity) {
 
     companion object {
         internal const val DT_SHARED_PREFS = "dashtracker_prefs"
+
+        internal val Context.OPT_OUT_LOCATION
+            get() = getString(R.string.prefs_opt_out_location)
+
         internal const val PREFS_OPT_OUT_LOCATION = "Don't ask | location"
         internal const val PREFS_OPT_OUT_BG_LOCATION = "Don't ask | bg location"
         internal const val PREFS_OPT_OUT_NOTIFICATION = "Don't ask | notifications"
-        internal const val PREFS_ASK_AGAIN_NOTIFICATION = "Decide later | notification"
         internal const val PREFS_OPT_OUT_BATTERY_OPTIMIZER = "Don't ask | battery optimization"
+
+        internal const val PREFS_ASK_AGAIN_NOTIFICATION = "Decide later | notification"
         internal const val PREFS_ASK_AGAIN_BATTERY_OPTIMIZER = "Decide later | battery optimization"
+
         internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
 
         internal enum class PermissionsState(val value: Byte) {

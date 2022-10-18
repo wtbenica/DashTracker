@@ -17,12 +17,15 @@
         android:roundIcon="@mipmap/icon_c"
         android:supportsRtl="true"
         android:theme="@style/SplashScreen">
-
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Base.DasherCompanion" />
         <activity
             android:name=".ui.activity_get_permissions.GetPermissionsActivity"
             android:exported="false"
             android:theme="@style/Base.DasherCompanion" />
-
         <activity
             android:name=".ui.activity_welcome.WelcomeActivity"
             android:exported="false"

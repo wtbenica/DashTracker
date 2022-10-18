@@ -182,7 +182,7 @@
         your starting and ending odometer readings.
     </string>
 
-<!--    ANNOTATED STRING: dialog_location_permission-->
+    <!--    ANNOTATED STRING: dialog_location_permission-->
     <string name="dialog_location_permission_1">DashTracker needs permission to access your location
         and physical activity (on foot, in car, still or moving).
 
@@ -267,4 +267,22 @@
     <string name="route_bg_location_permission">route_bg_location_permission</string>
     <string name="route_notification_permission">route_notification_permission</string>
     <string name="route_battery_permission">route_batter_permission</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="prefs_show_mileage_notification">Don\'t ask | notifications</string>
+    <string name="prefs_opt_out_location">automatic_mileage_tracking_enabled</string>
 </resources>

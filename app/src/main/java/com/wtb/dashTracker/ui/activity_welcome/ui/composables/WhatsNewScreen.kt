@@ -100,6 +100,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomTextButton(
                 onClick = {
+//                    activity?.setOptOutLocation(true)
                     activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
                 },
             ) {
@@ -110,6 +111,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomTextButton(
                 onClick = {
+//                    activity?.setOptOutLocation(true)
                     activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
                 },
             ) {
@@ -120,6 +122,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomOutlinedButton(
                 onClick = {
+//                    activity?.setOptOutLocation(true)
                     activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false) {
                         activity.startActivity(Intent(activity, GetPermissionsActivity::class.java))
                     }

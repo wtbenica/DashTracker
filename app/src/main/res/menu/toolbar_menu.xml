@@ -51,4 +51,9 @@
         android:id="@+id/action_import_from_csv"
         android:title="@string/label_action_import"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        app:showAsAction="never" />
 </menu>

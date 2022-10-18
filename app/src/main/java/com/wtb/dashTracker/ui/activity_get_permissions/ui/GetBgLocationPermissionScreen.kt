@@ -41,7 +41,6 @@ import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.car
-import com.wtb.dashTracker.util.PermissionsHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -116,7 +115,8 @@ fun GetBgLocationPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
+                activity?.setOptOutLocation(true)
+//                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
             },
         ) {
             Text("No thanks")
@@ -126,7 +126,8 @@ fun GetBgLocationPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
+                activity?.setOptOutLocation(false)
+//                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
                 activity?.finish()
             },
         ) {
@@ -137,7 +138,8 @@ fun GetBgLocationPermissionNav(
 
         CustomOutlinedButton(
             onClick = {
-                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
+                activity?.setOptOutLocation(false)
+//                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
                 activity?.getBgPermission()
             },
         ) {

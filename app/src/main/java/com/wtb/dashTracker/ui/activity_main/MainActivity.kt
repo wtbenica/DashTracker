@@ -59,6 +59,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -69,6 +70,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.SettingsActivity
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
@@ -132,8 +134,11 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     internal val permissionsHelper = PermissionsHelper(this)
 
-    internal val sharedPrefs
+    internal val sharedPrefsOld
         get() = getSharedPreferences(DT_SHARED_PREFS, 0)
+
+    internal val sharedPrefs
+        get() = PreferenceManager.getDefaultSharedPreferences(this)
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -566,6 +571,11 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     val id = viewModel.upsertAsync(Expense(isNew = true))
                     ExpenseDialog.newInstance(id).show(supportFragmentManager, "new_expense_dialog")
                 }
+                true
+            }
+            R.id.action_settings -> {
+                expectedExit = true
+                startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)

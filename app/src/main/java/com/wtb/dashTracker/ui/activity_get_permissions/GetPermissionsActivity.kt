@@ -54,6 +54,7 @@ import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetNotificationPermiss
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BATTERY_OPTIMIZER
@@ -110,6 +111,8 @@ class GetPermissionsActivity : AppCompatActivity() {
             ::onPermissionsUpdated
         )
     }
+
+    fun setOptOutLocation(optOut: Boolean) = setOptOutPref(OPT_OUT_LOCATION, optOut)
 
     private val permissionsHelper = PermissionsHelper(this)
 
