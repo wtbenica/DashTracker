@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -52,7 +52,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun GetLocationPermissionsScreen(
     modifier: Modifier = Modifier,
-    activity: GetPermissionsActivity? = null
+    activity: OnboardingMileageActivity? = null
 ) =
     ScreenTemplate(
         modifier = modifier,
@@ -110,7 +110,7 @@ fun GetLocationPermissionsScreen(
 @ExperimentalTextApi
 @Composable
 fun GetLocationPermissionsNav(
-    activity: GetPermissionsActivity? = null
+    activity: OnboardingMileageActivity? = null
 ) {
     Row(
         modifier = Modifier

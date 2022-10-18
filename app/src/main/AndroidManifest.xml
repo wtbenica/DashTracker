@@ -23,7 +23,7 @@
             android:label="@string/title_activity_settings"
             android:theme="@style/Base.DasherCompanion" />
         <activity
-            android:name=".ui.activity_get_permissions.GetPermissionsActivity"
+            android:name=".ui.activity_get_permissions.OnboardingMileageActivity"
             android:exported="false"
             android:theme="@style/Base.DasherCompanion" />
         <activity

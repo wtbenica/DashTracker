@@ -30,7 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreen
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreenCallback
@@ -60,7 +60,7 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback {
     override fun nextScreen() {
         Log.d(TAG, "WelcomeActivity | nextScreen")
         permissionsHelper.setBooleanPref(PREFS_SHOULD_SHOW_INTRO, false)
-        startActivity(Intent(this, GetPermissionsActivity::class.java))
+        startActivity(Intent(this, OnboardingMileageActivity::class.java))
         finish()
     }
 }

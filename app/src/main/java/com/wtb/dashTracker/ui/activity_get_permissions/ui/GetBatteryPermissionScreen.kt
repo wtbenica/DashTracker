@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -47,7 +47,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetBatteryPermission(modifier: Modifier = Modifier, activity: GetPermissionsActivity? = null) =
+fun GetBatteryPermission(modifier: Modifier = Modifier, activity: OnboardingMileageActivity? = null) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Battery Optimization",
@@ -105,7 +105,7 @@ fun GetBatteryPermission(modifier: Modifier = Modifier, activity: GetPermissions
 @Composable
 fun GetBatteryPermissionNav(
     modifier: Modifier = Modifier,
-    activity: GetPermissionsActivity? = null
+    activity: OnboardingMileageActivity? = null
 ) {
     Row(
         modifier = modifier

@@ -35,7 +35,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
@@ -46,7 +46,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: GetPermissionsActivity? = null) =
+fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity? = null) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Automatic Mileage Tracking",
@@ -89,7 +89,7 @@ fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: GetPermission
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 @Composable
-fun OnboardingIntroNav(activity: GetPermissionsActivity? = null) {
+fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
     DashTrackerTheme {
         Row(
             modifier = Modifier

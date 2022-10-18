@@ -50,7 +50,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun GetBgLocationPermissionScreen(
     modifier: Modifier = Modifier,
-    activity: GetPermissionsActivity? = null
+    activity: OnboardingMileageActivity? = null
 ) =
     ScreenTemplate(
         modifier = modifier,
@@ -104,7 +104,7 @@ fun GetBgLocationPermissionScreen(
 @Composable
 fun GetBgLocationPermissionNav(
     modifier: Modifier = Modifier,
-    activity: GetPermissionsActivity? = null
+    activity: OnboardingMileageActivity? = null
 ) {
     Row(
         modifier = modifier

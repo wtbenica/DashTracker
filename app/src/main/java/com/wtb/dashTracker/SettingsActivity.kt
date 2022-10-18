@@ -16,10 +16,20 @@
 
 package com.wtb.dashTracker
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.preference.Preference.OnPreferenceChangeListener
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +47,16 @@ class SettingsActivity : AppCompatActivity() {
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+            val mileageTrackingOptOutPref: SwitchPreference? =
+                findPreference(getString(R.string.prefs_enable_location))
+            mileageTrackingOptOutPref?.onPreferenceChangeListener =
+                OnPreferenceChangeListener { preference, newValue ->
+                    if (newValue == true) {
+                        startActivity(Intent(requireContext(), OnboardingMileageActivity::class.java))
+                    }
+                    true
+                }
         }
     }
 }

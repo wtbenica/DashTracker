@@ -22,7 +22,7 @@ import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_IN_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PermissionsState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -132,7 +132,7 @@ internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
         posAction2 = LambdaWrapper {
             this.sharedPrefs
                 .edit()
-                .putBoolean(OPT_OUT_LOCATION, true)
+                .putBoolean(OPT_IN_LOCATION, false)
                 .apply()
         }
     ).show(supportFragmentManager, null)
@@ -212,7 +212,7 @@ class PermissionsHelper(val activity: Activity) {
         missingBgLocationPermission: T? = null,
         missingAllPermissions: T? = null
     ): T? {
-        val optOut = sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
+        val optOut = !sharedPrefs.getBoolean(activity.OPT_IN_LOCATION, true)
 
         val askAgainBattery = sharedPrefs.getBoolean(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false)
 
@@ -224,7 +224,7 @@ class PermissionsHelper(val activity: Activity) {
             sharedPrefs.getBoolean(PREFS_ASK_AGAIN_NOTIFICATION, false)
 
         val hasDecidedNotifs = hasPermissions(activity, *OPTIONAL_PERMISSIONS)
-                || sharedPrefs.getBoolean(PREFS_OPT_OUT_NOTIFICATION, false)
+                || !sharedPrefs.getBoolean(activity.SHOW_NOTIFICATION, true)
                 || askAgainNotification
 
         val hasAll = hasDecidedBattery
@@ -237,8 +237,10 @@ class PermissionsHelper(val activity: Activity) {
 
         val missingBg = hasPermissions(activity, *LOCATION_PERMISSIONS)
 
-        Log.d(TAG, "whenPermissions | askAgainBattery: $askAgainBattery | hasDecidedBattery: " +
-                "$hasDecidedBattery")
+        Log.d(
+            TAG, "whenPermissions | askAgainBattery: $askAgainBattery | hasDecidedBattery: " +
+                    "$hasDecidedBattery"
+        )
         return when {
             optOut -> {
                 Log.d(TAG, "whenPermissions | optOut")
@@ -280,14 +282,17 @@ class PermissionsHelper(val activity: Activity) {
     companion object {
         internal const val DT_SHARED_PREFS = "dashtracker_prefs"
 
-        internal val Context.OPT_OUT_LOCATION
-            get() = getString(R.string.prefs_opt_out_location)
+        internal val Context.OPT_IN_LOCATION
+            get() = getString(R.string.prefs_enable_location)
+
+        internal val Context.SHOW_NOTIFICATION
+            get() = getString(R.string.prefs_show_mileage_notification)
 
         internal val Context.ASK_AGAIN_LOCATION
             get() = getString(R.string.prefs_ask_again_location)
 
         internal const val PREFS_OPT_OUT_BG_LOCATION = "Don't ask | bg location"
-        internal const val PREFS_OPT_OUT_NOTIFICATION = "Don't ask | notifications"
+
         internal const val PREFS_OPT_OUT_BATTERY_OPTIMIZER = "Don't ask | battery optimization"
 
         internal const val PREFS_ASK_AGAIN_NOTIFICATION = "Decide later | notification"

@@ -31,7 +31,7 @@
 
         <SwitchPreference
             app:defaultValue="false"
-            app:key="@string/prefs_opt_out_location"
+            app:key="@string/prefs_enable_location"
             app:title="Enable mileage tracking" />
 
         <SwitchPreference
