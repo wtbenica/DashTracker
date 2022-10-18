@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
@@ -34,23 +33,20 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.car
 import com.wtb.dashTracker.ui.theme.down
 import com.wtb.dashTracker.ui.theme.up
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object WelcomeScreen : Screen("route_welcome", R.string.route_welcome)
-    object WhatsNewScreen : Screen("route_whats_new", R.string.route_whats_new)
+interface WelcomeScreenCallback {
+    fun nextScreen()
 }
 
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun WelcomeScreen(modifier: Modifier = Modifier, navHostController: NavHostController) =
+fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScreenCallback) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Welcome to DashTracker",
@@ -66,10 +62,7 @@ fun WelcomeScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
             ) {
                 Column {
                     stringArrayResource(id = R.array.track_income).forEach {
-                        ListRow(
-                            it,
-                            icon = Icons.TwoTone.Circle
-                        )
+                        ListRow(text = it, icon = Icons.TwoTone.Circle)
                     }
                 }
             }
@@ -84,10 +77,7 @@ fun WelcomeScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
             ) {
                 Column {
                     stringArrayResource(id = R.array.track_expense).forEach {
-                        ListRow(
-                            it,
-                            icon = Icons.TwoTone.Circle
-                        )
+                        ListRow(text = it, icon = Icons.TwoTone.Circle)
                     }
                 }
             }
@@ -102,21 +92,18 @@ fun WelcomeScreen(modifier: Modifier = Modifier, navHostController: NavHostContr
             ) {
                 Column {
                     stringArrayResource(id = R.array.track_mileage).forEach {
-                        ListRow(
-                            it,
-                            icon = Icons.TwoTone.Circle
-                        )
+                        ListRow(text = it, icon = Icons.TwoTone.Circle)
                     }
                 }
             }
 
             DefaultSpacer()
         }
-    ) { WelcomeNav(navHostController = navHostController) }
+    ) { WelcomeNav(callback) }
 
 @ExperimentalTextApi
 @Composable
-fun WelcomeNav(navHostController: NavHostController) {
+fun WelcomeNav(callback: WelcomeScreenCallback) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,9 +112,7 @@ fun WelcomeNav(navHostController: NavHostController) {
 
         CustomOutlinedButton(
             onClick = {
-                navHostController.navigate(Screen.WhatsNewScreen.route) {
-                    launchSingleTop = true
-                }
+                callback.nextScreen()
             },
         ) {
             HalfSpacer()
@@ -145,11 +130,16 @@ fun WelcomeNav(navHostController: NavHostController) {
 @Preview
 @Composable
 fun PreviewWelcome() {
-    val navController = rememberNavController()
+    val callback = object : WelcomeScreenCallback {
+        override fun nextScreen() {
+
+        }
+    }
+
     DashTrackerTheme {
         Surface {
             Column {
-                WelcomeScreen(modifier = Modifier.weight(1f), navController)
+                WelcomeScreen(modifier = Modifier.weight(1f), callback)
             }
         }
     }

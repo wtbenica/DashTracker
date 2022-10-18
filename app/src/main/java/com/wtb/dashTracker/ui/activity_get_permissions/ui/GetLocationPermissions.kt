@@ -122,7 +122,6 @@ fun GetLocationPermissionsNav(
         CustomTextButton(
             onClick = {
                 activity?.setOptOutLocation(true)
-//                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, true)
             },
         ) {
             Text("No thanks")
@@ -133,7 +132,6 @@ fun GetLocationPermissionsNav(
         CustomTextButton(
             onClick = {
                 activity?.setOptOutLocation(false)
-//                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, false)
                 activity?.finish()
             },
         ) {
@@ -145,7 +143,6 @@ fun GetLocationPermissionsNav(
         CustomOutlinedButton(
             onClick = {
                 activity?.setOptOutLocation(false)
-//                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, false)
                 activity?.getLocationPermissions()
             },
         ) {

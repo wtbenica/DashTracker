@@ -1,6 +1,7 @@
 package com.wtb.dashTracker.util
 
 import android.Manifest.permission.*
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Context.POWER_SERVICE
@@ -21,8 +22,8 @@ import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BG_LOCATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PermissionsState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -131,7 +132,7 @@ internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
         posAction2 = LambdaWrapper {
             this.sharedPrefs
                 .edit()
-                .putBoolean(PREFS_OPT_OUT_LOCATION, true)
+                .putBoolean(OPT_OUT_LOCATION, true)
                 .apply()
         }
     ).show(supportFragmentManager, null)
@@ -162,22 +163,20 @@ internal fun MainActivity.showRationaleBgLocation(onGranted: () -> Unit) {
 
 class PermissionsHelper(val activity: Activity) {
 
-    internal val sharedPrefsOld
-        get() = activity.getSharedPreferences(DT_SHARED_PREFS, 0)
-
     internal val sharedPrefs
         get() = PreferenceManager.getDefaultSharedPreferences(activity)
 
-    internal fun hasPermissions(ctx: Context, vararg permissions: String): Boolean =
+    private fun hasPermissions(ctx: Context, vararg permissions: String): Boolean =
         permissions.all {
             ContextCompat.checkSelfPermission(ctx, it) == PackageManager.PERMISSION_GRANTED
         }
 
-    internal fun hasBatteryPermission(): Boolean {
+    private fun hasBatteryPermission(): Boolean {
         val pm = activity.getSystemService(POWER_SERVICE) as PowerManager
         return pm.isIgnoringBatteryOptimizations(activity.packageName)
     }
 
+    @SuppressLint("ApplySharedPref")
     fun setBooleanPref(
         prefKey: String,
         prefValue: Boolean,
@@ -213,7 +212,7 @@ class PermissionsHelper(val activity: Activity) {
         missingBgLocationPermission: T? = null,
         missingAllPermissions: T? = null
     ): T? {
-        val optOut = sharedPrefs.getBoolean(PREFS_OPT_OUT_LOCATION, false)
+        val optOut = sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
 
         val askAgainBattery = sharedPrefs.getBoolean(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false)
 
@@ -284,7 +283,9 @@ class PermissionsHelper(val activity: Activity) {
         internal val Context.OPT_OUT_LOCATION
             get() = getString(R.string.prefs_opt_out_location)
 
-        internal const val PREFS_OPT_OUT_LOCATION = "Don't ask | location"
+        internal val Context.ASK_AGAIN_LOCATION
+            get() = getString(R.string.prefs_ask_again_location)
+
         internal const val PREFS_OPT_OUT_BG_LOCATION = "Don't ask | bg location"
         internal const val PREFS_OPT_OUT_NOTIFICATION = "Don't ask | notifications"
         internal const val PREFS_OPT_OUT_BATTERY_OPTIMIZER = "Don't ask | battery optimization"
