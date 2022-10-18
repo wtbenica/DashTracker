@@ -116,7 +116,6 @@ fun GetBgLocationPermissionNav(
         CustomTextButton(
             onClick = {
                 activity?.setOptOutLocation(true)
-//                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
             },
         ) {
             Text("No thanks")
@@ -127,7 +126,6 @@ fun GetBgLocationPermissionNav(
         CustomTextButton(
             onClick = {
                 activity?.setOptOutLocation(false)
-//                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
                 activity?.finish()
             },
         ) {
@@ -139,7 +137,6 @@ fun GetBgLocationPermissionNav(
         CustomOutlinedButton(
             onClick = {
                 activity?.setOptOutLocation(false)
-//                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
                 activity?.getBgPermission()
             },
         ) {

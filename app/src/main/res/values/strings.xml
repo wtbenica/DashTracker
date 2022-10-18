@@ -285,4 +285,5 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="prefs_show_mileage_notification">Don\'t ask | notifications</string>
     <string name="prefs_opt_out_location">automatic_mileage_tracking_enabled</string>
+    <string name="prefs_ask_again_location">prefs_ask_again_location</string>
 </resources>

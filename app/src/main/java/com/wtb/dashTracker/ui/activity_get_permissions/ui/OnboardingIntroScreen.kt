@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -39,7 +38,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -47,7 +46,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = null) =
+fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: GetPermissionsActivity? = null) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Automatic Mileage Tracking",
@@ -79,7 +78,7 @@ fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = n
                     )
                 }
         }
-    ) { WhatsNewNav(activity) }
+    ) { OnboardingIntroNav(activity) }
 
 /**
  * Provides buttons for opting-in or -out to automatic mileage tracking: opt out, opt in, or
@@ -90,7 +89,7 @@ fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = n
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 @Composable
-fun WhatsNewNav(activity: WelcomeActivity? = null) {
+fun OnboardingIntroNav(activity: GetPermissionsActivity? = null) {
     DashTrackerTheme {
         Row(
             modifier = Modifier
@@ -100,8 +99,8 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomTextButton(
                 onClick = {
-//                    activity?.setOptOutLocation(true)
-                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
+                    activity?.setOptOutLocation(true)
+                    activity?.let { it.setOptOutPref(activity.ASK_AGAIN_LOCATION, false) }
                 },
             ) {
                 Text("No thanks")
@@ -111,8 +110,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomTextButton(
                 onClick = {
-//                    activity?.setOptOutLocation(true)
-                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
+                    activity?.setOptOutLocation(false)
                 },
             ) {
                 Text("Maybe later")
@@ -122,10 +120,8 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomOutlinedButton(
                 onClick = {
-//                    activity?.setOptOutLocation(true)
-                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false) {
-                        activity.startActivity(Intent(activity, GetPermissionsActivity::class.java))
-                    }
+                    activity?.setOptOutLocation(false)
+                    activity?.let { it.setOptOutPref(activity.ASK_AGAIN_LOCATION, false) }
                 },
             ) {
                 HalfSpacer()
@@ -149,7 +145,7 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 fun PreviewWhatsNew() {
     DashTrackerTheme {
         Column {
-            WhatsNewScreen(modifier = Modifier.weight(1f))
+            OnboardingIntroScreen(modifier = Modifier.weight(1f))
         }
     }
 }

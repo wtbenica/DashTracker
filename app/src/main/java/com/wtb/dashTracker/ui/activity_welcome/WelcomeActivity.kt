@@ -17,32 +17,33 @@
 package com.wtb.dashTracker.ui.activity_welcome
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeNavHost
-import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeNavHostPreview
+import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreen
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreenCallback
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
-class WelcomeActivity : ComponentActivity() {
-    fun setOptOutPref(prefKey: String, optedOut: Boolean, onPrefSet: (() -> Unit)? = null) =
-        permissionsHelper.setBooleanPref(
-            prefKey,
-            optedOut,
-        ) {
-            onPrefSet?.invoke()
-            permissionsHelper.setBooleanPref(PREFS_SHOULD_SHOW_INTRO, false)
-            finish()
-        }
+class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback {
 
     private val permissionsHelper = PermissionsHelper(this)
 
@@ -52,8 +53,15 @@ class WelcomeActivity : ComponentActivity() {
         actionBar?.hide()
 
         setContent {
-            WelcomeNavHost(this)
+            WelcomeScreen(callback = this)
         }
+    }
+
+    override fun nextScreen() {
+        Log.d(TAG, "WelcomeActivity | nextScreen")
+        permissionsHelper.setBooleanPref(PREFS_SHOULD_SHOW_INTRO, false)
+        startActivity(Intent(this, GetPermissionsActivity::class.java))
+        finish()
     }
 }
 
@@ -63,5 +71,17 @@ class WelcomeActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    WelcomeNavHostPreview()
+    val callback = object : WelcomeScreenCallback {
+        override fun nextScreen() {
+
+        }
+    }
+
+    DashTrackerTheme {
+        Surface {
+            Column {
+                WelcomeScreen(modifier = Modifier.weight(1f), callback)
+            }
+        }
+    }
 }
