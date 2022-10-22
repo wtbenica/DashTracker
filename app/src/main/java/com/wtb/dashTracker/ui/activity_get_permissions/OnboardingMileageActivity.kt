@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.activity_get_permissions
 
 import android.Manifest.permission.*
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
@@ -48,22 +49,321 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetBatteryPermission
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardMileageTrackingScreen.NotificationScreen
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetBatteryPermissionScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetLocationPermissionsScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetNotificationPermissionScreen
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.OnboardingIntroScreen
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_IN_LOCATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_BATTERY_OPTIMIZER
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_NOTIFICATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BATTERY_OPTIMIZER
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.SHOW_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import kotlinx.coroutines.*
 
-sealed class OnboardMileageTrackingScreen(val route: String, val page: Int) {
+@ExperimentalAnimationApi
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+class OnboardingMileageActivity : AppCompatActivity() {
+    fun setBooleanPref(prefKey: String, value: Boolean) {
+        Log.d(TAG, "whenPermissions | setOptOutPref: $prefKey $value")
+        permissionsHelper.setBooleanPref(
+            prefKey,
+            value,
+            ::onPermissionsUpdated
+        )
+    }
+
+    internal fun setOptOutLocation(optOut: Boolean) = setBooleanPref(OPT_OUT_LOCATION, optOut)
+
+    /**
+     * Sets shared pref [LOCATION_ENABLED] to [enabled]. If [enabled] is false,
+     * [NOTIFICATION_ENABLED] and [BG_BATTERY_ENABLED] are set to false also. Calls
+     * [onPermissionsUpdated] when finished.
+     */
+    internal fun setLocationEnabled(enabled: Boolean) {
+        if (!enabled) {
+            permissionsHelper.setBooleanPref(NOTIFICATION_ENABLED, enabled)
+            permissionsHelper.setBooleanPref(BG_BATTERY_ENABLED, enabled)
+        }
+        permissionsHelper.setBooleanPref(LOCATION_ENABLED, enabled, ::onPermissionsUpdated)
+    }
+
+    private val permissionsHelper = PermissionsHelper(this)
+
+    private val sharedPrefs
+        get() = permissionsHelper.sharedPrefs
+
+    private val multiplePermissionsLauncher: ActivityResultLauncher<Array<String>> =
+        registerMultiplePermissionsLauncher()
+
+    private val singlePermissionLauncher: ActivityResultLauncher<String> =
+        registerSinglePermissionLauncher()
+
+    private var navController: NavHostController? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
+
+        val showIntroScreen = sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, true)
+
+        Log.d(TAG, "onCreate |")
+        val missingPermissions = listOf(
+            showIntroScreen,
+            !hasPermissions(this, *LOCATION_PERMISSIONS),
+            !hasPermissions(this, ACCESS_BACKGROUND_LOCATION),
+            (SDK_INT >= TIRAMISU)
+                    && !hasPermissions(this, POST_NOTIFICATIONS)
+                    && sharedPrefs.getBoolean(NOTIFICATION_ENABLED, true),
+            !hasBatteryPermission()
+                    && sharedPrefs.getBoolean(BG_BATTERY_ENABLED, true)
+        )
+
+        val numPages = missingPermissions.count { it }
+
+        @Suppress("DEPRECATION")
+        val launchScreen: OnboardMileageTrackingScreen? = if (SDK_INT >= TIRAMISU) {
+            intent.getSerializableExtra(
+                EXTRA_PERMISSIONS_ROUTE,
+                OnboardMileageTrackingScreen::class.java
+            )
+        } else {
+            intent.getSerializableExtra(EXTRA_PERMISSIONS_ROUTE) as OnboardMileageTrackingScreen?
+        }
+
+        Log.d(TAG, "onCreate | singlePermIntent: ${launchScreen?.route}")
+
+        val screen: OnboardMileageTrackingScreen? = permissionsHelper.whenPermissions(
+            optOutLocation = null,
+            hasAllPermissions = null,
+            hasNotification = OnboardMileageTrackingScreen.BatteryOptimizationScreen,
+            hasBgLocation = NotificationScreen,
+            hasLocation = OnboardMileageTrackingScreen.BgLocationScreen,
+            noPermissions = if (showIntroScreen) {
+                OnboardMileageTrackingScreen.IntroScreen
+            } else {
+                OnboardMileageTrackingScreen.LocationScreen
+            }
+        )
+
+        Log.d(TAG, "onCreate | startDest: ${screen?.route}")
+
+        setContent {
+            DashTrackerTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+
+                    if (launchScreen != null) {
+                        Log.d(TAG, "onCreate | launchScreen")
+                        if (screen?.page?.let { it > launchScreen.page } == true) {
+                            Log.d(TAG, "onCreate | has applicable permission")
+                            finish()
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = 16.dp)
+                        ) {
+                            when (launchScreen) {
+                                is OnboardMileageTrackingScreen.IntroScreen -> {
+                                    OnboardingIntroScreen(
+                                        modifier = Modifier.weight(1f),
+                                        activity = this@OnboardingMileageActivity
+                                    )
+                                }
+                                is OnboardMileageTrackingScreen.LocationScreen -> {
+                                    GetLocationPermissionsScreen(
+                                        modifier = Modifier.weight(1f),
+                                        activity = this@OnboardingMileageActivity
+                                    )
+                                }
+                                is OnboardMileageTrackingScreen.BgLocationScreen -> {
+                                    GetBgLocationPermissionScreen(
+                                        modifier = Modifier.weight(1f),
+                                        activity = this@OnboardingMileageActivity
+                                    )
+                                }
+                                is NotificationScreen -> {
+                                    if (SDK_INT >= TIRAMISU) {
+                                        GetNotificationPermissionScreen(
+                                            modifier = Modifier.weight(1f),
+                                            activity = this@OnboardingMileageActivity,
+                                            finishWhenDone = true
+                                        )
+                                    }
+                                }
+                                is OnboardMileageTrackingScreen.BatteryOptimizationScreen -> {
+                                    GetBatteryPermissionScreen(
+                                        modifier = Modifier.weight(1f),
+                                        activity = this@OnboardingMileageActivity,
+                                        finishWhenDone = true
+                                    )
+                                }
+                            }
+                        }
+                    } else if (screen == null) {
+                        Log.d(TAG, "onCreate | startDest is null")
+                        finish()
+                    } else {
+                        navController = rememberAnimatedNavController()
+
+                        Log.d(TAG, "onCreate | startDest is normal")
+
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            val navBackStackEntry by navController!!.currentBackStackEntryAsState()
+
+                            val route = navBackStackEntry?.destination?.route
+
+                            Log.d(TAG, "GetPermissionActivity | route: $route")
+
+                            AnimatedNavHost(
+                                navController = navController!!,
+                                startDestination = screen.route,
+                                modifier = Modifier.weight(1f),
+                                enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                                exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
+                                popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                                popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
+                            ) {
+                                composable(OnboardMileageTrackingScreen.LocationScreen.route) {
+                                    GetLocationPermissionsScreen(activity = this@OnboardingMileageActivity)
+                                }
+                                composable(OnboardMileageTrackingScreen.BgLocationScreen.route) {
+                                    GetBgLocationPermissionScreen(activity = this@OnboardingMileageActivity)
+                                }
+                                composable(NotificationScreen.route) {
+                                    if (SDK_INT >= TIRAMISU) {
+                                        GetNotificationPermissionScreen(activity = this@OnboardingMileageActivity)
+                                    }
+                                }
+                                composable(OnboardMileageTrackingScreen.BatteryOptimizationScreen.route) {
+                                    GetBatteryPermissionScreen(activity = this@OnboardingMileageActivity)
+                                }
+                                composable(OnboardMileageTrackingScreen.IntroScreen.route) {
+                                    OnboardingIntroScreen(activity = this@OnboardingMileageActivity)
+                                }
+                            }
+
+                            val absoluteScreenNumber =
+                                OnboardMileageTrackingScreen.getScreenByRoute(route)
+
+                            val currentPage =
+                                missingPermissions.subList(0, absoluteScreenNumber).count { it } + 1
+
+                            PageIndicator(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
+                                numPages = numPages,
+                                selectedPage = currentPage
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        onPermissionsUpdated()
+    }
+
+    @SuppressLint("ApplySharedPref")
+    override fun onDestroy() {
+        permissionsHelper.sharedPrefs.edit()
+            .putBoolean(ASK_AGAIN_NOTIFICATION, false)
+            .putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false).commit()
+        super.onDestroy()
+    }
+
+    private fun onPermissionsUpdated() {
+        permissionsHelper.whenPermissions(
+            optOutLocation = {
+                finish()
+            },
+            hasAllPermissions = {
+                finish()
+            },
+            hasNotification = {
+                navController?.navigate(OnboardMileageTrackingScreen.BatteryOptimizationScreen.route) {
+                    launchSingleTop = true
+                }
+            },
+            hasBgLocation = {
+                navController?.navigate(NotificationScreen.route) {
+                    launchSingleTop = true
+                }
+            },
+            hasLocation = {
+                navController?.navigate(OnboardMileageTrackingScreen.BgLocationScreen.route) {
+                    launchSingleTop = true
+                }
+            }
+        ) {
+            navController?.navigate(OnboardMileageTrackingScreen.LocationScreen.route) {
+                launchSingleTop = true
+            }
+        }?.invoke()
+    }
+
+    fun getLocationPermissions() {
+        when {
+            !sharedPrefs.getBoolean(LOCATION_ENABLED, true) -> {}
+            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
+            else -> {
+                multiplePermissionsLauncher.launch(LOCATION_PERMISSIONS)
+            }
+        }
+    }
+
+    fun getBgPermission() {
+        when {
+            !sharedPrefs.getBoolean(LOCATION_ENABLED, true) -> {}
+            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
+            else -> {
+                singlePermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+            }
+        }
+    }
+
+    @RequiresApi(TIRAMISU)
+    fun getNotificationPermission() {
+        when {
+            !sharedPrefs.getBoolean(NOTIFICATION_ENABLED, true) -> {}
+            hasPermissions(this, POST_NOTIFICATIONS) -> {}
+            else -> {
+                singlePermissionLauncher.launch(POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    fun getBatteryPermission() {
+        when {
+            !sharedPrefs.getBoolean(BG_BATTERY_ENABLED, true) -> {}
+            hasBatteryPermission() -> {}
+            else -> {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                }
+                startActivity(intent)
+            }
+        }
+    }
+
+    companion object {
+        internal const val EXTRA_PERMISSIONS_ROUTE = "extra_permissions_route"
+        internal const val EXTRA_SKIP_INTRO = "extra_skip_intro"
+    }
+}
+
+sealed class OnboardMileageTrackingScreen(val route: String, val page: Int) : java.io.Serializable {
     object IntroScreen : OnboardMileageTrackingScreen(
         route = "intro",
         page = 0
@@ -104,239 +404,25 @@ sealed class OnboardMileageTrackingScreen(val route: String, val page: Int) {
     }
 }
 
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-class OnboardingMileageActivity : AppCompatActivity() {
-    fun setOptOutPref(prefKey: String, optedOut: Boolean) {
-        Log.d(TAG, "whenPermissions | setOptOutPref: $prefKey $optedOut")
-        permissionsHelper.setBooleanPref(
-            prefKey,
-            optedOut,
-            ::onPermissionsUpdated
-        )
-    }
-
-    internal fun setOptOutLocation(optOut: Boolean) = setOptOutPref(OPT_IN_LOCATION, !optOut)
-
-    private val permissionsHelper = PermissionsHelper(this)
-
-    private val sharedPrefs
-        get() = permissionsHelper.sharedPrefs
-
-    private val multiplePermissionsLauncher: ActivityResultLauncher<Array<String>> =
-        registerMultiplePermissionsLauncher()
-
-    private val singlePermissionLauncher: ActivityResultLauncher<String> =
-        registerSinglePermissionLauncher()
-
-    private var navController: NavHostController? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        supportActionBar?.hide()
-
-        val showIntroScreen = sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, true)
-
-        Log.d(TAG, "GetPermissionsActivity | onCreate")
-        val missingPermissions = listOf(
-            showIntroScreen,
-            !hasPermissions(this, *LOCATION_PERMISSIONS),
-            !hasPermissions(this, ACCESS_BACKGROUND_LOCATION),
-            SDK_INT >= TIRAMISU && !hasPermissions(this, POST_NOTIFICATIONS),
-            !hasBatteryPermission()
-        )
-
-        val numPages = missingPermissions.count { it }
-
-        val startDest: String? = permissionsHelper.whenPermissions(
-            optOutLocation = null,
-            hasAllPermissions = null,
-            missingBatteryPermission = OnboardMileageTrackingScreen.BatteryOptimizationScreen.route,
-            missingNotificationPermission = OnboardMileageTrackingScreen.NotificationScreen.route,
-            missingBgLocationPermission = OnboardMileageTrackingScreen.BgLocationScreen.route,
-            missingAllPermissions = if (showIntroScreen) {
-                OnboardMileageTrackingScreen.IntroScreen.route
-            } else {
-                OnboardMileageTrackingScreen.LocationScreen.route
-            }
-        )
-
-        setContent {
-            DashTrackerTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-
-                    navController = rememberAnimatedNavController()
-
-                    if (startDest == null) {
-                        finish()
-                    } else {
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            val navBackStackEntry by navController!!.currentBackStackEntryAsState()
-
-                            val route = navBackStackEntry?.destination?.route
-
-                            Log.d(TAG, "GetPermissionActivity | route: $route")
-
-                            AnimatedNavHost(
-                                navController = navController!!,
-                                startDestination = startDest,
-                                modifier = Modifier.weight(1f),
-                                enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
-                                exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
-                                popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
-                                popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
-                            ) {
-                                composable(OnboardMileageTrackingScreen.LocationScreen.route) {
-                                    GetLocationPermissionsScreen(activity = this@OnboardingMileageActivity)
-                                }
-                                composable(OnboardMileageTrackingScreen.BgLocationScreen.route) {
-                                    GetBgLocationPermissionScreen(activity = this@OnboardingMileageActivity)
-                                }
-                                composable(OnboardMileageTrackingScreen.NotificationScreen.route) {
-                                    if (SDK_INT >= TIRAMISU) {
-                                        GetNotificationPermissionScreen(activity = this@OnboardingMileageActivity)
-                                    }
-                                }
-                                composable(OnboardMileageTrackingScreen.BatteryOptimizationScreen.route) {
-                                    GetBatteryPermission(activity = this@OnboardingMileageActivity)
-                                }
-                                composable(OnboardMileageTrackingScreen.IntroScreen.route) {
-                                    OnboardingIntroScreen(activity = this@OnboardingMileageActivity)
-                                }
-                            }
-
-                            val absoluteScreenNumber =
-                                OnboardMileageTrackingScreen.getScreenByRoute(route)
-
-                            val currentPage =
-                                missingPermissions.subList(0, absoluteScreenNumber).count { it } + 1
-
-                            Log.d(
-                                TAG, "GetPermissionActivity | numPage: $numPages | screenNum: " +
-                                        "$absoluteScreenNumber | currentPage: $currentPage"
-                            )
-
-                            PageIndicator(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
-                                numPages = numPages,
-                                selectedPage = currentPage
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        onPermissionsUpdated()
-    }
-
-    override fun onDestroy() {
-        permissionsHelper.sharedPrefs.edit()
-            .putBoolean(PREFS_ASK_AGAIN_NOTIFICATION, false)
-            .putBoolean(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false).commit()
-        super.onDestroy()
-    }
-
-    private fun onPermissionsUpdated() {
-        permissionsHelper.whenPermissions(
-            optOutLocation = {
-                finish()
-            },
-            hasAllPermissions = {
-                finish()
-            },
-            missingBatteryPermission = {
-                navController?.navigate(OnboardMileageTrackingScreen.BatteryOptimizationScreen.route) {
-                    launchSingleTop = true
-                }
-            },
-            missingNotificationPermission = {
-                navController?.navigate(OnboardMileageTrackingScreen.NotificationScreen.route) {
-                    launchSingleTop = true
-                }
-            },
-            missingBgLocationPermission = {
-                navController?.navigate(OnboardMileageTrackingScreen.BgLocationScreen.route) {
-                    launchSingleTop = true
-                }
-            }
-        ) {
-            navController?.navigate(OnboardMileageTrackingScreen.LocationScreen.route) {
-                launchSingleTop = true
-            }
-        }?.invoke()
-    }
-
-    fun getLocationPermissions() {
-        when {
-            !sharedPrefs.getBoolean(OPT_IN_LOCATION, true) -> {}
-            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
-            else -> {
-                multiplePermissionsLauncher.launch(LOCATION_PERMISSIONS)
-            }
-        }
-    }
-
-    fun getBgPermission() {
-        when {
-            !sharedPrefs.getBoolean(OPT_IN_LOCATION, true) -> {}
-            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
-            else -> {
-                singlePermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-            }
-        }
-    }
-
-    @RequiresApi(TIRAMISU)
-    fun getNotificationPermission() {
-        when {
-            !sharedPrefs.getBoolean(SHOW_NOTIFICATION, true) -> {}
-            hasPermissions(this, POST_NOTIFICATIONS) -> {}
-            else -> {
-                singlePermissionLauncher.launch(POST_NOTIFICATIONS)
-            }
-        }
-    }
-
-    fun getBatteryPermission() {
-        when {
-            sharedPrefs.getBoolean(PREFS_OPT_OUT_BATTERY_OPTIMIZER, false) -> {}
-            hasBatteryPermission() -> {}
-            else -> {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", packageName, null)
-                }
-                startActivity(intent)
-            }
-        }
-    }
-}
-
 @Composable
 internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selectedPage: Int = 1) {
-    if (numPages > 1) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            Log.d(TAG, "Selected Page: $selectedPage")
-            for (i in 0 until numPages) {
-                Icon(
-                    if (i == selectedPage - 1) Icons.Filled.Circle else Icons.TwoTone.Circle,
-                    contentDescription = "circle",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+//    if (numPages > 1) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Log.d(TAG, "Selected Page: $selectedPage")
+        for (i in 0 until numPages) {
+            Icon(
+                if (i == selectedPage - 1) Icons.Filled.Circle else Icons.TwoTone.Circle,
+                contentDescription = "circle",
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
     }
+//    }
 }
 
 @ExperimentalCoroutinesApi

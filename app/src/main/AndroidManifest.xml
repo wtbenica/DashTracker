@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/SplashScreen">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.activity_settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
             android:theme="@style/Base.DasherCompanion" />

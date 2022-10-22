@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.os.Build.VERSION_CODES.TIRAMISU
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -37,11 +38,13 @@ import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_NOTIFICATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.SHOW_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @RequiresApi(TIRAMISU)
@@ -52,7 +55,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun GetNotificationPermissionScreen(
     modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null
+    activity: OnboardingMileageActivity? = null,
+    finishWhenDone: Boolean = false
 ) =
     ScreenTemplate(
         modifier = modifier,
@@ -66,6 +70,7 @@ fun GetNotificationPermissionScreen(
             )
         },
         mainContent = {
+            Log.d(TAG, "drawing notification")
             CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_notification_permission),
@@ -75,7 +80,7 @@ fun GetNotificationPermissionScreen(
             }
         },
         navContent = {
-            GetNotificationsPermissionNav(activity = activity)
+            GetNotificationsPermissionNav(activity = activity, finishWhenDone = finishWhenDone)
         }
     )
 
@@ -87,7 +92,8 @@ fun GetNotificationPermissionScreen(
 @RequiresApi(TIRAMISU)
 fun GetNotificationsPermissionNav(
     modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null
+    activity: OnboardingMileageActivity? = null,
+    finishWhenDone: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -97,9 +103,10 @@ fun GetNotificationsPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.let { it.setOptOutPref(activity.SHOW_NOTIFICATION, false) }
-//                activity?.setOptOutPref(PREFS_OPT_OUT_NOTIFICATION, true)
-                activity?.setOptOutPref(PREFS_ASK_AGAIN_NOTIFICATION, false)
+                activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, true)
+                activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, false)
+                if (finishWhenDone) activity?.finish()
             },
         ) {
             Text("No thanks")
@@ -109,9 +116,10 @@ fun GetNotificationsPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.let { it.setOptOutPref(activity.SHOW_NOTIFICATION, true) }
-//                activity?.setOptOutPref(PREFS_OPT_OUT_NOTIFICATION, false)
-                activity?.setOptOutPref(PREFS_ASK_AGAIN_NOTIFICATION, true)
+                activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, false)
+                activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, true)
+                if (finishWhenDone) activity?.finish()
             },
         ) {
             Text("Maybe later")
@@ -121,9 +129,9 @@ fun GetNotificationsPermissionNav(
 
         CustomOutlinedButton(
             onClick = {
-                activity?.let { it.setOptOutPref(activity.SHOW_NOTIFICATION, true) }
-//                activity?.setOptOutPref(PREFS_OPT_OUT_NOTIFICATION, false)
-                activity?.setOptOutPref(PREFS_ASK_AGAIN_NOTIFICATION, false)
+                activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, false)
+                activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, false)
                 activity?.getNotificationPermission()
             },
         ) {

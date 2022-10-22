@@ -112,7 +112,6 @@ class LocationService : Service() {
         notificationText: (Location?) -> String,
         updateNotificationText: ((Location?) -> String)? = null
     ) {
-        Log.d(TAG, "EBLOW: Updating notificationData")
         this.nd = notificationData
         this.notificationChannel = notificationChannel
         this.getNotificationText = notificationText
@@ -140,7 +139,6 @@ class LocationService : Service() {
         Log.d(TAG, "start | called while: ${serviceState.value.name}")
         return when (serviceState.value) {
             ServiceState.STOPPED -> {
-                Log.d(TAG, "start | calling startService")
                 startService(
                     Intent(applicationContext, LocationService::class.java)
                         .putExtra(EXTRA_LOCATION_HANDLER, LocationHandler(locationHandler))
@@ -277,8 +275,6 @@ class LocationService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand")
         intent?.let {
-            Log.d(TAG, "onStartCommand: has intent")
-
             if (it.getBooleanExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, false)) {
                 stop()
             }
@@ -353,7 +349,6 @@ class LocationService : Service() {
     override fun onUnbind(intent: Intent?): Boolean {
         Log.d(TAG, "onUnbind")
         if (!configurationChange) {
-            Log.d(TAG, "onUnbind: starting ongoing background notification")
             val notification: Notification = notificationUtil.generateNotification(
                 getNotificationText?.invoke(currentLocation) ?: "Location Service in use.",
                 notificationChannel

@@ -36,12 +36,16 @@
 
         <SwitchPreference
             app:defaultValue="false"
-            app:key="@string/prefs_show_mileage_notification"
-            app:title="Show notification when mileage tracking is active" />
+            app:dependency="@string/prefs_enable_location"
+            app:key="@string/prefs_enable_notification"
+            app:summaryOff=""
+            app:title="Show notification when active" />
 
         <SwitchPreference
-            app:key=""
-            app:title="Allow background battery usage"/>
+            app:defaultValue="false"
+            app:dependency="@string/prefs_enable_location"
+            app:key="@string/prefs_enable_bg_battery"
+            app:title="Allow background battery usage" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Security">
@@ -50,6 +54,5 @@
             app:defaultValue="true"
             app:key="require_authentication"
             app:title="Require authentication to open" />
-
     </PreferenceCategory>
 </PreferenceScreen>

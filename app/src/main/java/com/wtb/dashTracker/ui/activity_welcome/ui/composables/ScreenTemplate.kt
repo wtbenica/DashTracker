@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AccessAlarm
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.cardShape
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalTextApi
 @Composable
@@ -47,7 +49,7 @@ fun ScreenTemplate(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(16.dp, 16.dp, 16.dp, 0.dp)
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
         ) {
             Row(
                 modifier = Modifier.padding(vertical = 16.dp),
@@ -84,28 +86,30 @@ fun ScreenTemplate(
             }
 
             Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .weight(1f, true),
-                content = {
-                    mainContent()
-                }
-            )
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                mainContent()
+                FillSpacer()
+            }
 
             navContent?.let {
                 Column(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    content = {
-                        it()
-                    }
-                )
+                        .wrapContentHeight()
+                        .padding(top = 16.dp)
+                ) {
+                    it()
+                }
             }
         }
     }
 }
 
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @Preview(showBackground = true)
 @Composable
@@ -130,6 +134,9 @@ fun PreviewScreenTemplate() {
                         iconTint = MaterialTheme.colorScheme.secondary,
                         iconDescription = "Access Alarm"
                     )
+                },
+                navContent = {
+                    OnboardingIntroNav()
                 }
             )
         }

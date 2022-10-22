@@ -295,7 +295,8 @@ data class LambdaWrapper(val action: () -> Unit) : Parcelable
 enum class ConfirmType(val key: String) {
     DELETE("confirmDelete"),
     RESET("confirmReset"),
-    SAVE("confirmSave")
+    SAVE("confirmSave"),
+    RESTART("confirmRestart")
 }
 
 class ConfirmDeleteDialog {

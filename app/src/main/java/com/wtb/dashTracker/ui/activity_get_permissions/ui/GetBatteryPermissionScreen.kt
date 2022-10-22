@@ -38,8 +38,9 @@ import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_ASK_AGAIN_BATTERY_OPTIMIZER
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -47,7 +48,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetBatteryPermission(modifier: Modifier = Modifier, activity: OnboardingMileageActivity? = null) =
+fun GetBatteryPermissionScreen(
+    modifier: Modifier = Modifier,
+    activity: OnboardingMileageActivity? = null,
+    finishWhenDone: Boolean = false
+) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Battery Optimization",
@@ -93,7 +98,7 @@ fun GetBatteryPermission(modifier: Modifier = Modifier, activity: OnboardingMile
             }
         },
         navContent = {
-            GetBatteryPermissionNav(activity = activity)
+            GetBatteryPermissionNav(activity = activity, finishWhenDone = finishWhenDone)
         }
     )
 
@@ -105,7 +110,8 @@ fun GetBatteryPermission(modifier: Modifier = Modifier, activity: OnboardingMile
 @Composable
 fun GetBatteryPermissionNav(
     modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null
+    activity: OnboardingMileageActivity? = null,
+    finishWhenDone: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -116,8 +122,10 @@ fun GetBatteryPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutPref(PREFS_OPT_OUT_BATTERY_OPTIMIZER, true)
-                activity?.setOptOutPref(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, true)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                if (finishWhenDone) activity?.finish()
             },
         ) {
             Text("No thanks")
@@ -127,8 +135,10 @@ fun GetBatteryPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutPref(PREFS_OPT_OUT_BATTERY_OPTIMIZER, false)
-                activity?.setOptOutPref(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, true)
+                activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, false)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, true)
+                if (finishWhenDone) activity?.finish()
             },
         ) {
             Text("Maybe later")
@@ -138,8 +148,9 @@ fun GetBatteryPermissionNav(
 
         CustomOutlinedButton(
             onClick = {
-                activity?.setOptOutPref(PREFS_OPT_OUT_BATTERY_OPTIMIZER, false)
-                activity?.setOptOutPref(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, false)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, false)
                 activity?.getBatteryPermission()
             },
         ) {
@@ -166,7 +177,7 @@ fun GetBatteryPermissionPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetBatteryPermission()
+                GetBatteryPermissionScreen()
                 PageIndicator(
                     modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
                     numPages = 4,

@@ -43,6 +43,7 @@ import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.car
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalAnimationApi
@@ -121,7 +122,8 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutLocation(true)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, true)
+                activity?.setLocationEnabled(false)
             },
         ) {
             Text("No thanks")
@@ -131,7 +133,8 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutLocation(false)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
+                activity?.setLocationEnabled(false)
                 activity?.finish()
             },
         ) {
@@ -142,7 +145,8 @@ fun GetLocationPermissionsNav(
 
         CustomOutlinedButton(
             onClick = {
-                activity?.setOptOutLocation(false)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
+                activity?.setLocationEnabled(true)
                 activity?.getLocationPermissions()
             },
         ) {

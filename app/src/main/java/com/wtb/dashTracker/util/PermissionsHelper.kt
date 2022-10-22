@@ -2,7 +2,6 @@ package com.wtb.dashTracker.util
 
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Context.POWER_SERVICE
 import android.content.pm.PackageManager
@@ -22,7 +21,7 @@ import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_IN_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PermissionsState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -68,6 +67,11 @@ internal fun hasPermissions(context: Context, vararg permissions: String): Boole
     permissions.all {
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
+
+internal fun hasBatteryPermission(context: Context): Boolean {
+    val pm = context.getSystemService(POWER_SERVICE) as PowerManager
+    return pm.isIgnoringBatteryOptimizations(context.packageName)
+}
 
 internal fun AppCompatActivity.hasBatteryPermission(): Boolean {
     val pm = getSystemService(POWER_SERVICE) as PowerManager
@@ -132,7 +136,7 @@ internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
         posAction2 = LambdaWrapper {
             this.sharedPrefs
                 .edit()
-                .putBoolean(OPT_IN_LOCATION, false)
+                .putBoolean(LOCATION_ENABLED, false)
                 .apply()
         }
     ).show(supportFragmentManager, null)
@@ -161,17 +165,17 @@ internal fun MainActivity.showRationaleBgLocation(onGranted: () -> Unit) {
     ).show(supportFragmentManager, null)
 }
 
-class PermissionsHelper(val activity: Activity) {
+class PermissionsHelper(val activity: Context) {
 
     internal val sharedPrefs
         get() = PreferenceManager.getDefaultSharedPreferences(activity)
 
-    private fun hasPermissions(ctx: Context, vararg permissions: String): Boolean =
+    internal fun hasPermissions(ctx: Context, vararg permissions: String): Boolean =
         permissions.all {
             ContextCompat.checkSelfPermission(ctx, it) == PackageManager.PERMISSION_GRANTED
         }
 
-    private fun hasBatteryPermission(): Boolean {
+    internal fun hasBatteryPermission(): Boolean {
         val pm = activity.getSystemService(POWER_SERVICE) as PowerManager
         return pm.isIgnoringBatteryOptimizations(activity.packageName)
     }
@@ -197,45 +201,56 @@ class PermissionsHelper(val activity: Activity) {
      * @param optOutLocation Has opted out of mileage tracking
      * @param hasAllPermissions Has [REQUIRED_PERMISSIONS] + [AppCompatActivity.hasBatteryPermission]
      * + [OPTIONAL_PERMISSIONS] or has opted out of optional permissions
-     * @param missingBatteryPermission Has [REQUIRED_PERMISSIONS] + []
-     * @param missingNotificationPermission SDK_INT >= TIRAMISU and has [ACCESS_BACKGROUND_LOCATION] and
+     * @param hasNotification Has [REQUIRED_PERMISSIONS] + []
+     * @param hasBgLocation SDK_INT >= TIRAMISU and has [ACCESS_BACKGROUND_LOCATION] and
      * [LOCATION_PERMISSIONS]
-     * @param missingBgLocationPermission Has [LOCATION_PERMISSIONS]
-     * @param missingAllPermissions also the default return value
+     * @param hasLocation Has [LOCATION_PERMISSIONS]
+     * @param noPermissions also the default return value
      * @return the matching parameter
      */
     fun <T : Any> whenPermissions(
         optOutLocation: T? = null,
         hasAllPermissions: T? = null,
-        missingBatteryPermission: T? = null,
-        missingNotificationPermission: T? = null,
-        missingBgLocationPermission: T? = null,
-        missingAllPermissions: T? = null
+        hasNotification: T? = null,
+        hasBgLocation: T? = null,
+        hasLocation: T? = null,
+        noPermissions: T? = null
     ): T? {
-        val optOut = !sharedPrefs.getBoolean(activity.OPT_IN_LOCATION, true)
+        val optOut = !sharedPrefs.getBoolean(activity.LOCATION_ENABLED, true)
+                || sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
 
-        val askAgainBattery = sharedPrefs.getBoolean(PREFS_ASK_AGAIN_BATTERY_OPTIMIZER, false)
+        val askAgainLocation =
+            sharedPrefs.getBoolean(activity.ASK_AGAIN_LOCATION, false)
 
-        val hasDecidedBattery = hasBatteryPermission()
-                || sharedPrefs.getBoolean(PREFS_OPT_OUT_BATTERY_OPTIMIZER, false)
-                || askAgainBattery
+        val hasDecidedLocation = hasPermissions(activity, *LOCATION_PERMISSIONS)
+                || sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
+                || askAgainLocation
+
+        val askAgainBgLocation =
+            sharedPrefs.getBoolean(activity.ASK_AGAIN_BG_LOCATION, false)
+
+        val hasDecidedBgLocation = (hasPermissions(activity, *REQUIRED_PERMISSIONS) && hasDecidedLocation)
+                || sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
+                || askAgainBgLocation
 
         val askAgainNotification =
-            sharedPrefs.getBoolean(PREFS_ASK_AGAIN_NOTIFICATION, false)
+            sharedPrefs.getBoolean(activity.ASK_AGAIN_NOTIFICATION, false)
 
-        val hasDecidedNotifs = hasPermissions(activity, *OPTIONAL_PERMISSIONS)
-                || !sharedPrefs.getBoolean(activity.SHOW_NOTIFICATION, true)
+        val hasDecidedNotifs =
+            (hasPermissions(activity, *OPTIONAL_PERMISSIONS) && hasDecidedBgLocation)
+                || sharedPrefs.getBoolean(activity.OPT_OUT_NOTIFICATION, false)
                 || askAgainNotification
+
+        val askAgainBattery = sharedPrefs.getBoolean(activity.ASK_AGAIN_BATTERY_OPTIMIZER, false)
+
+        val hasDecidedBattery = (hasBatteryPermission() && hasDecidedNotifs)
+                || sharedPrefs.getBoolean(activity.OPT_OUT_BATTERY_OPTIMIZER, false)
+                || askAgainBattery
 
         val hasAll = hasDecidedBattery
                 && hasDecidedNotifs
-                && hasPermissions(activity, *REQUIRED_PERMISSIONS)
-
-        val missingBattery = hasDecidedNotifs && hasPermissions(activity, *REQUIRED_PERMISSIONS)
-
-        val missingNotification = hasPermissions(activity, *REQUIRED_PERMISSIONS)
-
-        val missingBg = hasPermissions(activity, *LOCATION_PERMISSIONS)
+                && hasDecidedBgLocation
+                && hasDecidedLocation
 
         Log.d(
             TAG, "whenPermissions | askAgainBattery: $askAgainBattery | hasDecidedBattery: " +
@@ -250,53 +265,57 @@ class PermissionsHelper(val activity: Activity) {
                 Log.d(TAG, "whenPermissions | hasAll")
                 hasAllPermissions
             }
-            missingBattery -> {
+            hasDecidedNotifs -> {
                 Log.d(TAG, "whenPermissions | missingBattery")
-                missingBatteryPermission
+                hasNotification
             }
-            missingNotification -> {
+            hasDecidedBgLocation -> {
                 Log.d(TAG, "whenPermissions | missingNotification")
-                missingNotificationPermission
+                hasBgLocation
             }
-            missingBg -> {
+            hasDecidedLocation -> {
                 Log.d(TAG, "whenPermissions | missingBg")
-                missingBgLocationPermission
+                hasLocation
             }
             else -> {
                 Log.d(TAG, "whenPermissions | else")
-                missingAllPermissions
+                noPermissions
             }
         }
     }
 
-    internal fun getPermissionsState(): PermissionsState? =
-        whenPermissions(
-            optOutLocation = OPT_OUT,
-            hasAllPermissions = ALL_GRANTED_OR_DECIDED,
-            missingBatteryPermission = MISSING_BATTERY,
-            missingNotificationPermission = MISSING_NOTIFICATION,
-            missingBgLocationPermission = MISSING_BG_LOCATION,
-            missingAllPermissions = MISSING_LOCATION
-        )
-
     companion object {
-        internal const val DT_SHARED_PREFS = "dashtracker_prefs"
-
-        internal val Context.OPT_IN_LOCATION
+        internal val Context.LOCATION_ENABLED
             get() = getString(R.string.prefs_enable_location)
 
-        internal val Context.SHOW_NOTIFICATION
-            get() = getString(R.string.prefs_show_mileage_notification)
+        internal val Context.NOTIFICATION_ENABLED
+            get() = getString(R.string.prefs_enable_notification)
+
+        internal val Context.BG_BATTERY_ENABLED
+            get() = getString(R.string.prefs_enable_bg_battery)
+
+        internal val Context.OPT_OUT_LOCATION
+            get() = getString(R.string.prefs_opt_out_location)
+
+        internal val Context.OPT_OUT_NOTIFICATION
+            get() = getString(R.string.prefs_opt_out_notification)
+
+        internal val Context.OPT_OUT_BATTERY_OPTIMIZER
+            get() = getString(R.string.prefs_opt_out_battery_optimizer)
 
         internal val Context.ASK_AGAIN_LOCATION
             get() = getString(R.string.prefs_ask_again_location)
 
+        internal val Context.ASK_AGAIN_BG_LOCATION
+            get() = getString(R.string.prefs_ask_again_bg_location)
+
+        internal val Context.ASK_AGAIN_NOTIFICATION
+            get() = getString(R.string.prefs_ask_again_notification)
+
+        internal val Context.ASK_AGAIN_BATTERY_OPTIMIZER
+            get() = getString(R.string.prefs_ask_again_battery_optimizer)
+
         internal const val PREFS_OPT_OUT_BG_LOCATION = "Don't ask | bg location"
-
-        internal const val PREFS_OPT_OUT_BATTERY_OPTIMIZER = "Don't ask | battery optimization"
-
-        internal const val PREFS_ASK_AGAIN_NOTIFICATION = "Decide later | notification"
-        internal const val PREFS_ASK_AGAIN_BATTERY_OPTIMIZER = "Decide later | battery optimization"
 
         internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
 

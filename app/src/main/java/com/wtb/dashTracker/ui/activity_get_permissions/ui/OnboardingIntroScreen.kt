@@ -38,7 +38,10 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -94,13 +97,15 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(0.dp)
         ) {
             FillSpacer()
 
             CustomTextButton(
                 onClick = {
                     activity?.setOptOutLocation(true)
-                    activity?.let { it.setOptOutPref(activity.ASK_AGAIN_LOCATION, false) }
+                    activity?.setLocationEnabled(false)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
                 },
             ) {
                 Text("No thanks")
@@ -111,6 +116,11 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
             CustomTextButton(
                 onClick = {
                     activity?.setOptOutLocation(false)
+                    activity?.setLocationEnabled(false)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, true)
                 },
             ) {
                 Text("Maybe later")
@@ -121,7 +131,8 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
             CustomOutlinedButton(
                 onClick = {
                     activity?.setOptOutLocation(false)
-                    activity?.let { it.setOptOutPref(activity.ASK_AGAIN_LOCATION, false) }
+                    activity?.setLocationEnabled(true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
                 },
             ) {
                 HalfSpacer()
@@ -144,7 +155,7 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
 @Composable
 fun PreviewWhatsNew() {
     DashTrackerTheme {
-        Column {
+        Column(modifier = Modifier.fillMaxSize()) {
             OnboardingIntroScreen(modifier = Modifier.weight(1f))
         }
     }

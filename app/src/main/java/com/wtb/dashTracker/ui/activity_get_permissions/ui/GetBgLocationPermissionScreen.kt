@@ -27,7 +27,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -41,6 +40,7 @@ import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.car
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -110,12 +110,12 @@ fun GetBgLocationPermissionNav(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        LocalContext.current
         FillSpacer()
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutLocation(true)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, true)
+                activity?.setLocationEnabled(false)
             },
         ) {
             Text("No thanks")
@@ -125,7 +125,8 @@ fun GetBgLocationPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutLocation(false)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
+                activity?.setLocationEnabled(false)
                 activity?.finish()
             },
         ) {
@@ -136,7 +137,8 @@ fun GetBgLocationPermissionNav(
 
         CustomOutlinedButton(
             onClick = {
-                activity?.setOptOutLocation(false)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
+                activity?.setLocationEnabled(true)
                 activity?.getBgPermission()
             },
         ) {
