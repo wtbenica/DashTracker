@@ -76,7 +76,6 @@ import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
@@ -93,7 +92,6 @@ import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasPermissions
-import com.wtb.dashTracker.util.registerSinglePermissionLauncher
 import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
@@ -155,28 +153,11 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     // State
     private var expectedExit = false
-    private var settingsRestart = false
-//    private var explicitlyStopped = false
 
     private var activeDash: ActiveDash? = null
         set(value) {
             field = value
         }
-
-    //
-//    /**
-//     * An [ActivityResultLauncher] that calls [getBgLocationPermResumeTracking] if the requested
-//     * permissions are granted
-//     */
-//    private val locationPermLauncher: ActivityResultLauncher<Array<String>> =
-//        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermResumeTracking)
-//
-//    /**
-//     * An [ActivityResultLauncher] that calls [ActiveDash.resumeOrStartNewTrip] if the requested
-//     * permission is granted
-//     */
-    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
-        registerSinglePermissionLauncher(onGranted = ::resumeMileageTracking)
 
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -188,68 +169,26 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             )?.invoke()
         }
 
+    /**
+     * Settings activity launcher - for launching [SettingsActivity] for result. checks data
+     * intent for [ACTIVITY_RESULT_NEEDS_RESTART]. If true, settings which require the app to
+     * restart were changed.
+     */
     private val settingsActivityLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val booleanExtra = it.data?.getBooleanExtra(ARG_CONFIRM, false)
+            val booleanExtra = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
             Log.d(TAG, "activityResult | confirmRestart: $booleanExtra")
             if (booleanExtra == true) {
-                settingsRestart = true
-
-                val mStartActivity = Intent(this, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-
-                val intent = packageManager.getLaunchIntentForPackage(packageName)
-                val mainIntent =
-                    Intent.makeRestartActivityTask(intent?.component).putExtra(ARG_CONFIRM, true)
-                startActivity(mainIntent)
-                System.exit(0)
-
-//                val mPendingIntentId = 123456
-//                val mPendingIntent = PendingIntent.getActivity(
-//                    this,
-//                    mPendingIntentId,
-//                    mStartActivity,
-//                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//                )
-//                val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-//
-//                alarmManager.set(
-//                    AlarmManager.RTC,
-//                    System.currentTimeMillis() + 100,
-//                    "Fred",
-//                    {
-//                        Log.d(TAG, "It's the alarm!")
-//                        startActivity(mStartActivity)
-//                        startActivity(Intent(ContextCompat.))
-//                    },
-//                    null
-//                )
-//
-////                alarmManager.set(
-////                    AlarmManager.RTC,
-////                    System.currentTimeMillis() + 100,
-////                    mPendingIntent
-////                )
-////
-//                moveTaskToBack(true)
-//                exitProcess(0)
+                restartApp()
             }
         }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        Log.d(TAG, "onSaveInstanceState | $settingsRestart")
-        if (settingsRestart) {
-            outState.putBoolean(ARG_CONFIRM, true)
-        }
-
-        val t: Boolean = outState.getBoolean(ARG_CONFIRM)
-        Log.d(
-            TAG,
-            "onSaveInstanceState | has confirm? ${outState.containsKey(ARG_CONFIRM)} | value: $t"
-        )
-
-        super.onSaveInstanceState(outState)
+    private fun restartApp() {
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        val mainIntent =
+            Intent.makeRestartActivityTask(intent?.component).putExtra(EXTRA_SETTINGS_RESTART_APP, true)
+        startActivity(mainIntent)
+        System.exit(0)
     }
 
     /**
@@ -267,16 +206,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate    | savedInstanceState? ${savedInstanceState != null}")
 
-        if (intent.getBooleanExtra(ARG_CONFIRM, false)) {
-            if (intent.getBooleanExtra(ARG_CONFIRM, false)) {
-                Log.d(TAG, "onCreate    | Restarted!")
-                isAuthenticated = true
-                expectedExit = true
-                val intent = Intent(this, SettingsActivity::class.java)
-                settingsActivityLauncher.launch(intent)
-            }
+        if (intent.getBooleanExtra(EXTRA_SETTINGS_RESTART_APP, false)) {
+            Log.d(TAG, "onCreate    | Restarted!")
+            isAuthenticated = true
+            expectedExit = true
+            val intent = Intent(this, SettingsActivity::class.java)
+            settingsActivityLauncher.launch(intent)
         }
 
         fun initBiometrics() {
@@ -562,7 +498,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause | activeDash: $activeDash")
+        Log.d(TAG, "onPause | activeDash: $activeDash | expectedExit? $expectedExit")
         activeDash?.apply {
             unbindLocationService()
         }
@@ -654,7 +590,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 expectedExit = true
                 val intent = Intent(this, SettingsActivity::class.java)
                 settingsActivityLauncher.launch(intent)
-//                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -687,28 +622,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         )
     }
 
-//    /**
-//     * Requests [ACCESS_BACKGROUND_LOCATION], if needed, and  calls [resumeMileageTracking].
-//     */
-//    private fun getBgLocationPermResumeTracking() {
-//        when {
-//            sharedPrefs.getBoolean(PREFS_OPT_OUT_BG_LOCATION, false) -> {}
-//            hasPermissions(this@MainActivity, ACCESS_BACKGROUND_LOCATION) -> {
-//                resumeMileageTracking()
-//            }
-//            shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
-//                showRationaleBgLocation {
-//                    bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-//                        .also { expectedExit = true }
-//                }
-//            }
-//            else -> {
-//                bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-//                expectedExit = true
-//            }
-//        }
-//    }
-//
     /**
      * Keeps track of the current dash and current pause state.
      *
@@ -1049,6 +962,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
 
+        internal const val ACTIVITY_RESULT_NEEDS_RESTART = "${BuildConfig.APPLICATION_ID}.result_needs_restart"
+        private const val EXTRA_SETTINGS_RESTART_APP = "${BuildConfig.APPLICATION_ID}.restart_settings"
         private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"
         private const val EXTRA_TRIP_ID = "${BuildConfig.APPLICATION_ID}.tripId"
 

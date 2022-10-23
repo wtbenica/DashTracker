@@ -46,7 +46,7 @@ interface WelcomeScreenCallback {
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScreenCallback) =
+internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScreenCallback) =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Welcome to DashTracker",

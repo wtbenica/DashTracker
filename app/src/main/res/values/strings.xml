@@ -296,7 +296,7 @@
     <string name="prefs_ask_again_battery_optimizer">prefs_ask_again_battery_optimizer</string>
     <string name="prefs_opt_out_battery_optimizer">prefs_opt_out_battery_optimizer</string>
     <string name="prefs_enable_bg_battery">prefs_enable_bg_battery</string>
-    <string name="dialog_restart">Restart now for settings to take effect immediately?</string>
+    <string name="dialog_restart">DashTracker needs to restart for changes to take effect. Restart now?</string>
     <string name="restart">Restart</string>
     <string name="later">Later</string>
 </resources>

@@ -23,7 +23,6 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BG_LOCATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PermissionsState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
@@ -252,33 +251,23 @@ class PermissionsHelper(val activity: Context) {
                 && hasDecidedBgLocation
                 && hasDecidedLocation
 
-        Log.d(
-            TAG, "whenPermissions | askAgainBattery: $askAgainBattery | hasDecidedBattery: " +
-                    "$hasDecidedBattery"
-        )
         return when {
             optOut -> {
-                Log.d(TAG, "whenPermissions | optOut")
                 optOutLocation
             }
             hasAll -> {
-                Log.d(TAG, "whenPermissions | hasAll")
                 hasAllPermissions
             }
             hasDecidedNotifs -> {
-                Log.d(TAG, "whenPermissions | missingBattery")
                 hasNotification
             }
             hasDecidedBgLocation -> {
-                Log.d(TAG, "whenPermissions | missingNotification")
                 hasBgLocation
             }
             hasDecidedLocation -> {
-                Log.d(TAG, "whenPermissions | missingBg")
                 hasLocation
             }
             else -> {
-                Log.d(TAG, "whenPermissions | else")
                 noPermissions
             }
         }
@@ -318,10 +307,5 @@ class PermissionsHelper(val activity: Context) {
         internal const val PREFS_OPT_OUT_BG_LOCATION = "Don't ask | bg location"
 
         internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
-
-        internal enum class PermissionsState(val value: Byte) {
-            OPT_OUT(1), ALL_GRANTED_OR_DECIDED(2), MISSING_BATTERY(4), MISSING_NOTIFICATION(8),
-            MISSING_BG_LOCATION(16), MISSING_LOCATION(32)
-        }
     }
 }

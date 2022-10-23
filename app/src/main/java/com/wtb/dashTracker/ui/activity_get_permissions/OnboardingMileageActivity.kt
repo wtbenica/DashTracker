@@ -24,7 +24,6 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
@@ -53,7 +52,6 @@ import com.wtb.dashTracker.ui.activity_get_permissions.OnboardMileageTrackingScr
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetBatteryPermissionScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetLocationPermissionsScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetNotificationPermissionScreen
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.OnboardingIntroScreen
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
@@ -72,7 +70,6 @@ import kotlinx.coroutines.*
 @ExperimentalTextApi
 class OnboardingMileageActivity : AppCompatActivity() {
     fun setBooleanPref(prefKey: String, value: Boolean) {
-        Log.d(TAG, "whenPermissions | setOptOutPref: $prefKey $value")
         permissionsHelper.setBooleanPref(
             prefKey,
             value,
@@ -114,7 +111,6 @@ class OnboardingMileageActivity : AppCompatActivity() {
 
         val showIntroScreen = sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, true)
 
-        Log.d(TAG, "onCreate |")
         val missingPermissions = listOf(
             showIntroScreen,
             !hasPermissions(this, *LOCATION_PERMISSIONS),
@@ -138,8 +134,6 @@ class OnboardingMileageActivity : AppCompatActivity() {
             intent.getSerializableExtra(EXTRA_PERMISSIONS_ROUTE) as OnboardMileageTrackingScreen?
         }
 
-        Log.d(TAG, "onCreate | singlePermIntent: ${launchScreen?.route}")
-
         val screen: OnboardMileageTrackingScreen? = permissionsHelper.whenPermissions(
             optOutLocation = null,
             hasAllPermissions = null,
@@ -153,16 +147,12 @@ class OnboardingMileageActivity : AppCompatActivity() {
             }
         )
 
-        Log.d(TAG, "onCreate | startDest: ${screen?.route}")
-
         setContent {
             DashTrackerTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
 
                     if (launchScreen != null) {
-                        Log.d(TAG, "onCreate | launchScreen")
                         if (screen?.page?.let { it > launchScreen.page } == true) {
-                            Log.d(TAG, "onCreate | has applicable permission")
                             finish()
                         }
 
@@ -209,19 +199,14 @@ class OnboardingMileageActivity : AppCompatActivity() {
                             }
                         }
                     } else if (screen == null) {
-                        Log.d(TAG, "onCreate | startDest is null")
                         finish()
                     } else {
                         navController = rememberAnimatedNavController()
-
-                        Log.d(TAG, "onCreate | startDest is normal")
 
                         Column(modifier = Modifier.fillMaxSize()) {
                             val navBackStackEntry by navController!!.currentBackStackEntryAsState()
 
                             val route = navBackStackEntry?.destination?.route
-
-                            Log.d(TAG, "GetPermissionActivity | route: $route")
 
                             AnimatedNavHost(
                                 navController = navController!!,
@@ -413,7 +398,6 @@ internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selecte
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Log.d(TAG, "Selected Page: $selectedPage")
         for (i in 0 until numPages) {
             Icon(
                 if (i == selectedPage - 1) Icons.Filled.Circle else Icons.TwoTone.Circle,

@@ -17,8 +17,9 @@
 package com.wtb.dashTracker.ui.activity_settings
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
@@ -38,6 +39,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardMileageTrackingScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity.Companion.EXTRA_PERMISSIONS_ROUTE
+import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
@@ -78,8 +80,9 @@ class SettingsActivity : AppCompatActivity() {
         var notificationEnabledPref: SwitchPreference? = null
         var bgBatteryEnabledPref: SwitchPreference? = null
 
-        val listener: SharedPreferences.OnSharedPreferenceChangeListener =
-            SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+        @SuppressLint("NotifyDataSetChanged")
+        val listener: OnSharedPreferenceChangeListener =
+            OnSharedPreferenceChangeListener { sharedPreferences, key ->
                 Log.d(TAG, "onSharedPrefChangeListener | $key")
                 when (key) {
                     getString(R.string.prefs_enable_location) -> {
@@ -107,8 +110,6 @@ class SettingsActivity : AppCompatActivity() {
                     getString(R.string.prefs_enable_notification) -> {
                         val isChecked = if (sharedPreferences.all.keys.contains(key))
                             sharedPreferences.getBoolean(key, false) else null
-                        Log.d(TAG, "notifications is checked: $isChecked")
-                        notificationEnabledPref?.isChecked = isChecked ?: false
 
                         if (isChecked == true) {
                             sharedPreferences?.edit()?.apply {
@@ -132,9 +133,6 @@ class SettingsActivity : AppCompatActivity() {
                             }
                         } else {
                             if (SDK_INT >= TIRAMISU) {
-                                notificationEnabledPref?.summaryOff =
-                                    "Restart for settings to take effect"
-
                                 requireContext().revokeSelfPermissionOnKill(POST_NOTIFICATIONS)
 
                                 ConfirmationDialog.newInstance(
@@ -189,7 +187,7 @@ class SettingsActivity : AppCompatActivity() {
                 val result = bundle.getBoolean(ARG_CONFIRM)
                 if (result) {
                     val intent = Intent().apply {
-                        putExtra(ARG_CONFIRM, true)
+                        putExtra(ACTIVITY_RESULT_NEEDS_RESTART, true)
                     }
                     activity?.apply {
                         setResult(RESULT_OK, intent)
@@ -231,9 +229,5 @@ class SettingsActivity : AppCompatActivity() {
             Log.d(TAG, "onPause | prefs is null: ${prefs == null}")
             prefs?.unregisterOnSharedPreferenceChangeListener(listener)
         }
-    }
-
-    companion object {
-        const val ACTIVITY_RESULT_SETTINGS_RESTART = "R"
     }
 }

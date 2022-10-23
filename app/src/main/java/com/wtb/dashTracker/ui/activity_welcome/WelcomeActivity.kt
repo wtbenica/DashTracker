@@ -24,12 +24,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreen
@@ -53,7 +55,7 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback {
         actionBar?.hide()
 
         setContent {
-            WelcomeScreen(callback = this)
+            WelcomeScreen(modifier = Modifier.padding(bottom = 16.dp), callback = this)
         }
     }
 
