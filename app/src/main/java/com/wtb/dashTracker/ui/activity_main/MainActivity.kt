@@ -813,6 +813,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     )
                 } else {
                     Log.d(TAG, "bindLocationService | missing permissions")
+                    startingService = false
                 }
             }
         }
