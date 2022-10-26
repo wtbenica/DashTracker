@@ -43,7 +43,7 @@ import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.car
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalAnimationApi
@@ -122,8 +122,9 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, true)
+                activity?.setOptOutLocation(true)
                 activity?.setLocationEnabled(false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
             },
         ) {
             Text("No thanks")
@@ -133,8 +134,9 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
+                activity?.setOptOutLocation(false)
                 activity?.setLocationEnabled(false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
                 activity?.finish()
             },
         ) {
@@ -145,8 +147,9 @@ fun GetLocationPermissionsNav(
 
         CustomOutlinedButton(
             onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
+                activity?.setOptOutLocation(false)
                 activity?.setLocationEnabled(true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
                 activity?.getLocationPermissions()
             },
         ) {

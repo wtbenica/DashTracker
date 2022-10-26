@@ -52,6 +52,7 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATI
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
@@ -99,6 +100,7 @@ class SettingsActivity : AppCompatActivity() {
                                 putBoolean(requireContext().ASK_AGAIN_NOTIFICATION, false)
                                 putBoolean(requireContext().ASK_AGAIN_BATTERY_OPTIMIZER, false)
                                 putBoolean(requireContext().OPT_OUT_LOCATION, false)
+                                putBoolean(requireContext().PREF_SHOW_SUMMARY_SCREEN, true)
                                 apply()
                             }
 

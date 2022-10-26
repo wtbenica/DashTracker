@@ -89,6 +89,7 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasPermissions
@@ -162,11 +163,14 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             Log.d(TAG, "onboardMileageTracking result")
-            permissionsHelper.whenPermissions(
-                hasAllPermissions = ::resumeMileageTracking,
-                hasNotification = ::resumeMileageTracking,
-                hasBgLocation = ::resumeMileageTracking
-            )?.invoke()
+            if (hasPermissions(this, *REQUIRED_PERMISSIONS)
+                && sharedPrefs.getBoolean(LOCATION_ENABLED, false)
+            ) {
+                Log.d(TAG, "onboardMileageTracking result | true")
+                resumeMileageTracking()
+            } else {
+                Log.d(TAG, "onboardMileageTracking result | false")
+            }
         }
 
     /**
@@ -186,7 +190,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private fun restartApp() {
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         val mainIntent =
-            Intent.makeRestartActivityTask(intent?.component).putExtra(EXTRA_SETTINGS_RESTART_APP, true)
+            Intent.makeRestartActivityTask(intent?.component)
+                .putExtra(EXTRA_SETTINGS_RESTART_APP, true)
         startActivity(mainIntent)
         System.exit(0)
     }
@@ -196,7 +201,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      *
      * @return null if [activeDash] is null
      */
-    private fun resumeMileageTracking() = activeDash?.resumeOrStartNewTrip()
+    private fun resumeMileageTracking() {
+        activeDash?.bindLocationService()
+        activeDash?.resumeOrStartNewTrip()
+    }
 
     private val csvImportLauncher: ActivityResultLauncher<String> =
         CSVUtils(activity = this).getContentLauncher(
@@ -475,7 +483,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             intent.removeExtra(EXTRA_TRIP_ID)
 
             if (!isAuthenticated) {
-
                 val onSuccess: () -> Unit =
                     if (endDashExtra == true) {
                         onEndDashIntent(tripId)
@@ -484,15 +491,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                     }
 
                 authenticate(onSuccess)
-
             } else {
-
                 if (endDashExtra == true) {
                     onEndDashIntent(tripId)
                 } else {
                     onUnlock()
                 }
-
             }
         }
     }
@@ -783,7 +787,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
          * Calls [unbindService] on [locationServiceConnection], sets [locationServiceBound] to
          * false, [locationServiceConnection] to null, and [locationService] to null.
          */
-        fun unbindLocationService() {
+        internal fun unbindLocationService() {
             if (locationServiceBound) {
                 Log.d(TAG, "unbinding service, allegedly | locServConn: $locationServiceConnection")
                 unbindService(locationServiceConnection!!)
@@ -794,7 +798,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
         }
 
-        private fun bindLocationService() {
+        internal fun bindLocationService() {
             if (!locationServiceBound && !startingService) {
                 startingService = true
                 Log.d(TAG, "bindLocationServices | locServConn")
@@ -963,8 +967,10 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
 
-        internal const val ACTIVITY_RESULT_NEEDS_RESTART = "${BuildConfig.APPLICATION_ID}.result_needs_restart"
-        private const val EXTRA_SETTINGS_RESTART_APP = "${BuildConfig.APPLICATION_ID}.restart_settings"
+        internal const val ACTIVITY_RESULT_NEEDS_RESTART =
+            "${BuildConfig.APPLICATION_ID}.result_needs_restart"
+        private const val EXTRA_SETTINGS_RESTART_APP =
+            "${BuildConfig.APPLICATION_ID}.restart_settings"
         private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"
         private const val EXTRA_TRIP_ID = "${BuildConfig.APPLICATION_ID}.tripId"
 

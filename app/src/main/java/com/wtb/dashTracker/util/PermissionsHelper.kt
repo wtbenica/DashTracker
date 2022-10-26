@@ -192,6 +192,8 @@ class PermissionsHelper(val activity: Context) {
         onPrefSet?.invoke()
     }
 
+    // TODO: This isn't used for permissions anymore, maybe move it to onboarding activity, the
+    //  only place it is used correctly
     /**
      *  wraps a when expression that checks for missing permissions in this order:
      *  none > battery > notification > bg location > location & activity > all
@@ -207,7 +209,7 @@ class PermissionsHelper(val activity: Context) {
      * @param noPermissions also the default return value
      * @return the matching parameter
      */
-    fun <T : Any> whenPermissions(
+    fun <T : Any> whenHasDecided(
         optOutLocation: T? = null,
         hasAllPermissions: T? = null,
         hasNotification: T? = null,
@@ -215,8 +217,8 @@ class PermissionsHelper(val activity: Context) {
         hasLocation: T? = null,
         noPermissions: T? = null
     ): T? {
-        val optOut = !sharedPrefs.getBoolean(activity.LOCATION_ENABLED, true)
-                || sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
+        val optOut = !sharedPrefs.getBoolean(activity.ASK_AGAIN_LOCATION, true)
+                && sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
 
         val askAgainLocation =
             sharedPrefs.getBoolean(activity.ASK_AGAIN_LOCATION, false)
@@ -228,17 +230,18 @@ class PermissionsHelper(val activity: Context) {
         val askAgainBgLocation =
             sharedPrefs.getBoolean(activity.ASK_AGAIN_BG_LOCATION, false)
 
-        val hasDecidedBgLocation = (hasPermissions(activity, *REQUIRED_PERMISSIONS) && hasDecidedLocation)
-                || sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
-                || askAgainBgLocation
+        val hasDecidedBgLocation =
+            (hasPermissions(activity, *REQUIRED_PERMISSIONS) && hasDecidedLocation)
+                    || sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, false)
+                    || askAgainBgLocation
 
         val askAgainNotification =
             sharedPrefs.getBoolean(activity.ASK_AGAIN_NOTIFICATION, false)
 
         val hasDecidedNotifs =
             (hasPermissions(activity, *OPTIONAL_PERMISSIONS) && hasDecidedBgLocation)
-                || sharedPrefs.getBoolean(activity.OPT_OUT_NOTIFICATION, false)
-                || askAgainNotification
+                    || sharedPrefs.getBoolean(activity.OPT_OUT_NOTIFICATION, false)
+                    || askAgainNotification
 
         val askAgainBattery = sharedPrefs.getBoolean(activity.ASK_AGAIN_BATTERY_OPTIMIZER, false)
 
@@ -303,6 +306,12 @@ class PermissionsHelper(val activity: Context) {
 
         internal val Context.ASK_AGAIN_BATTERY_OPTIMIZER
             get() = getString(R.string.prefs_ask_again_battery_optimizer)
+
+        internal val Context.PREF_SHOW_ONBOARD_INTRO
+            get() = getString(R.string.prefs_show_onboard_intro)
+
+        internal val Context.PREF_SHOW_SUMMARY_SCREEN
+            get() = getString(R.string.prefs_show_summary_screen)
 
         internal const val PREFS_OPT_OUT_BG_LOCATION = "Don't ask | bg location"
 
