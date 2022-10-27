@@ -36,7 +36,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.OnboardMileageTrackingScreen
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity.Companion.EXTRA_PERMISSIONS_ROUTE
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
@@ -126,7 +126,7 @@ class SettingsActivity : AppCompatActivity() {
                                     Intent(requireContext(), OnboardingMileageActivity::class.java)
                                         .putExtra(
                                             EXTRA_PERMISSIONS_ROUTE,
-                                            OnboardMileageTrackingScreen.NotificationScreen
+                                            OnboardingScreen.NOTIFICATION_SCREEN
                                         )
                                 startActivity(intent)
                             }
@@ -161,7 +161,7 @@ class SettingsActivity : AppCompatActivity() {
                                     Intent(requireContext(), OnboardingMileageActivity::class.java)
                                         .putExtra(
                                             EXTRA_PERMISSIONS_ROUTE,
-                                            OnboardMileageTrackingScreen.BatteryOptimizationScreen
+                                            OnboardingScreen.BATTERY_OPTIMIZATION_SCREEN
                                         )
                                 startActivity(intent)
                             }

@@ -49,7 +49,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.wtb.dashTracker.ui.activity_get_permissions.OnboardMileageTrackingScreen.NotificationScreen
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetBatteryPermissionScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetLocationPermissionsScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetNotificationPermissionScreen
@@ -88,8 +88,8 @@ class OnboardingMileageActivity : AppCompatActivity() {
         registerMultiplePermissionsLauncher()
 
     private var navController: NavHostController? = null
-    private var loadSingleScreen: OnboardMileageTrackingScreen? = null
-    private var initialScreen: OnboardMileageTrackingScreen? = null
+    private var loadSingleScreen: OnboardingScreen? = null
+    private var initialScreen: OnboardingScreen? = null
     private var showSummaryScreen = false
     private var showIntroScreen = true
 
@@ -101,10 +101,10 @@ class OnboardingMileageActivity : AppCompatActivity() {
         loadSingleScreen = if (SDK_INT >= TIRAMISU) {
             intent.getSerializableExtra(
                 EXTRA_PERMISSIONS_ROUTE,
-                OnboardMileageTrackingScreen::class.java
+                OnboardingScreen::class.java
             )
         } else {
-            intent.getSerializableExtra(EXTRA_PERMISSIONS_ROUTE) as OnboardMileageTrackingScreen?
+            intent.getSerializableExtra(EXTRA_PERMISSIONS_ROUTE) as OnboardingScreen?
         }
 
         showIntroScreen = sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, true)
@@ -152,25 +152,25 @@ class OnboardingMileageActivity : AppCompatActivity() {
                                 .padding(bottom = 16.dp)
                         ) {
                             when (loadSingleScreen!!) {
-                                is OnboardMileageTrackingScreen.IntroScreen -> {
+                                INTRO_SCREEN -> {
                                     OnboardingIntroScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity
                                     )
                                 }
-                                is OnboardMileageTrackingScreen.LocationScreen -> {
+                                LOCATION_SCREEN -> {
                                     GetLocationPermissionsScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity
                                     )
                                 }
-                                is OnboardMileageTrackingScreen.BgLocationScreen -> {
+                                BG_LOCATION_SCREEN -> {
                                     GetBgLocationPermissionScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity
                                     )
                                 }
-                                is NotificationScreen -> {
+                                NOTIFICATION_SCREEN -> {
                                     if (SDK_INT >= TIRAMISU) {
                                         GetNotificationPermissionScreen(
                                             modifier = Modifier.weight(1f),
@@ -179,14 +179,14 @@ class OnboardingMileageActivity : AppCompatActivity() {
                                         )
                                     }
                                 }
-                                is OnboardMileageTrackingScreen.BatteryOptimizationScreen -> {
+                                BATTERY_OPTIMIZATION_SCREEN -> {
                                     GetBatteryPermissionScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity,
                                         finishWhenDone = true
                                     )
                                 }
-                                is OnboardMileageTrackingScreen.SummaryScreen -> {
+                                SUMMARY_SCREEN -> {
                                     SummaryScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity,
@@ -206,40 +206,41 @@ class OnboardingMileageActivity : AppCompatActivity() {
 
                             AnimatedNavHost(
                                 navController = navController!!,
-                                startDestination = initialScreen!!.route,
+                                startDestination = initialScreen!!.name,
                                 modifier = Modifier.weight(1f),
                                 enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
                                 exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
                                 popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
                                 popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
                             ) {
-                                composable(OnboardMileageTrackingScreen.LocationScreen.route) {
+                                composable(LOCATION_SCREEN.name) {
                                     GetLocationPermissionsScreen(activity = this@OnboardingMileageActivity)
                                 }
-                                composable(OnboardMileageTrackingScreen.BgLocationScreen.route) {
+                                composable(BG_LOCATION_SCREEN.name) {
                                     GetBgLocationPermissionScreen(activity = this@OnboardingMileageActivity)
                                 }
-                                composable(NotificationScreen.route) {
+                                composable(NOTIFICATION_SCREEN.name) {
                                     if (SDK_INT >= TIRAMISU) {
                                         GetNotificationPermissionScreen(activity = this@OnboardingMileageActivity)
                                     }
                                 }
-                                composable(OnboardMileageTrackingScreen.BatteryOptimizationScreen.route) {
+                                composable(BATTERY_OPTIMIZATION_SCREEN.name) {
                                     GetBatteryPermissionScreen(activity = this@OnboardingMileageActivity)
                                 }
-                                composable(OnboardMileageTrackingScreen.IntroScreen.route) {
+                                composable(INTRO_SCREEN.name) {
                                     OnboardingIntroScreen(activity = this@OnboardingMileageActivity)
                                 }
-                                composable(OnboardMileageTrackingScreen.SummaryScreen.route) {
+                                composable(SUMMARY_SCREEN.name) {
                                     SummaryScreen(activity = this@OnboardingMileageActivity)
                                 }
                             }
 
-                            val absoluteScreenNumber =
-                                OnboardMileageTrackingScreen.getScreenByRoute(route)
+                            val absoluteScreenNumber = route?.let {
+                                OnboardingScreen.valueOf(it).ordinal
+                            } ?: 0
 
                             val currentPage =
-                                missingPermissions.subList(0, absoluteScreenNumber).count { it } + 1
+                                missingPermissions.subList(0, absoluteScreenNumber).count { it }
 
                             PageIndicator(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
@@ -339,24 +340,12 @@ class OnboardingMileageActivity : AppCompatActivity() {
         showSummaryScreen: Boolean,
         showIntroScreen: Boolean
     ) = whenHasDecided(
-        optOutLocation = if (showSummaryScreen) {
-            OnboardMileageTrackingScreen.SummaryScreen
-        } else {
-            null
-        },
-        hasAllPermissions = if (showSummaryScreen) {
-            OnboardMileageTrackingScreen.SummaryScreen
-        } else {
-            null
-        },
-        hasNotification = OnboardMileageTrackingScreen.BatteryOptimizationScreen,
-        hasBgLocation = NotificationScreen,
-        hasLocation = OnboardMileageTrackingScreen.BgLocationScreen,
-        noPermissions = if (showIntroScreen) {
-            OnboardMileageTrackingScreen.IntroScreen
-        } else {
-            OnboardMileageTrackingScreen.LocationScreen
-        }
+        optOutLocation = if (showSummaryScreen) SUMMARY_SCREEN else null,
+        hasAllPermissions = if (showSummaryScreen) SUMMARY_SCREEN else null,
+        hasNotification = BATTERY_OPTIMIZATION_SCREEN,
+        hasBgLocation = NOTIFICATION_SCREEN,
+        hasLocation = BG_LOCATION_SCREEN,
+        noPermissions = if (showIntroScreen) INTRO_SCREEN else LOCATION_SCREEN
     )
 
     override fun onResume() {
@@ -379,40 +368,21 @@ class OnboardingMileageActivity : AppCompatActivity() {
 
     private fun onPermissionsUpdated() {
         if (loadSingleScreen == null) {
-            whenHasDecided(
-                optOutLocation = {
-                    navController?.navigate(OnboardMileageTrackingScreen.SummaryScreen.route) {
-                        launchSingleTop = true
-                    }
-                },
-                hasAllPermissions = {
-                    navController?.navigate(OnboardMileageTrackingScreen.SummaryScreen.route) {
-                        launchSingleTop = true
-                    }
-                },
-                hasNotification = {
-                    navController?.navigate(OnboardMileageTrackingScreen.BatteryOptimizationScreen.route) {
-                        launchSingleTop = true
-                    }
-                },
-                hasBgLocation = {
-                    navController?.navigate(NotificationScreen.route) {
-                        launchSingleTop = true
-                    }
-                },
-                hasLocation = {
-                    navController?.navigate(OnboardMileageTrackingScreen.BgLocationScreen.route) {
-                        launchSingleTop = true
-                    }
-                },
-                noPermissions = {
-                    navController?.navigate(OnboardMileageTrackingScreen.LocationScreen.route) {
-                        launchSingleTop = true
-                    }
-                }
-            )?.invoke()
+            val route = whenHasDecided(
+                optOutLocation = SUMMARY_SCREEN,
+                hasAllPermissions = SUMMARY_SCREEN,
+                hasNotification = BATTERY_OPTIMIZATION_SCREEN,
+                hasBgLocation = NOTIFICATION_SCREEN,
+                hasLocation = BG_LOCATION_SCREEN,
+                noPermissions = LOCATION_SCREEN
+            )!!
+
+            navController?.navigate(route.name) {
+                launchSingleTop = true
+            }
         } else {
-            val currScreen: OnboardMileageTrackingScreen? = getStartingScreen(showSummaryScreen, showIntroScreen)
+            val currScreen = getStartingScreen(showSummaryScreen, showIntroScreen)
+
             if (currScreen == null || currScreen > loadSingleScreen!!) {
                 finish()
             }
@@ -492,64 +462,13 @@ class OnboardingMileageActivity : AppCompatActivity() {
     }
 }
 
-enum class OMTS(val page: Int) {
-    INTRO_SCREEN(0), LOCATION_SCREEN(1), BG_LOCATION_SCREEN(2)
-}
-
-// TODO: Switch this to enum class (see above). getScreenByRoute is built into enum: enum.valueOf
-//  (name)
-sealed class OnboardMileageTrackingScreen(val route: String, val page: Int) : java.io.Serializable,
-    Comparable<OnboardMileageTrackingScreen> {
-    object IntroScreen : OnboardMileageTrackingScreen(
-        route = "intro",
-        page = 0
-    )
-
-    object LocationScreen : OnboardMileageTrackingScreen(
-        route = "location",
-        page = 1
-    )
-
-    object BgLocationScreen : OnboardMileageTrackingScreen(
-        route = "bg_location",
-        page = 2
-    )
-
-    object NotificationScreen : OnboardMileageTrackingScreen(
-        route = "notification",
-        page = 3
-    )
-
-    object BatteryOptimizationScreen : OnboardMileageTrackingScreen(
-        route = "battery",
-        page = 4
-    )
-
-    object SummaryScreen : OnboardMileageTrackingScreen(
-        route = "summary",
-        page = 5
-    )
-
-    override fun compareTo(other: OnboardMileageTrackingScreen): Int = page.compareTo(other.page)
-
-    companion object {
-        fun getScreenByRoute(route: String?): Int {
-            if (route != null) {
-                OnboardMileageTrackingScreen::class.sealedSubclasses.forEach {
-                    if (it.objectInstance?.route == route) {
-                        return it.objectInstance?.page ?: 0
-                    }
-                }
-            }
-
-            return 0
-        }
-    }
+enum class OnboardingScreen {
+    INTRO_SCREEN, LOCATION_SCREEN, BG_LOCATION_SCREEN, NOTIFICATION_SCREEN,
+    BATTERY_OPTIMIZATION_SCREEN, SUMMARY_SCREEN
 }
 
 @Composable
-internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selectedPage: Int = 1) {
-//    if (numPages > 1) {
+internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selectedPage: Int = 0) {
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
@@ -558,13 +477,13 @@ internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selecte
     ) {
         for (i in 0 until numPages) {
             Icon(
-                if (i == selectedPage - 1) Icons.Filled.Circle else Icons.TwoTone.Circle,
+                if (i == selectedPage) Icons.Filled.Circle else Icons.TwoTone.Circle,
                 contentDescription = "circle",
+                modifier = Modifier.size(8.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
         }
     }
-//    }
 }
 
 @ExperimentalCoroutinesApi
