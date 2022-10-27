@@ -53,6 +53,7 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTI
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
+import com.wtb.dashTracker.util.hasPermissions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
@@ -120,10 +121,7 @@ class SettingsActivity : AppCompatActivity() {
                                 apply()
                             }
 
-                            if (!permissionHelper.hasPermissions(
-                                    POST_NOTIFICATIONS
-                                )
-                            ) {
+                            if (!requireContext().hasPermissions(POST_NOTIFICATIONS)) {
                                 val intent =
                                     Intent(requireContext(), OnboardingMileageActivity::class.java)
                                         .putExtra(

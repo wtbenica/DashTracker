@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             Log.d(TAG, "onboardMileageTracking result")
-            if (hasPermissions(this, *REQUIRED_PERMISSIONS)
+            if (this.hasPermissions(*REQUIRED_PERMISSIONS)
                 && sharedPrefs.getBoolean(LOCATION_ENABLED, false)
             ) {
                 Log.d(TAG, "onboardMileageTracking result | true")
@@ -363,7 +363,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 viewModel.loadActiveEntry(eid)
 
                 if (result) {
-                    activeDash?.startTracking(eid)
+                    activeDash?.startTracking()
                 }
             }
         }
@@ -671,13 +671,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         /**
          * Checks for [REQUIRED_PERMISSIONS]. If they have already been granted, calls
-         * [startLocationService] on [entryId], otherwise it requests the permissions using
+         * [startLocationService], otherwise it requests the permissions using
          * [onboardMileageTrackingLauncher]
          *
          * @param entryId passed as the argument to [startLocationService] if permissions have
          * already been granted
          */
-        fun startTracking(entryId: Long) {
+        fun startTracking() {
             stopOnBind = false
             expectedExit = true
             onboardMileageTrackingLauncher.launch(
@@ -804,7 +804,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 Log.d(TAG, "bindLocationServices | locServConn")
                 val locationServiceIntent = Intent(applicationContext, LocationService::class.java)
 
-                if (hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS)) {
+                if (this@MainActivity.hasPermissions(*REQUIRED_PERMISSIONS)) {
                     val onBind: (() -> Unit)? =
                         activeEntryId?.let { id -> { startLocationService(id) } }
                     val conn = getLocationServiceConnection(onBind)
