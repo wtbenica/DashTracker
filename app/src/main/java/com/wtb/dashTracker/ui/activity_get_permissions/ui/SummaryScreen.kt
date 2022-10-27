@@ -22,18 +22,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOff
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.rounded.NavigateNext
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.twotone.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,42 +51,39 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @Composable
 fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity) {
-    val permissionsHelper = PermissionsHelper(activity)
+    val permHelp = PermissionsHelper(activity)
 
-    val locOff: @Composable (ColumnScope.() -> Unit) = {
-        Icon(
-            imageVector = Icons.Outlined.LocationOff,
-            contentDescription = "Location Off",
-            modifier = Modifier.size(96.dp),
-            tint = MaterialTheme.colorScheme.secondary
-        )
+    fun getIconImage(): @Composable() (ColumnScope.() -> Unit) {
+        val locOff: @Composable (ColumnScope.() -> Unit) = {
+            Icon(
+                imageVector = Icons.Outlined.LocationOff,
+                contentDescription = "Location Off",
+                modifier = Modifier.size(96.dp),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        }
+
+        val locOn: @Composable (ColumnScope.() -> Unit) = {
+            Icon(
+                imageVector = Icons.Outlined.LocationOn,
+                contentDescription = "Location On",
+                modifier = Modifier.size(96.dp),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        }
+
+        val iconImage: @Composable (ColumnScope.() -> Unit) = if (
+            permHelp.hasPermissions(*REQUIRED_PERMISSIONS)
+            && permHelp.sharedPrefs.getBoolean(activity.LOCATION_ENABLED, false)
+        ) {
+            locOn
+        } else {
+            locOff
+        }
+        return iconImage
     }
 
-    val locOn: @Composable (ColumnScope.() -> Unit) = {
-        Icon(
-            imageVector = Icons.Outlined.LocationOn,
-            contentDescription = "Location On",
-            modifier = Modifier.size(96.dp),
-            tint = MaterialTheme.colorScheme.secondary
-        )
-    }
-
-    val iconImage: @Composable (ColumnScope.() -> Unit) = if (
-        permissionsHelper.hasPermissions(activity, *REQUIRED_PERMISSIONS)
-        && permissionsHelper.sharedPrefs.getBoolean(activity.LOCATION_ENABLED, false)
-    ) {
-        locOn
-    } else {
-        locOff
-    }
-//        permissionsHelper.whenHasDecided(
-//            optOutLocation = locOff,
-//            hasAllPermissions = locOn,
-//            hasNotification = locOn,
-//            hasBgLocation = locOn,
-//            hasLocation = locOff,
-//            noPermissions = locOff
-//        ) ?: locOn
+    val iconImage: @Composable (ColumnScope.() -> Unit) = getIconImage()
 
     ScreenTemplate(
         modifier = modifier,
@@ -87,39 +91,41 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
         iconImage = iconImage,
         mainContent = {
             CustomOutlinedCard {
-                // TODO: whenHasDecided is not the appropriate function here. need to come up
-                //  with one that is only whenHasPermissionsAndEnabled
                 Text(
-                    text = permissionsHelper.whenHasDecided(
-                        optOutLocation = "You've opted out of mileage tracking. To turn it on, go" +
-                                " to Settings.",
-                        hasAllPermissions = "Mileage tracking is set up. You can make adjustments" +
-                                " by going to Settings.",
-                        hasNotification = "Mileage tracking is all set up. If you are getting " +
-                                "inaccurate mileage, it's recommended that you turn off " +
-                                "battery optimization for DashTracker, which you can do by going " +
-                                "to Settings.",
-                        hasBgLocation = "Mileage tracking is all set up. If you are getting " +
-                                "inaccurate mileage, it's recommended that you turn off " +
-                                "battery optimization for DashTracker, which you can do by going " +
-                                "to Settings.",
-                        hasLocation = "Mileage tracking is missing required permissions. Next " +
-                                "time you press the Start Dash button, you will be given another " +
-                                "chance to opt out or grant the required permissions.",
-                        noPermissions = "Mileage tracking is missing required permissions. Next " +
-                                "time you press the Start Dash button, you will be given another " +
-                                "chance to opt out or grant the required permissions."
-                    ) ?: throw IllegalStateException(
-                        "Expected non-null result from whenPermissions"
-                    )
+                    text = when {
+                        permHelp.locationEnabled -> "Automatic mileage tracking is enabled"
+                        permHelp.sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, true) -> {
+                            "You've opted out of automatic mileage tracking. If you change your " +
+                                    "mind, you can turn it on by going to Settings."
+                        }
+                        permHelp.sharedPrefs.getBoolean(activity.ASK_AGAIN_LOCATION, false) ||
+                                permHelp.sharedPrefs.getBoolean(
+                                    activity.ASK_AGAIN_BG_LOCATION,
+                                    false
+                                ) -> "Next time you hit Start Dash, you will be " +
+                                "given another chance to decide. You can also enable automatic " +
+                                "mileage from Settings"
+                        else -> "Automatic mileage tracking is disabled. You can enable it from " +
+                                "Settings."
+                    }
                 )
             }
+
+            HalfSpacer()
+
+            PermissionsSummaryCard(
+                locationEnabled = permHelp.fgLocationEnabled,
+                bgLocationEnabled = permHelp.bgLocationEnabled,
+                notificationsEnabled = permHelp.notificationsEnabled,
+                batteryOptimizationDisabled = permHelp.batteryOptimizationDisabled
+            )
         },
         navContent = {
             SummaryScreenNav(activity = activity)
         }
     )
 }
+
 
 @ExperimentalCoroutinesApi
 @ExperimentalTextApi
@@ -150,5 +156,144 @@ fun SummaryScreenNav(
                 modifier = Modifier.padding(0.dp)
             )
         }
+    }
+}
+
+@ExperimentalTextApi
+@Composable
+fun PermRow(
+    permDesc: String,
+    permIcon: ImageVector,
+    permIconDescription: String,
+    isEnabled: Boolean,
+    isRequired: Boolean = true
+) {
+    Row {
+        Icon(permIcon, permIconDescription, tint = MaterialTheme.colorScheme.secondary)
+
+        HalfSpacer()
+
+        Column(modifier = Modifier.weight(1f)) {
+            @Suppress("DEPRECATION")
+            Text(
+                text = permDesc,
+                style = LocalTextStyle.current.merge(
+                    TextStyle(
+                        platformStyle = PlatformTextStyle(
+                            includeFontPadding = false
+                        ),
+                        lineHeightStyle = LineHeightStyle(
+                            alignment = LineHeightStyle.Alignment.Top,
+                            trim = LineHeightStyle.Trim.Both
+                        )
+                    )
+                )
+            )
+
+            Text(text = if (isRequired) "Required" else "Optional", fontSize = 10.sp)
+        }
+
+        HalfSpacer()
+
+        if (isEnabled)
+            Icon(
+                imageVector = Icons.TwoTone.Check,
+                contentDescription = "enabled",
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        else
+            Icon(
+                imageVector = Icons.TwoTone.DoNotDisturb,
+                contentDescription = "disabled",
+                tint = MaterialTheme.colorScheme.error
+            )
+    }
+}
+
+@ExperimentalCoroutinesApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
+@Preview(showBackground = true)
+@Composable
+fun SummaryScreenPreview() {
+    ScreenTemplate(
+        headerText = "Mileage Tracking",
+        iconImage = {
+            Icon(
+                imageVector = Icons.Outlined.LocationOff,
+                contentDescription = "Location Off",
+                modifier = Modifier.size(96.dp),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        },
+        mainContent = {
+            CustomOutlinedCard {
+                Text(text = "Automatic mileage tracking is enabled")
+            }
+
+            HalfSpacer()
+
+            PermissionsSummaryCard(
+                locationEnabled = true,
+                bgLocationEnabled = true,
+                notificationsEnabled = true,
+                batteryOptimizationDisabled = false
+            )
+        },
+        navContent = {
+            SummaryScreenNav()
+        }
+    )
+}
+
+@ExperimentalTextApi
+@Composable
+fun PermissionsSummaryCard(
+    locationEnabled: Boolean,
+    bgLocationEnabled: Boolean,
+    notificationsEnabled: Boolean,
+    batteryOptimizationDisabled: Boolean
+) {
+    CustomOutlinedCard {
+        Text(text = "Permissions")
+
+        DefaultSpacer()
+
+        PermRow(
+            permDesc = "Location",
+            permIcon = Icons.TwoTone.LocationOn,
+            permIconDescription = "location icon",
+            isEnabled = locationEnabled
+        )
+
+        DefaultSpacer()
+
+        PermRow(
+            permDesc = "Background Location",
+            permIcon = Icons.TwoTone.LocationSearching,
+            permIconDescription = "location icon",
+            isEnabled = bgLocationEnabled
+        )
+
+        DefaultSpacer()
+
+        PermRow(
+            permDesc = "Notifications",
+            permIcon = Icons.TwoTone.Notifications,
+            permIconDescription = "notifications icon",
+            isEnabled = notificationsEnabled,
+            isRequired = false
+        )
+
+        DefaultSpacer()
+
+        PermRow(
+            permDesc = "Battery Optimization Disabled",
+            permIcon = Icons.TwoTone.BatterySaver,
+            permIconDescription = "battery icon",
+            isEnabled = batteryOptimizationDisabled,
+            isRequired = false
+        )
     }
 }

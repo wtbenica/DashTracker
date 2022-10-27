@@ -121,7 +121,6 @@ class SettingsActivity : AppCompatActivity() {
                             }
 
                             if (!permissionHelper.hasPermissions(
-                                    requireContext(),
                                     POST_NOTIFICATIONS
                                 )
                             ) {
@@ -159,7 +158,7 @@ class SettingsActivity : AppCompatActivity() {
                                 apply()
                             }
 
-                            if (!permissionHelper.hasBatteryPermission()) {
+                            if (!permissionHelper.hasBatteryPermission) {
                                 val intent =
                                     Intent(requireContext(), OnboardingMileageActivity::class.java)
                                         .putExtra(
