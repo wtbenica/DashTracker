@@ -113,19 +113,16 @@ class OnboardingMileageActivity : AppCompatActivity() {
 
         showIntroScreen = sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, true)
 
-        val missingLocation = !hasPermissions(
-            this@OnboardingMileageActivity,
+        val missingLocation = !this@OnboardingMileageActivity.hasPermissions(
             *LOCATION_PERMISSIONS
         )
 
-        val missingBgLocation = !hasPermissions(
-            this@OnboardingMileageActivity,
+        val missingBgLocation = !this@OnboardingMileageActivity.hasPermissions(
             ACCESS_BACKGROUND_LOCATION
         )
 
         val missingNotification = ((SDK_INT >= TIRAMISU)
-                && !hasPermissions(
-            this@OnboardingMileageActivity,
+                && !this@OnboardingMileageActivity.hasPermissions(
             POST_NOTIFICATIONS
         )
                 && !sharedPrefs.getBoolean(OPT_OUT_NOTIFICATION, false))
@@ -266,10 +263,92 @@ class OnboardingMileageActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     *  wraps a when expression that checks for missing permissions in this order:
+     *  none > battery > notification > bg location > location & activity > all
+     *
+     * @param T return type
+     * @param optOutLocation Has opted out of mileage tracking
+     * @param hasAllPermissions Has [REQUIRED_PERMISSIONS] + [AppCompatActivity.hasBatteryPermission]
+     * + [OPTIONAL_PERMISSIONS] or has opted out of optional permissions
+     * @param hasNotification Has [REQUIRED_PERMISSIONS] + []
+     * @param hasBgLocation SDK_INT >= TIRAMISU and has [ACCESS_BACKGROUND_LOCATION] and
+     * [LOCATION_PERMISSIONS]
+     * @param hasLocation Has [LOCATION_PERMISSIONS]
+     * @param noPermissions also the default return value
+     * @return the matching parameter
+     */
+    private fun <T : Any> whenHasDecided(
+        optOutLocation: T? = null,
+        hasAllPermissions: T? = null,
+        hasNotification: T? = null,
+        hasBgLocation: T? = null,
+        hasLocation: T? = null,
+        noPermissions: T? = null
+    ): T? {
+        val optOut = !sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, true)
+                && sharedPrefs.getBoolean(OPT_OUT_LOCATION, false)
+
+        val askAgainLocation =
+            sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, false)
+
+        val hasDecidedLocation = this.hasPermissions(*LOCATION_PERMISSIONS)
+                || sharedPrefs.getBoolean(OPT_OUT_LOCATION, false)
+                || askAgainLocation
+
+        val askAgainBgLocation =
+            sharedPrefs.getBoolean(ASK_AGAIN_BG_LOCATION, false)
+
+        val hasDecidedBgLocation =
+            (this.hasPermissions(*REQUIRED_PERMISSIONS) && hasDecidedLocation)
+                    || sharedPrefs.getBoolean(OPT_OUT_LOCATION, false)
+                    || askAgainBgLocation
+
+        val askAgainNotification =
+            sharedPrefs.getBoolean(ASK_AGAIN_NOTIFICATION, false)
+
+        val hasDecidedNotifs =
+            (this.hasPermissions(*OPTIONAL_PERMISSIONS) && hasDecidedBgLocation)
+                    || sharedPrefs.getBoolean(OPT_OUT_NOTIFICATION, false)
+                    || askAgainNotification
+
+        val askAgainBattery = sharedPrefs.getBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
+
+        val hasDecidedBattery = (permissionsHelper.hasBatteryPermission && hasDecidedNotifs)
+                || sharedPrefs.getBoolean(OPT_OUT_BATTERY_OPTIMIZER, false)
+                || askAgainBattery
+
+        val hasAll = hasDecidedBattery
+                && hasDecidedNotifs
+                && hasDecidedBgLocation
+                && hasDecidedLocation
+
+        return when {
+            optOut -> {
+                optOutLocation
+            }
+            hasAll -> {
+                hasAllPermissions
+            }
+            hasDecidedNotifs -> {
+                hasNotification
+            }
+            hasDecidedBgLocation -> {
+                hasBgLocation
+            }
+            hasDecidedLocation -> {
+                hasLocation
+            }
+            else -> {
+                noPermissions
+            }
+        }
+    }
+
     private fun getStartingScreen(
         showSummaryScreen: Boolean,
         showIntroScreen: Boolean
-    ) = permissionsHelper.whenHasDecided(
+    ) = whenHasDecided(
         optOutLocation = if (showSummaryScreen) {
             OnboardMileageTrackingScreen.SummaryScreen
         } else {
@@ -310,7 +389,7 @@ class OnboardingMileageActivity : AppCompatActivity() {
 
     private fun onPermissionsUpdated() {
         if (loadSingleScreen == null) {
-            permissionsHelper.whenHasDecided(
+            whenHasDecided(
                 optOutLocation = {
                     navController?.navigate(OnboardMileageTrackingScreen.SummaryScreen.route) {
                         launchSingleTop = true
@@ -353,7 +432,7 @@ class OnboardingMileageActivity : AppCompatActivity() {
     fun getLocationPermissions() {
         when {
             !sharedPrefs.getBoolean(LOCATION_ENABLED, true) -> {}
-            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
+            this.hasPermissions(*REQUIRED_PERMISSIONS) -> {}
             else -> {
                 multiplePermissionsLauncher.launch(LOCATION_PERMISSIONS)
             }
@@ -363,7 +442,7 @@ class OnboardingMileageActivity : AppCompatActivity() {
     fun getBgPermission() {
         when {
             !sharedPrefs.getBoolean(LOCATION_ENABLED, true) -> {}
-            hasPermissions(this, *REQUIRED_PERMISSIONS) -> {}
+            this.hasPermissions(*REQUIRED_PERMISSIONS) -> {}
             else -> {
                 singlePermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
             }
@@ -374,7 +453,7 @@ class OnboardingMileageActivity : AppCompatActivity() {
     fun getNotificationPermission() {
         when {
             !sharedPrefs.getBoolean(NOTIFICATION_ENABLED, true) -> {}
-            hasPermissions(this, POST_NOTIFICATIONS) -> {}
+            this.hasPermissions(POST_NOTIFICATIONS) -> {}
             else -> {
                 singlePermissionLauncher.launch(POST_NOTIFICATIONS)
             }

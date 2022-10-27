@@ -12,18 +12,10 @@ import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.TAG
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
-import com.wtb.dashTracker.ui.dialog_confirm.LambdaWrapper
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BG_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
@@ -55,23 +47,10 @@ internal val OPTIONAL_PERMISSIONS: Array<String> =
         arrayOf()
     }
 
-/**
- * All Permissions [REQUIRED_PERMISSIONS] and [OPTIONAL_PERMISSIONS]
- */
-internal val ALL_PERMISSIONS: Array<String> = arrayOf(
-    *OPTIONAL_PERMISSIONS,
-    *REQUIRED_PERMISSIONS
-)
-
-internal fun hasPermissions(context: Context, vararg permissions: String): Boolean =
+internal fun Context.hasPermissions(vararg permissions: String): Boolean =
     permissions.all {
-        ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
     }
-
-internal fun hasBatteryPermission(context: Context): Boolean {
-    val pm = context.getSystemService(POWER_SERVICE) as PowerManager
-    return pm.isIgnoringBatteryOptimizations(context.packageName)
-}
 
 internal fun AppCompatActivity.hasBatteryPermission(): Boolean {
     val pm = getSystemService(POWER_SERVICE) as PowerManager
@@ -119,61 +98,10 @@ internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: (() -
     }
 
 
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
-@ExperimentalTextApi
-@ExperimentalMaterial3Api
-internal fun MainActivity.showRationaleLocation(onGranted: () -> Unit) {
-    ConfirmationDialog.newInstance(
-        text = R.string.dialog_location_permission_1,
-        requestKey = "Thrust",
-        title = "Allow location access",
-        posButton = R.string.allow,
-        posAction = LambdaWrapper { onGranted() },
-        negButton = R.string.deny,
-        negAction = LambdaWrapper { },
-        posButton2 = R.string.dont_ask,
-        posAction2 = LambdaWrapper {
-            this.sharedPrefs
-                .edit()
-                .putBoolean(LOCATION_ENABLED, false)
-                .apply()
-        }
-    ).show(supportFragmentManager, null)
-}
-
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
-@ExperimentalTextApi
-@ExperimentalMaterial3Api
-internal fun MainActivity.showRationaleBgLocation(onGranted: () -> Unit) {
-    ConfirmationDialog.newInstance(
-        text = R.string.dialog_bg_location_text,
-        requestKey = "Bob",
-        title = "Allow background location",
-        posButton = R.string.allow,
-        posAction = LambdaWrapper { onGranted() },
-        negButton = R.string.deny,
-        negAction = LambdaWrapper { },
-        posButton2 = R.string.dont_ask,
-        posAction2 = LambdaWrapper {
-            this.sharedPrefs
-                .edit()
-                .putBoolean(PREFS_OPT_OUT_BG_LOCATION, true)
-                .apply()
-        }
-    ).show(supportFragmentManager, null)
-}
-
 class PermissionsHelper(val context: Context) {
 
     internal val sharedPrefs
         get() = PreferenceManager.getDefaultSharedPreferences(context)
-
-    internal fun hasPermissions(vararg permissions: String): Boolean =
-        permissions.all {
-            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-        }
 
     internal val hasBatteryPermission: Boolean
         get() {
@@ -182,22 +110,22 @@ class PermissionsHelper(val context: Context) {
         }
 
     internal val locationEnabled
-        get() = hasPermissions(*REQUIRED_PERMISSIONS)
+        get() = context.hasPermissions(*REQUIRED_PERMISSIONS)
                 && sharedPrefs.getBoolean(context.LOCATION_ENABLED, false)
                 && !sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, true)
 
     internal val fgLocationEnabled
-        get() = hasPermissions(ACCESS_FINE_LOCATION)
+        get() = context.hasPermissions(ACCESS_FINE_LOCATION)
                 && sharedPrefs.getBoolean(context.LOCATION_ENABLED, false)
                 && !sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, true)
 
     internal val bgLocationEnabled
-    get() = hasPermissions(ACCESS_BACKGROUND_LOCATION)
+    get() = context.hasPermissions(ACCESS_BACKGROUND_LOCATION)
             && sharedPrefs.getBoolean(context.LOCATION_ENABLED, false)
             && !sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, true)
 
     internal val notificationsEnabled
-        get() = ((SDK_INT < TIRAMISU) || hasPermissions(POST_NOTIFICATIONS))
+        get() = ((SDK_INT < TIRAMISU) || context.hasPermissions(POST_NOTIFICATIONS))
                 && sharedPrefs.getBoolean(context.NOTIFICATION_ENABLED, false)
                 && !sharedPrefs.getBoolean(context.OPT_OUT_NOTIFICATION, true)
 
@@ -216,90 +144,6 @@ class PermissionsHelper(val context: Context) {
             prefValue
         )?.commit()
         onPrefSet?.invoke()
-    }
-
-    // TODO: This isn't used for permissions anymore, maybe move it to onboarding activity, the
-    //  only place it is used correctly
-    /**
-     *  wraps a when expression that checks for missing permissions in this order:
-     *  none > battery > notification > bg location > location & activity > all
-     *
-     * @param T return type
-     * @param optOutLocation Has opted out of mileage tracking
-     * @param hasAllPermissions Has [REQUIRED_PERMISSIONS] + [AppCompatActivity.hasBatteryPermission]
-     * + [OPTIONAL_PERMISSIONS] or has opted out of optional permissions
-     * @param hasNotification Has [REQUIRED_PERMISSIONS] + []
-     * @param hasBgLocation SDK_INT >= TIRAMISU and has [ACCESS_BACKGROUND_LOCATION] and
-     * [LOCATION_PERMISSIONS]
-     * @param hasLocation Has [LOCATION_PERMISSIONS]
-     * @param noPermissions also the default return value
-     * @return the matching parameter
-     */
-    fun <T : Any> whenHasDecided(
-        optOutLocation: T? = null,
-        hasAllPermissions: T? = null,
-        hasNotification: T? = null,
-        hasBgLocation: T? = null,
-        hasLocation: T? = null,
-        noPermissions: T? = null
-    ): T? {
-        val optOut = !sharedPrefs.getBoolean(context.ASK_AGAIN_LOCATION, true)
-                && sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, false)
-
-        val askAgainLocation =
-            sharedPrefs.getBoolean(context.ASK_AGAIN_LOCATION, false)
-
-        val hasDecidedLocation = hasPermissions(*LOCATION_PERMISSIONS)
-                || sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, false)
-                || askAgainLocation
-
-        val askAgainBgLocation =
-            sharedPrefs.getBoolean(context.ASK_AGAIN_BG_LOCATION, false)
-
-        val hasDecidedBgLocation =
-            (hasPermissions(*REQUIRED_PERMISSIONS) && hasDecidedLocation)
-                    || sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, false)
-                    || askAgainBgLocation
-
-        val askAgainNotification =
-            sharedPrefs.getBoolean(context.ASK_AGAIN_NOTIFICATION, false)
-
-        val hasDecidedNotifs =
-            (hasPermissions(*OPTIONAL_PERMISSIONS) && hasDecidedBgLocation)
-                    || sharedPrefs.getBoolean(context.OPT_OUT_NOTIFICATION, false)
-                    || askAgainNotification
-
-        val askAgainBattery = sharedPrefs.getBoolean(context.ASK_AGAIN_BATTERY_OPTIMIZER, false)
-
-        val hasDecidedBattery = (hasBatteryPermission && hasDecidedNotifs)
-                || sharedPrefs.getBoolean(context.OPT_OUT_BATTERY_OPTIMIZER, false)
-                || askAgainBattery
-
-        val hasAll = hasDecidedBattery
-                && hasDecidedNotifs
-                && hasDecidedBgLocation
-                && hasDecidedLocation
-
-        return when {
-            optOut -> {
-                optOutLocation
-            }
-            hasAll -> {
-                hasAllPermissions
-            }
-            hasDecidedNotifs -> {
-                hasNotification
-            }
-            hasDecidedBgLocation -> {
-                hasBgLocation
-            }
-            hasDecidedLocation -> {
-                hasLocation
-            }
-            else -> {
-                noPermissions
-            }
-        }
     }
 
     companion object {

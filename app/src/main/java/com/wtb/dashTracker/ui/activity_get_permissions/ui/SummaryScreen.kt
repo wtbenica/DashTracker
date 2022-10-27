@@ -43,6 +43,7 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
+import com.wtb.dashTracker.util.hasPermissions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -73,7 +74,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
         }
 
         val iconImage: @Composable (ColumnScope.() -> Unit) = if (
-            permHelp.hasPermissions(*REQUIRED_PERMISSIONS)
+            activity.hasPermissions(*REQUIRED_PERMISSIONS)
             && permHelp.sharedPrefs.getBoolean(activity.LOCATION_ENABLED, false)
         ) {
             locOn
