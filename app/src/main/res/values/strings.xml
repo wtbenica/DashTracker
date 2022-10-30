@@ -289,19 +289,24 @@
 
     <string name="prefs_enable_location">prefs_enable_location</string>
     <string name="prefs_enable_notification">prefs_enable_notification</string>
+    <string name="prefs_enable_bg_battery">prefs_enable_bg_battery</string>
 
     <string name="prefs_opt_out_location">prefs_opt_out_location</string>
     <string name="prefs_opt_out_notification">prefs_opt_out_notification</string>
+    <string name="prefs_opt_out_battery_optimizer">prefs_opt_out_battery_optimizer</string>
 
     <string name="prefs_ask_again_location">prefs_ask_again_location</string>
     <string name="prefs_ask_again_bg_location">prefs_ask_again_bg_location</string>
     <string name="prefs_ask_again_notification">prefs_ask_again_notification</string>
     <string name="prefs_ask_again_battery_optimizer">prefs_ask_again_battery_optimizer</string>
-    <string name="prefs_opt_out_battery_optimizer">prefs_opt_out_battery_optimizer</string>
-    <string name="prefs_enable_bg_battery">prefs_enable_bg_battery</string>
+
+    <string name="prefs_show_onboard_intro">prefs_show_onboard_intro</string>
+    <string name="prefs_show_summary_screen">prefs_show_summary_screen</string>
+
+    <string name="prefs_show_base_pay_adjusts">prefs_show_base_pay_adjusts</string>
+
     <string name="dialog_restart">DashTracker needs to restart for changes to take effect. Restart now?</string>
     <string name="restart">Restart</string>
     <string name="later">Later</string>
-    <string name="prefs_show_onboard_intro">prefs_show_onboard_intro</string>
-    <string name="prefs_show_summary_screen">prefs_show_summary_screen</string>
+
 </resources>

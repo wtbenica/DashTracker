@@ -20,9 +20,8 @@
 
         <SwitchPreference
             app:defaultValue="true"
-            app:key="use_base_pay_adjustment"
-            app:summary="Include a field in weekly summary for recording Base Pay Adjustment (for CA dashers) or weekly incentive payments"
-            app:title="Show Base Pay Adjustment/Weekly Incentive field"
+            app:key="@string/prefs_show_base_pay_adjusts"
+            app:title="Show weekly adjustment/incentive field"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
