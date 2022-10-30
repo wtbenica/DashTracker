@@ -57,7 +57,7 @@ fun ExpandableCard(
     icon: ImageVector,
     iconTint: Color,
     iconDescription: String,
-    content: @Composable() (() -> Unit)? = null
+    content: @Composable (() -> Unit)? = null
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -177,7 +177,7 @@ fun ContentCard(
     icon: ImageVector,
     iconTint: Color,
     iconDescription: String,
-    content: @Composable() (() -> Unit)? = null
+    content: @Composable (() -> Unit)? = null
 ) {
     DashTrackerTheme {
         OutlinedCard(
@@ -236,14 +236,14 @@ fun ContentCard(
 @Composable
 fun ListRow(
     text: String,
-    rowModifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
     fontSize: TextUnit = 16.sp,
     iconSize: Dp = 18.dp,
     fontFamily: FontFamily? = MaterialTheme.typography.bodyLarge.fontFamily,
     icon: ImageVector = Icons.TwoTone.Circle
 ) {
     Row(
-        modifier = rowModifier,
+        modifier = modifier,
         verticalAlignment = Alignment.Top
     ) {
         Icon(
@@ -267,10 +267,10 @@ fun ListRow(
 
 @ExperimentalTextApi
 @Composable
-fun HeaderRow(text: String, rowModifier: Modifier = Modifier, icon: ImageVector) =
+fun HeaderRow(text: String, modifier: Modifier = Modifier, icon: ImageVector) =
     ListRow(
         text = text,
-        rowModifier = rowModifier,
+        modifier = modifier,
         fontSize = 18.sp,
         iconSize = 18.dp,
         icon = icon

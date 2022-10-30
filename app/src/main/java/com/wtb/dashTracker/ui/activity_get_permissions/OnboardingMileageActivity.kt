@@ -25,6 +25,7 @@ import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
@@ -50,12 +51,8 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetBatteryPermissionScreen
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetLocationPermissionsScreen
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.GetNotificationPermissionScreen
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.SummaryScreen
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.*
 import com.wtb.dashTracker.ui.activity_main.TAG
-import com.wtb.dashTracker.ui.activity_welcome.ui.composables.OnboardingIntroScreen
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
@@ -74,7 +71,7 @@ import kotlinx.coroutines.*
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
-class OnboardingMileageActivity : AppCompatActivity() {
+class OnboardingMileageActivity : ComponentActivity() {
 
     private val permissionsHelper = PermissionsHelper(this)
 
@@ -95,7 +92,7 @@ class OnboardingMileageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.hide()
+        actionBar?.hide()
 
         @Suppress("DEPRECATION")
         loadSingleScreen = if (SDK_INT >= TIRAMISU) {
@@ -110,16 +107,12 @@ class OnboardingMileageActivity : AppCompatActivity() {
         showIntroScreen = sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, true)
 
         val missingLocation = !hasPermissions(*LOCATION_PERMISSIONS)
-
         val missingBgLocation = !hasPermissions(ACCESS_BACKGROUND_LOCATION)
-
         val missingNotification = ((SDK_INT >= TIRAMISU)
                 && !hasPermissions(POST_NOTIFICATIONS)
                 && !sharedPrefs.getBoolean(OPT_OUT_NOTIFICATION, false))
-
         val missingBatteryOptimization = (!hasBatteryPermission()
                 && !sharedPrefs.getBoolean(OPT_OUT_BATTERY_OPTIMIZER, false))
-
         val missingPermissions = mutableListOf(
             showIntroScreen,
             missingLocation,
@@ -127,14 +120,11 @@ class OnboardingMileageActivity : AppCompatActivity() {
             missingNotification,
             missingBatteryOptimization,
         )
-
         showSummaryScreen = missingPermissions.contains(true)
-
         missingPermissions.add(showSummaryScreen)
+        val numPages = missingPermissions.count { it }
 
         initialScreen = getStartingScreen(showSummaryScreen, showIntroScreen)
-
-        val numPages = missingPermissions.count { it }
 
         setContent {
             DashTrackerTheme {
@@ -142,7 +132,6 @@ class OnboardingMileageActivity : AppCompatActivity() {
 
                     if (loadSingleScreen != null) {
                         if (initialScreen != null && initialScreen!! > loadSingleScreen!!) {
-                            Log.d(TAG, "Load: ${loadSingleScreen} | init: $initialScreen")
                             finish()
                         }
 
@@ -179,7 +168,7 @@ class OnboardingMileageActivity : AppCompatActivity() {
                                         )
                                     }
                                 }
-                                BATTERY_OPTIMIZATION_SCREEN -> {
+                                OPTIMIZATION_OFF_SCREEN -> {
                                     GetBatteryPermissionScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity,
@@ -190,6 +179,14 @@ class OnboardingMileageActivity : AppCompatActivity() {
                                     SummaryScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity,
+                                    )
+                                }
+                                OPTIMIZATION_ON_SCREEN -> {
+                                    Log.d(TAG, "Reenable battery optimization")
+                                    ReenableBatteryOptimizationScreen(
+                                        modifier = Modifier.weight(1f),
+                                        activity = this@OnboardingMileageActivity,
+                                        finishWhenDone = true
                                     )
                                 }
                             }
@@ -224,7 +221,7 @@ class OnboardingMileageActivity : AppCompatActivity() {
                                         GetNotificationPermissionScreen(activity = this@OnboardingMileageActivity)
                                     }
                                 }
-                                composable(BATTERY_OPTIMIZATION_SCREEN.name) {
+                                composable(OPTIMIZATION_OFF_SCREEN.name) {
                                     GetBatteryPermissionScreen(activity = this@OnboardingMileageActivity)
                                 }
                                 composable(INTRO_SCREEN.name) {
@@ -243,7 +240,10 @@ class OnboardingMileageActivity : AppCompatActivity() {
                                 missingPermissions.subList(0, absoluteScreenNumber).count { it }
 
                             PageIndicator(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
+                                modifier = Modifier.padding(
+                                    horizontal = 16.dp,
+                                    vertical = 0.dp
+                                ),
                                 numPages = numPages,
                                 selectedPage = currentPage
                             )
@@ -336,13 +336,19 @@ class OnboardingMileageActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * @param showSummaryScreen whether to show [SUMMARY_SCREEN]
+     * @param showIntroScreen whether to s [INTRO_SCREEN]
+     * @return The next [OnboardingScreen] based on which permissions have been decided (granted,
+     * postponed or denied). Null if all permissions are decided and [showSummaryScreen] is false.
+     */
     private fun getStartingScreen(
         showSummaryScreen: Boolean,
         showIntroScreen: Boolean
     ) = whenHasDecided(
         optOutLocation = if (showSummaryScreen) SUMMARY_SCREEN else null,
         hasAllPermissions = if (showSummaryScreen) SUMMARY_SCREEN else null,
-        hasNotification = BATTERY_OPTIMIZATION_SCREEN,
+        hasNotification = OPTIMIZATION_OFF_SCREEN,
         hasBgLocation = NOTIFICATION_SCREEN,
         hasLocation = BG_LOCATION_SCREEN,
         noPermissions = if (showIntroScreen) INTRO_SCREEN else LOCATION_SCREEN
@@ -371,7 +377,7 @@ class OnboardingMileageActivity : AppCompatActivity() {
             val route = whenHasDecided(
                 optOutLocation = SUMMARY_SCREEN,
                 hasAllPermissions = SUMMARY_SCREEN,
-                hasNotification = BATTERY_OPTIMIZATION_SCREEN,
+                hasNotification = OPTIMIZATION_OFF_SCREEN,
                 hasBgLocation = NOTIFICATION_SCREEN,
                 hasLocation = BG_LOCATION_SCREEN,
                 noPermissions = LOCATION_SCREEN
@@ -381,9 +387,17 @@ class OnboardingMileageActivity : AppCompatActivity() {
                 launchSingleTop = true
             }
         } else {
-            val currScreen = getStartingScreen(showSummaryScreen, showIntroScreen)
+            val loadSingleComplete = when (loadSingleScreen!!) {
+                LOCATION_SCREEN -> hasPermissions(*LOCATION_PERMISSIONS)
+                BG_LOCATION_SCREEN -> hasPermissions(ACCESS_BACKGROUND_LOCATION)
+                NOTIFICATION_SCREEN -> SDK_INT < TIRAMISU || hasPermissions(POST_NOTIFICATIONS)
+                OPTIMIZATION_OFF_SCREEN -> hasBatteryPermission()
+                OPTIMIZATION_ON_SCREEN -> !hasBatteryPermission()
+                INTRO_SCREEN -> null
+                SUMMARY_SCREEN -> null
+            }
 
-            if (currScreen == null || currScreen > loadSingleScreen!!) {
+            if (loadSingleComplete ?: false) {
                 finish()
             }
         }
@@ -420,8 +434,8 @@ class OnboardingMileageActivity : AppCompatActivity() {
         }
     }
 
-    fun getBatteryPermission() {
-        when {
+    fun getBatteryPermission(ifHasPermission: Boolean = true) {
+        when (ifHasPermission) {
             !sharedPrefs.getBoolean(BG_BATTERY_ENABLED, true) -> {}
             hasBatteryPermission() -> {}
             else -> {
@@ -450,8 +464,8 @@ class OnboardingMileageActivity : AppCompatActivity() {
      */
     internal fun setLocationEnabled(enabled: Boolean) {
         if (!enabled) {
-            permissionsHelper.setBooleanPref(NOTIFICATION_ENABLED, enabled)
-            permissionsHelper.setBooleanPref(BG_BATTERY_ENABLED, enabled)
+            permissionsHelper.setBooleanPref(NOTIFICATION_ENABLED, false)
+            permissionsHelper.setBooleanPref(BG_BATTERY_ENABLED, false)
         }
         permissionsHelper.setBooleanPref(LOCATION_ENABLED, enabled, ::onPermissionsUpdated)
     }
@@ -463,8 +477,12 @@ class OnboardingMileageActivity : AppCompatActivity() {
 }
 
 enum class OnboardingScreen {
+    // page order/numbering matters for these
     INTRO_SCREEN, LOCATION_SCREEN, BG_LOCATION_SCREEN, NOTIFICATION_SCREEN,
-    BATTERY_OPTIMIZATION_SCREEN, SUMMARY_SCREEN
+    OPTIMIZATION_OFF_SCREEN, SUMMARY_SCREEN,
+
+    // page order/numbering doesn't matter - intended for loadSingleScreen ONLY
+    OPTIMIZATION_ON_SCREEN
 }
 
 @Composable

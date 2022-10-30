@@ -9,6 +9,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.PowerManager
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -52,7 +53,7 @@ internal fun Context.hasPermissions(vararg permissions: String): Boolean =
         ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
     }
 
-internal fun AppCompatActivity.hasBatteryPermission(): Boolean {
+internal fun Context.hasBatteryPermission(): Boolean {
     val pm = getSystemService(POWER_SERVICE) as PowerManager
     return pm.isIgnoringBatteryOptimizations(packageName)
 }
@@ -65,13 +66,13 @@ internal fun AppCompatActivity.hasBatteryPermission(): Boolean {
  * @return an [ActivityResultLauncher]
  */
 @ExperimentalCoroutinesApi
-internal fun AppCompatActivity.registerMultiplePermissionsLauncher(
+internal fun ComponentActivity.registerMultiplePermissionsLauncher(
     onGranted: (() -> Unit)? = null,
     onNotGranted: (() -> Unit)? = null
 ): ActivityResultLauncher<Array<String>> =
     registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
         it?.let { permissionMap ->
-            val permissionGranted = permissionMap.toList().all { it.second }
+            val permissionGranted = permissionMap.toList().all { p -> p.second }
             if (permissionGranted) {
                 Log.d(TAG, "I can haz permission?")
                 onGranted?.invoke()
@@ -89,7 +90,7 @@ internal fun AppCompatActivity.registerMultiplePermissionsLauncher(
  * @param onGranted the function to call if permission is granted
  * @return an [ActivityResultLauncher]
  */
-internal fun AppCompatActivity.registerSinglePermissionLauncher(onGranted: (() -> Unit)? = null):
+internal fun ComponentActivity.registerSinglePermissionLauncher(onGranted: (() -> Unit)? = null):
         ActivityResultLauncher<String> =
     registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         if (it) {
@@ -183,8 +184,5 @@ class PermissionsHelper(val context: Context) {
         internal val Context.PREF_SHOW_SUMMARY_SCREEN
             get() = getString(R.string.prefs_show_summary_screen)
 
-        internal const val PREFS_OPT_OUT_BG_LOCATION = "Don't ask | bg location"
-
-        internal const val PREFS_SHOULD_SHOW_INTRO = "Run Intro"
     }
 }

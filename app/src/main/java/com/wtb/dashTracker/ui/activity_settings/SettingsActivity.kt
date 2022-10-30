@@ -23,7 +23,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
-import android.os.PowerManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -34,25 +33,30 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity.Companion.EXTRA_PERMISSIONS_ROUTE
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
+import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
+import com.wtb.dashTracker.util.hasBatteryPermission
 import com.wtb.dashTracker.util.hasPermissions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -62,6 +66,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class SettingsActivity : AppCompatActivity() {
+    private val sharedPrefs
+        get() = PreferenceManager.getDefaultSharedPreferences(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
@@ -74,105 +81,112 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    class SettingsFragment : PreferenceFragmentCompat() {
-        private val permissionHelper
-            get() = PermissionsHelper(requireContext())
+    override fun onResume() {
+        super.onResume()
 
-        var mileageTrackingEnabledPref: SwitchPreference? = null
-        var notificationEnabledPref: SwitchPreference? = null
-        var bgBatteryEnabledPref: SwitchPreference? = null
+        sharedPrefs.registerOnSharedPreferenceChangeListener(listener)
+    }
 
-        @SuppressLint("NotifyDataSetChanged")
-        val listener: OnSharedPreferenceChangeListener =
-            OnSharedPreferenceChangeListener { sharedPreferences, key ->
-                Log.d(TAG, "onSharedPrefChangeListener | $key")
-                when (key) {
-                    getString(R.string.prefs_enable_location) -> {
-                        val isChecked = if (sharedPreferences.all.keys.contains(key))
-                            sharedPreferences.getBoolean(key, false) else null
-                        Log.d(TAG, "location is checked: $isChecked")
-                        mileageTrackingEnabledPref?.isChecked = isChecked ?: false
+    override fun onPause() {
+        super.onPause()
 
+        sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
+    }
 
-                        if (isChecked == true) {
+    @SuppressLint("NotifyDataSetChanged")
+    val listener: OnSharedPreferenceChangeListener =
+        OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            Log.d(TAG, "onSharedPrefChangeListener | $key")
+            when (key) {
+                getString(R.string.prefs_enable_location) -> {
+                    val isChecked = sharedPreferences.getBoolean(key, false)
+                    if (isChecked) {
+                        sharedPreferences?.edit()?.apply {
+                            putBoolean(ASK_AGAIN_LOCATION, false)
+                            putBoolean(ASK_AGAIN_BG_LOCATION, false)
+                            putBoolean(ASK_AGAIN_NOTIFICATION, false)
+                            putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                            putBoolean(OPT_OUT_LOCATION, false)
+                            putBoolean(PREF_SHOW_SUMMARY_SCREEN, true)
+                            apply()
+                        }
+
+                        startActivity(Intent(this, OnboardingMileageActivity::class.java))
+                    }
+                }
+                getString(R.string.prefs_enable_notification) -> {
+                    val isChecked = sharedPreferences.getBoolean(key, false)
+                    if (isChecked) {
+                        sharedPreferences?.edit()?.apply {
+                            putBoolean(OPT_OUT_NOTIFICATION, false)
+                            putBoolean(ASK_AGAIN_NOTIFICATION, false)
+                            apply()
+                        }
+
+                        if (!hasPermissions(POST_NOTIFICATIONS)) {
+                            startActivity(
+                                Intent(this, OnboardingMileageActivity::class.java)
+                                    .putExtra(EXTRA_PERMISSIONS_ROUTE, NOTIFICATION_SCREEN)
+                            )
+                        }
+                    } else {
+                        if (SDK_INT >= TIRAMISU) {
                             sharedPreferences?.edit()?.apply {
-                                putBoolean(requireContext().ASK_AGAIN_LOCATION, false)
-                                putBoolean(requireContext().ASK_AGAIN_BG_LOCATION, false)
-                                putBoolean(requireContext().ASK_AGAIN_NOTIFICATION, false)
-                                putBoolean(requireContext().ASK_AGAIN_BATTERY_OPTIMIZER, false)
-                                putBoolean(requireContext().OPT_OUT_LOCATION, false)
-                                putBoolean(requireContext().PREF_SHOW_SUMMARY_SCREEN, true)
+                                putBoolean(OPT_OUT_NOTIFICATION, true)
+                                putBoolean(ASK_AGAIN_NOTIFICATION, true)
                                 apply()
                             }
 
-                            val intent =
-                                Intent(requireContext(), OnboardingMileageActivity::class.java)
-                            startActivity(intent)
+                            revokeSelfPermissionOnKill(POST_NOTIFICATIONS)
+
+                            ConfirmationDialog.newInstance(
+                                text = R.string.dialog_restart,
+                                requestKey = ConfirmType.RESTART.key,
+                                posButton = R.string.restart,
+                                negButton = R.string.later
+                            ).show(supportFragmentManager, null)
                         }
                     }
-                    getString(R.string.prefs_enable_notification) -> {
-                        val isChecked = if (sharedPreferences.all.keys.contains(key))
-                            sharedPreferences.getBoolean(key, false) else null
-
-                        if (isChecked == true) {
-                            sharedPreferences?.edit()?.apply {
-                                putBoolean(requireContext().OPT_OUT_NOTIFICATION, false)
-                                putBoolean(requireContext().ASK_AGAIN_NOTIFICATION, false)
-                                apply()
-                            }
-
-                            if (!requireContext().hasPermissions(POST_NOTIFICATIONS)) {
-                                val intent =
-                                    Intent(requireContext(), OnboardingMileageActivity::class.java)
-                                        .putExtra(
-                                            EXTRA_PERMISSIONS_ROUTE,
-                                            OnboardingScreen.NOTIFICATION_SCREEN
-                                        )
-                                startActivity(intent)
-                            }
-                        } else {
-                            if (SDK_INT >= TIRAMISU) {
-                                requireContext().revokeSelfPermissionOnKill(POST_NOTIFICATIONS)
-
-                                ConfirmationDialog.newInstance(
-                                    text = R.string.dialog_restart,
-                                    requestKey = ConfirmType.RESTART.key,
-                                    posButton = R.string.restart,
-                                    negButton = R.string.later
-                                ).show(parentFragmentManager, null)
-                            }
+                }
+                getString(R.string.prefs_enable_bg_battery) -> {
+                    val isChecked = sharedPreferences.getBoolean(key, false)
+                    if (isChecked) {
+                        sharedPreferences?.edit()?.apply {
+                            putBoolean(OPT_OUT_BATTERY_OPTIMIZER, false)
+                            putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                            apply()
                         }
-                    }
-                    getString(R.string.prefs_enable_bg_battery) -> {
-                        val isChecked = if (sharedPreferences.all.keys.contains(key))
-                            sharedPreferences.getBoolean(key, false) else null
-                        Log.d(TAG, "bg battery is checked: $isChecked")
-                        bgBatteryEnabledPref?.isChecked = isChecked ?: false
 
-                        if (isChecked == true) {
-                            sharedPreferences?.edit()?.apply {
-                                putBoolean(requireContext().OPT_OUT_BATTERY_OPTIMIZER, false)
-                                putBoolean(requireContext().ASK_AGAIN_BATTERY_OPTIMIZER, false)
-                                apply()
-                            }
+                        if (!hasBatteryPermission()) {
+                            startActivity(
+                                Intent(this, OnboardingMileageActivity::class.java)
+                                    .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_OFF_SCREEN)
+                            )
+                        }
+                    } else {
+                        Log.d(TAG, "BATTERY | battery switch off")
+                        sharedPreferences?.edit()?.apply {
+                            putBoolean(OPT_OUT_BATTERY_OPTIMIZER, true)
+                            putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, true)
+                            apply()
+                        }
 
-                            if (!permissionHelper.hasBatteryPermission) {
-                                val intent =
-                                    Intent(requireContext(), OnboardingMileageActivity::class.java)
-                                        .putExtra(
-                                            EXTRA_PERMISSIONS_ROUTE,
-                                            OnboardingScreen.BATTERY_OPTIMIZATION_SCREEN
-                                        )
-                                startActivity(intent)
-                            }
-                        } else {
-                            val pm =
-                                requireContext().getSystemService(POWER_SERVICE) as PowerManager
-                            pm.isIgnoringBatteryOptimizations(requireContext().packageName)
+                        if (hasBatteryPermission()) {
+                            Log.d(TAG, "BATTERY | has battery permission, turning it off")
+                            startActivity(
+                                Intent(this, OnboardingMileageActivity::class.java)
+                                    .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_ON_SCREEN)
+                            )
                         }
                     }
                 }
             }
+        }
+
+    class SettingsFragment : PreferenceFragmentCompat() {
+        var mileageTrackingEnabledPref: SwitchPreference? = null
+        var notificationEnabledPref: SwitchPreference? = null
+        var bgBatteryEnabledPref: SwitchPreference? = null
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -202,13 +216,18 @@ class SettingsActivity : AppCompatActivity() {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
             Log.d(TAG, "onCreatePreferences | ")
 
-            mileageTrackingEnabledPref = findPreference(getString(R.string.prefs_enable_location))
-            notificationEnabledPref = findPreference(getString(R.string.prefs_enable_notification))
-            bgBatteryEnabledPref = findPreference(getString(R.string.prefs_enable_bg_battery))
+            mileageTrackingEnabledPref = findPreference(requireContext().LOCATION_ENABLED)
 
-            if (SDK_INT < TIRAMISU) {
-                notificationEnabledPref?.isVisible = false
-            }
+            notificationEnabledPref =
+                findPreference<SwitchPreference>(requireContext().NOTIFICATION_ENABLED)?.apply {
+                    if (SDK_INT < TIRAMISU) {
+                        isVisible = false
+                    }
+                }
+
+            bgBatteryEnabledPref = findPreference(requireContext().BG_BATTERY_ENABLED)
+
+            updatePreferencesToReflectCurrentPermissions()
         }
 
         override fun onResume() {
@@ -217,16 +236,27 @@ class SettingsActivity : AppCompatActivity() {
             preferenceScreen.removeAll()
             addPreferencesFromResource(R.xml.root_preferences)
 
-            val prefs = preferenceManager.sharedPreferences
-            Log.d(TAG, "onResume | prefs is null: ${prefs == null}")
-            prefs?.registerOnSharedPreferenceChangeListener(listener)
+            updatePreferencesToReflectCurrentPermissions()
         }
 
-        override fun onPause() {
-            super.onPause()
-            val prefs = preferenceManager.sharedPreferences
-            Log.d(TAG, "onPause | prefs is null: ${prefs == null}")
-            prefs?.unregisterOnSharedPreferenceChangeListener(listener)
+        private fun updatePreferencesToReflectCurrentPermissions() {
+            mileageTrackingEnabledPref?.apply {
+                if (!context.hasPermissions(*REQUIRED_PERMISSIONS)) {
+                    isChecked = false
+                }
+            }
+
+            notificationEnabledPref?.apply {
+                if (SDK_INT >= TIRAMISU && !context.hasPermissions(POST_NOTIFICATIONS)) {
+                    isChecked = false
+                }
+            }
+
+            bgBatteryEnabledPref?.apply {
+                if (!context.hasBatteryPermission()) {
+                    isChecked = false
+                }
+            }
         }
     }
 }

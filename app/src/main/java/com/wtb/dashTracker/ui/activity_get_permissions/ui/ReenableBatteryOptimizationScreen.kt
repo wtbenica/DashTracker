@@ -20,14 +20,11 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
-import androidx.compose.material.icons.twotone.PinDrop
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.twotone.BatterySaver
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
@@ -41,9 +38,9 @@ import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.ui.theme.car
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -51,61 +48,67 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetBgLocationPermissionScreen(
+fun ReenableBatteryOptimizationScreen(
     modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null
+    activity: OnboardingMileageActivity? = null,
+    finishWhenDone: Boolean = false
 ) =
     ScreenTemplate(
         modifier = modifier,
-        headerText = "Background Location Permission",
-        subtitleText = "Required for automatic mileage tracking",
+        headerText = "Battery Optimization",
+        subtitleText = "Optional",
         iconImage = {
             Icon(
-                imageVector = Icons.TwoTone.PinDrop,
-                contentDescription = "Location symbol",
-                modifier = Modifier
-                    .size(96.dp),
-                tint = car
+                imageVector = Icons.TwoTone.BatterySaver,
+                contentDescription = "Battery Saver Icon",
+                modifier = Modifier.size(96.dp),
+                tint = MaterialTheme.colorScheme.secondary
             )
         },
         mainContent = {
-            val str = buildAnnotatedString {
-                append(stringResource(R.string.dialog_bg_location_text_1))
+            CustomOutlinedCard {
+                val str = buildAnnotatedString {
+                    append(stringResource(id = R.string.reenable_battery_permission_1))
 
-                withStyle(style = styleBold) {
-                    append(stringResource(R.string.dialog_bg_location_text_2_ital))
+                    withStyle(style = styleBold) {
+                        append(stringResource(id = R.string.reenable_battery_permission_2_ital))
+                    }
+
+                    append(stringResource(id = R.string.reenable_battery_permission_3))
+
+                    withStyle(style = styleBold) {
+                        append(stringResource(id = R.string.reenable_battery_permission_4_ital))
+                    }
+
+                    append(stringResource(id = R.string.reenable_battery_permission_5))
+
+                    withStyle(style = styleBold) {
+                        append(stringResource(id = R.string.reenable_battery_permission_6_ital))
+                    }
+
+                    append(stringResource(id = R.string.reenable_battery_permission_7))
                 }
 
-                append(stringResource(R.string.dialog_bg_location_text_3))
-            }
 
-            CustomOutlinedCard {
                 Text(
                     text = str,
                     fontSize = 18.sp,
                     fontFamily = FontFamilyFiraSans
                 )
             }
-
-            val uriHandler = LocalUriHandler.current
-
-            CustomTextButton(onClick = {
-                uriHandler.openUri("https://www.benica.dev")
-            }) {
-                Text("Privacy Policy")
-            }
         },
         navContent = {
-            GetBgLocationPermissionNav(activity = activity)
+            ReenableBatteryOptimizationNav(activity = activity)
         }
     )
+
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetBgLocationPermissionNav(
+fun ReenableBatteryOptimizationNav(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ) {
@@ -113,13 +116,13 @@ fun GetBgLocationPermissionNav(
         modifier = modifier
             .fillMaxWidth()
     ) {
+        LocalContext.current
         FillSpacer()
 
         CustomTextButton(
             onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, true)
-                activity?.setLocationEnabled(false)
-                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, false)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, true)
+                activity?.finish()
             },
         ) {
             Text("No thanks")
@@ -127,24 +130,12 @@ fun GetBgLocationPermissionNav(
 
         DefaultSpacer()
 
-        CustomTextButton(
-            onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
-                activity?.setLocationEnabled(false)
-                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, true)
-            },
-        ) {
-            Text("Maybe later")
-        }
-
-        DefaultSpacer()
-
         CustomOutlinedButton(
             onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
-                activity?.setLocationEnabled(true)
-                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, false)
-                activity?.getBgPermission()
+                activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, true)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                activity?.getBatteryPermission(false)
             },
         ) {
             HalfSpacer()
@@ -158,24 +149,23 @@ fun GetBgLocationPermissionNav(
     }
 }
 
-
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Preview(showBackground = true)
 @Composable
-fun GetBgLocationPermissionPreview() {
+fun ReenableBatteryOptimizationPreview() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetBgLocationPermissionScreen()
+                ReenableBatteryOptimizationScreen()
                 PageIndicator(
                     modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
                     numPages = 4,
-                    selectedPage = 2
+                    selectedPage = 4
                 )
             }
         }
