@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +35,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,13 +48,13 @@ import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment.Companion.toVisibleIfTrueElseGone
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -66,6 +68,14 @@ class WeeklyListFragment : ListItemFragment() {
 
     private lateinit var binding: FragItemListBinding
     private var deductionType: DeductionType = DeductionType.NONE
+    private val fullWeeklyAdapter = FullWeeklyAdapter().apply {
+        registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                binding.itemListRecyclerView.scrollToPosition(positionStart)
+            }
+        })
+    }
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -86,24 +96,17 @@ class WeeklyListFragment : ListItemFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = FullWeeklyAdapter().apply {
-            registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                    binding.itemListRecyclerView.scrollToPosition(positionStart)
-                }
-            })
-        }
-        binding.itemListRecyclerView.adapter = adapter
+        binding.itemListRecyclerView.adapter = fullWeeklyAdapter
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
             deductionType = it
-            adapter.notifyDataSetChanged()
+            fullWeeklyAdapter.notifyDataSetChanged()
         }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allWeekliesPaged.collectLatest {
-                    adapter.submitData(it)
+                    fullWeeklyAdapter.submitData(it)
                 }
             }
         }
@@ -112,6 +115,26 @@ class WeeklyListFragment : ListItemFragment() {
     override fun onDetach() {
         super.onDetach()
         callback = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .registerOnSharedPreferenceChangeListener(sharedPrefsListener)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private val sharedPrefsListener = OnSharedPreferenceChangeListener { sharedPrefs, key ->
+        if (key == requireContext().PREF_SHOW_BASE_PAY_ADJUSTS) {
+            val recyclerView = binding.itemListRecyclerView
+            val myLayoutManager = recyclerView.layoutManager
+            recyclerView.adapter = null
+            recyclerView.layoutManager = null
+            recyclerView.adapter = fullWeeklyAdapter
+            recyclerView.layoutManager = myLayoutManager
+            fullWeeklyAdapter.notifyDataSetChanged()
+        }
     }
 
     interface WeeklyListFragmentCallback : DeductionCallback
@@ -126,13 +149,18 @@ class WeeklyListFragment : ListItemFragment() {
             LayoutInflater.from(parent.context).inflate(R.layout.list_item_weekly, parent, false)
         ) {
             private val binding: ListItemWeeklyBinding = ListItemWeeklyBinding.bind(itemView)
+
             private val detailsBinding: ListItemWeeklyDetailsTableBinding =
                 ListItemWeeklyDetailsTableBinding.bind(itemView)
 
             override val collapseArea: ConstraintLayout
                 get() = binding.listItemDetails
+
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
+
+            private val showBPAs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getBoolean(requireContext().PREF_SHOW_BASE_PAY_ADJUSTS, true)
 
             init {
                 binding.listItemBtnEdit.apply {
@@ -209,8 +237,9 @@ class WeeklyListFragment : ListItemFragment() {
                         this.item.weekly.date.minusDays(6).shortFormat.uppercase(),
                         this.item.weekly.date.shortFormat.uppercase()
                     )
-                binding.listItemAlert.visibility =
-                    toVisibleIfTrueElseGone(this.item.weekly.isIncomplete)
+
+                binding.listItemAlert.setVisibleIfTrue(showBPAs && this.item.weekly.isIncomplete)
+
                 binding.listItemTitle2.text =
                     getCurrencyString(
                         if (this.item.totalPay != 0f) {
@@ -237,6 +266,9 @@ class WeeklyListFragment : ListItemFragment() {
                 )
 
 
+
+                detailsBinding.listItemWeeklyAdjust.setVisibleIfTrue(showBPAs)
+                detailsBinding.labelBasePayAdjust.setVisibleIfTrue(showBPAs)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
                 detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
                 detailsBinding.listItemWeeklyHours.text = getFloatString(this.item.hours)

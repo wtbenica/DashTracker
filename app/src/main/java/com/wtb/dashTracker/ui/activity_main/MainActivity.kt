@@ -75,6 +75,8 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
@@ -184,25 +186,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 restartApp()
             }
         }
-
-    private fun restartApp() {
-        val intent = packageManager.getLaunchIntentForPackage(packageName)
-        val mainIntent =
-            Intent.makeRestartActivityTask(intent?.component)
-                .putExtra(EXTRA_SETTINGS_RESTART_APP, true)
-        startActivity(mainIntent)
-        exitProcess(0)
-    }
-
-    /**
-     * Calls [ActiveDash.resumeOrStartNewTrip] on [activeDash]
-     *
-     * @return null if [activeDash] is null
-     */
-    private fun resumeMileageTracking() {
-        activeDash?.bindLocationService()
-        activeDash?.resumeOrStartNewTrip()
-    }
 
     private val csvImportLauncher: ActivityResultLauncher<String> =
         CSVUtils(activity = this).getContentLauncher(
@@ -497,6 +480,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }
             }
         }
+
+        invalidateOptionsMenu()
     }
 
     override fun onPause() {
@@ -541,6 +526,15 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val boolean = sharedPrefs.getBoolean(PREF_SHOW_BASE_PAY_ADJUSTS, true)
+        Log.d(TAG, "onPrepareOptionsMenu | show? $boolean")
+        menu?.findItem(R.id.action_new_weekly)?.isVisible =
+            boolean
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -599,6 +593,16 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     /**
+     * Calls [ActiveDash.resumeOrStartNewTrip] on [activeDash]
+     *
+     * @return null if [activeDash] is null
+     */
+    private fun resumeMileageTracking() {
+        activeDash?.bindLocationService()
+        activeDash?.resumeOrStartNewTrip()
+    }
+
+    /**
      * Calls [ActiveDash.stopLocationService]
      *
      */
@@ -613,7 +617,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         activeDash?.stopDash(entryId)
     }
 
-
     private fun insertOrReplace(models: ModelMap) {
         viewModel.insertOrReplace(
             entries = models.get<DashEntry, DashEntry.Companion>().ifEmpty { null },
@@ -622,6 +625,15 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             purposes = models.get<ExpensePurpose, ExpensePurpose.Companion>().ifEmpty { null },
             locationData = models.get<LocationData, LocationData.Companion>().ifEmpty { null }
         )
+    }
+
+    private fun restartApp() {
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        val mainIntent =
+            Intent.makeRestartActivityTask(intent?.component)
+                .putExtra(EXTRA_SETTINGS_RESTART_APP, true)
+        startActivity(mainIntent)
+        exitProcess(0)
     }
 
     /**
@@ -962,8 +974,8 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
 
-        internal const val ACTIVITY_RESULT_NEEDS_RESTART =
-            "${BuildConfig.APPLICATION_ID}.result_needs_restart"
+        //        internal const val ACTIVITY_RESULT_NEEDS_RESTART =
+//            "${BuildConfig.APPLICATION_ID}.result_needs_restart"
         private const val EXTRA_SETTINGS_RESTART_APP =
             "${BuildConfig.APPLICATION_ID}.restart_settings"
         private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"
