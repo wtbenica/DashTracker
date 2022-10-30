@@ -55,18 +55,6 @@ class LocationService : Service() {
     private val isStarted: StateFlow<Boolean>
         get() = _isStarted
 
-    /**
-     * The user's detected activity is [DetectedActivity.STILL]
-     */
-    private val isStill: StateFlow<Boolean>
-        get() = _isStill
-
-    /**
-     * The user's detected activity is [DetectedActivity.IN_VEHICLE]
-     */
-    private val inVehicle: StateFlow<Boolean>
-        get() = _inVehicle
-
     fun setIsTesting(isTesting: Boolean) {
         _isTesting.value = isTesting
     }
@@ -451,19 +439,20 @@ class LocationService : Service() {
         private const val UPDATE_INTERVAL_MILLISECONDS: Long = 5000
         private const val FASTEST_UPDATE_INTERVAL_MILLISECONDS = UPDATE_INTERVAL_MILLISECONDS / 2
         private const val PREFS_IS_PAUSED = "service_state"
-        const val EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION =
-            "${BuildConfig.LIBRARY_PACKAGE_NAME}.extra.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICAITON"
+        private const val EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION =
+            "${BuildConfig.LIBRARY_PACKAGE_NAME}.extra.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION"
 
-        const val SHARED_PREFS = "mileage_tracker"
-        const val EXTRA_LOCATION_HANDLER = "${BuildConfig.LIBRARY_PACKAGE_NAME}.locHandler"
-        const val EXTRA_TRIP_ID = "${BuildConfig.LIBRARY_PACKAGE_NAME}.tripId"
+        private const val SHARED_PREFS = "mileage_tracker"
+        private const val EXTRA_LOCATION_HANDLER = "${BuildConfig.LIBRARY_PACKAGE_NAME}.locHandler"
+        private const val EXTRA_TRIP_ID = "${BuildConfig.LIBRARY_PACKAGE_NAME}.tripId"
 
         private val locationRequest: LocationRequest
-            get() = LocationRequest.create().apply {
-                interval = UPDATE_INTERVAL_MILLISECONDS
-                fastestInterval = FASTEST_UPDATE_INTERVAL_MILLISECONDS
-                priority = Priority.PRIORITY_HIGH_ACCURACY
-            }
+            get() = LocationRequest.Builder(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                UPDATE_INTERVAL_MILLISECONDS
+            )
+                .setMinUpdateIntervalMillis(FASTEST_UPDATE_INTERVAL_MILLISECONDS)
+                .build()
 
         var dtf: DateTimeFormatter =
             DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss:SSS")

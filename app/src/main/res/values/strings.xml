@@ -229,18 +229,21 @@
         background battery use.
 
         \n\nPressing\ </string>
-
     <string name="dialog_battery_permission_2_ital">OK</string>
-
     <string name="dialog_battery_permission_3">\ will open Android\'s DashTracker settings. Select\ </string>
-
     <string name="dialog_battery_permission_4_ital">Battery</string>
-
     <string name="dialog_battery_permission_5">\ then\ </string>
-
     <string name="dialog_battery_permission_6_ital">Unrestricted</string>
-
     <string name="dialog_battery_permission_7">, then return to DashTracker.</string>
+
+    <string name="reenable_battery_permission_1">To reenable battery optimization, press\ </string>
+    <string name="reenable_battery_permission_2_ital">OK</string>
+    <string name="reenable_battery_permission_3">, which will open Android\'s DashTracker settings. Select\ </string>
+    <string name="reenable_battery_permission_4_ital">Battery</string>
+    <string name="reenable_battery_permission_5">\ then\ </string>
+    <string name="reenable_battery_permission_6_ital">Optimized</string>
+    <string name="reenable_battery_permission_7">, then return to DashTracker.</string>
+
 
     <string name="action_menu_new_item">New Item</string>
     <string name="action_add_dash">Add Dash</string>

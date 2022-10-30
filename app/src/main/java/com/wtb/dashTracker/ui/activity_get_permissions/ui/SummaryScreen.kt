@@ -54,7 +54,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity) {
     val permHelp = PermissionsHelper(activity)
 
-    fun getIconImage(): @Composable() (ColumnScope.() -> Unit) {
+    fun getIconImage(): @Composable (ColumnScope.() -> Unit) {
         val locOff: @Composable (ColumnScope.() -> Unit) = {
             Icon(
                 imageVector = Icons.Outlined.LocationOff,

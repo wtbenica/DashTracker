@@ -90,7 +90,7 @@ import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListF
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasPermissions
 import com.wtb.dashTracker.views.ActiveDashBar
@@ -107,6 +107,7 @@ import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import kotlin.system.exitProcess
 
 private const val APP = "GT_"
 private const val IS_TESTING = false
@@ -156,9 +157,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private var expectedExit = false
 
     private var activeDash: ActiveDash? = null
-        set(value) {
-            field = value
-        }
 
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -182,7 +180,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val booleanExtra = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
             Log.d(TAG, "activityResult | confirmRestart: $booleanExtra")
-            if (booleanExtra == true) {
+            if (booleanExtra ?: false) {
                 restartApp()
             }
         }
@@ -193,7 +191,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             Intent.makeRestartActivityTask(intent?.component)
                 .putExtra(EXTRA_SETTINGS_RESTART_APP, true)
         startActivity(mainIntent)
-        System.exit(0)
+        exitProcess(0)
     }
 
     /**
@@ -470,7 +468,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         super.onResume()
         Log.d(TAG, "onResume    | activeDash? ${activeDash != null}")
 
-        if ((IS_TESTING && IS_FIRST) || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
+        if ((IS_TESTING && IS_FIRST) || sharedPrefs.getBoolean(PREF_SHOW_ONBOARD_INTRO, true)) {
             IS_FIRST = false
 
             onFirstRun()
@@ -484,7 +482,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
             if (!isAuthenticated) {
                 val onSuccess: () -> Unit =
-                    if (endDashExtra == true) {
+                    if (endDashExtra ?: false) {
                         onEndDashIntent(tripId)
                     } else {
                         ::onUnlock
@@ -492,7 +490,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
                 authenticate(onSuccess)
             } else {
-                if (endDashExtra == true) {
+                if (endDashExtra ?: false) {
                     onEndDashIntent(tripId)
                 } else {
                     onUnlock()
@@ -673,9 +671,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
          * Checks for [REQUIRED_PERMISSIONS]. If they have already been granted, calls
          * [startLocationService], otherwise it requests the permissions using
          * [onboardMileageTrackingLauncher]
-         *
-         * @param entryId passed as the argument to [startLocationService] if permissions have
-         * already been granted
          */
         fun startTracking() {
             stopOnBind = false

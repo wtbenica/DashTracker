@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_welcome
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -38,7 +37,7 @@ import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreen
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreenCallback
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.PermissionsHelper
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -49,7 +48,6 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback {
 
     private val permissionsHelper = PermissionsHelper(this)
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
@@ -61,7 +59,7 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback {
 
     override fun nextScreen() {
         Log.d(TAG, "WelcomeActivity | nextScreen")
-        permissionsHelper.setBooleanPref(PREFS_SHOULD_SHOW_INTRO, false)
+        permissionsHelper.setBooleanPref(PREF_SHOW_ONBOARD_INTRO, false)
         startActivity(Intent(this, OnboardingMileageActivity::class.java))
         finish()
     }

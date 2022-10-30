@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.OnboardingIntroNav
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.cardShape
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,9 +42,9 @@ fun ScreenTemplate(
     modifier: Modifier = Modifier,
     headerText: String,
     subtitleText: String? = null,
-    iconImage: @Composable() (ColumnScope.() -> Unit),
-    mainContent: @Composable() (ColumnScope.() -> Unit),
-    navContent: @Composable() (ColumnScope.() -> Unit)? = null
+    iconImage: @Composable (ColumnScope.() -> Unit),
+    mainContent: @Composable (ColumnScope.() -> Unit),
+    navContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     DashTrackerTheme {
         Column(
