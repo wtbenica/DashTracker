@@ -75,6 +75,7 @@ import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
@@ -177,6 +178,8 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             Log.d(TAG, "activityResult | confirmRestart: $booleanExtra")
             if (booleanExtra == true) {
                 restartApp()
+            } else {
+                isAuthenticated = true
             }
         }
 
@@ -198,7 +201,9 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             Log.d(TAG, "onCreate    | Restarted!")
             isAuthenticated = true
             expectedExit = true
-            val intent = Intent(this, SettingsActivity::class.java)
+            val intent = Intent(this, SettingsActivity::class.java).apply {
+                putExtra(INTENT_EXTRA_PRE_AUTH, true)
+            }
             settingsActivityLauncher.launch(intent)
         }
 
@@ -505,7 +510,9 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             }
             R.id.action_settings -> {
                 expectedExit = true
-                val intent = Intent(this, SettingsActivity::class.java)
+                val intent = Intent(this, SettingsActivity::class.java).apply {
+                    putExtra(INTENT_EXTRA_PRE_AUTH, true)
+                }
                 settingsActivityLauncher.launch(intent)
                 true
             }

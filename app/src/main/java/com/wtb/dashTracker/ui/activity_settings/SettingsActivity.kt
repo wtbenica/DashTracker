@@ -27,16 +27,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.FrameLayout
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity.Companion.EXTRA_PERMISSIONS_ROUTE
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
@@ -65,10 +66,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
-class SettingsActivity : AppCompatActivity() {
-    private val sharedPrefs
-        get() = PreferenceManager.getDefaultSharedPreferences(this)
-
+class SettingsActivity : AuthenticatedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
@@ -78,19 +76,41 @@ class SettingsActivity : AppCompatActivity() {
                 .replace(R.id.settings, SettingsFragment())
                 .commit()
         }
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onResume() {
         super.onResume()
 
         sharedPrefs.registerOnSharedPreferenceChangeListener(listener)
+
+        if (intent?.getBooleanExtra(INTENT_EXTRA_PRE_AUTH, false) != true) {
+            lockScreen()
+
+            authenticate()
+        } else {
+            intent.putExtra(INTENT_EXTRA_PRE_AUTH, false)
+        }
     }
 
     override fun onPause() {
-        super.onPause()
-
         sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
+
+        super.onPause()
+    }
+
+    override val onAuthentication: () -> Unit
+        get() = fun() {
+            supportActionBar?.show()
+            findViewById<FrameLayout>(R.id.settings)?.isVisible = true
+        }
+
+    override val onAuthFailed: (() -> Unit)? = null
+
+    override val onAuthError: (() -> Unit)? = null
+
+    override fun lockScreen() {
+        supportActionBar?.hide()
+        findViewById<FrameLayout>(R.id.settings)?.isVisible = false
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
@@ -277,5 +297,7 @@ class SettingsActivity : AppCompatActivity() {
 
         internal val Context.PREF_SHOW_BASE_PAY_ADJUSTS
             get() = getString(R.string.prefs_show_base_pay_adjusts)
+
+        internal val INTENT_EXTRA_PRE_AUTH = "${BuildConfig.APPLICATION_ID}.pre_auth_settings"
     }
 }
