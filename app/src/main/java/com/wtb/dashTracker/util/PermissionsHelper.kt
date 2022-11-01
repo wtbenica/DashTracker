@@ -121,9 +121,9 @@ class PermissionsHelper(val context: Context) {
                 && !sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, true)
 
     internal val bgLocationEnabled
-    get() = context.hasPermissions(ACCESS_BACKGROUND_LOCATION)
-            && sharedPrefs.getBoolean(context.LOCATION_ENABLED, false)
-            && !sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, true)
+        get() = context.hasPermissions(ACCESS_BACKGROUND_LOCATION)
+                && sharedPrefs.getBoolean(context.LOCATION_ENABLED, false)
+                && !sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, true)
 
     internal val notificationsEnabled
         get() = ((SDK_INT < TIRAMISU) || context.hasPermissions(POST_NOTIFICATIONS))
@@ -156,6 +156,9 @@ class PermissionsHelper(val context: Context) {
 
         internal val Context.BG_BATTERY_ENABLED
             get() = getString(R.string.prefs_enable_bg_battery)
+
+        internal val Context.AUTHENTICATION_ENABLED
+            get() = getString(R.string.prefs_authentication_enabled)
 
         internal val Context.OPT_OUT_LOCATION
             get() = getString(R.string.prefs_opt_out_location)

@@ -26,6 +26,7 @@ import android.content.ServiceConnection
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
+import android.os.PersistableBundle
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -49,6 +50,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -91,6 +93,7 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
@@ -160,6 +163,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     private var activeDash: ActiveDash? = null
 
+    private var isAuthenticated = false
+
+    private val authenticationEnabled: Boolean
+        get() = sharedPrefs.getBoolean(AUTHENTICATION_ENABLED, true)
+
+    // Launchers
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             Log.d(TAG, "onboardMileageTracking result")
@@ -372,7 +381,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         supportActionBar?.title = "DashTracker"
 
         initMainActivityBinding()
-
         setContentView(binding.root)
 
         initBiometrics()
@@ -408,44 +416,13 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
         fun onFirstRun() {
+            expectedExit = true
             startActivity((Intent(this, WelcomeActivity::class.java)))
         }
 
         fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
             endDash(tripId)
             onUnlock()
-        }
-
-        /**
-         * Authenticates user using [BiometricPrompt]
-         */
-        fun authenticate(onSuccess: () -> Unit) {
-            val executor = ContextCompat.getMainExecutor(this)
-
-            val biometricPrompt = BiometricPrompt(this, executor,
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        super.onAuthenticationSucceeded(result)
-                        onSuccess()
-                    }
-
-                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        super.onAuthenticationError(errorCode, errString)
-                        Log.d(TAG, "login | error")
-                    }
-
-                    override fun onAuthenticationFailed() {
-                        super.onAuthenticationFailed()
-                        Log.d(TAG, "login | failed")
-                    }
-                })
-
-            val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Unlock to access DashTracker")
-                .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
-                .build()
-
-            biometricPrompt.authenticate(promptInfo)
         }
 
         super.onResume()
@@ -463,21 +440,17 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
             intent.removeExtra(EXTRA_TRIP_ID)
 
-            if (!isAuthenticated) {
-                val onSuccess: () -> Unit =
-                    if (endDashExtra ?: false) {
-                        onEndDashIntent(tripId)
-                    } else {
-                        ::onUnlock
-                    }
-
-                authenticate(onSuccess)
-            } else {
-                if (endDashExtra ?: false) {
+            val onAuthentication: () -> Unit =
+                if (endDashExtra == true) {
                     onEndDashIntent(tripId)
                 } else {
-                    onUnlock()
+                    ::onUnlock
                 }
+
+            if (authenticationEnabled && !isAuthenticated) {
+                authenticate(onAuthentication)
+            } else {
+                onAuthentication()
             }
         }
 
@@ -512,10 +485,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     private fun lockScreen() {
         binding.container.visibility = INVISIBLE
+        supportActionBar?.hide()
     }
 
     private fun unlockScreen() {
         binding.container.visibility = VISIBLE
+        supportActionBar?.show()
     }
 
     override fun onDestroy() {
@@ -968,11 +943,11 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     companion object {
-        private var isAuthenticated = false
-
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
+
+        private const val EXPECTED_EXIT = "expected_exit"
 
         //        internal const val ACTIVITY_RESULT_NEEDS_RESTART =
 //            "${BuildConfig.APPLICATION_ID}.result_needs_restart"
@@ -1042,5 +1017,45 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
  * serve a purpose
  */
 interface DeductionCallback
+
+/**
+ * Authenticates user using [BiometricPrompt]
+ */
+fun FragmentActivity.authenticate(
+    onSuccess: () -> Unit,
+    onError: (() -> Unit)? = null,
+    onFailed: (() -> Unit)? = null
+) {
+    val executor = ContextCompat.getMainExecutor(this)
+
+    val biometricPrompt = BiometricPrompt(this, executor,
+        object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                onSuccess()
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                Log.d(TAG, "login | error")
+                onError?.invoke()
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                Log.d(TAG, "login | failed")
+                onFailed?.invoke()
+            }
+        })
+
+    val promptInfo = BiometricPrompt.PromptInfo.Builder()
+        .setTitle("Unlock to access DashTracker")
+        .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+        .build()
+
+    biometricPrompt.authenticate(promptInfo)
+}
+
+
 
 

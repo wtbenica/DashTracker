@@ -50,7 +50,7 @@
 
         <SwitchPreference
             app:defaultValue="true"
-            app:key="require_authentication"
+            app:key="@string/prefs_authentication_enabled"
             app:title="Require authentication to open" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -121,6 +121,7 @@ class OnboardingMileageActivity : ComponentActivity() {
             missingBatteryOptimization,
         )
         showSummaryScreen = missingPermissions.contains(true)
+                && !sharedPrefs.getBoolean(OPT_OUT_LOCATION, false)
         missingPermissions.add(showSummaryScreen)
         val numPages = missingPermissions.count { it }
 

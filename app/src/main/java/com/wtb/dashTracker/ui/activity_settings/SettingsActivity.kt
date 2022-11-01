@@ -47,6 +47,7 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OP
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
@@ -77,7 +78,7 @@ class SettingsActivity : AppCompatActivity() {
                 .replace(R.id.settings, SettingsFragment())
                 .commit()
         }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onResume() {
@@ -169,7 +170,7 @@ class SettingsActivity : AppCompatActivity() {
     val listener: OnSharedPreferenceChangeListener =
         OnSharedPreferenceChangeListener { sharedPreferences, key ->
             when (key) {
-                getString(R.string.prefs_enable_location) -> {
+                LOCATION_ENABLED -> {
                     val isChecked = sharedPreferences.getBoolean(key, false)
                     if (isChecked) {
                         sharedPreferences?.edit()?.apply {
@@ -183,9 +184,19 @@ class SettingsActivity : AppCompatActivity() {
                         }
 
                         startActivity(Intent(this, OnboardingMileageActivity::class.java))
+                    } else {
+                        sharedPreferences?.edit()?.apply {
+                            putBoolean(ASK_AGAIN_LOCATION, false)
+                            putBoolean(ASK_AGAIN_BG_LOCATION, false)
+                            putBoolean(ASK_AGAIN_NOTIFICATION, false)
+                            putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                            putBoolean(OPT_OUT_LOCATION, true)
+                            putBoolean(PREF_SHOW_SUMMARY_SCREEN, false)
+                            apply()
+                        }
                     }
                 }
-                getString(R.string.prefs_enable_notification) -> {
+                NOTIFICATION_ENABLED -> {
                     val isChecked = sharedPreferences.getBoolean(key, false)
                     if (isChecked) {
                         sharedPreferences?.edit()?.apply {
@@ -219,7 +230,7 @@ class SettingsActivity : AppCompatActivity() {
                         }
                     }
                 }
-                getString(R.string.prefs_enable_bg_battery) -> {
+                BG_BATTERY_ENABLED -> {
                     val isChecked = sharedPreferences.getBoolean(key, false)
                     if (isChecked) {
                         sharedPreferences?.edit()?.apply {
@@ -247,6 +258,14 @@ class SettingsActivity : AppCompatActivity() {
                                     .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_ON_SCREEN)
                             )
                         }
+                    }
+                }
+                AUTHENTICATION_ENABLED -> {
+                    val isChecked = sharedPreferences.getBoolean(key, true)
+                    if (isChecked) {
+
+                    } else {
+
                     }
                 }
             }

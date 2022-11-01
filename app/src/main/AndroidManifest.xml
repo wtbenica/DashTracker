@@ -17,19 +17,42 @@
         android:roundIcon="@mipmap/icon_c"
         android:supportsRtl="true"
         android:theme="@style/SplashScreen">
+
+        <activity
+            android:name=".ui.activity_main.MainActivity"
+            android:exported="true"
+            android:theme="@style/SplashScreen">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.activity_welcome.WelcomeActivity"
+            android:exported="false"
+            android:theme="@style/Base.DasherCompanion" />
+
+        <activity
+            android:name=".ui.activity_get_permissions.OnboardingMileageActivity"
+            android:exported="false"
+            android:theme="@style/Base.DasherCompanion" />
+
         <activity
             android:name=".ui.activity_settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
             android:theme="@style/Base.DasherCompanion" />
+
         <activity
-            android:name=".ui.activity_get_permissions.OnboardingMileageActivity"
-            android:exported="false"
-            android:theme="@style/Base.DasherCompanion" />
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/LicensesActivitiesTheme" />
+
         <activity
-            android:name=".ui.activity_welcome.WelcomeActivity"
-            android:exported="false"
-            android:theme="@style/Base.DasherCompanion" />
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/LicensesActivitiesTheme" />
 
         <service
             android:name="dev.benica.mileagetracker.LocationService"
@@ -38,25 +61,6 @@
             android:exported="false"
             android:foregroundServiceType="location"
             android:permission="android.permissions.FOREGROUND_SERVICE" />
-
-        <activity
-            android:name=".ui.activity_main.MainActivity"
-            android:exported="true"
-            android:theme="@style/SplashScreen">
-
-            <!-- android:theme="@style/Base.DasherCompanion"> -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-            android:theme="@style/LicensesActivitiesTheme" />
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-            android:theme="@style/LicensesActivitiesTheme" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

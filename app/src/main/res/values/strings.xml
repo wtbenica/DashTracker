@@ -308,5 +308,6 @@
     <string name="dialog_restart">DashTracker needs to restart for changes to take effect. Restart now?</string>
     <string name="restart">Restart</string>
     <string name="later">Later</string>
+    <string name="prefs_authentication_enabled">prefs_authentication_enabled</string>
 
 </resources>
