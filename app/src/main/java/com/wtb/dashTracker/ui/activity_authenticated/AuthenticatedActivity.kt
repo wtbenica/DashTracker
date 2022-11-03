@@ -26,6 +26,10 @@ import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 
+/**
+ *
+ *
+ */
 abstract class AuthenticatedActivity : AppCompatActivity() {
     protected val sharedPrefs: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(this)
@@ -38,25 +42,13 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
         get() = sharedPrefs.getBoolean(AUTHENTICATION_ENABLED, true)
 
     abstract val onAuthentication: () -> Unit
-    abstract val onAuthFailed: (() -> Unit)?
-    abstract val onAuthError: (() -> Unit)?
-
-    fun authenticate() {
-        if (authenticationEnabled && !isAuthenticated) {
-            authenticate(
-                onSuccess = onAuthentication,
-                onError = onAuthError,
-                onFailed = onAuthFailed
-            )
-        } else {
-            onAuthentication()
-        }
-    }
+    protected open val onAuthError: (() -> Unit)? = null
+    protected open val onAuthFailed: (() -> Unit)? = null
 
     override fun onPause() {
         super.onPause()
 
-        if (!expectedExit) {
+        if (authenticationEnabled && !expectedExit) {
             isAuthenticated = false
             lockScreen()
         }
@@ -67,38 +59,43 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
     /**
      * Authenticates user using [BiometricPrompt]
      */
-    private fun authenticate(
-        onSuccess: () -> Unit,
-        onError: (() -> Unit)? = null,
-        onFailed: (() -> Unit)? = null
+    fun authenticate(
+        onSuccess: () -> Unit = onAuthentication,
+        onError: (() -> Unit)? = onAuthError,
+        onFailed: (() -> Unit)? = onAuthFailed,
+        forceAuthentication: Boolean = false
     ) {
-        val executor = ContextCompat.getMainExecutor(this)
+        if (forceAuthentication || (authenticationEnabled && !isAuthenticated)) {
+            val executor = ContextCompat.getMainExecutor(this)
 
-        val biometricPrompt = BiometricPrompt(this, executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    onSuccess()
-                }
+            val biometricPrompt = BiometricPrompt(this, executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        super.onAuthenticationSucceeded(result)
+                        onSuccess()
+                    }
 
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    super.onAuthenticationError(errorCode, errString)
-                    Log.d(TAG, "login | error")
-                    onError?.invoke()
-                }
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        super.onAuthenticationError(errorCode, errString)
+                        Log.d(TAG, "login | error")
+                        onError?.invoke()
+                    }
 
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    Log.d(TAG, "login | failed")
-                    onFailed?.invoke()
-                }
-            })
+                    override fun onAuthenticationFailed() {
+                        super.onAuthenticationFailed()
+                        Log.d(TAG, "login | failed")
+                        onFailed?.invoke()
+                    }
+                })
 
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Unlock to access DashTracker")
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-            .build()
+            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Unlock to access DashTracker")
+                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                .build()
 
-        biometricPrompt.authenticate(promptInfo)
+            biometricPrompt.authenticate(promptInfo)
+        } else {
+            onSuccess()
+        }
     }
 }

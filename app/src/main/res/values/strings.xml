@@ -309,5 +309,7 @@
     <string name="restart">Restart</string>
     <string name="later">Later</string>
     <string name="prefs_authentication_enabled">prefs_authentication_enabled</string>
+    <string name="prefs_authentication_enabled_confirmed">prefs_authentication_enabled_confirmed</string>
+    <string name="prefs_authentication_enabled_reverted">prefs_authentication_enabled_reverted</string>
 
 </resources>

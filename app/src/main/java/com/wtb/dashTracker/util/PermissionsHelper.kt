@@ -160,6 +160,9 @@ class PermissionsHelper(val context: Context) {
         internal val Context.AUTHENTICATION_ENABLED
             get() = getString(R.string.prefs_authentication_enabled)
 
+        internal val Context.AUTHENTICATION_ENABLED_REVERTED
+            get() = getString(R.string.prefs_authentication_enabled_reverted)
+
         internal val Context.OPT_OUT_LOCATION
             get() = getString(R.string.prefs_opt_out_location)
 
