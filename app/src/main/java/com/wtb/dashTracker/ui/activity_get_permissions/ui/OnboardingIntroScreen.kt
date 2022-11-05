@@ -71,7 +71,7 @@ fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMil
             stringArrayResource(id = R.array.list_whats_new_mileage_tracking)
                 .forEachIndexed { i, it ->
                     if (i != 0) {
-                        HalfSpacer()
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
 
                     ContentCard(
