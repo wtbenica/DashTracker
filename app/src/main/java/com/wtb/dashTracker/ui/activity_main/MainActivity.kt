@@ -75,6 +75,7 @@ import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
@@ -174,12 +175,18 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
      */
     private val settingsActivityLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val booleanExtra = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
-            Log.d(TAG, "activityResult | confirmRestart: $booleanExtra")
-            if (booleanExtra == true) {
+            val needsRestart = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
+            Log.d(TAG, "activityResult | confirmRestart: $needsRestart")
+            if (needsRestart == true) {
                 restartApp()
             } else {
-                isAuthenticated = true
+                val auth = it.data?.getBooleanExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, false)
+                if (auth != true) {
+                    lockScreen()
+                    authenticate()
+                } else {
+                    onUnlock()
+                }
             }
         }
 
@@ -567,21 +574,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     // AuthenticatedActivity overrides
     override val onAuthentication: () -> Unit
         get() {
-            fun unlockScreen() {
-                binding.container.visibility = VISIBLE
-                supportActionBar?.show()
-            }
-
-            /**
-             * Sets content to visible
-             */
-            fun onUnlock() {
-                Log.d(TAG, "login | onUnlock")
-                isAuthenticated = true
-                expectedExit = false
-                unlockScreen()
-            }
-
             fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
                 endDash(tripId)
                 onUnlock()
@@ -606,6 +598,21 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     override fun lockScreen() {
         binding.container.visibility = INVISIBLE
         supportActionBar?.hide()
+    }
+
+    /**
+     * Sets content to visible
+     */
+    fun unlockScreen() {
+        binding.container.visibility = VISIBLE
+        supportActionBar?.show()
+    }
+
+    fun onUnlock() {
+        Log.d(TAG, "login | onUnlock")
+        isAuthenticated = true
+        expectedExit = false
+        unlockScreen()
     }
 
     /**

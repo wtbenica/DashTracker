@@ -52,7 +52,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
         headerText = "Welcome to DashTracker",
         iconImage = { Logo() },
         mainContent = {
-            val rowSpacing = 8.dp
+            val rowSpacing = 24.dp
 
             ExpandableCard(
                 text = "Track your income",

@@ -32,6 +32,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
@@ -74,6 +75,8 @@ class SettingsActivity : AuthenticatedActivity() {
     var bgBatteryEnabledPref: SwitchPreference? = null
     var authenticationEnabledPref: SwitchPreference? = null
 
+    val res = Intent()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
@@ -83,6 +86,17 @@ class SettingsActivity : AuthenticatedActivity() {
                 .beginTransaction()
                 .replace(R.id.settings, SettingsFragment())
                 .commit()
+        }
+
+        supportFragmentManager.setFragmentResultListener(
+            /* requestKey = */ REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
+            /* lifecycleOwner = */ this
+        ) { str, bundle ->
+            val needsRestart = bundle.getBoolean(ACTIVITY_RESULT_NEEDS_RESTART)
+            res.apply {
+                putExtra(ACTIVITY_RESULT_NEEDS_RESTART, needsRestart)
+            }
+            finish()
         }
     }
 
@@ -102,6 +116,10 @@ class SettingsActivity : AuthenticatedActivity() {
 
     override fun onPause() {
         sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
+
+        res.apply {
+            putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
+        }
 
         super.onPause()
     }
@@ -136,13 +154,17 @@ class SettingsActivity : AuthenticatedActivity() {
             ) { _, bundle ->
                 val result = bundle.getBoolean(ARG_CONFIRM)
                 if (result) {
-                    val intent = Intent().apply {
-                        putExtra(ACTIVITY_RESULT_NEEDS_RESTART, true)
-                    }
-                    activity?.apply {
-                        setResult(RESULT_OK, intent)
-                        finish()
-                    }
+                    setFragmentResult(
+                        REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
+                        Bundle().apply { putBoolean(ACTIVITY_RESULT_NEEDS_RESTART, true) })
+//
+//                    val intent = Intent().apply {
+//                        putExtra(ACTIVITY_RESULT_NEEDS_RESTART, true)
+//                    }
+//                    activity?.apply {
+//                        setResult(RESULT_OK, intent)
+//                        finish()
+//                    }
                 }
             }
 
@@ -311,7 +333,10 @@ class SettingsActivity : AuthenticatedActivity() {
                             //  changed (attempted)
                             val settingsFragment =
                                 supportFragmentManager.findFragmentById(R.id.settings) as SettingsFragment?
-                            settingsFragment?.setPreferencesFromResource(R.xml.root_preferences, null)
+                            settingsFragment?.setPreferencesFromResource(
+                                R.xml.root_preferences,
+                                null
+                            )
 
                         }
                         authenticate(
@@ -332,8 +357,14 @@ class SettingsActivity : AuthenticatedActivity() {
         internal const val ACTIVITY_RESULT_NEEDS_RESTART =
             "${BuildConfig.APPLICATION_ID}.result_needs_restart"
 
+        internal const val REQUEST_KEY_SETTINGS_ACTIVITY_RESULT =
+            "${BuildConfig.APPLICATION_ID}.result_settings_fragment"
+
         internal val Context.PREF_SHOW_BASE_PAY_ADJUSTS
             get() = getString(R.string.prefs_show_base_pay_adjusts)
+
+        internal const val EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED =
+            "${BuildConfig.APPLICATION_ID}.extra_settings_activity_is_authenticated"
 
         internal const val INTENT_EXTRA_PRE_AUTH = "${BuildConfig.APPLICATION_ID}.pre_auth_settings"
     }

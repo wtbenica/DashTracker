@@ -18,6 +18,8 @@ package com.wtb.dashTracker.ui.activity_authenticated
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
@@ -45,6 +47,8 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
     protected open val onAuthError: (() -> Unit)? = null
     protected open val onAuthFailed: (() -> Unit)? = null
 
+    private var disableBackButtonCallback: OnBackPressedCallback? = null
+
     override fun onPause() {
         super.onPause()
 
@@ -68,10 +72,21 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
         if (forceAuthentication || (authenticationEnabled && !isAuthenticated)) {
             val executor = ContextCompat.getMainExecutor(this)
 
+            Log.d(TAG, "1 Adding disablebuttoncallback | prev: $disableBackButtonCallback")
+            disableBackButtonCallback?.remove()
+            disableBackButtonCallback = onBackPressedDispatcher.addCallback(this, true) {
+                authenticate(onSuccess, onError, onFailed)
+            }
+            Log.d(TAG, "2 Adding disablebuttoncallback | curr: $disableBackButtonCallback")
+
             val biometricPrompt = BiometricPrompt(this, executor,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
+                        Log.d(TAG, "1 SUCCESS, removing $disableBackButtonCallback")
+                        disableBackButtonCallback?.remove()
+                        disableBackButtonCallback = null
+                        Log.d(TAG, "2 SUCCESS, removing $disableBackButtonCallback")
                         onSuccess()
                     }
 
@@ -95,6 +110,8 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
 
             biometricPrompt.authenticate(promptInfo)
         } else {
+            disableBackButtonCallback?.remove()
+            disableBackButtonCallback = null
             onSuccess()
         }
     }
