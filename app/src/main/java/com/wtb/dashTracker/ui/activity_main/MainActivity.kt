@@ -590,12 +590,12 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     /**
      * Sets content to visible
      */
-    fun unlockScreen() {
+    private fun unlockScreen() {
         binding.container.visibility = VISIBLE
         supportActionBar?.show()
     }
 
-    fun onUnlock() {
+    private fun onUnlock() {
         isAuthenticated = true
         expectedExit = false
         unlockScreen()

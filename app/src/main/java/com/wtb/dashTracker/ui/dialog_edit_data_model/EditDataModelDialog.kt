@@ -24,6 +24,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.activity.ComponentDialog
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -98,17 +100,20 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        object : Dialog(requireContext(), theme) {
-            @Deprecated("Deprecated in Java")
-            override fun onBackPressed() {
-                if (isEmpty() && !saveConfirmed) {
-                    ConfirmSaveDialog.newInstance(
-                        text = R.string.confirm_save_entry_incomplete
-                    ).show(parentFragmentManager, null)
-                } else {
-                    super.onBackPressed()
+        ComponentDialog(requireContext()).also {
+            val onBackPressedCallback = object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isEmpty() && !saveConfirmed) {
+                        ConfirmSaveDialog.newInstance(
+                            text = R.string.confirm_save_entry_incomplete
+                        ).show(parentFragmentManager, null)
+                    } else {
+                        isEnabled = false
+                        it.onBackPressedDispatcher.onBackPressed()
+                    }
                 }
             }
+            it.onBackPressedDispatcher.addCallback(onBackPressedCallback)
         }
 
     override fun onDestroy() {
