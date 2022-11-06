@@ -18,7 +18,6 @@ package com.wtb.dashTracker.ui.activity_welcome
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
@@ -37,7 +36,6 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialScreenCallback
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialSettings
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreen
@@ -102,7 +100,6 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
     }
 
     override fun nextScreen2() {
-        Log.d(TAG, "WelcomeActivity | nextScreen")
         permissionsHelper.setBooleanPref(PREF_SHOW_ONBOARD_INTRO, false)
         startActivity(Intent(this, OnboardingMileageActivity::class.java))
         finish()

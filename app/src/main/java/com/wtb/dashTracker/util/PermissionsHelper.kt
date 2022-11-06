@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.PowerManager
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_main.TAG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
@@ -74,10 +72,8 @@ internal fun ComponentActivity.registerMultiplePermissionsLauncher(
         it?.let { permissionMap ->
             val permissionGranted = permissionMap.toList().all { p -> p.second }
             if (permissionGranted) {
-                Log.d(TAG, "I can haz permission?")
                 onGranted?.invoke()
             } else {
-                Log.d(TAG, "Missing permission")
                 onNotGranted?.invoke()
             }
         }

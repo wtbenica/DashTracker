@@ -75,7 +75,7 @@ class SettingsActivity : AuthenticatedActivity() {
     var bgBatteryEnabledPref: SwitchPreference? = null
     var authenticationEnabledPref: SwitchPreference? = null
 
-    val res = Intent()
+    val activityResult = Intent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,7 +93,8 @@ class SettingsActivity : AuthenticatedActivity() {
             /* lifecycleOwner = */ this
         ) { str, bundle ->
             val needsRestart = bundle.getBoolean(ACTIVITY_RESULT_NEEDS_RESTART)
-            res.apply {
+
+            activityResult.apply {
                 putExtra(ACTIVITY_RESULT_NEEDS_RESTART, needsRestart)
             }
             finish()
@@ -117,11 +118,25 @@ class SettingsActivity : AuthenticatedActivity() {
     override fun onPause() {
         sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
 
-        res.apply {
+        activityResult.apply {
             putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
         }
 
+        setResult(RESULT_OK, activityResult)
+
         super.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        if (!activityResult.hasExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED)) {
+            activityResult.apply {
+                putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
+            }
+
+            setResult(RESULT_OK, activityResult)
+        }
     }
 
     override val onAuthentication: () -> Unit
@@ -157,14 +172,6 @@ class SettingsActivity : AuthenticatedActivity() {
                     setFragmentResult(
                         REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
                         Bundle().apply { putBoolean(ACTIVITY_RESULT_NEEDS_RESTART, true) })
-//
-//                    val intent = Intent().apply {
-//                        putExtra(ACTIVITY_RESULT_NEEDS_RESTART, true)
-//                    }
-//                    activity?.apply {
-//                        setResult(RESULT_OK, intent)
-//                        finish()
-//                    }
                 }
             }
 

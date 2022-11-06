@@ -15,7 +15,6 @@ import com.wtb.notificationutil.NotificationUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
-import java.time.format.DateTimeFormatter
 
 val Any.TAG: String
     get() = "GT_" + this.javaClass.simpleName
@@ -124,7 +123,6 @@ class LocationService : Service() {
         newTripId: Long,
         locationHandler: (Location, Long, Int, Int, Int, Int) -> Unit
     ): Long {
-        Log.d(TAG, "start | called while: ${serviceState.value.name}")
         return when (serviceState.value) {
             ServiceState.STOPPED -> {
                 startService(
@@ -261,7 +259,7 @@ class LocationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "onStartCommand")
+
         intent?.let {
             if (it.getBooleanExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, false)) {
                 stop()
@@ -319,7 +317,6 @@ class LocationService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        Log.d(TAG, "onBind")
         stopForeground(STOP_FOREGROUND_REMOVE)
         serviceRunningInForeground = false
         configurationChange = false
@@ -335,7 +332,6 @@ class LocationService : Service() {
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.d(TAG, "onUnbind")
         if (!configurationChange) {
             val notification: Notification = notificationUtil.generateNotification(
                 getNotificationText?.invoke(currentLocation) ?: "Location Service in use.",
@@ -453,10 +449,6 @@ class LocationService : Service() {
             )
                 .setMinUpdateIntervalMillis(FASTEST_UPDATE_INTERVAL_MILLISECONDS)
                 .build()
-
-        var dtf: DateTimeFormatter =
-            DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss:SSS")
-
     }
 }
 
