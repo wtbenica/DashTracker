@@ -65,7 +65,7 @@ class CpmChart(
     R.string.lbl_cost_per_mile,
     R.string.frag_title_expenses
 ) {
-    val binding = ChartCpmBinding.inflate(LayoutInflater.from(context), this)
+    val binding: ChartCpmBinding = ChartCpmBinding.inflate(LayoutInflater.from(context), this)
     private var lineChartCpm: WeeklyLineChart = binding.cpmChartLineCpm.apply { style() }
     private val selectedDeductionType: DeductionType
         get() = when (binding.buttonGroupDeductionType.checkedButtonId) {

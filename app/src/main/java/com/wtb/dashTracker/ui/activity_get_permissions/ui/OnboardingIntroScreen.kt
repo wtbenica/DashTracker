@@ -50,7 +50,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity? = null) =
+fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity? = null): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Automatic Mileage Tracking",

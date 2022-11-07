@@ -49,7 +49,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected abstract val viewModel: ListItemViewModel<M>
 
     // if save button is pressed or is confirmed by save dialog, gets assigned true
-    protected var saveConfirmed = false
+    protected var saveConfirmed: Boolean = false
 
     // if delete button is pressed, gets assigned false
     private var saveOnExit = true
@@ -205,8 +205,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     }
 
     companion object {
-        const val ARG_ITEM_ID = "item_id"
-        const val REQUEST_KEY_ENTRY_DIALOG = "result: modification state"
-        const val ARG_MODIFICATION_STATE = "arg modification state"
+        const val ARG_ITEM_ID: String = "item_id"
+        const val REQUEST_KEY_ENTRY_DIALOG: String = "result: modification state"
+        const val ARG_MODIFICATION_STATE: String = "arg modification state"
     }
 }

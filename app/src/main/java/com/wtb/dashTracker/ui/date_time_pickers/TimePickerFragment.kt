@@ -77,16 +77,16 @@ class TimePickerFragment : DialogFragment(),
     }
 
     companion object {
-        const val ARG_TIME_TEXTVIEW = "param1"
+        const val ARG_TIME_TEXTVIEW: String = "param1"
         private const val ARG_CURRENT_TEXT = "param2"
         private const val ARG_REQUEST_KEY = "param3"
 
-        const val REQUEST_KEY_TIME = "requestTimePicker"
-        const val ARG_NEW_HOUR = "hour"
-        const val ARG_NEW_MINUTE = "minute"
+        const val REQUEST_KEY_TIME: String = "requestTimePicker"
+        const val ARG_NEW_HOUR: String = "hour"
+        const val ARG_NEW_MINUTE: String = "minute"
 
         @JvmStatic
-        fun newInstance(@IdRes textViewId: Int, currentText: String, requestKey: String) =
+        fun newInstance(@IdRes textViewId: Int, currentText: String, requestKey: String): TimePickerFragment =
             TimePickerFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_TIME_TEXTVIEW, textViewId)

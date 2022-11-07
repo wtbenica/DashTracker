@@ -226,7 +226,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
         fun newInstance(
             date: LocalDate = LocalDate.now().endOfWeek.minusDays(7)
-        ) = WeeklyDialog().apply {
+        ): WeeklyDialog = WeeklyDialog().apply {
             arguments = Bundle().apply {
                 putSerializable(ARG_DATE_ID, date)
             }

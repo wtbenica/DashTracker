@@ -395,7 +395,7 @@ class OnboardingMileageActivity : ComponentActivity() {
                 SUMMARY_SCREEN -> null
             }
 
-            if (loadSingleComplete ?: false) {
+            if (loadSingleComplete == true) {
                 finish()
             }
         }

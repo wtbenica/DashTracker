@@ -54,7 +54,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 fun GetLocationPermissionsScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
-) =
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Location and Activity Permissions",

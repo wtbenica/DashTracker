@@ -52,7 +52,7 @@ fun GetBatteryPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
-) =
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Battery Optimization",

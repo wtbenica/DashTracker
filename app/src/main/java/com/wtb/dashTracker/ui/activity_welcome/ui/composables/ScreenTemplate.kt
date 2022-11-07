@@ -144,5 +144,5 @@ fun PreviewScreenTemplate() {
     }
 }
 
-val styleBold =
+val styleBold: SpanStyle =
     SpanStyle(fontWeight = FontWeight.Bold)

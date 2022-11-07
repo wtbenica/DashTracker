@@ -29,9 +29,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 
-val cardShape = RoundedCornerShape(24.dp)
+val cardShape: RoundedCornerShape = RoundedCornerShape(24.dp)
 
 private val DarkColorScheme = darkColorScheme(
     primary = darkPrimary,
@@ -89,8 +89,9 @@ fun DashTrackerTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            (view.context as Activity).window.statusBarColor = colorScheme.primary.toArgb()
-            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = darkTheme
+            val theWindow = (view.context as Activity).window
+            theWindow.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(theWindow, view).isAppearanceLightStatusBars = darkTheme
         }
     }
 

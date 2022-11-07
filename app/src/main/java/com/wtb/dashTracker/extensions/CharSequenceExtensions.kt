@@ -21,11 +21,11 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @ExperimentalCoroutinesApi
-fun CharSequence.toTimeOrNull() =
+fun CharSequence.toTimeOrNull(): LocalTime? =
     if (this.isNotEmpty()) LocalTime.parse(this, dtfTime) else null
 
 @ExperimentalCoroutinesApi
-fun CharSequence.toDateOrNull() =
+fun CharSequence.toDateOrNull(): LocalDate? =
     if (this.isNotEmpty()) {
         try {
             val df = dtfDate

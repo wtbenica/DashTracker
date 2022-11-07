@@ -150,7 +150,7 @@ fun ExpandableCard(
 fun CustomOutlinedCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
-) = DashTrackerTheme {
+): Unit = DashTrackerTheme {
     OutlinedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -267,7 +267,7 @@ fun ListRow(
 
 @ExperimentalTextApi
 @Composable
-fun HeaderRow(text: String, modifier: Modifier = Modifier, icon: ImageVector) =
+fun HeaderRow(text: String, modifier: Modifier = Modifier, icon: ImageVector): Unit =
     ListRow(
         text = text,
         modifier = modifier,

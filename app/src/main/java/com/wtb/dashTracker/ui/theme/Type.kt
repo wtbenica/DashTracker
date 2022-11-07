@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 
 @ExperimentalTextApi
-val provider = GoogleFont.Provider(
+val provider: GoogleFont.Provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
     providerPackage = "com.google.android.gms",
     certificates = R.array.com_google_android_gms_fonts_certs
@@ -27,24 +27,24 @@ val provider = GoogleFont.Provider(
 //)
 
 @ExperimentalTextApi
-val FontOswald = GoogleFont(name = "Oswald")
+val FontOswald: GoogleFont = GoogleFont(name = "Oswald")
 
 @ExperimentalTextApi
-val FontFamilyOswald = FontFamily(
+val FontFamilyOswald: FontFamily = FontFamily(
     Font(FontOswald, provider)
 )
 
 @ExperimentalTextApi
-val FontNotoSans = GoogleFont(name = "Fira Sans")
+val FontNotoSans: GoogleFont = GoogleFont(name = "Fira Sans")
 
 @ExperimentalTextApi
-val FontFamilyFiraSans = FontFamily(
+val FontFamilyFiraSans: FontFamily = FontFamily(
     Font(FontNotoSans, provider)
 )
 
 // Set of Material typography styles to start with
 @ExperimentalTextApi
-val Typography = Typography(
+val Typography: Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamilyOswald,
         fontWeight = FontWeight.Normal,

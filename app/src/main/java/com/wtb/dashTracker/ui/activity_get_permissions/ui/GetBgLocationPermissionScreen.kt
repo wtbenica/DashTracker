@@ -54,7 +54,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 fun GetBgLocationPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
-) =
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Background Location Permission",

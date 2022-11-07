@@ -75,7 +75,7 @@ class SettingsActivity : AuthenticatedActivity() {
     var bgBatteryEnabledPref: SwitchPreference? = null
     var authenticationEnabledPref: SwitchPreference? = null
 
-    val activityResult = Intent()
+    private val activityResult = Intent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

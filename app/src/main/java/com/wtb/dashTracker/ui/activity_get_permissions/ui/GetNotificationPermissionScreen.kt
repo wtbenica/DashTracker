@@ -57,7 +57,7 @@ fun GetNotificationPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
-) =
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Notifications Permission",
