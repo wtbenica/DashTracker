@@ -267,7 +267,7 @@ class OnboardingMileageActivity : ComponentActivity() {
      * @param noPermissions also the default return value
      * @return the matching parameter
      */
-    private fun <T : Any> whenHasDecided(
+    internal fun <T : Any> whenHasDecided(
         optOutLocation: T? = null,
         hasAllPermissions: T? = null,
         hasNotification: T? = null,

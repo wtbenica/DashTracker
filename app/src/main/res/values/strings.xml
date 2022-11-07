@@ -225,7 +225,7 @@
 
     <string name="dialog_battery_permission_1">Android\'s battery optimizer may interfere with
         DashTracker\'s mileage tracking, especially if the battery is low. In order for mileage
-        tracking to work as expected, it is recommended that you all DashTracker unrestricted
+        tracking to work as expected, it is recommended that you allow DashTracker unrestricted
         background battery use.
 
         \n\nPressing\ </string>
@@ -312,5 +312,9 @@
     <string name="prefs_authentication_enabled_confirmed">prefs_authentication_enabled_confirmed</string>
     <string name="prefs_authentication_enabled_reverted">prefs_authentication_enabled_reverted</string>
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</string>
+    <string name="show_weekly_bpa_desc">If you live in a state with a weekly base pay adjustment or in a market that has weekly incentives or extra pay, DashTracker can include fields for tracking them.</string>
+    <string name="require_pin_desc">To protect your data, DashTracker can require a fingerprint or PIN to open.</string>
+    <string name="pref_title_show_weekly_adjustment_field">Show weekly adjustment field</string>
+    <string name="pref_title_require_authentication">Require authentication to open</string>
 
 </resources>
