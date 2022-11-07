@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
+import androidx.annotation.DimenRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
@@ -26,17 +27,15 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.twotone.AttachMoney
 import androidx.compose.material.icons.twotone.Circle
+import androidx.compose.material3.*
 import androidx.compose.material3.CardDefaults.cardColors
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +48,19 @@ import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.cardShape
 import com.wtb.dashTracker.ui.theme.primaryDark
 import com.wtb.dashTracker.ui.theme.up
+
+@Composable
+fun fontSizeDimensionResource(@DimenRes id: Int) = dimensionResource(id = id).value.sp
+
+@Composable
+fun customCardColors(): CardColors {
+    return cardColors(
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        disabledContainerColor = MaterialTheme.colorScheme.primary,
+        disabledContentColor = MaterialTheme.colorScheme.onPrimary
+    )
+}
 
 @ExperimentalTextApi
 @Composable
@@ -68,13 +80,8 @@ fun ExpandableCard(
                 .clip(cardShape)
                 .clickable(content != null) { isExpanded = !isExpanded },
             shape = cardShape,
-            colors = cardColors(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContainerColor = MaterialTheme.colorScheme.primary,
-                disabledContentColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
+            colors = customCardColors(),
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary)
         ) {
             Column {
                 Row(
@@ -156,13 +163,8 @@ fun CustomOutlinedCard(
             .fillMaxWidth()
             .clip(cardShape),
         shape = cardShape,
-        colors = cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-            disabledContainerColor = MaterialTheme.colorScheme.primary,
-            disabledContentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
+        colors = customCardColors(),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary),
     ) {
         Column(modifier = Modifier.padding(32.dp)) {
             content()
@@ -170,10 +172,19 @@ fun CustomOutlinedCard(
     }
 }
 
+/**
+ * Outlined card with title, icon, and content areas
+ *
+ * @param titleText
+ * @param icon
+ * @param iconTint
+ * @param iconDescription
+ * @param content
+ */
 @ExperimentalTextApi
 @Composable
 fun ContentCard(
-    text: String,
+    titleText: String,
     icon: ImageVector,
     iconTint: Color,
     iconDescription: String,
@@ -185,13 +196,8 @@ fun ContentCard(
                 .fillMaxWidth()
                 .clip(cardShape),
             shape = cardShape,
-            colors = cardColors(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContainerColor = MaterialTheme.colorScheme.primary,
-                disabledContentColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
+            colors = customCardColors(),
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary)
         ) {
             Row(
                 modifier = if (content == null) {
@@ -201,7 +207,7 @@ fun ContentCard(
                 }
             ) {
                 Text(
-                    text = text,
+                    text = titleText,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .weight(1f),
@@ -295,7 +301,7 @@ fun PreviewExpandableCard() {
 @Preview
 fun PreviewContentCard() {
     ContentCard(
-        text = "Track your income as if your life depended on it i'm trying to see what " +
+        titleText = "Track your income as if your life depended on it i'm trying to see what " +
                 "happens when the text is long and I want to see if it is limited to nope",
         icon = Icons.TwoTone.AttachMoney,
         iconTint = up,

@@ -46,6 +46,7 @@ import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
@@ -70,6 +71,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class SettingsActivity : AuthenticatedActivity() {
+    val ph: PermissionsHelper
+        get() = PermissionsHelper(this)
+
     var mileageTrackingEnabledPref: SwitchPreference? = null
     var notificationEnabledPref: SwitchPreference? = null
     var bgBatteryEnabledPref: SwitchPreference? = null
@@ -86,6 +90,11 @@ class SettingsActivity : AuthenticatedActivity() {
                 .beginTransaction()
                 .replace(R.id.settings, SettingsFragment())
                 .commit()
+        }
+
+        if (savedInstanceState?.getBoolean(EXPECTED_EXIT) == true) {
+            isAuthenticated = true
+            expectedExit = false
         }
 
         supportFragmentManager.setFragmentResultListener(
@@ -106,11 +115,10 @@ class SettingsActivity : AuthenticatedActivity() {
 
         sharedPrefs.registerOnSharedPreferenceChangeListener(listener)
 
-        if (intent?.getBooleanExtra(INTENT_EXTRA_PRE_AUTH, false) != true) {
-            lockScreen()
-
+        if (!isAuthenticated && intent?.getBooleanExtra(INTENT_EXTRA_PRE_AUTH, false) != true) {
             authenticate()
         } else {
+            isAuthenticated = true
             intent.removeExtra(INTENT_EXTRA_PRE_AUTH)
         }
     }
@@ -141,8 +149,10 @@ class SettingsActivity : AuthenticatedActivity() {
 
     override val onAuthentication: () -> Unit
         get() = fun() {
-            supportActionBar?.show()
-            findViewById<FrameLayout>(R.id.settings)?.isVisible = true
+            if (findViewById<FrameLayout>(R.id.settings)?.isVisible == false) {
+                supportActionBar?.show()
+                findViewById<FrameLayout>(R.id.settings)?.isVisible = true
+            }
         }
 
     override val onAuthFailed: (() -> Unit)? = null
@@ -248,7 +258,15 @@ class SettingsActivity : AuthenticatedActivity() {
                             apply()
                         }
 
-                        startActivity(Intent(this, OnboardingMileageActivity::class.java))
+                        expectedExit = true
+
+                        fun startOnboarding() = startActivity(Intent(this, OnboardingMileageActivity::class.java))
+
+                        ph.whenHasDecided(
+                            hasNotification = ::startOnboarding,
+                            hasBgLocation = ::startOnboarding,
+                            hasLocation = ::startOnboarding
+                        )?.invoke()
                     } else {
                         sharedPreferences?.edit()?.apply {
                             putBoolean(ASK_AGAIN_LOCATION, false)
@@ -335,9 +353,13 @@ class SettingsActivity : AuthenticatedActivity() {
                                 .putBoolean(AUTHENTICATION_ENABLED_REVERTED, true)
                                 .commit()
 
-                            // TODO: This is what causes the nasty redraw when biometric
-                            //  authentication fails when authentication enabled preference is
-                            //  changed (attempted)
+/*
+                             TODO: This is what causes the nasty redraw when biometric
+                              authentication fails when authentication enabled preference is
+                              changed (attempted) | not sure if I've grown accustomed to it, or if
+                              it has actually gotten better, but it doesn't seem -that- nasty to
+                              me now
+*/
                             val settingsFragment =
                                 supportFragmentManager.findFragmentById(R.id.settings) as SettingsFragment?
                             settingsFragment?.setPreferencesFromResource(

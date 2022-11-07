@@ -17,6 +17,8 @@
 package com.wtb.dashTracker.ui.activity_authenticated
 
 import android.content.SharedPreferences
+import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -68,6 +70,8 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
         forceAuthentication: Boolean = false
     ) {
         if (forceAuthentication || (authenticationEnabled && !isAuthenticated)) {
+            if (!forceAuthentication) lockScreen()
+
             val executor = ContextCompat.getMainExecutor(this)
 
             disableBackButtonCallback?.remove()
@@ -79,6 +83,7 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
+                        isAuthenticated = true
                         disableBackButtonCallback?.remove()
                         disableBackButtonCallback = null
                         onSuccess()
@@ -86,11 +91,13 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                         super.onAuthenticationError(errorCode, errString)
+                        isAuthenticated = false
                         onError?.invoke()
                     }
 
                     override fun onAuthenticationFailed() {
                         super.onAuthenticationFailed()
+                        isAuthenticated = false
                         onFailed?.invoke()
                     }
                 })
@@ -106,5 +113,19 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
             disableBackButtonCallback = null
             onSuccess()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        super.onSaveInstanceState(outState, outPersistentState)
+    }
+
+    companion object {
+        internal const val EXPECTED_EXIT = "expected_exit"
     }
 }

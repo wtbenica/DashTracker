@@ -59,7 +59,7 @@ fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMil
                 imageVector = Icons.TwoTone.LocationOn,
                 contentDescription = "",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.primary
             )
         },
         mainContent = {
@@ -75,7 +75,7 @@ fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMil
                     }
 
                     ContentCard(
-                        text = it,
+                        titleText = it,
                         icon = icons[i],
                         iconTint = MaterialTheme.colorScheme.secondary,
                         iconDescription = "Punch Clock",

@@ -38,8 +38,8 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialScreenCallback
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialSettings
-import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreen
-import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeScreenCallback
+import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreen
+import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreenCallback
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
@@ -79,10 +79,7 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
                                 popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
                             ) {
                                 composable(WelcomeActivityScreen.WELCOME.name) {
-                                    WelcomeScreen(
-                                        modifier = Modifier.padding(bottom = 16.dp),
-                                        callback = this@WelcomeActivity
-                                    )
+                                    WelcomeScreen(callback = this@WelcomeActivity)
                                 }
                                 composable(WelcomeActivityScreen.SETTINGS.name) {
                                     InitialSettings(this@WelcomeActivity)

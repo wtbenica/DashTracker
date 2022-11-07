@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.activity_welcome.ui.composables
+package com.wtb.dashTracker.ui.activity_welcome.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
-import androidx.compose.material.icons.twotone.AttachMoney
 import androidx.compose.material.icons.twotone.Circle
 import androidx.compose.material.icons.twotone.DirectionsCar
+import androidx.compose.material.icons.twotone.MonetizationOn
 import androidx.compose.material.icons.twotone.Wallet
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +34,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.car
 import com.wtb.dashTracker.ui.theme.down
@@ -56,7 +57,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
 
             ExpandableCard(
                 text = "Track your income",
-                icon = Icons.TwoTone.AttachMoney,
+                icon = Icons.TwoTone.MonetizationOn,
                 iconTint = up,
                 iconDescription = "Drawing of a car",
             ) {
@@ -116,7 +117,7 @@ fun WelcomeNav(callback: WelcomeScreenCallback) {
             },
         ) {
             HalfSpacer()
-            Text("What's New")
+            Text("Setup")
             Icon(
                 Icons.Rounded.NavigateNext,
                 contentDescription = "Next screen"

@@ -26,7 +26,6 @@ import android.content.ServiceConnection
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.os.PersistableBundle
 import android.provider.Settings
 import android.util.TypedValue
 import android.view.Menu
@@ -178,7 +177,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 val auth = it.data?.getBooleanExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, false)
 
                 if (auth != true) {
-                    lockScreen()
                     authenticate()
                 } else {
                     onUnlock()
@@ -439,11 +437,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         super.onPause()
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        outState.putBoolean(EXPECTED_EXIT, expectedExit)
-        super.onSaveInstanceState(outState, outPersistentState)
-    }
-
+//    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+//        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+//        super.onSaveInstanceState(outState, outPersistentState)
+//    }
+//
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
@@ -587,18 +585,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         supportActionBar?.hide()
     }
 
-    /**
-     * Sets content to visible
-     */
-    private fun unlockScreen() {
-        binding.container.visibility = VISIBLE
-        supportActionBar?.show()
-    }
-
     private fun onUnlock() {
         isAuthenticated = true
         expectedExit = false
-        unlockScreen()
+        binding.container.visibility = VISIBLE
+        supportActionBar?.show()
     }
 
     /**
@@ -929,8 +920,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
-
-        private const val EXPECTED_EXIT = "expected_exit"
 
         private const val EXTRA_SETTINGS_RESTART_APP =
             "${BuildConfig.APPLICATION_ID}.restart_settings"

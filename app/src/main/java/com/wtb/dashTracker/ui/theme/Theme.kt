@@ -57,7 +57,7 @@ private val LightColorScheme = lightColorScheme(
     background = Color.Yellow,
     onBackground = onPrimary,
     onSurface = onPrimary,
-    outline = primaryDark
+    outline = primaryDark,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
