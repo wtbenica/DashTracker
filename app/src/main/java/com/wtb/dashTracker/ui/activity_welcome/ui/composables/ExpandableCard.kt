@@ -158,6 +158,98 @@ fun ExpandableCard(
 
 @ExperimentalTextApi
 @Composable
+fun SingleExpandableCard(
+    text: String,
+    icon: ImageVector,
+    iconTint: Color,
+    iconDescription: String,
+    isExpanded: Boolean,
+    callback: () -> Unit,
+    content: @Composable (() -> Unit)? = null
+) {
+    DashTrackerTheme {
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(cardShape)
+                .clickable(content != null) { callback() },
+            shape = cardShape,
+            colors = customCardColors(),
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary)
+        ) {
+            Column {
+                Row(
+                    modifier = if (content == null) {
+                        Modifier
+                            .padding(all = 16.dp)
+                    } else {
+                        Modifier
+                            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    }
+                ) {
+                    Text(
+                        text = text,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .weight(1f),
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Start,
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        icon,
+                        contentDescription = iconDescription,
+                        modifier = Modifier
+                            .width(48.dp)
+                            .height(48.dp),
+                        tint = iconTint
+                    )
+                }
+
+                if (content != null) {
+                    AnimatedVisibility(visible = isExpanded) {
+                        Row(
+                            modifier = Modifier
+                                .padding(16.dp)
+                        ) {
+                            content()
+                        }
+                    }
+                }
+            }
+
+            if (content != null) {
+                Crossfade(
+                    targetState = isExpanded,
+                ) {
+                    when (it) {
+                        true -> Icon(
+                            Icons.Filled.KeyboardArrowUp,
+                            contentDescription = "Show less",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(16.dp),
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                        false -> Icon(
+                            Icons.Filled.KeyboardArrowDown,
+                            contentDescription = "Show more",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(16.dp),
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalTextApi
+@Composable
 fun CustomOutlinedCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
@@ -250,7 +342,7 @@ fun SecondaryOutlinedCard(
 ): Unit = DashTrackerTheme {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
+        colors = cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),

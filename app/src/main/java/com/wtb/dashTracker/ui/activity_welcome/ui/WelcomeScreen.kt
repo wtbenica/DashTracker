@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.Circle
@@ -31,12 +30,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_welcome.ui.Card.*
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.car
@@ -45,6 +45,10 @@ import com.wtb.dashTracker.ui.theme.up
 
 interface WelcomeScreenCallback {
     fun nextScreen()
+}
+
+enum class Card {
+    NONE, INCOME, EXPENSES, MILEAGE
 }
 
 @ExperimentalTextApi
@@ -56,56 +60,79 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
         headerText = "Welcome to DashTracker",
         iconImage = { Logo() },
         mainContent = {
-            LazyColumn {
-                item {
-                    ExpandableCard(
-                        text = "Track your income",
-                        icon = Icons.TwoTone.MonetizationOn,
-                        iconTint = up,
-                        iconDescription = "Drawing of a car",
-                    ) {
-                        Column {
-                            stringArrayResource(id = R.array.track_income).forEach {
-                                ListRow(text = it, icon = Icons.TwoTone.Circle)
+            Column {
+                var expandedCard by remember { mutableStateOf(NONE) }
+
+                SingleExpandableCard(
+                    text = "Track your income",
+                    icon = Icons.TwoTone.MonetizationOn,
+                    iconTint = up,
+                    iconDescription = "Drawing of a car",
+                    isExpanded = expandedCard == INCOME,
+                    callback = {
+                        expandedCard =
+                            if (expandedCard == INCOME) {
+                                NONE
+                            } else {
+                                INCOME
                             }
+                    },
+                ) {
+                    Column {
+                        stringArrayResource(id = R.array.track_income).forEach {
+                            ListRow(text = it, icon = Icons.TwoTone.Circle)
                         }
                     }
-
-                    WideSpacer()
                 }
 
-                item {
-                    ExpandableCard(
-                        text = "Track your expenses",
-                        icon = Icons.TwoTone.Wallet,
-                        iconTint = down,
-                        iconDescription = "Drawing of a car",
-                    ) {
-                        Column {
-                            stringArrayResource(id = R.array.track_expense).forEach {
-                                ListRow(text = it, icon = Icons.TwoTone.Circle)
+                WideSpacer()
+
+                SingleExpandableCard(
+                    text = "Track your expenses",
+                    icon = Icons.TwoTone.Wallet,
+                    iconTint = down,
+                    iconDescription = "Drawing of a car",
+                    isExpanded = expandedCard == EXPENSES,
+                    callback = {
+                        expandedCard =
+                            if (expandedCard == EXPENSES) {
+                                NONE
+                            } else {
+                                EXPENSES
                             }
+                    },
+                ) {
+                    Column {
+                        stringArrayResource(id = R.array.track_expense).forEach {
+                            ListRow(text = it, icon = Icons.TwoTone.Circle)
                         }
                     }
-
-                    WideSpacer()
                 }
 
-                item {
-                    ExpandableCard(
-                        text = "Track your mileage",
-                        icon = Icons.TwoTone.DirectionsCar,
-                        iconTint = car,
-                        iconDescription = "Drawing of a car",
-                    ) {
-                        Column {
-                            stringArrayResource(id = R.array.track_mileage).forEach {
-                                ListRow(text = it, icon = Icons.TwoTone.Circle)
-                            }
-                        }
+                WideSpacer()
 
-                        DefaultSpacer()
+                SingleExpandableCard(
+                    text = "Track your mileage",
+                    icon = Icons.TwoTone.DirectionsCar,
+                    iconTint = car,
+                    iconDescription = "Drawing of a car",
+                    isExpanded = expandedCard == MILEAGE,
+                    callback = {
+                        expandedCard =
+                            if (expandedCard == MILEAGE) {
+                                NONE
+                            } else {
+                                MILEAGE
+                            }
+                    },
+                ) {
+                    Column {
+                        stringArrayResource(id = R.array.track_mileage).forEach {
+                            ListRow(text = it, icon = Icons.TwoTone.Circle)
+                        }
                     }
+
+                    DefaultSpacer()
                 }
             }
         }
