@@ -231,9 +231,7 @@ class SettingsActivity : AuthenticatedActivity() {
             }
 
             (activity as SettingsActivity).bgBatteryEnabledPref?.apply {
-                if (!context.hasBatteryPermission()) {
-                    isChecked = false
-                }
+                isChecked = context.hasBatteryPermission()
             }
 
             (activity as SettingsActivity).authenticationEnabledPref?.apply {
@@ -260,7 +258,8 @@ class SettingsActivity : AuthenticatedActivity() {
 
                         expectedExit = true
 
-                        fun startOnboarding() = startActivity(Intent(this, OnboardingMileageActivity::class.java))
+                        fun startOnboarding() =
+                            startActivity(Intent(this, OnboardingMileageActivity::class.java))
 
                         ph.whenHasDecided(
                             hasNotification = ::startOnboarding,
@@ -322,6 +321,7 @@ class SettingsActivity : AuthenticatedActivity() {
                             .apply()
 
                         if (!hasBatteryPermission()) {
+                            expectedExit = true
                             startActivity(
                                 Intent(this, OnboardingMileageActivity::class.java)
                                     .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_OFF_SCREEN)
@@ -335,6 +335,7 @@ class SettingsActivity : AuthenticatedActivity() {
                         }
 
                         if (hasBatteryPermission()) {
+                            expectedExit = true
                             startActivity(
                                 Intent(this, OnboardingMileageActivity::class.java)
                                     .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_ON_SCREEN)

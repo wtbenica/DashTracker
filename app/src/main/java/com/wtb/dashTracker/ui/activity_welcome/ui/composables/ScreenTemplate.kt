@@ -56,7 +56,7 @@ fun ScreenTemplate(
                 .fillMaxSize()
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
         ) {
-            WideSpacer()
+            DefaultSpacer()
 
             OutlinedCard(
                 shape = cardShape,
@@ -66,7 +66,7 @@ fun ScreenTemplate(
                 ),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
+                WideSpacer()
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     FillSpacer()
@@ -110,14 +110,13 @@ fun ScreenTemplate(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                WideSpacer()
             }
 
-            WideSpacer()
+            Spacer(modifier = Modifier.size(64.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
                 mainContent()
-                FillSpacer()
             }
 
             navContent?.let {

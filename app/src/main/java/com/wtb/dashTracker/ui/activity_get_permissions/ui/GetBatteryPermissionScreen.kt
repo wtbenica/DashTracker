@@ -67,25 +67,7 @@ fun GetBatteryPermissionScreen(
         mainContent = {
             CustomOutlinedCard {
                 val str = buildAnnotatedString {
-                    append(stringResource(id = R.string.dialog_battery_permission_1))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_battery_permission_2_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_battery_permission_3))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_battery_permission_4_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_battery_permission_5))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_battery_permission_6_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_battery_permission_7))
+                    append(stringResource(id = R.string.dialog_battery_permission))
                 }
 
 
@@ -94,6 +76,34 @@ fun GetBatteryPermissionScreen(
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
+
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant unrestricted background battery use, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Battery")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Unrestricted")
+                    }
+
+                    append(" then return to DashTracker.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {

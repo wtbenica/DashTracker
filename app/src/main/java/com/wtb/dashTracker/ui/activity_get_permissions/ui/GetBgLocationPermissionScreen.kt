@@ -64,19 +64,9 @@ fun GetBgLocationPermissionScreen(
             )
         },
         mainContent = {
-            val str = buildAnnotatedString {
-                append(stringResource(R.string.dialog_bg_location_text_1))
-
-                withStyle(style = styleBold) {
-                    append(stringResource(R.string.dialog_bg_location_text_2_ital))
-                }
-
-                append(stringResource(R.string.dialog_bg_location_text_3))
-            }
-
             CustomOutlinedCard {
                 Text(
-                    text = str,
+                    text = stringResource(R.string.dialog_bg_location_text),
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
@@ -88,6 +78,27 @@ fun GetBgLocationPermissionScreen(
                 uriHandler.openUri("https://www.benica.dev")
             }) {
                 Text("Privacy Policy")
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant background location permission, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(" then ")
+
+                    withStyle(style = styleBold) {
+                        append("Allow all the time")
+                    }
+
+                    append(", then return to DashTracker.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {

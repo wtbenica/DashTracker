@@ -64,24 +64,8 @@ fun GetLocationPermissionsScreen(
         },
         mainContent = {
             CustomOutlinedCard {
-                val str = buildAnnotatedString {
-                    append(stringResource(id = R.string.dialog_location_permission_1))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_location_permission_2_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_location_permission_3))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_location_permission_4_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_location_permission_5))
-                }
-
                 Text(
-                    text = str,
+                    text = stringResource(id = R.string.dialog_location_permission),
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
@@ -93,6 +77,33 @@ fun GetLocationPermissionsScreen(
                 onClick = { uriHandler.openUri("https://www.benica.dev/privacy") }
             ) {
                 Text("Privacy Policy")
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant location permissions, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(" then allow location access ")
+
+                    withStyle(style = styleBold) {
+                        append("While using the app")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Allow")
+                    }
+
+                    append(" physical activity access.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {

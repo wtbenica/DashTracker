@@ -32,6 +32,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
@@ -50,7 +52,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity? = null): Unit =
+fun OnboardingIntroScreen(
+    modifier: Modifier = Modifier,
+    activity: OnboardingMileageActivity? = null
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Automatic Mileage Tracking",
@@ -71,7 +76,7 @@ fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMil
             stringArrayResource(id = R.array.list_whats_new_mileage_tracking)
                 .forEachIndexed { i, it ->
                     if (i != 0) {
-                        Spacer(modifier = Modifier.height(24.dp))
+                        WideSpacer()
                     }
 
                     ContentCard(
@@ -81,8 +86,24 @@ fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMil
                         iconDescription = "Punch Clock",
                     )
                 }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant permissions, select ")
+
+                    withStyle(style = styleBold) {
+                        append("I'm in.")
+                    }
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
+            }
+        },
+        navContent = {
+            OnboardingIntroNav(activity)
         }
-    ) { OnboardingIntroNav(activity) }
+    )
 
 /**
  * Provides buttons for opting-in or -out to automatic mileage tracking: opt out, opt in, or

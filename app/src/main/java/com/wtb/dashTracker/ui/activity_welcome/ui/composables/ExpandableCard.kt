@@ -37,8 +37,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -136,14 +138,16 @@ fun ExpandableCard(
                             contentDescription = "Show less",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(16.dp)
+                                .height(16.dp),
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                         false -> Icon(
                             Icons.Filled.KeyboardArrowDown,
                             contentDescription = "Show more",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(16.dp)
+                                .height(16.dp),
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
@@ -240,6 +244,24 @@ fun ContentCard(
 
 @ExperimentalTextApi
 @Composable
+fun SecondaryOutlinedCard(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+): Unit = DashTrackerTheme {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+    ) {
+        content()
+    }
+}
+
+@ExperimentalTextApi
+@Composable
 fun ListRow(
     text: String,
     modifier: Modifier = Modifier,
@@ -323,5 +345,35 @@ fun PreviewContentCard() {
 fun PreviewCustomOutlined() {
     CustomOutlinedCard {
         Text("This is just an outlined card")
+    }
+}
+
+@ExperimentalTextApi
+@Composable
+@Preview
+fun PreviewSecondaryCustomOutlined() {
+    SecondaryOutlinedCard() {
+        val str = buildAnnotatedString {
+            append("To grant location permissions, select ")
+
+            withStyle(style = styleBold) {
+                append("OK")
+            }
+
+            append(" then allow location access ")
+
+            withStyle(style = styleBold) {
+                append("While using the app")
+            }
+
+            append(", then ")
+
+            withStyle(style = styleBold) {
+                append("Allow")
+            }
+
+            append(" physical activity access.")
+        }
+        Text(str, modifier = Modifier.padding(24.dp))
     }
 }

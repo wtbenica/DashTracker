@@ -36,14 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
-import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.*
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
-import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
-import com.wtb.dashTracker.util.hasPermissions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -94,7 +94,27 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
             CustomOutlinedCard {
                 Text(
                     text = when {
-                        permHelp.locationEnabled -> "Automatic mileage tracking is enabled"
+                        permHelp.locationEnabled -> "Automatic mileage tracking is enabled." +
+                                if (!activity.hasPermissions(*OPTIONAL_PERMISSIONS)
+                                    && permHelp.sharedPrefs.getBoolean(
+                                        activity.ASK_AGAIN_NOTIFICATION,
+                                        false
+                                    )
+                                ) {
+                                    " Next time you hit Start Dash, you will be asked again if you would like to enable notifications."
+                                } else {
+                                    ""
+                                } +
+                                if (!activity.hasBatteryPermission()
+                                    && permHelp.sharedPrefs.getBoolean(
+                                        activity.ASK_AGAIN_BATTERY_OPTIMIZER,
+                                        false
+                                    )
+                                ) {
+                                    " Next time you hit Start Dash, you will be asked again if you would like to allow unrestricted background battery use."
+                                } else {
+                                    ""
+                                }
                         permHelp.sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, true) -> {
                             "You've opted out of automatic mileage tracking. If you change your " +
                                     "mind, you can turn it on by going to Settings."
@@ -103,9 +123,9 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
                                 permHelp.sharedPrefs.getBoolean(
                                     activity.ASK_AGAIN_BG_LOCATION,
                                     false
-                                ) -> "Next time you hit Start Dash, you will be " +
-                                "given another chance to decide. You can also enable automatic " +
-                                "mileage from Settings"
+                                ) -> "Next time you hit Start Dash, you will be asked whether you " +
+                                "want to enable automatic mileage tracking. You can also enable " +
+                                "automatic tracking from Settings."
                         else -> "Automatic mileage tracking is disabled. You can enable it from " +
                                 "Settings."
                     }

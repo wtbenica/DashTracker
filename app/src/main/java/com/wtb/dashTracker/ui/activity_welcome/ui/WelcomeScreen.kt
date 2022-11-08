@@ -16,7 +16,11 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.Circle
@@ -32,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -53,52 +56,58 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
         headerText = "Welcome to DashTracker",
         iconImage = { Logo() },
         mainContent = {
-            val rowSpacing = 24.dp
+            LazyColumn {
+                item {
+                    ExpandableCard(
+                        text = "Track your income",
+                        icon = Icons.TwoTone.MonetizationOn,
+                        iconTint = up,
+                        iconDescription = "Drawing of a car",
+                    ) {
+                        Column {
+                            stringArrayResource(id = R.array.track_income).forEach {
+                                ListRow(text = it, icon = Icons.TwoTone.Circle)
+                            }
+                        }
+                    }
 
-            ExpandableCard(
-                text = "Track your income",
-                icon = Icons.TwoTone.MonetizationOn,
-                iconTint = up,
-                iconDescription = "Drawing of a car",
-            ) {
-                Column {
-                    stringArrayResource(id = R.array.track_income).forEach {
-                        ListRow(text = it, icon = Icons.TwoTone.Circle)
+                    WideSpacer()
+                }
+
+                item {
+                    ExpandableCard(
+                        text = "Track your expenses",
+                        icon = Icons.TwoTone.Wallet,
+                        iconTint = down,
+                        iconDescription = "Drawing of a car",
+                    ) {
+                        Column {
+                            stringArrayResource(id = R.array.track_expense).forEach {
+                                ListRow(text = it, icon = Icons.TwoTone.Circle)
+                            }
+                        }
+                    }
+
+                    WideSpacer()
+                }
+
+                item {
+                    ExpandableCard(
+                        text = "Track your mileage",
+                        icon = Icons.TwoTone.DirectionsCar,
+                        iconTint = car,
+                        iconDescription = "Drawing of a car",
+                    ) {
+                        Column {
+                            stringArrayResource(id = R.array.track_mileage).forEach {
+                                ListRow(text = it, icon = Icons.TwoTone.Circle)
+                            }
+                        }
+
+                        DefaultSpacer()
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(rowSpacing))
-
-            ExpandableCard(
-                text = "Track your expenses",
-                icon = Icons.TwoTone.Wallet,
-                iconTint = down,
-                iconDescription = "Drawing of a car",
-            ) {
-                Column {
-                    stringArrayResource(id = R.array.track_expense).forEach {
-                        ListRow(text = it, icon = Icons.TwoTone.Circle)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(rowSpacing))
-
-            ExpandableCard(
-                text = "Track your mileage",
-                icon = Icons.TwoTone.DirectionsCar,
-                iconTint = car,
-                iconDescription = "Drawing of a car",
-            ) {
-                Column {
-                    stringArrayResource(id = R.array.track_mileage).forEach {
-                        ListRow(text = it, icon = Icons.TwoTone.Circle)
-                    }
-                }
-            }
-
-            DefaultSpacer()
         }
     ) { WelcomeNav(callback) }
 

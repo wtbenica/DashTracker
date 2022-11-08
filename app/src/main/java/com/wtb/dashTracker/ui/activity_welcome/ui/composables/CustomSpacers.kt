@@ -27,7 +27,7 @@ fun DefaultSpacer() {
 
 @Composable
 fun WideSpacer() {
-    Spacer(modifier = Modifier.size(64.dp))
+    Spacer(modifier = Modifier.size(24.dp))
 }
 
 @Composable
