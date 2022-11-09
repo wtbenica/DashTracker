@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.OnboardingIntroNav
-import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.cardShape
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
+import com.wtb.dashTracker.ui.theme.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalTextApi
@@ -92,21 +92,26 @@ fun ScreenTemplate(
                     FillSpacer()
 
                     OutlinedCard(
-                        shape = cardShape,
                         modifier = Modifier
                             .width(128.dp)
                             .height(96.dp)
                             .align(Alignment.CenterVertically)
                             .padding(end = dimensionResource(R.dimen.margin_half)),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+                        shape = cardShape,
+                        colors = cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = secondary()
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface)
                     ) {
                         Column(
                             modifier = Modifier.align(
-                                Alignment.CenterHorizontally),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                iconImage()
-                            }
+                                Alignment.CenterHorizontally
+                            ),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            iconImage()
+                        }
                     }
                 }
 
@@ -115,7 +120,11 @@ fun ScreenTemplate(
 
             Spacer(modifier = Modifier.size(64.dp))
 
-            Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            ) {
                 mainContent()
             }
 
@@ -150,7 +159,7 @@ fun PreviewScreenTemplate() {
                         imageVector = Icons.TwoTone.Dangerous,
                         contentDescription = "Dangerous",
                         modifier = Modifier.size(96.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = welcomeIconColor()
                     )
                 },
                 mainContent = {

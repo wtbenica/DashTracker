@@ -19,14 +19,15 @@ package com.wtb.dashTracker.ui.activity_welcome.ui
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.NavigateNext
-import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
@@ -36,20 +37,24 @@ import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.secondary
+import com.wtb.dashTracker.ui.theme.secondaryFaded
+import com.wtb.dashTracker.ui.theme.secondaryLight
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Composable
 fun customSwitchColors(): SwitchColors {
     return SwitchDefaults.colors(
-        checkedThumbColor = MaterialTheme.colorScheme.surface,
-        checkedTrackColor = MaterialTheme.colorScheme.primary,
-        checkedBorderColor = MaterialTheme.colorScheme.primary,
-        uncheckedThumbColor = MaterialTheme.colorScheme.tertiary,
-        uncheckedTrackColor = MaterialTheme.colorScheme.primary,
-        uncheckedBorderColor = MaterialTheme.colorScheme.primary
+        checkedThumbColor = secondary(),
+        checkedTrackColor = secondaryFaded(),
+        checkedBorderColor = secondary(),
+        uncheckedThumbColor = secondaryLight(),
+        uncheckedTrackColor = secondaryFaded(),
+        uncheckedBorderColor = secondary()
     )
 }
 
@@ -63,43 +68,57 @@ fun InitialSettings(context: WelcomeActivity? = null) {
         headerText = "Initial Setup",
         iconImage = {
             Icon(
-                imageVector = Icons.TwoTone.Settings,
+                imageVector = Icons.Outlined.Settings,
                 contentDescription = "Settings",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = welcomeIconColor()
             )
         },
         mainContent = {
-            CustomOutlinedCard {
+            CustomOutlinedCard(padding = 0) {
                 Column {
-                    Row(
-                        modifier = Modifier.padding(0.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
-                        Text(
-                            text = stringResource(R.string.pref_title_show_weekly_adjustment_field),
-                            fontWeight = FontWeight.Bold,
-                        )
-                        FillSpacer()
+                        Row(
+                            modifier = Modifier
+                                .padding(
+                                    vertical = dimensionResource(R.dimen.margin_half),
+                                    horizontal = dimensionResource(id = R.dimen.margin_wide)
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.pref_title_show_weekly_adjustment_field),
+                                fontWeight = FontWeight.Bold,
+                            )
 
-                        val showBPAs = remember { mutableStateOf(true) }
-                        Switch(
-                            checked = showBPAs.value, onCheckedChange = { newValue ->
-                                showBPAs.value = newValue
-                                context?.let {
-                                    PreferenceManager.getDefaultSharedPreferences(context).edit()
-                                        .putBoolean(context.PREF_SHOW_BASE_PAY_ADJUSTS, newValue)
-                                        .apply()
-                                }
-                            },
-                            colors = customSwitchColors()
-                        )
+                            FillSpacer()
+
+                            val showBPAs = remember { mutableStateOf(true) }
+                            Switch(
+                                checked = showBPAs.value,
+                                onCheckedChange = { newValue ->
+                                    showBPAs.value = newValue
+                                    context?.let {
+                                        PreferenceManager.getDefaultSharedPreferences(context)
+                                            .edit()
+                                            .putBoolean(
+                                                context.PREF_SHOW_BASE_PAY_ADJUSTS,
+                                                newValue
+                                            )
+                                            .apply()
+                                    }
+                                },
+                                colors = customSwitchColors()
+                            )
+                        }
                     }
-
-                    HalfSpacer()
 
                     Text(
                         text = stringResource(R.string.show_weekly_bpa_desc),
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_wide)),
                         fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                         fontFamily = FontFamilyFiraSans
                     )
@@ -108,37 +127,47 @@ fun InitialSettings(context: WelcomeActivity? = null) {
 
             HalfSpacer()
 
-            CustomOutlinedCard {
+            CustomOutlinedCard(padding = 0) {
                 Column {
-                    Row(
-                        modifier = Modifier.padding(0.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.pref_title_require_authentication),
-                            fontWeight = FontWeight.Bold
-                        )
-                        FillSpacer()
+                        Row(
+                            modifier = Modifier
+                                .padding(
+                                    vertical = dimensionResource(R.dimen.margin_half),
+                                    horizontal = dimensionResource(id = R.dimen.margin_wide)
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.pref_title_require_authentication),
+                                fontWeight = FontWeight.Bold
+                            )
+                            FillSpacer()
 
-                        val authEnabled = remember { mutableStateOf(true) }
+                            val authEnabled = remember { mutableStateOf(true) }
 
-                        Switch(
-                            checked = authEnabled.value, onCheckedChange = { newValue ->
-                                authEnabled.value = newValue
-                                context?.let {
-                                    PreferenceManager.getDefaultSharedPreferences(context).edit()
-                                        .putBoolean(context.AUTHENTICATION_ENABLED, newValue)
-                                        .apply()
-                                }
-                            },
-                            colors = customSwitchColors()
-                        )
+                            Switch(
+                                checked = authEnabled.value,
+                                onCheckedChange = { newValue ->
+                                    authEnabled.value = newValue
+                                    context?.let {
+                                        PreferenceManager.getDefaultSharedPreferences(context)
+                                            .edit()
+                                            .putBoolean(context.AUTHENTICATION_ENABLED, newValue)
+                                            .apply()
+                                    }
+                                },
+                                colors = customSwitchColors()
+                            )
+                        }
                     }
-
-                    HalfSpacer()
 
                     Text(
                         text = stringResource(R.string.require_pin_desc),
+                        modifier = Modifier.padding(dimensionResource(R.dimen.margin_wide)),
                         fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                         fontFamily = FontFamilyFiraSans
                     )

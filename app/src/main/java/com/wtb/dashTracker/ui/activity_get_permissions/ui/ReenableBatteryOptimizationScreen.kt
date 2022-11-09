@@ -61,7 +61,7 @@ fun ReenableBatteryOptimizationScreen(
                 imageVector = Icons.TwoTone.BatterySaver,
                 contentDescription = "Battery Saver Icon",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.secondary
             )
         },
         mainContent = {
@@ -94,6 +94,33 @@ fun ReenableBatteryOptimizationScreen(
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant unrestricted background battery use, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Battery")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Unrestricted")
+                    }
+
+                    append(" then return to DashTracker.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {

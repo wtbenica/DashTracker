@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
@@ -60,7 +61,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
                 imageVector = Icons.Outlined.LocationOff,
                 contentDescription = "Location Off",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = welcomeIconColor()
             )
         }
 
@@ -69,7 +70,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
                 imageVector = Icons.Outlined.LocationOn,
                 contentDescription = "Location On",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = welcomeIconColor()
             )
         }
 

@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.activity_authenticated
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 
 /**
@@ -69,6 +71,8 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
         onFailed: (() -> Unit)? = onAuthFailed,
         forceAuthentication: Boolean = false
     ) {
+        Log.d(TAG, "authenticate | isAuthenticated: $isAuthenticated")
+
         if (forceAuthentication || (authenticationEnabled && !isAuthenticated)) {
             if (!forceAuthentication) lockScreen()
 

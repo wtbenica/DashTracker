@@ -26,7 +26,9 @@ import android.content.ServiceConnection
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
+import android.os.PersistableBundle
 import android.provider.Settings
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -192,7 +194,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.d(TAG, "onCreate")
         if (savedInstanceState?.getBoolean(EXPECTED_EXIT) == true) {
             isAuthenticated = true
             expectedExit = false
@@ -415,6 +417,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         super.onResume()
+        Log.d(TAG, "onResume | expectedExit: $expectedExit")
+        if (expectedExit) {
+            isAuthenticated = true
+            expectedExit = false
+        }
 
         if (sharedPrefs.getBoolean(PREF_SHOW_ONBOARD_INTRO, true)) {
             onFirstRun()
@@ -437,11 +444,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         super.onPause()
     }
 
-//    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-//        outState.putBoolean(EXPECTED_EXIT, expectedExit)
-//        super.onSaveInstanceState(outState, outPersistentState)
-//    }
-//
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        super.onSaveInstanceState(outState, outPersistentState)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true

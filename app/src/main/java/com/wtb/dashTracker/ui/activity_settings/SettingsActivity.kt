@@ -264,7 +264,8 @@ class SettingsActivity : AuthenticatedActivity() {
                         ph.whenHasDecided(
                             hasNotification = ::startOnboarding,
                             hasBgLocation = ::startOnboarding,
-                            hasLocation = ::startOnboarding
+                            hasLocation = ::startOnboarding,
+                            noPermissions = ::startOnboarding
                         )?.invoke()
                     } else {
                         sharedPreferences?.edit()?.apply {

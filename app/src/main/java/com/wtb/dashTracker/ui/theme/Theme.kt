@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.theme
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -33,7 +34,7 @@ import androidx.core.view.WindowCompat
 
 val cardShape: RoundedCornerShape = RoundedCornerShape(24.dp)
 
-private val DarkColorScheme = darkColorScheme(
+private val DarkColorScheme: ColorScheme = darkColorScheme(
     primary = darkPrimary,
     secondary = darkPrimaryLight,
     tertiary = darkPrimaryFaded,
@@ -41,9 +42,19 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = darkOnPrimary,
     secondaryContainer = darkOnPrimary,
     tertiaryContainer = darkOnPrimary
+
+    /* Other default colors to override
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
+    */
 )
 
-private val LightColorScheme = lightColorScheme(
+private val LightColorScheme: ColorScheme = lightColorScheme(
     primary = primary,
     onPrimary = onPrimary,
     primaryContainer = primaryFaded,
@@ -60,13 +71,8 @@ private val LightColorScheme = lightColorScheme(
     outline = primaryDark,
 
     /* Other default colors to override
-    background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
     */
 )
 
@@ -91,7 +97,8 @@ fun DashTrackerTheme(
         SideEffect {
             val theWindow = (view.context as Activity).window
             theWindow.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(theWindow, view).isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(theWindow, view).isAppearanceLightStatusBars =
+                darkTheme
         }
     }
 

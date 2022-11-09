@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.cardShape
 import com.wtb.dashTracker.ui.theme.primaryDark
@@ -252,7 +253,8 @@ fun SingleExpandableCard(
 @Composable
 fun CustomOutlinedCard(
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
+    padding: Int? = null,
+    content: @Composable (ColumnScope.() -> Unit)
 ): Unit = DashTrackerTheme {
     OutlinedCard(
         modifier = modifier
@@ -262,7 +264,7 @@ fun CustomOutlinedCard(
         colors = customCardColors(),
         border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary),
     ) {
-        Column(modifier = Modifier.padding(32.dp)) {
+        Column(modifier = Modifier.padding(padding?.dp ?: dimensionResource(id = R.dimen.margin_wide))) {
             content()
         }
     }
@@ -342,6 +344,7 @@ fun SecondaryOutlinedCard(
 ): Unit = DashTrackerTheme {
     Card(
         modifier = modifier.fillMaxWidth(),
+        shape = cardShape,
         colors = cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.onPrimary
