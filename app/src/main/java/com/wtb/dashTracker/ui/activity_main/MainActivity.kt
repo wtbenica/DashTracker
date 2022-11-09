@@ -16,8 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_main
 
-import android.Manifest
-import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -28,6 +26,7 @@ import android.content.ServiceConnection
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
+import android.os.PersistableBundle
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -43,12 +42,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
-import androidx.biometric.BiometricPrompt
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -66,7 +63,6 @@ import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
@@ -75,6 +71,13 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
@@ -88,10 +91,11 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialo
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.util.*
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.DT_SHARED_PREFS
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_BG_LOCATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
+import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
+import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
+import com.wtb.dashTracker.util.hasPermissions
 import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
@@ -106,10 +110,9 @@ import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import kotlin.system.exitProcess
 
 private const val APP = "GT_"
-private const val IS_TESTING = false
-private var IS_FIRST = true
 
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
@@ -127,13 +130,10 @@ internal val Any.TAG: String
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
+class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
 
     internal val permissionsHelper = PermissionsHelper(this)
-
-    internal val sharedPrefs
-        get() = getSharedPreferences(DT_SHARED_PREFS, 0)
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -152,38 +152,39 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private lateinit var mAdView: AdView
 
     // State
-    private var expectedExit = false
-//    private var explicitlyStopped = false
-
     private var activeDash: ActiveDash? = null
-        set(value) {
-            Log.d(
-                "PAUSE",
-                "MainActivity | setting activeDash from ${field.hashCode()} to ${value.hashCode()}"
-            )
-            field = value
+
+    // Launchers
+    private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (this.hasPermissions(*REQUIRED_PERMISSIONS)
+                && sharedPrefs.getBoolean(LOCATION_ENABLED, false)
+            ) {
+                resumeMileageTracking()
+            }
         }
 
     /**
-     * An [ActivityResultLauncher] that calls [getBgLocationPermResumeTracking] if the requested
-     * permissions are granted
+     * Settings activity launcher - for launching [SettingsActivity] for result. checks data
+     * intent for [ACTIVITY_RESULT_NEEDS_RESTART]. If true, settings which require the app to
+     * restart were changed.
      */
-    private val locationPermLauncher: ActivityResultLauncher<Array<String>> =
-        registerMultiplePermissionsLauncher(onGranted = ::getBgLocationPermResumeTracking)
+    private val settingsActivityLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val needsRestart = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
 
-    /**
-     * An [ActivityResultLauncher] that calls [ActiveDash.resumeOrStartNewTrip] if the requested
-     * permission is granted
-     */
-    private val bgLocationPermLauncher: ActivityResultLauncher<String> =
-        registerSinglePermissionLauncher(onGranted = ::resumeMileageTracking)
+            if (needsRestart == true) {
+                restartApp()
+            } else {
+                val auth = it.data?.getBooleanExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, false)
 
-    /**
-     * Calls [ActiveDash.resumeOrStartNewTrip] on [activeDash]
-     *
-     * @return null if [activeDash] is null
-     */
-    private fun resumeMileageTracking() = activeDash?.resumeOrStartNewTrip()
+                if (auth != true) {
+                    authenticate()
+                } else {
+                    onUnlock()
+                }
+            }
+        }
 
     private val csvImportLauncher: ActivityResultLauncher<String> =
         CSVUtils(activity = this).getContentLauncher(
@@ -193,7 +194,20 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate    |")
+        Log.d(TAG, "onCreate")
+        if (savedInstanceState?.getBoolean(EXPECTED_EXIT) == true) {
+            isAuthenticated = true
+            expectedExit = false
+        }
+
+        if (intent.getBooleanExtra(EXTRA_SETTINGS_RESTART_APP, false)) {
+            isAuthenticated = true
+            expectedExit = true
+            val intent = Intent(this, SettingsActivity::class.java).apply {
+                putExtra(INTENT_EXTRA_PRE_AUTH, true)
+            }
+            settingsActivityLauncher.launch(intent)
+        }
 
         fun initBiometrics() {
             val biometricManager = BiometricManager.from(this)
@@ -335,7 +349,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 viewModel.loadActiveEntry(eid)
 
                 if (result) {
-                    activeDash?.startTracking(eid)
+                    activeDash?.startTracking()
                 }
             }
         }
@@ -363,7 +377,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         supportActionBar?.title = "DashTracker"
 
         initMainActivityBinding()
-
         setContentView(binding.root)
 
         initBiometrics()
@@ -399,95 +412,31 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         }
 
         fun onFirstRun() {
+            expectedExit = true
             startActivity((Intent(this, WelcomeActivity::class.java)))
         }
 
-        fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
-            endDash(tripId)
-            onUnlock()
-        }
-
-        /**
-         * Authenticates user using [BiometricPrompt]
-         */
-        fun authenticate(onSuccess: () -> Unit) {
-            Log.d(TAG, "login | authenticate")
-            val executor = ContextCompat.getMainExecutor(this)
-
-            val biometricPrompt = BiometricPrompt(this, executor,
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        super.onAuthenticationSucceeded(result)
-                        onSuccess()
-                    }
-
-                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        super.onAuthenticationError(errorCode, errString)
-                        Log.d(TAG, "login | error")
-                    }
-
-                    override fun onAuthenticationFailed() {
-                        super.onAuthenticationFailed()
-                        Log.d(TAG, "login | failed")
-                    }
-                })
-
-            val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Unlock to access DashTracker")
-                .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
-                .build()
-
-            biometricPrompt.authenticate(promptInfo)
-        }
-
         super.onResume()
-        Log.d("PAUSE", "onResume    | activeDash? ${activeDash != null}")
+        Log.d(TAG, "onResume | expectedExit: $expectedExit")
+        if (expectedExit) {
+            isAuthenticated = true
+            expectedExit = false
+        }
 
-        if ((IS_TESTING && IS_FIRST) || sharedPrefs.getBoolean(PREFS_SHOULD_SHOW_INTRO, true)) {
-            IS_FIRST = false
-
+        if (sharedPrefs.getBoolean(PREF_SHOW_ONBOARD_INTRO, true)) {
             onFirstRun()
         } else {
             cleanupFiles()
 
-            val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
-            intent.removeExtra(EXTRA_END_DASH)
-            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
-            intent.removeExtra(EXTRA_TRIP_ID)
-
-            if (!isAuthenticated) {
-
-                val onSuccess: () -> Unit =
-                    if (endDashExtra == true) {
-                        onEndDashIntent(tripId)
-                    } else {
-                        ::onUnlock
-                    }
-
-                authenticate(onSuccess)
-
-            } else {
-
-                if (endDashExtra == true) {
-                    onEndDashIntent(tripId)
-                } else {
-                    onUnlock()
-                }
-
-            }
+            authenticate()
         }
+
+        invalidateOptionsMenu()
     }
 
     override fun onPause() {
-        Log.d("PAUSE", "onPause | activeDash: $activeDash")
         activeDash?.apply {
-            Log.d("PAUSE", "onPause | activeDash is not null, unbind location service")
             unbindLocationService()
-        }
-
-        if (!expectedExit) {
-            isAuthenticated = false
-            lockScreen()
         }
 
         activeDash = null
@@ -495,32 +444,22 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         super.onPause()
     }
 
-    /**
-     * Sets content to visible
-     */
-    private fun onUnlock() {
-        Log.d(TAG, "login | onUnlock")
-        isAuthenticated = true
-        expectedExit = false
-        unlockScreen()
-    }
-
-    private fun lockScreen() {
-        binding.container.visibility = INVISIBLE
-    }
-
-    private fun unlockScreen() {
-        binding.container.visibility = VISIBLE
-    }
-
-    override fun onDestroy() {
-        Log.d("PAUSE", "onDestroy |")
-        super.onDestroy()
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        super.onSaveInstanceState(outState, outPersistentState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val showBPAs = sharedPrefs.getBoolean(PREF_SHOW_BASE_PAY_ADJUSTS, true)
+
+        menu?.findItem(R.id.action_new_weekly)?.isVisible = showBPAs
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -568,8 +507,26 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }
                 true
             }
+            R.id.action_settings -> {
+                expectedExit = true
+                val intent = Intent(this, SettingsActivity::class.java).apply {
+                    putExtra(INTENT_EXTRA_PRE_AUTH, true)
+                }
+                settingsActivityLauncher.launch(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    /**
+     * Calls [ActiveDash.resumeOrStartNewTrip] on [activeDash]
+     *
+     * @return null if [activeDash] is null
+     */
+    private fun resumeMileageTracking() {
+        activeDash?.bindLocationService()
+        activeDash?.resumeOrStartNewTrip()
     }
 
     /**
@@ -587,7 +544,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         activeDash?.stopDash(entryId)
     }
 
-
     private fun insertOrReplace(models: ModelMap) {
         viewModel.insertOrReplace(
             entries = models.get<DashEntry, DashEntry.Companion>().ifEmpty { null },
@@ -598,26 +554,49 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         )
     }
 
-    /**
-     * Requests [ACCESS_BACKGROUND_LOCATION], if needed, and  calls [resumeMileageTracking].
-     */
-    private fun getBgLocationPermResumeTracking() {
-        when {
-            sharedPrefs.getBoolean(PREFS_OPT_OUT_BG_LOCATION, false) -> {}
-            hasPermissions(this@MainActivity, ACCESS_BACKGROUND_LOCATION) -> {
-                resumeMileageTracking()
+    private fun restartApp() {
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        val mainIntent =
+            Intent.makeRestartActivityTask(intent?.component)
+                .putExtra(EXTRA_SETTINGS_RESTART_APP, true)
+        startActivity(mainIntent)
+        exitProcess(0)
+    }
+
+    // AuthenticatedActivity overrides
+    override val onAuthentication: () -> Unit
+        get() {
+            fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
+                endDash(tripId)
+                onUnlock()
             }
-            shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
-                showRationaleBgLocation {
-                    bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-                        .also { expectedExit = true }
-                }
-            }
-            else -> {
-                bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-                expectedExit = true
+
+            val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
+            intent.removeExtra(EXTRA_END_DASH)
+            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
+            intent.removeExtra(EXTRA_TRIP_ID)
+
+            return if (endDashExtra == true) {
+                onEndDashIntent(tripId)
+            } else {
+                ::onUnlock
             }
         }
+
+    override val onAuthFailed: (() -> Unit)? = null
+
+    override val onAuthError: (() -> Unit)? = null
+
+    override fun lockScreen() {
+        binding.container.visibility = INVISIBLE
+        supportActionBar?.hide()
+    }
+
+    private fun onUnlock() {
+        isAuthenticated = true
+        expectedExit = false
+        binding.container.visibility = VISIBLE
+        supportActionBar?.show()
     }
 
     /**
@@ -643,7 +622,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private var locationService: LocationService? = null
         private var locationServiceConnection: ServiceConnection? = null
             set(value) {
-                Log.d(TAG, "locServConn | before: $field | after: $value")
                 if (field != null) {
                     unbindLocationService()
                 }
@@ -666,70 +644,15 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
         /**
          * Checks for [REQUIRED_PERMISSIONS]. If they have already been granted, calls
-         * [startLocationService] on [entryId], otherwise it requests the permissions using
-         * [locationPermLauncher]
-         *
-         * @param entryId passed as the argument to [startLocationService] if permissions have
-         * already been granted
+         * [startLocationService], otherwise it requests the permissions using
+         * [onboardMileageTrackingLauncher]
          */
-        fun startTracking(entryId: Long) {
+        fun startTracking() {
             stopOnBind = false
-
-            permissionsHelper.whenPermissions(
-                optOutLocation = {
-                    Snackbar.make(
-                        /* context = */ this@MainActivity,
-                        /* view = */ binding.root,
-                        /* text = */ "Opted out",
-                        /* duration = */ Snackbar.LENGTH_LONG
-                    ).show()
-                },
-                hasAllPermissions = {
-                    startLocationService(entryId)
-                },
-                missingBatteryPermission = {
-                    Snackbar.make(
-                        /* context = */ this@MainActivity,
-                        /* view = */ binding.root,
-                        /* text = */ "Missing battery permissions",
-                        /* duration = */ Snackbar.LENGTH_LONG
-                    ).show()
-                },
-                missingNotificationPermission = {
-                    Snackbar.make(
-                        /* context = */ this@MainActivity,
-                        /* view = */ binding.root,
-                        /* text = */ "Missing notification permissions",
-                        /* duration = */ Snackbar.LENGTH_LONG
-                    ).show()
-                },
-                missingBgLocationPermission = {
-                    expectedExit = true
-                    when {
-                        shouldShowRequestPermissionRationale(ACCESS_BACKGROUND_LOCATION) -> {
-                            showRationaleBgLocation {
-                                bgLocationPermLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-                            }
-                        }
-                        else -> {
-                            locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                        }
-                    }
-                },
-                missingAllPermissions = {
-                    expectedExit = true
-                    when {
-                        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                            showRationaleLocation {
-                                locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                            }
-                        }
-                        else -> {
-                            locationPermLauncher.launch(LOCATION_PERMISSIONS)
-                        }
-                    }
-                },
-            )?.invoke()
+            expectedExit = true
+            onboardMileageTrackingLauncher.launch(
+                Intent(this@MainActivity, OnboardingMileageActivity::class.java)
+            )
         }
 
         /**
@@ -834,29 +757,24 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
          * Calls [unbindService] on [locationServiceConnection], sets [locationServiceBound] to
          * false, [locationServiceConnection] to null, and [locationService] to null.
          */
-        fun unbindLocationService() {
+        internal fun unbindLocationService() {
             if (locationServiceBound) {
-                Log.d(TAG, "unbinding service, allegedly | locServConn: $locationServiceConnection")
                 unbindService(locationServiceConnection!!)
                 locationServiceBound = false
                 locationServiceConnection = null
                 locationService = null
-//            }
             }
         }
 
-        private fun bindLocationService() {
+        internal fun bindLocationService() {
             if (!locationServiceBound && !startingService) {
                 startingService = true
-                Log.d(TAG, "bindLocationServices | locServConn")
                 val locationServiceIntent = Intent(applicationContext, LocationService::class.java)
 
-                if (hasPermissions(this@MainActivity, *REQUIRED_PERMISSIONS)) {
-                    Log.d(TAG, "bindLocationService | actually binding the service")
+                if (this@MainActivity.hasPermissions(*REQUIRED_PERMISSIONS)) {
                     val onBind: (() -> Unit)? =
                         activeEntryId?.let { id -> { startLocationService(id) } }
                     val conn = getLocationServiceConnection(onBind)
-                    Log.d(TAG, "locServConn | $conn")
                     locationServiceConnection = conn
 
                     bindService(
@@ -865,7 +783,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         BIND_AUTO_CREATE
                     )
                 } else {
-                    Log.d(TAG, "bindLocationService | missing permissions")
+                    startingService = false
                 }
             }
         }
@@ -907,14 +825,11 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                             tripId = it
                         }
 
-                        Log.d(TAG, "EBLOW: updateLocationServiceNotificationData:799 | $tripId")
                         updateLocationServiceNotificationData(tripId)
                     }
 
-                    Log.d(TAG, "onServiceConnected")
                     val binder = service as LocationService.LocalBinder
                     locationService = binder.service
-                    Log.d(TAG, "locServConn | bound <- true")
                     locationServiceBound = true
 
                     initLocSvcObserver()
@@ -923,9 +838,7 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         binder.service.stop()
                         stopOnBind = false
                     } else if (startOnBind) {
-                        Log.d(TAG, "onServiceConnected | startOnBind: $activeEntryId")
                         (activeEntryId ?: startOnBindId)?.let { startLocationService(it) }
-                        Log.d(TAG, "onServiceConnected | setting startOnBind false")
                         startOnBind = false
                         startOnBindId = null
                     } else {
@@ -936,7 +849,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
-                    Log.d(TAG, "onServiceDisconnected")
                     locationService = null
                     locationServiceBound = false
                 }
@@ -971,7 +883,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
             fun getStopServiceAction(ctx: Context): NotificationCompat.Action {
                 fun getEndDashPendingIntent(id: Long?): PendingIntent? {
-                    Log.d(TAG, "EBLOW: New End Dash Intent: $id")
                     val intent = Intent(ctx, MainActivity::class.java)
                         .putExtra(EXTRA_END_DASH, true)
                         .putExtra(EXTRA_TRIP_ID, id ?: -30L)
@@ -1003,10 +914,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 )
 
             locationService?.apply {
-                Log.d(
-                    TAG,
-                    "EBLOW: Initializing locServ $tripId"
-                )
                 initialize(
                     notificationData = locServiceOngoingNotificationData,
                     notificationChannel = notificationChannel,
@@ -1017,12 +924,12 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     companion object {
-        private var isAuthenticated = false
-
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
 
+        private const val EXTRA_SETTINGS_RESTART_APP =
+            "${BuildConfig.APPLICATION_ID}.restart_settings"
         private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"
         private const val EXTRA_TRIP_ID = "${BuildConfig.APPLICATION_ID}.tripId"
 
@@ -1087,5 +994,3 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
  * serve a purpose
  */
 interface DeductionCallback
-
-

@@ -77,7 +77,7 @@ interface ExpandableAdapter {
 abstract class BaseItemListAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
     ListAdapter<T, BaseItemHolder<T>>(diffCallback), ExpandableAdapter {
 
-    override var mExpandedPositions = mutableSetOf<Int>()
+    override var mExpandedPositions: MutableSet<Int> = mutableSetOf<Int>()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -115,7 +115,7 @@ abstract class BaseItemListAdapter<T : ListItemType>(diffCallback: DiffUtil.Item
 abstract class BaseItemPagingDataAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
     PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback), ExpandableAdapter {
 
-    override var mExpandedPositions = mutableSetOf<Int>()
+    override var mExpandedPositions: MutableSet<Int> = mutableSetOf<Int>()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)

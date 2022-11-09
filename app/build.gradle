@@ -78,7 +78,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.activity:activity-compose:1.6.0'
+    implementation 'androidx.activity:activity-compose:1.6.1'
 
     implementation 'androidx.annotation:annotation:1.5.0'
 
@@ -88,7 +88,7 @@ dependencies {
 
     implementation "androidx.compose.compiler:compiler:$compose_compiler_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-rc01'
+    implementation 'androidx.compose.material3:material3:1.1.0-alpha01'
     implementation "androidx.compose.runtime:runtime:$compose_version"
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
@@ -99,13 +99,13 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.core:core-splashscreen:1.0.0'
 
-    implementation 'androidx.fragment:fragment-ktx:1.5.3'
+    implementation 'androidx.fragment:fragment-ktx:1.5.4'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
@@ -130,15 +130,16 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:21.3.0'
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation "com.google.android.material:material:$material_version"
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.20'
-    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation "com.google.android.gms:play-services-location:$play_services_location_version"
 
     implementation files('../../MyLibraries/CsvUtil-release.aar')
     implementation project(path: ':mileageTracker')
     implementation project(path: ':notificationutil')
-    implementation 'com.google.accompanist:accompanist-navigation-animation:0.26.5-rc'
+    implementation 'com.google.accompanist:accompanist-navigation-animation:0.27.0'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
 
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"

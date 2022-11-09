@@ -69,17 +69,17 @@ class DatePickerFragment : DialogFragment(),
     }
 
     companion object {
-        const val ARG_DATE_TEXTVIEW = "param1"
+        const val ARG_DATE_TEXTVIEW: String = "param1"
         private const val ARG_CURRENT_TEXT = "param2"
         private const val ARG_REQUEST_KEY = "param3"
 
-        const val REQUEST_KEY_DATE = "requestDatePicker"
-        const val ARG_NEW_YEAR = "year"
-        const val ARG_NEW_MONTH = "month"
-        const val ARG_NEW_DAY = "dayOfMonth"
+        const val REQUEST_KEY_DATE: String = "requestDatePicker"
+        const val ARG_NEW_YEAR: String = "year"
+        const val ARG_NEW_MONTH: String = "month"
+        const val ARG_NEW_DAY: String = "dayOfMonth"
 
         @JvmStatic
-        fun newInstance(@IdRes textViewId: Int, currentText: String, requestKey: String) =
+        fun newInstance(@IdRes textViewId: Int, currentText: String, requestKey: String): DatePickerFragment =
             DatePickerFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_DATE_TEXTVIEW, textViewId)

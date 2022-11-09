@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
+import com.wtb.dashTracker.R
 
 @Composable
 fun RowScope.FillSpacer() {
@@ -20,17 +22,22 @@ fun ColumnScope.FillSpacer(modifier: Modifier = Modifier) {
 
 @Composable
 fun DefaultSpacer() {
-    Spacer(modifier = Modifier.size(16.dp))
+    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_default)))
+}
+
+@Composable
+fun WideSpacer() {
+    Spacer(modifier = Modifier.size(24.dp))
 }
 
 @Composable
 fun HalfSpacer() {
-    Spacer(modifier = Modifier.size(8.dp))
+    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_half)))
 }
 
 @Composable
 fun QuarterSpacer() {
-    Spacer(modifier = Modifier.size(4.dp))
+    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_narrow)))
 }
 
 @Composable

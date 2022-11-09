@@ -64,7 +64,7 @@ class HourlyBarChart(
     R.string.lbl_hourly_gross_net,
     R.string.frag_title_income
 ) {
-    val binding =
+    val binding: ChartHourlyGrossNetBinding =
         ChartHourlyGrossNetBinding.inflate(LayoutInflater.from(context), this)
     private var barChartGrossNetHourly: WeeklyBarChart =
         binding.chartLineHourlyTrend.apply { style() }

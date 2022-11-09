@@ -15,7 +15,6 @@ import com.wtb.notificationutil.NotificationUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
-import java.time.format.DateTimeFormatter
 
 val Any.TAG: String
     get() = "GT_" + this.javaClass.simpleName
@@ -54,18 +53,6 @@ class LocationService : Service() {
      */
     private val isStarted: StateFlow<Boolean>
         get() = _isStarted
-
-    /**
-     * The user's detected activity is [DetectedActivity.STILL]
-     */
-    private val isStill: StateFlow<Boolean>
-        get() = _isStill
-
-    /**
-     * The user's detected activity is [DetectedActivity.IN_VEHICLE]
-     */
-    private val inVehicle: StateFlow<Boolean>
-        get() = _inVehicle
 
     fun setIsTesting(isTesting: Boolean) {
         _isTesting.value = isTesting
@@ -112,7 +99,6 @@ class LocationService : Service() {
         notificationText: (Location?) -> String,
         updateNotificationText: ((Location?) -> String)? = null
     ) {
-        Log.d(TAG, "EBLOW: Updating notificationData")
         this.nd = notificationData
         this.notificationChannel = notificationChannel
         this.getNotificationText = notificationText
@@ -137,10 +123,8 @@ class LocationService : Service() {
         newTripId: Long,
         locationHandler: (Location, Long, Int, Int, Int, Int) -> Unit
     ): Long {
-        Log.d(TAG, "start | called while: ${serviceState.value.name}")
         return when (serviceState.value) {
             ServiceState.STOPPED -> {
-                Log.d(TAG, "start | calling startService")
                 startService(
                     Intent(applicationContext, LocationService::class.java)
                         .putExtra(EXTRA_LOCATION_HANDLER, LocationHandler(locationHandler))
@@ -275,10 +259,8 @@ class LocationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "onStartCommand")
-        intent?.let {
-            Log.d(TAG, "onStartCommand: has intent")
 
+        intent?.let {
             if (it.getBooleanExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, false)) {
                 stop()
             }
@@ -335,7 +317,6 @@ class LocationService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        Log.d(TAG, "onBind")
         stopForeground(STOP_FOREGROUND_REMOVE)
         serviceRunningInForeground = false
         configurationChange = false
@@ -351,9 +332,7 @@ class LocationService : Service() {
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.d(TAG, "onUnbind")
         if (!configurationChange) {
-            Log.d(TAG, "onUnbind: starting ongoing background notification")
             val notification: Notification = notificationUtil.generateNotification(
                 getNotificationText?.invoke(currentLocation) ?: "Location Service in use.",
                 notificationChannel
@@ -456,23 +435,20 @@ class LocationService : Service() {
         private const val UPDATE_INTERVAL_MILLISECONDS: Long = 5000
         private const val FASTEST_UPDATE_INTERVAL_MILLISECONDS = UPDATE_INTERVAL_MILLISECONDS / 2
         private const val PREFS_IS_PAUSED = "service_state"
-        const val EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION =
-            "${BuildConfig.LIBRARY_PACKAGE_NAME}.extra.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICAITON"
+        private const val EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION =
+            "${BuildConfig.LIBRARY_PACKAGE_NAME}.extra.EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION"
 
-        const val SHARED_PREFS = "mileage_tracker"
-        const val EXTRA_LOCATION_HANDLER = "${BuildConfig.LIBRARY_PACKAGE_NAME}.locHandler"
-        const val EXTRA_TRIP_ID = "${BuildConfig.LIBRARY_PACKAGE_NAME}.tripId"
+        private const val SHARED_PREFS = "mileage_tracker"
+        private const val EXTRA_LOCATION_HANDLER = "${BuildConfig.LIBRARY_PACKAGE_NAME}.locHandler"
+        private const val EXTRA_TRIP_ID = "${BuildConfig.LIBRARY_PACKAGE_NAME}.tripId"
 
         private val locationRequest: LocationRequest
-            get() = LocationRequest.create().apply {
-                interval = UPDATE_INTERVAL_MILLISECONDS
-                fastestInterval = FASTEST_UPDATE_INTERVAL_MILLISECONDS
-                priority = Priority.PRIORITY_HIGH_ACCURACY
-            }
-
-        var dtf: DateTimeFormatter =
-            DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss:SSS")
-
+            get() = LocationRequest.Builder(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                UPDATE_INTERVAL_MILLISECONDS
+            )
+                .setMinUpdateIntervalMillis(FASTEST_UPDATE_INTERVAL_MILLISECONDS)
+                .build()
     }
 }
 

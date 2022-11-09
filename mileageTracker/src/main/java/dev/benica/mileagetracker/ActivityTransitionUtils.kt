@@ -12,41 +12,12 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.wtb.notificationUtil.BuildConfig
-import dev.benica.mileagetracker.ActivityTransitionReceiver.Companion.getPendingIntent
 import dev.benica.mileagetracker.ActivityUpdateReceiver.Companion.getUpdatesPendingIntent
 
-const val REQUEST_CODE = 1234
-const val UPDATE_REQ_CODE = 2345
+//internal const val REQUEST_CODE = 1234
+internal const val UPDATE_REQ_CODE = 2345
 
 class ActivityTransitionUtils(private val context: Context) {
-    private val requestedTransitions: MutableList<ActivityTransition>
-        get() = mutableListOf(
-            ActivityTransition.Builder()
-                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                .setActivityType(DetectedActivity.STILL)
-                .build(),
-            ActivityTransition.Builder()
-                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-                .setActivityType(DetectedActivity.STILL)
-                .build(),
-            ActivityTransition.Builder()
-                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                .setActivityType(DetectedActivity.IN_VEHICLE)
-                .build(),
-            ActivityTransition.Builder()
-                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-                .setActivityType(DetectedActivity.IN_VEHICLE)
-                .build(),
-            ActivityTransition.Builder()
-                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                .setActivityType(DetectedActivity.ON_FOOT)
-                .build(),
-            ActivityTransition.Builder()
-                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-                .setActivityType(DetectedActivity.ON_FOOT)
-                .build()
-        )
-
     internal fun registerForActivityUpdates() {
         val task = if (ActivityCompat.checkSelfPermission(
                 context,
@@ -91,51 +62,82 @@ class ActivityTransitionUtils(private val context: Context) {
         }
     }
 
-    internal fun registerForActivityTransitionUpdates() {
-        val request = ActivityTransitionRequest(requestedTransitions)
+    // TODO: These 2 aren't used, but could be helpful in the future to implement a notification
+    //  when driving is detected to say "Start tracking?"
 
-        val task = if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACTIVITY_RECOGNITION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            throw Exception("Missing permission 'android.permission.ACTIVITY_RECOGNITION'")
-        } else {
-            ActivityRecognition.getClient(context)
-                .requestActivityTransitionUpdates(request, getPendingIntent(context))
-        }
-
-        task.run {
-            addOnSuccessListener {
-                Log.d(TAG, "Request transition updates success")
-            }
-            addOnFailureListener {
-                Log.d(TAG, "Request transition updates failed")
-            }
-        }
-    }
-
-    internal fun removeActivityTransitionUpdates() {
-        val task = if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACTIVITY_RECOGNITION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            throw Exception("Missing permission 'android.permission.ACTIVITY_RECOGNITION'")
-        } else {
-            ActivityRecognition.getClient(context)
-                .removeActivityTransitionUpdates(getPendingIntent(context))
-        }
-
-        task.run {
-            addOnSuccessListener {
-                Log.d(TAG, "Remove transition updates success")
-            }
-            addOnFailureListener {
-                Log.d(TAG, "Remove transition updates failed")
-            }
-        }
-    }
+//    private val requestedTransitions: MutableList<ActivityTransition>
+//        get() = mutableListOf(
+//            ActivityTransition.Builder()
+//                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+//                .setActivityType(DetectedActivity.STILL)
+//                .build(),
+//            ActivityTransition.Builder()
+//                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+//                .setActivityType(DetectedActivity.STILL)
+//                .build(),
+//            ActivityTransition.Builder()
+//                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+//                .setActivityType(DetectedActivity.IN_VEHICLE)
+//                .build(),
+//            ActivityTransition.Builder()
+//                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+//                .setActivityType(DetectedActivity.IN_VEHICLE)
+//                .build(),
+//            ActivityTransition.Builder()
+//                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+//                .setActivityType(DetectedActivity.ON_FOOT)
+//                .build(),
+//            ActivityTransition.Builder()
+//                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+//                .setActivityType(DetectedActivity.ON_FOOT)
+//                .build()
+//        )
+//
+//    internal fun registerForActivityTransitionUpdates() {
+//        val request = ActivityTransitionRequest(requestedTransitions)
+//
+//        val task = if (ActivityCompat.checkSelfPermission(
+//                context,
+//                Manifest.permission.ACTIVITY_RECOGNITION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            throw Exception("Missing permission 'android.permission.ACTIVITY_RECOGNITION'")
+//        } else {
+//            ActivityRecognition.getClient(context)
+//                .requestActivityTransitionUpdates(request, getPendingIntent(context))
+//        }
+//
+//        task.run {
+//            addOnSuccessListener {
+//                Log.d(TAG, "Request transition updates success")
+//            }
+//            addOnFailureListener {
+//                Log.d(TAG, "Request transition updates failed")
+//            }
+//        }
+//    }
+//
+//    internal fun removeActivityTransitionUpdates() {
+//        val task = if (ActivityCompat.checkSelfPermission(
+//                context,
+//                Manifest.permission.ACTIVITY_RECOGNITION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            throw Exception("Missing permission 'android.permission.ACTIVITY_RECOGNITION'")
+//        } else {
+//            ActivityRecognition.getClient(context)
+//                .removeActivityTransitionUpdates(getPendingIntent(context))
+//        }
+//
+//        task.run {
+//            addOnSuccessListener {
+//                Log.d(TAG, "Remove transition updates success")
+//            }
+//            addOnFailureListener {
+//                Log.d(TAG, "Remove transition updates failed")
+//            }
+//        }
+//    }
 }
 
 class ActivityUpdateReceiver : BroadcastReceiver() {
@@ -150,7 +152,7 @@ class ActivityUpdateReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val ACT_UPDATE_INTENT = "${BuildConfig.LIBRARY_PACKAGE_NAME}.act_update_intent"
+        internal const val ACT_UPDATE_INTENT = "${BuildConfig.LIBRARY_PACKAGE_NAME}.act_update_intent"
 
         @SuppressLint("UnspecifiedImmutableFlag")
         fun getUpdatesPendingIntent(context: Context): PendingIntent {
@@ -187,28 +189,28 @@ class ActivityTransitionReceiver : BroadcastReceiver() {
         }
     }
 
-    companion object {
-        private const val ACT_TRANS_INTENT = "LocationLibrary.act_trans_intent"
-
-        @SuppressLint("UnspecifiedImmutableFlag")
-        fun getPendingIntent(context: Context): PendingIntent {
-            val intent = Intent(ACT_TRANS_INTENT)
-
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                PendingIntent.getBroadcast(
-                    context,
-                    REQUEST_CODE,
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-                )
-            } else {
-                PendingIntent.getBroadcast(
-                    context,
-                    REQUEST_CODE,
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            }
-        }
-    }
+//    companion object {
+//        private const val ACT_TRANS_INTENT = "LocationLibrary.act_trans_intent"
+//
+//        @SuppressLint("UnspecifiedImmutableFlag")
+//        fun getPendingIntent(context: Context): PendingIntent {
+//            val intent = Intent(ACT_TRANS_INTENT)
+//
+//            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//                PendingIntent.getBroadcast(
+//                    context,
+//                    REQUEST_CODE,
+//                    intent,
+//                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+//                )
+//            } else {
+//                PendingIntent.getBroadcast(
+//                    context,
+//                    REQUEST_CODE,
+//                    intent,
+//                    PendingIntent.FLAG_UPDATE_CURRENT
+//                )
+//            }
+//        }
+//    }
 }

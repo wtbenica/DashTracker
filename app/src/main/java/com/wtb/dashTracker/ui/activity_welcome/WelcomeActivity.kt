@@ -16,45 +16,103 @@
 
 package com.wtb.dashTracker.ui.activity_welcome
 
-import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeNavHost
-import com.wtb.dashTracker.ui.activity_welcome.ui.composables.WelcomeNavHostPreview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
+import com.wtb.dashTracker.ui.activity_welcome.ui.InitialScreenCallback
+import com.wtb.dashTracker.ui.activity_welcome.ui.InitialSettings
+import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreen
+import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreenCallback
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.PermissionsHelper
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_SHOULD_SHOW_INTRO
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
-class WelcomeActivity : ComponentActivity() {
-    fun setOptOutPref(prefKey: String, optedOut: Boolean, onPrefSet: (() -> Unit)? = null) =
-        permissionsHelper.setBooleanPref(
-            prefKey,
-            optedOut,
-        ) {
-            onPrefSet?.invoke()
-            permissionsHelper.setBooleanPref(PREFS_SHOULD_SHOW_INTRO, false)
-            finish()
-        }
+class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScreenCallback {
 
     private val permissionsHelper = PermissionsHelper(this)
+    private var navController: NavHostController? = null
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
 
         setContent {
-            WelcomeNavHost(this)
+            DashTrackerTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 16.dp)
+                    ) {
+                        navController = rememberAnimatedNavController()
+
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            AnimatedNavHost(
+                                navController = navController!!,
+                                startDestination = WelcomeActivityScreen.WELCOME.name,
+                                modifier = Modifier.weight(1f),
+                                enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                                exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
+                                popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                                popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
+                            ) {
+                                composable(WelcomeActivityScreen.WELCOME.name) {
+                                    WelcomeScreen(callback = this@WelcomeActivity)
+                                }
+                                composable(WelcomeActivityScreen.SETTINGS.name) {
+                                    InitialSettings(this@WelcomeActivity)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
+
+    override fun nextScreen() {
+        navController?.navigate(WelcomeActivityScreen.SETTINGS.name)
+    }
+
+    override fun nextScreen2() {
+        permissionsHelper.setBooleanPref(PREF_SHOW_ONBOARD_INTRO, false)
+        startActivity(Intent(this, OnboardingMileageActivity::class.java))
+        finish()
+    }
+
+    companion object {
+        @Composable
+        fun welcomeIconColor(): Color = MaterialTheme.colorScheme.tertiary
+
+    }
+}
+
+enum class WelcomeActivityScreen {
+    WELCOME, SETTINGS
 }
 
 @ExperimentalAnimationApi
@@ -63,5 +121,17 @@ class WelcomeActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    WelcomeNavHostPreview()
+    val callback = object : WelcomeScreenCallback {
+        override fun nextScreen() {
+
+        }
+    }
+
+    DashTrackerTheme {
+        Surface {
+            Column {
+                WelcomeScreen(modifier = Modifier.weight(1f), callback)
+            }
+        }
+    }
 }

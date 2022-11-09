@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.activity_get_permissions
+package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -27,7 +27,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -35,13 +34,15 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.ui.theme.car
-import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -51,8 +52,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun GetBgLocationPermissionScreen(
     modifier: Modifier = Modifier,
-    activity: GetPermissionsActivity? = null
-) =
+    activity: OnboardingMileageActivity? = null
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Background Location Permission",
@@ -63,24 +64,14 @@ fun GetBgLocationPermissionScreen(
                 contentDescription = "Location symbol",
                 modifier = Modifier
                     .size(96.dp),
-                tint = car
+                tint = welcomeIconColor()
             )
         },
         mainContent = {
-            val str = buildAnnotatedString {
-                append(stringResource(R.string.dialog_bg_location_text_1))
-
-                withStyle(style = styleBold) {
-                    append(stringResource(R.string.dialog_bg_location_text_2_ital))
-                }
-
-                append(stringResource(R.string.dialog_bg_location_text_3))
-            }
-
-            CustomOutlinedCard() {
+            CustomOutlinedCard {
                 Text(
-                    text = str,
-                    fontSize = 18.sp,
+                    text = stringResource(R.string.dialog_bg_location_text),
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
             }
@@ -91,6 +82,27 @@ fun GetBgLocationPermissionScreen(
                 uriHandler.openUri("https://www.benica.dev")
             }) {
                 Text("Privacy Policy")
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant background location permission, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(" then ")
+
+                    withStyle(style = styleBold) {
+                        append("Allow all the time")
+                    }
+
+                    append(", then return to DashTracker.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {
@@ -105,18 +117,19 @@ fun GetBgLocationPermissionScreen(
 @Composable
 fun GetBgLocationPermissionNav(
     modifier: Modifier = Modifier,
-    activity: GetPermissionsActivity? = null
+    activity: OnboardingMileageActivity? = null
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        LocalContext.current
         FillSpacer()
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, true)
+                activity?.setLocationEnabled(false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, false)
             },
         ) {
             Text("No thanks")
@@ -126,8 +139,9 @@ fun GetBgLocationPermissionNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
-                activity?.finish()
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
+                activity?.setLocationEnabled(false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, true)
             },
         ) {
             Text("Maybe later")
@@ -137,7 +151,9 @@ fun GetBgLocationPermissionNav(
 
         CustomOutlinedButton(
             onClick = {
-                activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
+                activity?.setLocationEnabled(true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, false)
                 activity?.getBgPermission()
             },
         ) {

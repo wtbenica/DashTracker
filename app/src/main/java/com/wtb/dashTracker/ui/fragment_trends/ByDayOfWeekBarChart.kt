@@ -63,7 +63,7 @@ class ByDayOfWeekBarChart(
     R.string.lbl_hourly_by_day_of_week,
     R.string.frag_title_income
 ) {
-    val binding =
+    val binding: ChartByDayOfWeekBinding =
         ChartByDayOfWeekBinding.inflate(LayoutInflater.from(context), this)
 
     private var barChartHourlyByDay: HorizontalBarChart =
@@ -275,10 +275,10 @@ data class DailyStats(
     val amNumShifts: Int? = null,
     val pmNumShifts: Int? = null
 ) {
-    val amHourly = safeDiv(amEarned, amHours)
-    val pmHourly = safeDiv(pmEarned, pmHours)
-    val amAvgDel = safeDiv(amEarned, amDels)
-    val pmAvgDel = safeDiv(pmEarned, pmDels)
-    val amDelHr = safeDiv(amDels, amHours)
-    val pmDelHr = safeDiv(pmDels, pmHours)
+    val amHourly: Float? = safeDiv(amEarned, amHours)
+    val pmHourly: Float? = safeDiv(pmEarned, pmHours)
+    val amAvgDel: Float? = safeDiv(amEarned, amDels)
+    val pmAvgDel: Float? = safeDiv(pmEarned, pmDels)
+    val amDelHr: Float? = safeDiv(amDels, amHours)
+    val pmDelHr: Float? = safeDiv(pmDels, pmHours)
 }

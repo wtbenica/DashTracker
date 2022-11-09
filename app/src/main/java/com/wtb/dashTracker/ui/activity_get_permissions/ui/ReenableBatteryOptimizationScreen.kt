@@ -16,17 +16,15 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.os.Build.VERSION_CODES.TIRAMISU
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
-import androidx.compose.material.icons.twotone.Notifications
+import androidx.compose.material.icons.twotone.BatterySaver
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
@@ -36,44 +34,63 @@ import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_main.TAG
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@RequiresApi(TIRAMISU)
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetNotificationPermissionScreen(
+fun ReenableBatteryOptimizationScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
 ): Unit =
     ScreenTemplate(
         modifier = modifier,
-        headerText = "Notifications Permission",
+        headerText = "Battery Optimization",
         subtitleText = "Optional",
         iconImage = {
             Icon(
-                imageVector = Icons.TwoTone.Notifications,
-                contentDescription = "Notifications Icon",
+                imageVector = Icons.TwoTone.BatterySaver,
+                contentDescription = "Battery Saver Icon",
                 modifier = Modifier.size(96.dp),
-                tint = welcomeIconColor()
+                tint = MaterialTheme.colorScheme.secondary
             )
         },
         mainContent = {
-            Log.d(TAG, "drawing notification")
             CustomOutlinedCard {
+                val str = buildAnnotatedString {
+                    append(stringResource(id = R.string.reenable_battery_permission_1))
+
+                    withStyle(style = styleBold) {
+                        append(stringResource(id = R.string.reenable_battery_permission_2_ital))
+                    }
+
+                    append(stringResource(id = R.string.reenable_battery_permission_3))
+
+                    withStyle(style = styleBold) {
+                        append(stringResource(id = R.string.reenable_battery_permission_4_ital))
+                    }
+
+                    append(stringResource(id = R.string.reenable_battery_permission_5))
+
+                    withStyle(style = styleBold) {
+                        append(stringResource(id = R.string.reenable_battery_permission_6_ital))
+                    }
+
+                    append(stringResource(id = R.string.reenable_battery_permission_7))
+                }
+
+
                 Text(
-                    text = stringResource(id = R.string.dialog_notification_permission),
+                    text = str,
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
@@ -83,7 +100,7 @@ fun GetNotificationPermissionScreen(
 
             SecondaryOutlinedCard {
                 val str = buildAnnotatedString {
-                    append("To grant notification permission, select ")
+                    append("To grant unrestricted background battery use, select ")
 
                     withStyle(style = styleBold) {
                         append("OK")
@@ -92,42 +109,46 @@ fun GetNotificationPermissionScreen(
                     append(", then ")
 
                     withStyle(style = styleBold) {
-                        append("Allow")
+                        append("Battery")
                     }
 
-                    append(".")
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Unrestricted")
+                    }
+
+                    append(" then return to DashTracker.")
                 }
                 Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {
-            GetNotificationsPermissionNav(activity = activity, finishWhenDone = finishWhenDone)
+            ReenableBatteryOptimizationNav(activity = activity)
         }
     )
+
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-@RequiresApi(TIRAMISU)
-fun GetNotificationsPermissionNav(
+fun ReenableBatteryOptimizationNav(
     modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null,
-    finishWhenDone: Boolean = false
+    activity: OnboardingMileageActivity? = null
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
     ) {
+        LocalContext.current
         FillSpacer()
 
         CustomTextButton(
             onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, true)
-                activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, false)
-                activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, false)
-                if (finishWhenDone) activity?.finish()
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, true)
+                activity?.finish()
             },
         ) {
             Text("No thanks")
@@ -135,25 +156,12 @@ fun GetNotificationsPermissionNav(
 
         DefaultSpacer()
 
-        CustomTextButton(
-            onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, false)
-                activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, false)
-                activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, true)
-                if (finishWhenDone) activity?.finish()
-            },
-        ) {
-            Text("Maybe later")
-        }
-
-        DefaultSpacer()
-
         CustomOutlinedButton(
             onClick = {
-                activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, false)
-                activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, true)
-                activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, false)
-                activity?.getNotificationPermission()
+                activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, true)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                activity?.getBatteryPermission(false)
             },
         ) {
             HalfSpacer()
@@ -167,22 +175,23 @@ fun GetNotificationsPermissionNav(
     }
 }
 
-@ExperimentalCoroutinesApi
-@RequiresApi(TIRAMISU)
 @ExperimentalAnimationApi
+@ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewGetNotificationPermissionScreen() {
+fun ReenableBatteryOptimizationPreview() {
     DashTrackerTheme {
-        Surface {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
             Column {
-                GetNotificationPermissionScreen()
+                ReenableBatteryOptimizationScreen()
                 PageIndicator(
                     modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
                     numPages = 4,
-                    selectedPage = 3
+                    selectedPage = 4
                 )
             }
         }

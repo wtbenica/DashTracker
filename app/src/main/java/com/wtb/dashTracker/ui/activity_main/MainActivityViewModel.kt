@@ -106,9 +106,9 @@ class MainActivityViewModel : ViewModel() {
             repository.upsertModel(dataModel)
         }
 
-    fun export() = repository.export()
+    fun export(): Unit = repository.export()
 
-    fun import(activityResultLauncher: ActivityResultLauncher<String>) =
+    fun import(activityResultLauncher: ActivityResultLauncher<String>): Unit =
         repository.import(activityResultLauncher)
 
     fun insertOrReplace(

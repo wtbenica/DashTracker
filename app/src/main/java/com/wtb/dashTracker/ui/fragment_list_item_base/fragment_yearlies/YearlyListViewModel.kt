@@ -84,7 +84,7 @@ class YearlyListViewModel : ViewModel() {
                 }
                 year -= 1
             }
-            
+
             yearlies
         }
 
@@ -96,7 +96,7 @@ class YearlyListViewModel : ViewModel() {
 
 @ExperimentalCoroutinesApi
 class Yearly(val year: Int) : ListItemType {
-    val monthlies = mutableMapOf<Month, Monthly>().apply {
+    val monthlies: MutableMap<Month, Monthly> = mutableMapOf<Month, Monthly>().apply {
         Month.values().forEach { this[it] = Monthly() }
     }
 
@@ -104,8 +104,6 @@ class Yearly(val year: Int) : ListItemType {
 
     var basePayAdjustment: Float = 0f
 
-    // TODO: Need to still add in bpa
-    // TODO: Figure out what the above TODO means
     val reportedPay: Float
         get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.reportedPay } + basePayAdjustment
 
@@ -145,6 +143,7 @@ class Yearly(val year: Int) : ListItemType {
     }
 }
 
+@ExperimentalCoroutinesApi
 data class Monthly(
     var mileage: Float = 0f,
     var pay: Float = 0f,

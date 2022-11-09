@@ -35,15 +35,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.ui.theme.car
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREFS_OPT_OUT_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalAnimationApi
@@ -53,8 +52,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun GetLocationPermissionsScreen(
     modifier: Modifier = Modifier,
-    activity: GetPermissionsActivity? = null
-) =
+    activity: OnboardingMileageActivity? = null
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Location and Activity Permissions",
@@ -64,30 +63,14 @@ fun GetLocationPermissionsScreen(
                 imageVector = Icons.TwoTone.LocationOn,
                 contentDescription = "My Location",
                 modifier = Modifier.size(96.dp),
-                tint = car
+                tint = welcomeIconColor()
             )
         },
         mainContent = {
             CustomOutlinedCard {
-                val str = buildAnnotatedString {
-                    append(stringResource(id = R.string.dialog_location_permission_1))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_location_permission_2_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_location_permission_3))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_location_permission_4_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_location_permission_5))
-                }
-
                 Text(
-                    text = str,
-                    fontSize = 18.sp,
+                    text = stringResource(id = R.string.dialog_location_permission),
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
             }
@@ -98,6 +81,33 @@ fun GetLocationPermissionsScreen(
                 onClick = { uriHandler.openUri("https://www.benica.dev/privacy") }
             ) {
                 Text("Privacy Policy")
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant location permissions, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(" then allow location access ")
+
+                    withStyle(style = styleBold) {
+                        append("While using the app")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Allow")
+                    }
+
+                    append(" physical activity access.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {
@@ -111,7 +121,7 @@ fun GetLocationPermissionsScreen(
 @ExperimentalTextApi
 @Composable
 fun GetLocationPermissionsNav(
-    activity: GetPermissionsActivity? = null
+    activity: OnboardingMileageActivity? = null
 ) {
     Row(
         modifier = Modifier
@@ -122,7 +132,9 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, true)
+                activity?.setOptOutLocation(true)
+                activity?.setLocationEnabled(false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
             },
         ) {
             Text("No thanks")
@@ -132,7 +144,9 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, false)
+                activity?.setOptOutLocation(false)
+                activity?.setLocationEnabled(false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
                 activity?.finish()
             },
         ) {
@@ -143,7 +157,9 @@ fun GetLocationPermissionsNav(
 
         CustomOutlinedButton(
             onClick = {
-                activity?.setOptOutPref(PREFS_OPT_OUT_LOCATION, false)
+                activity?.setOptOutLocation(false)
+                activity?.setLocationEnabled(true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
                 activity?.getLocationPermissions()
             },
         ) {

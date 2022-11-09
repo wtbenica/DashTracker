@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.activity_welcome.ui.composables
+package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -33,13 +32,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.GetPermissionsActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.util.PermissionsHelper
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -47,7 +53,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = null) =
+fun OnboardingIntroScreen(
+    modifier: Modifier = Modifier,
+    activity: OnboardingMileageActivity? = null
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Automatic Mileage Tracking",
@@ -56,7 +65,7 @@ fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = n
                 imageVector = Icons.TwoTone.LocationOn,
                 contentDescription = "",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = welcomeIconColor()
             )
         },
         mainContent = {
@@ -68,18 +77,34 @@ fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = n
             stringArrayResource(id = R.array.list_whats_new_mileage_tracking)
                 .forEachIndexed { i, it ->
                     if (i != 0) {
-                        HalfSpacer()
+                        WideSpacer()
                     }
 
                     ContentCard(
-                        text = it,
+                        titleText = it,
                         icon = icons[i],
                         iconTint = MaterialTheme.colorScheme.secondary,
                         iconDescription = "Punch Clock",
                     )
                 }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant permissions, select ")
+
+                    withStyle(style = styleBold) {
+                        append("I'm in.")
+                    }
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
+            }
+        },
+        navContent = {
+            OnboardingIntroNav(activity)
         }
-    ) { WhatsNewNav(activity) }
+    )
 
 /**
  * Provides buttons for opting-in or -out to automatic mileage tracking: opt out, opt in, or
@@ -90,17 +115,20 @@ fun WhatsNewScreen(modifier: Modifier = Modifier, activity: WelcomeActivity? = n
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 @Composable
-fun WhatsNewNav(activity: WelcomeActivity? = null) {
+fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
     DashTrackerTheme {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(0.dp)
         ) {
             FillSpacer()
 
             CustomTextButton(
                 onClick = {
-                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, true)
+                    activity?.setOptOutLocation(true)
+                    activity?.setLocationEnabled(false)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
                 },
             ) {
                 Text("No thanks")
@@ -110,7 +138,12 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomTextButton(
                 onClick = {
-                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false)
+                    activity?.setOptOutLocation(false)
+                    activity?.setLocationEnabled(false)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, true)
                 },
             ) {
                 Text("Maybe later")
@@ -120,9 +153,9 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 
             CustomOutlinedButton(
                 onClick = {
-                    activity?.setOptOutPref(PermissionsHelper.PREFS_OPT_OUT_LOCATION, false) {
-                        activity.startActivity(Intent(activity, GetPermissionsActivity::class.java))
-                    }
+                    activity?.setOptOutLocation(false)
+                    activity?.setLocationEnabled(true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
                 },
             ) {
                 HalfSpacer()
@@ -145,8 +178,8 @@ fun WhatsNewNav(activity: WelcomeActivity? = null) {
 @Composable
 fun PreviewWhatsNew() {
     DashTrackerTheme {
-        Column {
-            WhatsNewScreen(modifier = Modifier.weight(1f))
+        Column(modifier = Modifier.fillMaxSize()) {
+            OnboardingIntroScreen(modifier = Modifier.weight(1f))
         }
     }
 }

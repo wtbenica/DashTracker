@@ -21,7 +21,7 @@ import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import com.wtb.dashTracker.R
 
-fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?) =
+fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?): String =
     if (args.map { it != null }.reduce { acc, b -> acc && b })
         getString(resId, *args)
     else
@@ -63,5 +63,5 @@ fun Context.getFloatString(value: Float?): String =
     else
         getStringOrElse(R.string.float_fmt, "-", value)
 
-fun Context.getDimen(@DimenRes res: Int) =
+fun Context.getDimen(@DimenRes res: Int): Float =
     resources.getDimension(res) / resources.displayMetrics.density
