@@ -22,12 +22,17 @@
     android:paddingBottom="@dimen/chart_fragment_bottom_padding"
     app:layout_dodgeInsetEdges="bottom">
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorTabIndicator" />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/chartsTabs"
         style="@style/FragIncomeTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_half"
         app:tabMode="scrollable">
 
         <com.google.android.material.tabs.TabItem
@@ -45,6 +50,13 @@
             android:layout_height="wrap_content"
             android:text="Hourly gross/net" />
     </com.google.android.material.tabs.TabLayout>
+
+    <View
+        android:id="@+id/divider_2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/margin_half"
+        android:background="?attr/colorTabIndicator" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/chart_pager"

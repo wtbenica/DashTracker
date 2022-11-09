@@ -32,6 +32,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
@@ -45,6 +46,7 @@ import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
@@ -69,10 +71,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class SettingsActivity : AuthenticatedActivity() {
+    val ph: PermissionsHelper
+        get() = PermissionsHelper(this)
+
     var mileageTrackingEnabledPref: SwitchPreference? = null
     var notificationEnabledPref: SwitchPreference? = null
     var bgBatteryEnabledPref: SwitchPreference? = null
     var authenticationEnabledPref: SwitchPreference? = null
+
+    private val activityResult = Intent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +91,23 @@ class SettingsActivity : AuthenticatedActivity() {
                 .replace(R.id.settings, SettingsFragment())
                 .commit()
         }
+
+        if (savedInstanceState?.getBoolean(EXPECTED_EXIT) == true) {
+            isAuthenticated = true
+            expectedExit = false
+        }
+
+        supportFragmentManager.setFragmentResultListener(
+            /* requestKey = */ REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
+            /* lifecycleOwner = */ this
+        ) { str, bundle ->
+            val needsRestart = bundle.getBoolean(ACTIVITY_RESULT_NEEDS_RESTART)
+
+            activityResult.apply {
+                putExtra(ACTIVITY_RESULT_NEEDS_RESTART, needsRestart)
+            }
+            finish()
+        }
     }
 
     override fun onResume() {
@@ -91,11 +115,10 @@ class SettingsActivity : AuthenticatedActivity() {
 
         sharedPrefs.registerOnSharedPreferenceChangeListener(listener)
 
-        if (intent?.getBooleanExtra(INTENT_EXTRA_PRE_AUTH, false) != true) {
-            lockScreen()
-
+        if (!isAuthenticated && intent?.getBooleanExtra(INTENT_EXTRA_PRE_AUTH, false) != true) {
             authenticate()
         } else {
+            isAuthenticated = true
             intent.removeExtra(INTENT_EXTRA_PRE_AUTH)
         }
     }
@@ -103,13 +126,33 @@ class SettingsActivity : AuthenticatedActivity() {
     override fun onPause() {
         sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
 
+        activityResult.apply {
+            putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
+        }
+
+        setResult(RESULT_OK, activityResult)
+
         super.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        if (!activityResult.hasExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED)) {
+            activityResult.apply {
+                putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
+            }
+
+            setResult(RESULT_OK, activityResult)
+        }
     }
 
     override val onAuthentication: () -> Unit
         get() = fun() {
-            supportActionBar?.show()
-            findViewById<FrameLayout>(R.id.settings)?.isVisible = true
+            if (findViewById<FrameLayout>(R.id.settings)?.isVisible == false) {
+                supportActionBar?.show()
+                findViewById<FrameLayout>(R.id.settings)?.isVisible = true
+            }
         }
 
     override val onAuthFailed: (() -> Unit)? = null
@@ -136,13 +179,9 @@ class SettingsActivity : AuthenticatedActivity() {
             ) { _, bundle ->
                 val result = bundle.getBoolean(ARG_CONFIRM)
                 if (result) {
-                    val intent = Intent().apply {
-                        putExtra(ACTIVITY_RESULT_NEEDS_RESTART, true)
-                    }
-                    activity?.apply {
-                        setResult(RESULT_OK, intent)
-                        finish()
-                    }
+                    setFragmentResult(
+                        REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
+                        Bundle().apply { putBoolean(ACTIVITY_RESULT_NEEDS_RESTART, true) })
                 }
             }
 
@@ -192,9 +231,7 @@ class SettingsActivity : AuthenticatedActivity() {
             }
 
             (activity as SettingsActivity).bgBatteryEnabledPref?.apply {
-                if (!context.hasBatteryPermission()) {
-                    isChecked = false
-                }
+                isChecked = context.hasBatteryPermission()
             }
 
             (activity as SettingsActivity).authenticationEnabledPref?.apply {
@@ -219,7 +256,17 @@ class SettingsActivity : AuthenticatedActivity() {
                             apply()
                         }
 
-                        startActivity(Intent(this, OnboardingMileageActivity::class.java))
+                        expectedExit = true
+
+                        fun startOnboarding() =
+                            startActivity(Intent(this, OnboardingMileageActivity::class.java))
+
+                        ph.whenHasDecided(
+                            hasNotification = ::startOnboarding,
+                            hasBgLocation = ::startOnboarding,
+                            hasLocation = ::startOnboarding,
+                            noPermissions = ::startOnboarding
+                        )?.invoke()
                     } else {
                         sharedPreferences?.edit()?.apply {
                             putBoolean(ASK_AGAIN_LOCATION, false)
@@ -275,6 +322,7 @@ class SettingsActivity : AuthenticatedActivity() {
                             .apply()
 
                         if (!hasBatteryPermission()) {
+                            expectedExit = true
                             startActivity(
                                 Intent(this, OnboardingMileageActivity::class.java)
                                     .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_OFF_SCREEN)
@@ -288,6 +336,7 @@ class SettingsActivity : AuthenticatedActivity() {
                         }
 
                         if (hasBatteryPermission()) {
+                            expectedExit = true
                             startActivity(
                                 Intent(this, OnboardingMileageActivity::class.java)
                                     .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_ON_SCREEN)
@@ -306,12 +355,19 @@ class SettingsActivity : AuthenticatedActivity() {
                                 .putBoolean(AUTHENTICATION_ENABLED_REVERTED, true)
                                 .commit()
 
-                            // TODO: This is what causes the nasty redraw when biometric
-                            //  authentication fails when authentication enabled preference is
-                            //  changed (attempted)
+/*
+                             TODO: This is what causes the nasty redraw when biometric
+                              authentication fails when authentication enabled preference is
+                              changed (attempted) | not sure if I've grown accustomed to it, or if
+                              it has actually gotten better, but it doesn't seem -that- nasty to
+                              me now
+*/
                             val settingsFragment =
                                 supportFragmentManager.findFragmentById(R.id.settings) as SettingsFragment?
-                            settingsFragment?.setPreferencesFromResource(R.xml.root_preferences, null)
+                            settingsFragment?.setPreferencesFromResource(
+                                R.xml.root_preferences,
+                                null
+                            )
 
                         }
                         authenticate(
@@ -332,8 +388,14 @@ class SettingsActivity : AuthenticatedActivity() {
         internal const val ACTIVITY_RESULT_NEEDS_RESTART =
             "${BuildConfig.APPLICATION_ID}.result_needs_restart"
 
+        internal const val REQUEST_KEY_SETTINGS_ACTIVITY_RESULT =
+            "${BuildConfig.APPLICATION_ID}.result_settings_fragment"
+
         internal val Context.PREF_SHOW_BASE_PAY_ADJUSTS
             get() = getString(R.string.prefs_show_base_pay_adjusts)
+
+        internal const val EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED =
+            "${BuildConfig.APPLICATION_ID}.extra_settings_activity_is_authenticated"
 
         internal const val INTENT_EXTRA_PRE_AUTH = "${BuildConfig.APPLICATION_ID}.pre_auth_settings"
     }

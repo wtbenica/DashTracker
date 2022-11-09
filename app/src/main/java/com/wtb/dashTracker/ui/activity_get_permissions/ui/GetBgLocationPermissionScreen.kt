@@ -34,14 +34,13 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.ui.theme.car
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,7 +53,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 fun GetBgLocationPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
-) =
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Background Location Permission",
@@ -65,24 +64,14 @@ fun GetBgLocationPermissionScreen(
                 contentDescription = "Location symbol",
                 modifier = Modifier
                     .size(96.dp),
-                tint = car
+                tint = welcomeIconColor()
             )
         },
         mainContent = {
-            val str = buildAnnotatedString {
-                append(stringResource(R.string.dialog_bg_location_text_1))
-
-                withStyle(style = styleBold) {
-                    append(stringResource(R.string.dialog_bg_location_text_2_ital))
-                }
-
-                append(stringResource(R.string.dialog_bg_location_text_3))
-            }
-
             CustomOutlinedCard {
                 Text(
-                    text = str,
-                    fontSize = 18.sp,
+                    text = stringResource(R.string.dialog_bg_location_text),
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
             }
@@ -93,6 +82,27 @@ fun GetBgLocationPermissionScreen(
                 uriHandler.openUri("https://www.benica.dev")
             }) {
                 Text("Privacy Policy")
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant background location permission, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(" then ")
+
+                    withStyle(style = styleBold) {
+                        append("Allow all the time")
+                    }
+
+                    append(", then return to DashTracker.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {

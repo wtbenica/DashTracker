@@ -96,7 +96,7 @@ class YearlyListViewModel : ViewModel() {
 
 @ExperimentalCoroutinesApi
 class Yearly(val year: Int) : ListItemType {
-    val monthlies = mutableMapOf<Month, Monthly>().apply {
+    val monthlies: MutableMap<Month, Monthly> = mutableMapOf<Month, Monthly>().apply {
         Month.values().forEach { this[it] = Monthly() }
     }
 

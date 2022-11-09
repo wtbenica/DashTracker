@@ -248,8 +248,8 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
     }
 
     companion object {
-        const val ARG_CONFIRM = "confirm"
-        const val ARG_EXTRA = "extra"
+        const val ARG_CONFIRM: String = "confirm"
+        const val ARG_EXTRA: String = "extra"
         private const val ARG_TEXT = "dialog_text"
         private const val ARG_REQ_KEY = "request_key"
         private const val ARG_CONFIRM_ID = "confirm_id"
@@ -272,7 +272,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
             negAction: (LambdaWrapper)? = null,
             @StringRes posButton2: Int? = null,
             posAction2: (LambdaWrapper)? = null,
-        ) = ConfirmationDialog().apply {
+        ): ConfirmationDialog = ConfirmationDialog().apply {
             arguments = Bundle().apply {
                 text?.let { putInt(ARG_TEXT, it) }
                 putString(ARG_REQ_KEY, requestKey)
@@ -304,7 +304,7 @@ class ConfirmDeleteDialog {
         fun newInstance(
             confirmId: Long? = null,
             @StringRes text: Int? = null,
-        ) = ConfirmationDialog.newInstance(
+        ): ConfirmationDialog = ConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_delete,
             requestKey = ConfirmType.DELETE.key,
             confirmId = confirmId,
@@ -317,7 +317,7 @@ class ConfirmResetDialog {
     companion object {
         fun newInstance(
             @StringRes text: Int? = null,
-        ) = ConfirmationDialog.newInstance(
+        ): ConfirmationDialog = ConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_reset,
             requestKey = ConfirmType.RESET.key,
             posButton = R.string.reset
@@ -327,7 +327,7 @@ class ConfirmResetDialog {
 
 class ConfirmSaveDialog {
     companion object {
-        fun newInstance(@StringRes text: Int? = null) =
+        fun newInstance(@StringRes text: Int? = null): ConfirmationDialog =
             ConfirmationDialog.newInstance(
                 text = text,
                 requestKey = ConfirmType.SAVE.key,

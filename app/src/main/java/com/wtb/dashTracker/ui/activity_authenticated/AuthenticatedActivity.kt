@@ -17,7 +17,11 @@
 package com.wtb.dashTracker.ui.activity_authenticated
 
 import android.content.SharedPreferences
+import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
@@ -45,6 +49,8 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
     protected open val onAuthError: (() -> Unit)? = null
     protected open val onAuthFailed: (() -> Unit)? = null
 
+    private var disableBackButtonCallback: OnBackPressedCallback? = null
+
     override fun onPause() {
         super.onPause()
 
@@ -65,25 +71,37 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
         onFailed: (() -> Unit)? = onAuthFailed,
         forceAuthentication: Boolean = false
     ) {
+        Log.d(TAG, "authenticate | isAuthenticated: $isAuthenticated")
+
         if (forceAuthentication || (authenticationEnabled && !isAuthenticated)) {
+            if (!forceAuthentication) lockScreen()
+
             val executor = ContextCompat.getMainExecutor(this)
+
+            disableBackButtonCallback?.remove()
+            disableBackButtonCallback = onBackPressedDispatcher.addCallback(this, true) {
+                authenticate(onSuccess, onError, onFailed)
+            }
 
             val biometricPrompt = BiometricPrompt(this, executor,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
+                        isAuthenticated = true
+                        disableBackButtonCallback?.remove()
+                        disableBackButtonCallback = null
                         onSuccess()
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                         super.onAuthenticationError(errorCode, errString)
-                        Log.d(TAG, "login | error")
+                        isAuthenticated = false
                         onError?.invoke()
                     }
 
                     override fun onAuthenticationFailed() {
                         super.onAuthenticationFailed()
-                        Log.d(TAG, "login | failed")
+                        isAuthenticated = false
                         onFailed?.invoke()
                     }
                 })
@@ -95,7 +113,23 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
 
             biometricPrompt.authenticate(promptInfo)
         } else {
+            disableBackButtonCallback?.remove()
+            disableBackButtonCallback = null
             onSuccess()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        super.onSaveInstanceState(outState, outPersistentState)
+    }
+
+    companion object {
+        internal const val EXPECTED_EXIT = "expected_exit"
     }
 }

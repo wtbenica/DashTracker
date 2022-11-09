@@ -31,7 +31,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
@@ -52,7 +51,7 @@ fun ReenableBatteryOptimizationScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
-) =
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Battery Optimization",
@@ -92,9 +91,36 @@ fun ReenableBatteryOptimizationScreen(
 
                 Text(
                     text = str,
-                    fontSize = 18.sp,
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant unrestricted background battery use, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Battery")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Unrestricted")
+                    }
+
+                    append(" then return to DashTracker.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {

@@ -75,6 +75,7 @@ import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
@@ -156,14 +157,10 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     // Launchers
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            Log.d(TAG, "onboardMileageTracking result")
             if (this.hasPermissions(*REQUIRED_PERMISSIONS)
                 && sharedPrefs.getBoolean(LOCATION_ENABLED, false)
             ) {
-                Log.d(TAG, "onboardMileageTracking result | true")
                 resumeMileageTracking()
-            } else {
-                Log.d(TAG, "onboardMileageTracking result | false")
             }
         }
 
@@ -174,12 +171,18 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
      */
     private val settingsActivityLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val booleanExtra = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
-            Log.d(TAG, "activityResult | confirmRestart: $booleanExtra")
-            if (booleanExtra == true) {
+            val needsRestart = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
+
+            if (needsRestart == true) {
                 restartApp()
             } else {
-                isAuthenticated = true
+                val auth = it.data?.getBooleanExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, false)
+
+                if (auth != true) {
+                    authenticate()
+                } else {
+                    onUnlock()
+                }
             }
         }
 
@@ -191,14 +194,13 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.d(TAG, "onCreate")
         if (savedInstanceState?.getBoolean(EXPECTED_EXIT) == true) {
             isAuthenticated = true
             expectedExit = false
         }
 
         if (intent.getBooleanExtra(EXTRA_SETTINGS_RESTART_APP, false)) {
-            Log.d(TAG, "onCreate    | Restarted!")
             isAuthenticated = true
             expectedExit = true
             val intent = Intent(this, SettingsActivity::class.java).apply {
@@ -415,7 +417,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         super.onResume()
-        Log.d(TAG, "onResume    | activeDash? ${activeDash != null}")
+        Log.d(TAG, "onResume | expectedExit: $expectedExit")
+        if (expectedExit) {
+            isAuthenticated = true
+            expectedExit = false
+        }
 
         if (sharedPrefs.getBoolean(PREF_SHOW_ONBOARD_INTRO, true)) {
             onFirstRun()
@@ -429,7 +435,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause | activeDash: $activeDash | expectedExit? $expectedExit")
         activeDash?.apply {
             unbindLocationService()
         }
@@ -444,21 +449,15 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         super.onSaveInstanceState(outState, outPersistentState)
     }
 
-    override fun onDestroy() {
-        Log.d(TAG, "onDestroy |")
-        super.onDestroy()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        val boolean = sharedPrefs.getBoolean(PREF_SHOW_BASE_PAY_ADJUSTS, true)
-        Log.d(TAG, "onPrepareOptionsMenu | show? $boolean")
-        menu?.findItem(R.id.action_new_weekly)?.isVisible =
-            boolean
+        val showBPAs = sharedPrefs.getBoolean(PREF_SHOW_BASE_PAY_ADJUSTS, true)
+
+        menu?.findItem(R.id.action_new_weekly)?.isVisible = showBPAs
 
         return super.onPrepareOptionsMenu(menu)
     }
@@ -567,21 +566,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     // AuthenticatedActivity overrides
     override val onAuthentication: () -> Unit
         get() {
-            fun unlockScreen() {
-                binding.container.visibility = VISIBLE
-                supportActionBar?.show()
-            }
-
-            /**
-             * Sets content to visible
-             */
-            fun onUnlock() {
-                Log.d(TAG, "login | onUnlock")
-                isAuthenticated = true
-                expectedExit = false
-                unlockScreen()
-            }
-
             fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
                 endDash(tripId)
                 onUnlock()
@@ -606,6 +590,13 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     override fun lockScreen() {
         binding.container.visibility = INVISIBLE
         supportActionBar?.hide()
+    }
+
+    private fun onUnlock() {
+        isAuthenticated = true
+        expectedExit = false
+        binding.container.visibility = VISIBLE
+        supportActionBar?.show()
     }
 
     /**
@@ -768,19 +759,16 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
          */
         internal fun unbindLocationService() {
             if (locationServiceBound) {
-                Log.d(TAG, "unbinding service, allegedly | locServConn: $locationServiceConnection")
                 unbindService(locationServiceConnection!!)
                 locationServiceBound = false
                 locationServiceConnection = null
                 locationService = null
-//            }
             }
         }
 
         internal fun bindLocationService() {
             if (!locationServiceBound && !startingService) {
                 startingService = true
-                Log.d(TAG, "bindLocationServices | locServConn")
                 val locationServiceIntent = Intent(applicationContext, LocationService::class.java)
 
                 if (this@MainActivity.hasPermissions(*REQUIRED_PERMISSIONS)) {
@@ -795,7 +783,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                         BIND_AUTO_CREATE
                     )
                 } else {
-                    Log.d(TAG, "bindLocationService | missing permissions")
                     startingService = false
                 }
             }
@@ -841,7 +828,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                         updateLocationServiceNotificationData(tripId)
                     }
 
-                    Log.d(TAG, "onServiceConnected")
                     val binder = service as LocationService.LocalBinder
                     locationService = binder.service
                     locationServiceBound = true
@@ -852,7 +838,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                         binder.service.stop()
                         stopOnBind = false
                     } else if (startOnBind) {
-                        Log.d(TAG, "onServiceConnected | startOnBind: $activeEntryId")
                         (activeEntryId ?: startOnBindId)?.let { startLocationService(it) }
                         startOnBind = false
                         startOnBindId = null
@@ -864,7 +849,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
-                    Log.d(TAG, "onServiceDisconnected")
                     locationService = null
                     locationServiceBound = false
                 }
@@ -944,10 +928,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
 
-        private const val EXPECTED_EXIT = "expected_exit"
-
-        //        internal const val ACTIVITY_RESULT_NEEDS_RESTART =
-//            "${BuildConfig.APPLICATION_ID}.result_needs_restart"
         private const val EXTRA_SETTINGS_RESTART_APP =
             "${BuildConfig.APPLICATION_ID}.restart_settings"
         private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"

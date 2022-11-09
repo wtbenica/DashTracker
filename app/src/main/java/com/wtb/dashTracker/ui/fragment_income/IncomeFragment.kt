@@ -161,6 +161,6 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
         private const val NUM_PAGES = 3
 
         @JvmStatic
-        fun newInstance() = IncomeFragment()
+        fun newInstance(): IncomeFragment = IncomeFragment()
     }
 }
