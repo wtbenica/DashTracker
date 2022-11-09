@@ -32,11 +32,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
@@ -50,7 +53,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity? = null) =
+fun OnboardingIntroScreen(
+    modifier: Modifier = Modifier,
+    activity: OnboardingMileageActivity? = null
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Automatic Mileage Tracking",
@@ -59,7 +65,7 @@ fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMil
                 imageVector = Icons.TwoTone.LocationOn,
                 contentDescription = "",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = welcomeIconColor()
             )
         },
         mainContent = {
@@ -71,18 +77,34 @@ fun OnboardingIntroScreen(modifier: Modifier = Modifier, activity: OnboardingMil
             stringArrayResource(id = R.array.list_whats_new_mileage_tracking)
                 .forEachIndexed { i, it ->
                     if (i != 0) {
-                        HalfSpacer()
+                        WideSpacer()
                     }
 
                     ContentCard(
-                        text = it,
+                        titleText = it,
                         icon = icons[i],
                         iconTint = MaterialTheme.colorScheme.secondary,
                         iconDescription = "Punch Clock",
                     )
                 }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant permissions, select ")
+
+                    withStyle(style = styleBold) {
+                        append("I'm in.")
+                    }
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
+            }
+        },
+        navContent = {
+            OnboardingIntroNav(activity)
         }
-    ) { OnboardingIntroNav(activity) }
+    )
 
 /**
  * Provides buttons for opting-in or -out to automatic mileage tracking: opt out, opt in, or

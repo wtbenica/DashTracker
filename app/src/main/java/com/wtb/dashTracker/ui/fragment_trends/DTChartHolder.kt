@@ -41,7 +41,7 @@ class DTChartHolder @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrSet, defStyleAttr) {
     private var mCallback: DTChartHolderCallback? = null
-    val binding = ChartHolderBinding.inflate(LayoutInflater.from(context), this)
+    val binding: ChartHolderBinding = ChartHolderBinding.inflate(LayoutInflater.from(context), this)
 
     private var mCpmListDaily = listOf<NewCpm>()
     private var mCpmListWeekly = listOf<NewCpm>()

@@ -21,7 +21,7 @@
         <SwitchPreference
             app:defaultValue="true"
             app:key="@string/prefs_show_base_pay_adjusts"
-            app:title="Show weekly adjustment/incentive field"
+            app:title="@string/pref_title_show_weekly_adjustment_field"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
@@ -51,6 +51,6 @@
         <SwitchPreference
             app:defaultValue="true"
             app:key="@string/prefs_authentication_enabled"
-            app:title="Require authentication to open" />
+            app:title="@string/pref_title_require_authentication" />
     </PreferenceCategory>
 </PreferenceScreen>

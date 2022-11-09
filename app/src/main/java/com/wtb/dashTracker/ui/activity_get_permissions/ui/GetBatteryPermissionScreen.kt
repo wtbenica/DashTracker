@@ -21,7 +21,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.BatterySaver
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,10 +34,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
@@ -52,7 +55,7 @@ fun GetBatteryPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
-) =
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = "Battery Optimization",
@@ -62,39 +65,49 @@ fun GetBatteryPermissionScreen(
                 imageVector = Icons.TwoTone.BatterySaver,
                 contentDescription = "Battery Saver Icon",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = welcomeIconColor()
             )
         },
         mainContent = {
             CustomOutlinedCard {
                 val str = buildAnnotatedString {
-                    append(stringResource(id = R.string.dialog_battery_permission_1))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_battery_permission_2_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_battery_permission_3))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_battery_permission_4_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_battery_permission_5))
-
-                    withStyle(style = styleBold) {
-                        append(stringResource(id = R.string.dialog_battery_permission_6_ital))
-                    }
-
-                    append(stringResource(id = R.string.dialog_battery_permission_7))
+                    append(stringResource(id = R.string.dialog_battery_permission))
                 }
 
 
                 Text(
                     text = str,
-                    fontSize = 18.sp,
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
+
+            }
+
+            FillSpacer()
+
+            SecondaryOutlinedCard {
+                val str = buildAnnotatedString {
+                    append("To grant unrestricted background battery use, select ")
+
+                    withStyle(style = styleBold) {
+                        append("OK")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Battery")
+                    }
+
+                    append(", then ")
+
+                    withStyle(style = styleBold) {
+                        append("Unrestricted")
+                    }
+
+                    append(" then return to DashTracker.")
+                }
+                Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {

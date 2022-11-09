@@ -15,6 +15,7 @@
   -->
 
 <resources>
+    <dimen name="margin_extra_wide">64dp</dimen>
     <dimen name="margin_wide">24dp</dimen>
     <dimen name="margin_default">16dp</dimen>
     <dimen name="margin_half">8dp</dimen>

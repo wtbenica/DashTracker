@@ -32,9 +32,9 @@ class EntryListViewModel : ViewModel() {
 
     val fullEntryList: Flow<PagingData<FullEntry>> = repository.allFullEntriesPaged
 
-    fun delete(entry: DashEntry) = repository.deleteModel(entry)
+    fun delete(entry: DashEntry): Unit = repository.deleteModel(entry)
 
-    fun deleteEntryById(id: Long) = repository.deleteEntryById(id)
+    fun deleteEntryById(id: Long): Unit = repository.deleteEntryById(id)
 
     suspend fun getCostPerMile(date: LocalDate, deductionType: DeductionType): Float =
         repository.getCostPerMile(date, deductionType)

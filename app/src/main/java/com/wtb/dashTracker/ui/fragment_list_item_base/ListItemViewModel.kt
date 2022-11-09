@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
 abstract class ListItemViewModel<T : DataModel> : ViewModel() {
-    protected val repository = Repository.get()
+    protected val repository: Repository = Repository.get()
 
     private val _id = MutableStateFlow(AUTO_ID)
     protected val id: StateFlow<Long>
@@ -47,7 +47,7 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         _id.value = id ?: AUTO_ID
     }
 
-    fun insert(dataModel: DataModel) = repository.saveModel(dataModel)
+    fun insert(dataModel: DataModel): Unit = repository.saveModel(dataModel)
 
     suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)
 
@@ -75,7 +75,7 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
             id
         }
 
-    fun delete(dataModel: DataModel) = repository.deleteModel(dataModel)
+    fun delete(dataModel: DataModel): Unit = repository.deleteModel(dataModel)
 
     fun clearEntry() {
         _id.value = AUTO_ID

@@ -30,7 +30,7 @@ import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import kotlin.reflect.KProperty1
 
-const val AUTO_ID = 0L
+const val AUTO_ID: Long = 0L
 
 @ExperimentalCoroutinesApi
 @Entity(
@@ -65,10 +65,10 @@ data class DashEntry(
     override val id: Long
         get() = entryId
 
-    val isIncomplete
+    val isIncomplete: Boolean
         get() = startTime == null || endTime == null || pay == null || mileage == null || numDeliveries == null
 
-    val startDateTime
+    val startDateTime: LocalDateTime?
         get() = startTime?.let { st -> LocalDateTime.of(date, st) }
 
     private val endDateTime

@@ -42,15 +42,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
-import androidx.biometric.BiometricPrompt
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -59,7 +56,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.PreferenceManager
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -75,9 +71,12 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
@@ -93,7 +92,6 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.util.PermissionsHelper
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
@@ -115,8 +113,6 @@ import java.time.format.DateTimeParseException
 import kotlin.system.exitProcess
 
 private const val APP = "GT_"
-private const val IS_TESTING = false
-private var IS_FIRST = true
 
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
@@ -134,13 +130,10 @@ internal val Any.TAG: String
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
+class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
 
     internal val permissionsHelper = PermissionsHelper(this)
-
-    internal val sharedPrefs
-        get() = PreferenceManager.getDefaultSharedPreferences(this)
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -159,26 +152,15 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     private lateinit var mAdView: AdView
 
     // State
-    private var expectedExit = false
-
     private var activeDash: ActiveDash? = null
-
-    private var isAuthenticated = false
-
-    private val authenticationEnabled: Boolean
-        get() = sharedPrefs.getBoolean(AUTHENTICATION_ENABLED, true)
 
     // Launchers
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            Log.d(TAG, "onboardMileageTracking result")
             if (this.hasPermissions(*REQUIRED_PERMISSIONS)
                 && sharedPrefs.getBoolean(LOCATION_ENABLED, false)
             ) {
-                Log.d(TAG, "onboardMileageTracking result | true")
                 resumeMileageTracking()
-            } else {
-                Log.d(TAG, "onboardMileageTracking result | false")
             }
         }
 
@@ -189,10 +171,18 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
      */
     private val settingsActivityLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val booleanExtra = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
-            Log.d(TAG, "activityResult | confirmRestart: $booleanExtra")
-            if (booleanExtra ?: false) {
+            val needsRestart = it.data?.getBooleanExtra(ACTIVITY_RESULT_NEEDS_RESTART, false)
+
+            if (needsRestart == true) {
                 restartApp()
+            } else {
+                val auth = it.data?.getBooleanExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, false)
+
+                if (auth != true) {
+                    authenticate()
+                } else {
+                    onUnlock()
+                }
             }
         }
 
@@ -204,12 +194,18 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
+        if (savedInstanceState?.getBoolean(EXPECTED_EXIT) == true) {
+            isAuthenticated = true
+            expectedExit = false
+        }
 
         if (intent.getBooleanExtra(EXTRA_SETTINGS_RESTART_APP, false)) {
-            Log.d(TAG, "onCreate    | Restarted!")
             isAuthenticated = true
             expectedExit = true
-            val intent = Intent(this, SettingsActivity::class.java)
+            val intent = Intent(this, SettingsActivity::class.java).apply {
+                putExtra(INTENT_EXTRA_PRE_AUTH, true)
+            }
             settingsActivityLauncher.launch(intent)
         }
 
@@ -420,52 +416,27 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             startActivity((Intent(this, WelcomeActivity::class.java)))
         }
 
-        fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
-            endDash(tripId)
-            onUnlock()
+        super.onResume()
+        Log.d(TAG, "onResume | expectedExit: $expectedExit")
+        if (expectedExit) {
+            isAuthenticated = true
+            expectedExit = false
         }
 
-        super.onResume()
-        Log.d(TAG, "onResume    | activeDash? ${activeDash != null}")
-
-        if ((IS_TESTING && IS_FIRST) || sharedPrefs.getBoolean(PREF_SHOW_ONBOARD_INTRO, true)) {
-            IS_FIRST = false
-
+        if (sharedPrefs.getBoolean(PREF_SHOW_ONBOARD_INTRO, true)) {
             onFirstRun()
         } else {
             cleanupFiles()
 
-            val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
-            intent.removeExtra(EXTRA_END_DASH)
-            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
-            intent.removeExtra(EXTRA_TRIP_ID)
-
-            val onAuthentication: () -> Unit =
-                if (endDashExtra == true) {
-                    onEndDashIntent(tripId)
-                } else {
-                    ::onUnlock
-                }
-
-            if (authenticationEnabled && !isAuthenticated) {
-                authenticate(onAuthentication)
-            } else {
-                onAuthentication()
-            }
+            authenticate()
         }
 
         invalidateOptionsMenu()
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause | activeDash: $activeDash | expectedExit? $expectedExit")
         activeDash?.apply {
             unbindLocationService()
-        }
-
-        if (!expectedExit) {
-            isAuthenticated = false
-            lockScreen()
         }
 
         activeDash = null
@@ -473,29 +444,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         super.onPause()
     }
 
-    /**
-     * Sets content to visible
-     */
-    private fun onUnlock() {
-        Log.d(TAG, "login | onUnlock")
-        isAuthenticated = true
-        expectedExit = false
-        unlockScreen()
-    }
-
-    private fun lockScreen() {
-        binding.container.visibility = INVISIBLE
-        supportActionBar?.hide()
-    }
-
-    private fun unlockScreen() {
-        binding.container.visibility = VISIBLE
-        supportActionBar?.show()
-    }
-
-    override fun onDestroy() {
-        Log.d(TAG, "onDestroy |")
-        super.onDestroy()
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        super.onSaveInstanceState(outState, outPersistentState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -504,10 +455,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        val boolean = sharedPrefs.getBoolean(PREF_SHOW_BASE_PAY_ADJUSTS, true)
-        Log.d(TAG, "onPrepareOptionsMenu | show? $boolean")
-        menu?.findItem(R.id.action_new_weekly)?.isVisible =
-            boolean
+        val showBPAs = sharedPrefs.getBoolean(PREF_SHOW_BASE_PAY_ADJUSTS, true)
+
+        menu?.findItem(R.id.action_new_weekly)?.isVisible = showBPAs
 
         return super.onPrepareOptionsMenu(menu)
     }
@@ -559,7 +509,9 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
             }
             R.id.action_settings -> {
                 expectedExit = true
-                val intent = Intent(this, SettingsActivity::class.java)
+                val intent = Intent(this, SettingsActivity::class.java).apply {
+                    putExtra(INTENT_EXTRA_PRE_AUTH, true)
+                }
                 settingsActivityLauncher.launch(intent)
                 true
             }
@@ -609,6 +561,42 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 .putExtra(EXTRA_SETTINGS_RESTART_APP, true)
         startActivity(mainIntent)
         exitProcess(0)
+    }
+
+    // AuthenticatedActivity overrides
+    override val onAuthentication: () -> Unit
+        get() {
+            fun onEndDashIntent(tripId: Long): () -> Unit = fun() {
+                endDash(tripId)
+                onUnlock()
+            }
+
+            val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
+            intent.removeExtra(EXTRA_END_DASH)
+            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -40L)
+            intent.removeExtra(EXTRA_TRIP_ID)
+
+            return if (endDashExtra == true) {
+                onEndDashIntent(tripId)
+            } else {
+                ::onUnlock
+            }
+        }
+
+    override val onAuthFailed: (() -> Unit)? = null
+
+    override val onAuthError: (() -> Unit)? = null
+
+    override fun lockScreen() {
+        binding.container.visibility = INVISIBLE
+        supportActionBar?.hide()
+    }
+
+    private fun onUnlock() {
+        isAuthenticated = true
+        expectedExit = false
+        binding.container.visibility = VISIBLE
+        supportActionBar?.show()
     }
 
     /**
@@ -771,19 +759,16 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
          */
         internal fun unbindLocationService() {
             if (locationServiceBound) {
-                Log.d(TAG, "unbinding service, allegedly | locServConn: $locationServiceConnection")
                 unbindService(locationServiceConnection!!)
                 locationServiceBound = false
                 locationServiceConnection = null
                 locationService = null
-//            }
             }
         }
 
         internal fun bindLocationService() {
             if (!locationServiceBound && !startingService) {
                 startingService = true
-                Log.d(TAG, "bindLocationServices | locServConn")
                 val locationServiceIntent = Intent(applicationContext, LocationService::class.java)
 
                 if (this@MainActivity.hasPermissions(*REQUIRED_PERMISSIONS)) {
@@ -798,7 +783,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         BIND_AUTO_CREATE
                     )
                 } else {
-                    Log.d(TAG, "bindLocationService | missing permissions")
                     startingService = false
                 }
             }
@@ -844,7 +828,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         updateLocationServiceNotificationData(tripId)
                     }
 
-                    Log.d(TAG, "onServiceConnected")
                     val binder = service as LocationService.LocalBinder
                     locationService = binder.service
                     locationServiceBound = true
@@ -855,7 +838,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                         binder.service.stop()
                         stopOnBind = false
                     } else if (startOnBind) {
-                        Log.d(TAG, "onServiceConnected | startOnBind: $activeEntryId")
                         (activeEntryId ?: startOnBindId)?.let { startLocationService(it) }
                         startOnBind = false
                         startOnBindId = null
@@ -867,7 +849,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
-                    Log.d(TAG, "onServiceDisconnected")
                     locationService = null
                     locationServiceBound = false
                 }
@@ -947,10 +928,6 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"
         private const val LOC_SVC_CHANNEL_DESC = "DashTracker mileage tracker is active"
 
-        private const val EXPECTED_EXIT = "expected_exit"
-
-        //        internal const val ACTIVITY_RESULT_NEEDS_RESTART =
-//            "${BuildConfig.APPLICATION_ID}.result_needs_restart"
         private const val EXTRA_SETTINGS_RESTART_APP =
             "${BuildConfig.APPLICATION_ID}.restart_settings"
         private const val EXTRA_END_DASH = "${BuildConfig.APPLICATION_ID}.End dash"
@@ -1017,45 +994,3 @@ class MainActivity : AppCompatActivity(), ExpenseListFragmentCallback,
  * serve a purpose
  */
 interface DeductionCallback
-
-/**
- * Authenticates user using [BiometricPrompt]
- */
-fun FragmentActivity.authenticate(
-    onSuccess: () -> Unit,
-    onError: (() -> Unit)? = null,
-    onFailed: (() -> Unit)? = null
-) {
-    val executor = ContextCompat.getMainExecutor(this)
-
-    val biometricPrompt = BiometricPrompt(this, executor,
-        object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-                onSuccess()
-            }
-
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                Log.d(TAG, "login | error")
-                onError?.invoke()
-            }
-
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-                Log.d(TAG, "login | failed")
-                onFailed?.invoke()
-            }
-        })
-
-    val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setTitle("Unlock to access DashTracker")
-        .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
-        .build()
-
-    biometricPrompt.authenticate(promptInfo)
-}
-
-
-
-

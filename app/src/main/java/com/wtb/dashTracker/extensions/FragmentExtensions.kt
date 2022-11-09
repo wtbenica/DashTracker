@@ -22,7 +22,7 @@ import androidx.fragment.app.Fragment
 import com.wtb.dashTracker.R
 import java.time.LocalTime
 
-fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?) =
+fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?): String =
     if (args.map { it != null }.reduce { acc, b -> acc && b })
         getString(resId, *args)
     else
@@ -80,5 +80,5 @@ fun Fragment.getOdometerRangeString(start: Float?, end: Float?): String =
         getString(R.string.odometer_range, start, end)
 
 
-fun Fragment.getDimen(@DimenRes res: Int) =
+fun Fragment.getDimen(@DimenRes res: Int): Float =
     resources.getDimension(res) / resources.displayMetrics.density
