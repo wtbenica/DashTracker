@@ -162,7 +162,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                     binding.fragEntryEndMileage.setText(getString(R.string.odometer_fmt, eo))
                 }
                 tempEntry.mileage?.let { m ->
-                    binding.fragEntryTotalMileage.setText(getString(R.string.odometer_fmt, m))
+                    binding.fragEntryTotalMileage.text = getString(R.string.odometer_fmt, m)
                 }
                 tempEntry.pay?.let { p -> binding.fragEntryPay.setText(p.toString()) }
                 tempEntry.otherPay?.let { op -> binding.fragEntryPayOther.setText(op.toString()) }

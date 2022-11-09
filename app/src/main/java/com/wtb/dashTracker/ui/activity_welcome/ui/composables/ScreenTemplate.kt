@@ -17,23 +17,27 @@
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AccessAlarm
 import androidx.compose.material.icons.twotone.Dangerous
 import androidx.compose.material3.*
+import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.OnboardingIntroNav
-import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.cardShape
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
+import com.wtb.dashTracker.ui.theme.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalTextApi
@@ -52,46 +56,76 @@ fun ScreenTemplate(
                 .fillMaxSize()
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column {
-                    Text(
-                        text = headerText,
-                        modifier = Modifier.padding(0.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+            DefaultSpacer()
 
-                    subtitleText?.let {
+            OutlinedCard(
+                shape = cardShape,
+                colors = cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+            ) {
+                WideSpacer()
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FillSpacer()
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = it,
-                            modifier = Modifier.padding(top = 8.dp),
-                            fontSize = 16.sp,
+                            text = headerText,
+                            modifier = Modifier.padding(0.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = subtitleText?.let { 18.sp } ?: 20.sp,
+                            fontWeight = FontWeight.Bold,
                         )
+
+                        subtitleText?.let {
+                            Text(
+                                text = it,
+                                modifier = Modifier.padding(0.dp),
+                                fontSize = 14.sp,
+                            )
+                        }
+                    }
+
+                    FillSpacer()
+
+                    OutlinedCard(
+                        modifier = Modifier
+                            .width(128.dp)
+                            .height(96.dp)
+                            .align(Alignment.CenterVertically)
+                            .padding(end = dimensionResource(R.dimen.margin_half)),
+                        shape = cardShape,
+                        colors = cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = secondary()
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface)
+                    ) {
+                        Column(
+                            modifier = Modifier.align(
+                                Alignment.CenterHorizontally
+                            ),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            iconImage()
+                        }
                     }
                 }
 
-                FillSpacer()
-
-                OutlinedCard(
-                    shape = cardShape,
-                    modifier = Modifier
-                        .size(96.dp)
-                        .align(Alignment.CenterVertically),
-                ) {
-                    iconImage()
-                }
+                WideSpacer()
             }
+
+            Spacer(modifier = Modifier.size(64.dp))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .fillMaxHeight()
             ) {
                 mainContent()
-                FillSpacer()
             }
 
             navContent?.let {
@@ -125,12 +159,12 @@ fun PreviewScreenTemplate() {
                         imageVector = Icons.TwoTone.Dangerous,
                         contentDescription = "Dangerous",
                         modifier = Modifier.size(96.dp),
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = welcomeIconColor()
                     )
                 },
                 mainContent = {
                     ContentCard(
-                        text = "ContentCard",
+                        titleText = "ContentCard",
                         icon = Icons.TwoTone.AccessAlarm,
                         iconTint = MaterialTheme.colorScheme.secondary,
                         iconDescription = "Access Alarm"
@@ -144,5 +178,5 @@ fun PreviewScreenTemplate() {
     }
 }
 
-val styleBold =
+val styleBold: SpanStyle =
     SpanStyle(fontWeight = FontWeight.Bold)

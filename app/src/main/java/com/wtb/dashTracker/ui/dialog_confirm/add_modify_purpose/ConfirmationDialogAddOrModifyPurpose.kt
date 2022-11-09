@@ -141,9 +141,9 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
     }
 
     companion object {
-        const val ARG_PURPOSE_NAME = "arg_purpose_name"
-        const val ARG_PURPOSE_ID = "arg_purpose_id"
-        const val RK_ADD_PURPOSE = "add_purpose"
+        const val ARG_PURPOSE_NAME: String = "arg_purpose_name"
+        const val ARG_PURPOSE_ID: String = "arg_purpose_id"
+        const val RK_ADD_PURPOSE: String = "add_purpose"
         private const val ARG_IS_NEW = "arg_is_new"
         private const val ARG_PREV_PURPOSE = "arg_prev_purpose"
 
@@ -151,7 +151,7 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
             purposeId: Long,
             prevPurpose: Long? = null,
             isNew: Boolean = true,
-        ) = ConfirmationDialogAddOrModifyPurpose().apply {
+        ): ConfirmationDialogAddOrModifyPurpose = ConfirmationDialogAddOrModifyPurpose().apply {
             arguments = Bundle().apply {
                 putLong(ARG_PURPOSE_ID, purposeId)
                 putBoolean(ARG_IS_NEW, isNew)

@@ -170,71 +170,23 @@
     <string name="dialog_location_permission">DashTracker needs permission to access your location
         and physical activity (on foot, in car, still or moving).
 
-        \n\nAfter you select <i>Allow</i> below, two dialog windows will open. The first will ask you to
-        allow location access; select <i>While using the app</i>. The second dialog will ask you to
-        allow physical activity access; select <i>Allow</i>.
-
-        \n\nDashTracker will only access your location and physical activity while mileage tracking
-        is active. Your data is not accessible to anyone but you. For more details, see our privacy
-        policy.
-
-        \n\nIf you choose not to allow location access, you can still track your mileage by entering
-        your starting and ending odometer readings.
-    </string>
-
-    <!--    ANNOTATED STRING: dialog_location_permission-->
-    <string name="dialog_location_permission_1">DashTracker needs permission to access your location
-        and physical activity (on foot, in car, still or moving).
-
-        \n\nOn the next screen, allow location access\ </string>
-
-    <string name="dialog_location_permission_2_ital">While using the app</string>
-
-    <string name="dialog_location_permission_3">, then\ </string>
-
-    <string name="dialog_location_permission_4_ital">Allow</string>
-
-    <string name="dialog_location_permission_5">\ physical activity access.
-
         \n\nDashTracker will only access your location and physical activity while mileage tracking
         is active.
     </string>
 
-    <!--    ANNOTATED STRING: dialog_bg_location_text-->
-    <string name="dialog_bg_location_text_1">DashTracker needs permission to access your location
-        while it is running in the background. Without this permission, DashTracker cannot
-        provide accurate mileage tracking.
-
-        \n\nOn the next screen, set location access to\ </string>
-
-    <string name="dialog_bg_location_text_2_ital">Allow all the time</string>
-
-    <string name="dialog_bg_location_text_3">.</string>
-
     <string name="dialog_bg_location_text">DashTracker needs permission to access your location
         while it is running in the background. Without this permission, DashTracker cannot
-        provide accurate mileage tracking.
-
-        \n\nIf you would like to use automatic mileage tracking, select "Allow," and on the
-        next screen, select "Always all the time."
-    </string>
+        provide accurate mileage tracking.</string>
 
     <string name="dialog_notification_permission">You can have DashTracker show a notification when
         mileage tracking is active while the app is running in the background.
     </string>
 
-    <string name="dialog_battery_permission_1">Android\'s battery optimizer may interfere with
+    <string name="dialog_battery_permission">Android\'s battery optimizer may interfere with
         DashTracker\'s mileage tracking, especially if the battery is low. In order for mileage
-        tracking to work as expected, it is recommended that you all DashTracker unrestricted
+        tracking to work as expected, it is recommended that you allow DashTracker unrestricted
         background battery use.
-
-        \n\nPressing\ </string>
-    <string name="dialog_battery_permission_2_ital">OK</string>
-    <string name="dialog_battery_permission_3">\ will open Android\'s DashTracker settings. Select\ </string>
-    <string name="dialog_battery_permission_4_ital">Battery</string>
-    <string name="dialog_battery_permission_5">\ then\ </string>
-    <string name="dialog_battery_permission_6_ital">Unrestricted</string>
-    <string name="dialog_battery_permission_7">, then return to DashTracker.</string>
+    </string>
 
     <string name="reenable_battery_permission_1">To reenable battery optimization, press\ </string>
     <string name="reenable_battery_permission_2_ital">OK</string>
@@ -308,5 +260,13 @@
     <string name="dialog_restart">DashTracker needs to restart for changes to take effect. Restart now?</string>
     <string name="restart">Restart</string>
     <string name="later">Later</string>
+    <string name="prefs_authentication_enabled">prefs_authentication_enabled</string>
+    <string name="prefs_authentication_enabled_confirmed">prefs_authentication_enabled_confirmed</string>
+    <string name="prefs_authentication_enabled_reverted">prefs_authentication_enabled_reverted</string>
+
+    <string name="show_weekly_bpa_desc">DashTracker can include fields for tracking any additions to your weekly pay. This would be useful if you live in a state with a weekly base pay adjustment or work in a market that has weekly incentives or extra pay.</string>
+    <string name="require_pin_desc">To protect your data, DashTracker can require a fingerprint or PIN to open.</string>
+    <string name="pref_title_show_weekly_adjustment_field">Show weekly adjustment field</string>
+    <string name="pref_title_require_authentication">Require authentication to open</string>
 
 </resources>

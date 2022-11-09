@@ -24,7 +24,6 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -52,7 +51,6 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.*
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
@@ -121,6 +119,7 @@ class OnboardingMileageActivity : ComponentActivity() {
             missingBatteryOptimization,
         )
         showSummaryScreen = missingPermissions.contains(true)
+                && !sharedPrefs.getBoolean(OPT_OUT_LOCATION, false)
         missingPermissions.add(showSummaryScreen)
         val numPages = missingPermissions.count { it }
 
@@ -182,7 +181,6 @@ class OnboardingMileageActivity : ComponentActivity() {
                                     )
                                 }
                                 OPTIMIZATION_ON_SCREEN -> {
-                                    Log.d(TAG, "Reenable battery optimization")
                                     ReenableBatteryOptimizationScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity,
@@ -269,7 +267,7 @@ class OnboardingMileageActivity : ComponentActivity() {
      * @param noPermissions also the default return value
      * @return the matching parameter
      */
-    private fun <T : Any> whenHasDecided(
+    internal fun <T : Any> whenHasDecided(
         optOutLocation: T? = null,
         hasAllPermissions: T? = null,
         hasNotification: T? = null,
@@ -397,7 +395,7 @@ class OnboardingMileageActivity : ComponentActivity() {
                 SUMMARY_SCREEN -> null
             }
 
-            if (loadSingleComplete ?: false) {
+            if (loadSingleComplete == true) {
                 finish()
             }
         }

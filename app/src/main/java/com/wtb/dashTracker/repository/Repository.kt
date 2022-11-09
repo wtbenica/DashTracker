@@ -97,9 +97,9 @@ class Repository private constructor(private val context: Context) {
         }
     }
 
-    fun getEntryFlowById(id: Long) = entryDao.getFlow(id)
+    fun getEntryFlowById(id: Long): Flow<DashEntry?> = entryDao.getFlow(id)
 
-    fun getFullEntryFlowById(id: Long) = entryDao.getFullEntryFlow(id)
+    fun getFullEntryFlowById(id: Long): Flow<FullEntry?> = entryDao.getFullEntryFlow(id)
 
     suspend fun getCostPerMile(date: LocalDate, purpose: DeductionType): Float =
         when (purpose) {
@@ -144,7 +144,7 @@ class Repository private constructor(private val context: Context) {
     suspend fun getWeeklyByDateSus(date: LocalDate): FullWeekly? =
         weeklyDao.getWeeklyByDateSus(date)
 
-    fun getBasePayAdjustFlowById(id: Long) = weeklyDao.getFlow(id)
+    fun getBasePayAdjustFlowById(id: Long): Flow<Weekly?> = weeklyDao.getFlow(id)
 
     /**
      * Yearly
@@ -281,7 +281,7 @@ class Repository private constructor(private val context: Context) {
         }
     }
 
-    fun import(activityResultLauncher: ActivityResultLauncher<String>) =
+    fun import(activityResultLauncher: ActivityResultLauncher<String>): Unit =
         csvUtil.import(activityResultLauncher)
 
     /**
