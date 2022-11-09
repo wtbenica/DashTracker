@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.views
+package com.wtb.dashTracker.ui.fragment_trends
 
 import android.view.ViewGroup
 import android.view.WindowManager

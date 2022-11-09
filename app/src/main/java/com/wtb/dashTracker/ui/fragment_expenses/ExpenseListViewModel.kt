@@ -30,7 +30,7 @@ class ExpenseListViewModel : ViewModel() {
 
     val expenseList: Flow<PagingData<FullExpense>> = repository.allExpensesPaged
 
-    fun delete(expense: Expense) = repository.deleteModel(expense)
+    fun delete(expense: Expense): Unit = repository.deleteModel(expense)
 
-    fun deleteExpenseById(id: Int) = repository.deleteExpenseById(id)
+    fun deleteExpenseById(id: Long): Unit = repository.deleteExpenseById(id)
 }

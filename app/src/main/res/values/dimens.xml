@@ -15,6 +15,7 @@
   -->
 
 <resources>
+    <dimen name="margin_extra_wide">64dp</dimen>
     <dimen name="margin_wide">24dp</dimen>
     <dimen name="margin_default">16dp</dimen>
     <dimen name="margin_half">8dp</dimen>
@@ -31,4 +32,5 @@
 
     <dimen name="fragment_padding_for_bottom_nav">72dp</dimen>
     <dimen name="chart_fragment_bottom_padding">86dp</dimen>
+    <dimen name="bg_edit_text_border">1dp</dimen>
 </resources>

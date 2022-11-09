@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -53,11 +54,14 @@ class WeeklyBarChart @JvmOverloads constructor(
             WeeklyXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer, isWeekly)
     }
 
+    // TODO: It would be nice if i could remember why i thought this was important to do
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         super.onInterceptTouchEvent(ev)
         return true
     }
 
+    // TODO: It would be nice if i could remember why i thought this was important to do
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         super.onTouchEvent(event)
         return true
@@ -82,11 +86,14 @@ class WeeklyLineChart @JvmOverloads constructor(
             WeeklyXAxisRenderer(mViewPortHandler, mXAxis, mLeftAxisTransformer, isWeekly)
     }
 
+    // TODO: It would be nice if i could remember why i thought this was important to do
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         super.onInterceptTouchEvent(ev)
         return true
     }
 
+    // TODO: It would be nice if i could remember why i thought this was important to do
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         super.onTouchEvent(event)
         return true

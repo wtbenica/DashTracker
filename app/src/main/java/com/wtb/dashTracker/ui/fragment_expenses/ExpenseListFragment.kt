@@ -21,6 +21,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -41,13 +44,16 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
+import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class ExpenseListFragment : ListItemFragment() {
 
@@ -80,7 +86,7 @@ class ExpenseListFragment : ListItemFragment() {
             ConfirmType.DELETE.key
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
-            val id = bundle.getInt(ARG_EXTRA)
+            val id = bundle.getLong(ARG_EXTRA)
             if (result) {
                 viewModel.deleteExpenseById(id)
             }
@@ -115,7 +121,8 @@ class ExpenseListFragment : ListItemFragment() {
 
     interface ExpenseListFragmentCallback
 
-    inner class ExpenseAdapter : BaseItemAdapter<FullExpense>(
+    @ExperimentalAnimationApi
+    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense>(
         DIFF_CALLBACK
     ) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullExpense> =
@@ -132,6 +139,7 @@ class ExpenseListFragment : ListItemFragment() {
 
         abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView)
 
+        @ExperimentalAnimationApi
         inner class GasExpenseHolder(parent: ViewGroup) : ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense, parent, false)
         ), View.OnClickListener {
@@ -160,7 +168,7 @@ class ExpenseListFragment : ListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
+            override fun bind(item: FullExpense, payloads: List<Any>?) {
                 this.item = item
 
                 if (this.item.isEmpty) {
@@ -184,6 +192,7 @@ class ExpenseListFragment : ListItemFragment() {
             }
         }
 
+        @ExperimentalAnimationApi
         inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseAdapter.ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense_non_gas, parent, false)
         ), View.OnClickListener {
@@ -213,7 +222,7 @@ class ExpenseListFragment : ListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullExpense, payloads: MutableList<Any>?) {
+            override fun bind(item: FullExpense, payloads: List<Any>?) {
                 this.item = item
 
                 binding.listItemTitle.text = this.item.expense.date.formatted.uppercase()

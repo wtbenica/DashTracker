@@ -23,7 +23,10 @@ import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
-import com.wtb.dashTracker.database.models.*
+import com.wtb.dashTracker.database.models.Expense
+import com.wtb.dashTracker.database.models.ExpensePurpose
+import com.wtb.dashTracker.database.models.FullExpense
+import com.wtb.dashTracker.database.models.FullExpensePurpose
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
@@ -95,18 +98,4 @@ abstract class ExpensePurposeDao : BaseDao<ExpensePurpose>("ExpensePurpose", "pu
     companion object {
         private const val SQL_GET_ALL = "SELECT * FROM ExpensePurpose ORDER BY name"
     }
-}
-
-@ExperimentalCoroutinesApi
-@Dao
-abstract class StandardMileageDeductionDao :
-    BaseDao<StandardMileageDeduction>("StandardMileageDeduction", "year") {
-    @Query("DELETE FROM StandardMileageDeduction")
-    abstract override fun clear()
-
-    @RawQuery(observedEntities = [StandardMileageDeduction::class])
-    abstract override fun getDataModelFlowByQuery(query: SupportSQLiteQuery): Flow<StandardMileageDeduction?>
-
-    @Query("SELECT * FROM StandardMileageDeduction ORDER BY year")
-    abstract override fun getAll(): Flow<List<StandardMileageDeduction>>
 }

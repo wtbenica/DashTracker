@@ -24,6 +24,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.activity.ComponentDialog
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -35,7 +37,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.ui.dialog_confirm.*
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
-import com.wtb.dashTracker.views.FullWidthDialogFragment
+import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -47,7 +49,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected abstract val viewModel: ListItemViewModel<M>
 
     // if save button is pressed or is confirmed by save dialog, gets assigned true
-    protected var saveConfirmed = false
+    protected var saveConfirmed: Boolean = false
 
     // if delete button is pressed, gets assigned false
     private var saveOnExit = true
@@ -98,16 +100,20 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        object : Dialog(requireContext(), theme) {
-            override fun onBackPressed() {
-                if (isEmpty() && !saveConfirmed) {
-                    ConfirmSaveDialog.newInstance(
-                        text = R.string.confirm_save_entry_incomplete
-                    ).show(parentFragmentManager, null)
-                } else {
-                    super.onBackPressed()
+        ComponentDialog(requireContext()).also {
+            val onBackPressedCallback = object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isEmpty() && !saveConfirmed) {
+                        ConfirmSaveDialog.newInstance(
+                            text = R.string.confirm_save_entry_incomplete
+                        ).show(parentFragmentManager, null)
+                    } else {
+                        isEnabled = false
+                        it.onBackPressedDispatcher.onBackPressed()
+                    }
                 }
             }
+            it.onBackPressedDispatcher.addCallback(onBackPressedCallback)
         }
 
     override fun onDestroy() {
@@ -197,8 +203,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     }
 
     companion object {
-        const val ARG_ITEM_ID = "item_id"
-        const val REQUEST_KEY_ENTRY_DIALOG = "result: modification state"
-        const val ARG_MODIFICATION_STATE = "arg modification state"
+        const val ARG_ITEM_ID: String = "item_id"
+        const val REQUEST_KEY_ENTRY_DIALOG: String = "result: modification state"
+        const val ARG_MODIFICATION_STATE: String = "arg modification state"
     }
 }

@@ -25,6 +25,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
@@ -32,9 +35,9 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.fragment_trends.TAG
-import com.wtb.dashTracker.views.FullWidthDialogFragment
+import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +45,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
 
@@ -57,7 +63,7 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val purposeId = arguments?.getInt(ARG_PURPOSE_ID)
+        val purposeId = arguments?.getLong(ARG_PURPOSE_ID)
         arguments?.getBoolean(ARG_IS_NEW)?.let { isNew = it }
         viewModel.loadDataModel(purposeId)
     }
@@ -135,21 +141,21 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
     }
 
     companion object {
-        const val ARG_PURPOSE_NAME = "arg_purpose_name"
-        const val ARG_PURPOSE_ID = "arg_purpose_id"
+        const val ARG_PURPOSE_NAME: String = "arg_purpose_name"
+        const val ARG_PURPOSE_ID: String = "arg_purpose_id"
+        const val RK_ADD_PURPOSE: String = "add_purpose"
+        private const val ARG_IS_NEW = "arg_is_new"
         private const val ARG_PREV_PURPOSE = "arg_prev_purpose"
-        const val ARG_IS_NEW = "arg_is_new"
-        const val RK_ADD_PURPOSE = "add_purpose"
 
         fun newInstance(
-            purposeId: Int,
-            prevPurpose: Int? = null,
+            purposeId: Long,
+            prevPurpose: Long? = null,
             isNew: Boolean = true,
-        ) = ConfirmationDialogAddOrModifyPurpose().apply {
+        ): ConfirmationDialogAddOrModifyPurpose = ConfirmationDialogAddOrModifyPurpose().apply {
             arguments = Bundle().apply {
-                putInt(ARG_PURPOSE_ID, purposeId)
+                putLong(ARG_PURPOSE_ID, purposeId)
                 putBoolean(ARG_IS_NEW, isNew)
-                prevPurpose?.let { putInt(ARG_PREV_PURPOSE, it) }
+                prevPurpose?.let { putLong(ARG_PREV_PURPOSE, it) }
             }
         }
     }

@@ -18,8 +18,11 @@ package com.wtb.dashTracker.database
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.wtb.dashTracker.database.DashDatabase.Companion.AutoMigrateSpec_10_11
+import com.wtb.dashTracker.database.DashDatabase.Companion.AutoMigrateSpec_7_8
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,23 +31,33 @@ import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @Database(
-    version = 5,
-    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class, StandardMileageDeduction::class],
+    version = 12,
+    entities = [DashEntry::class, Weekly::class, Expense::class, ExpensePurpose::class,
+        LocationData::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4)
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8, spec = AutoMigrateSpec_7_8::class),
+        AutoMigration(from = 8, to = 9),
+        AutoMigration(from = 9, to = 10),
+        AutoMigration(from = 10, to = 11, spec = AutoMigrateSpec_10_11::class),
+        AutoMigration(from = 11, to = 12, spec = DashDatabase.Companion.AutoMigrateSpec_11_12::class),
     ],
     exportSchema = true,
 )
+
+
 @TypeConverters(DbTypeConverters::class)
 abstract class DashDatabase : RoomDatabase() {
     abstract fun entryDao(): DashEntryDao
     abstract fun weeklyDao(): WeeklyDao
     abstract fun expenseDao(): ExpenseDao
     abstract fun expensePurposeDao(): ExpensePurposeDao
-    abstract fun standardMileageDeductionDao(): StandardMileageDeductionDao
     abstract fun transactionDao(): TransactionDao
+    abstract fun locationDao(): LocationDao
 
     companion object {
         @Volatile
@@ -62,7 +75,7 @@ abstract class DashDatabase : RoomDatabase() {
                 )
                     .addMigrations(MIGRATION_4_5)
                     .addCallback(
-                        object : RoomDatabase.Callback() {
+                        object : Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {
                                 super.onCreate(db)
 
@@ -70,15 +83,9 @@ abstract class DashDatabase : RoomDatabase() {
                                     ExpensePurpose(purpose.id, purpose.purposeName)
                                 }
 
-                                val standardDeductions =
-                                    StandardMileageDeduction.STANDARD_DEDUCTIONS.map {
-                                        StandardMileageDeduction(it.key, it.value)
-                                    }
-
                                 Executors.newSingleThreadScheduledExecutor().execute {
                                     getInstance(context).apply {
                                         expensePurposeDao().upsertAll(purposes)
-                                        standardMileageDeductionDao().upsertAll(standardDeductions)
                                     }
 
                                 }
@@ -91,26 +98,30 @@ abstract class DashDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_4_5 = object: Migration(4, 5) {
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 val purposes = Purpose.values().map { purpose ->
                     ExpensePurpose(purpose.id, purpose.purposeName)
                 }
 
-                val standardDeductions =
-                    StandardMileageDeduction.STANDARD_DEDUCTIONS.map {
-                        StandardMileageDeduction(it.key, it.value)
-                    }
-
                 Executors.newSingleThreadScheduledExecutor().execute {
                     INSTANCE?.apply {
                         expensePurposeDao().upsertAll(purposes)
-                        standardMileageDeductionDao().upsertAll(standardDeductions)
                     }
                 }
             }
 
         }
+
+        @DeleteTable.Entries(DeleteTable(tableName = "StandardMileageDeduction"))
+        class AutoMigrateSpec_7_8 : AutoMigrationSpec
+
+        @DeleteTable.Entries(DeleteTable(tableName = "Pause"))
+        class AutoMigrateSpec_10_11 : AutoMigrationSpec
+
+        @DeleteTable.Entries(DeleteTable(tableName = "Drive"))
+        class AutoMigrateSpec_11_12 : AutoMigrationSpec
+
 //
 //        @DeleteColumn(
 //            tableName = "GasExpense",

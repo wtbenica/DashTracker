@@ -25,6 +25,7 @@ import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.Purpose
 import com.wtb.dashTracker.repository.DeductionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 fun <T> List<T>.toStringList(): String {
@@ -44,29 +45,76 @@ abstract class TransactionDao {
     @RawQuery(observedEntities = [Expense::class, DashEntry::class])
     abstract suspend fun getFloatByQuery(query: SupportSQLiteQuery): Float?
 
+    @RawQuery(observedEntities = [Expense::class, DashEntry::class])
+    abstract fun getFloatByQueryFlow(query: SupportSQLiteQuery): Flow<Float?>
+
     private suspend fun getCpm(
         startDate: LocalDate? = null,
         endDate: LocalDate? = null,
         vararg purpose: Purpose? = emptyArray()
     ): Float {
-        val query = SimpleSQLiteQuery(
-            """SELECT (
-            SELECT SUM(amount)
-            FROM Expense
-            WHERE date BETWEEN '$startDate' and '$endDate'"""
-                    + if (purpose.isNotEmpty()) {
-                """ AND purpose in (${purpose.mapNotNull { it?.id }.toStringList()})) """
-            } else {
-                ")"
-            } +
-                    """ / (
-                        SELECT max (endOdometer) - min(startOdometer)
-                                from DashEntry
-                                WHERE date BETWEEN '$startDate' AND '$endDate'
-                                AND startOdometer != 0)"""
-        )
+        val query = queryCpmAvgByDate(startDate, endDate, purpose)
 
         return getFloatByQuery(query) ?: 0f
+    }
+
+    private fun getCpmFlow(
+        startDate: LocalDate? = null,
+        endDate: LocalDate? = null,
+        vararg purpose: Purpose? = emptyArray()
+    ): Flow<Float?> {
+        val query = queryCpmAvgByDate(startDate, endDate, purpose)
+
+        return getFloatByQueryFlow(query)
+    }
+
+    private fun queryCpmAvgByDate(
+        startDate: LocalDate?,
+        endDate: LocalDate?,
+        purpose: Array<out Purpose?>
+    ) = SimpleSQLiteQuery(
+        """SELECT (
+                SELECT SUM(amount)
+                FROM Expense
+                WHERE date BETWEEN '$startDate' and '$endDate'"""
+                + if (purpose.isNotEmpty()) {
+            """ AND purpose in (${purpose.mapNotNull { it?.id }.toStringList()})) """
+        } else {
+            ")"
+        } +
+                """ / (
+                            SELECT max (endOdometer) - min(startOdometer)
+                                    from DashEntry
+                                    WHERE date BETWEEN '$startDate' AND '$endDate'
+                                    AND startOdometer != 0)"""
+    )
+
+    suspend fun getCostPerMileByDate(
+        date: LocalDate,
+        vararg purpose: Purpose? = emptyArray()
+    ): Float {
+        val startDate = date.minusDays(NUM_DAYS_HISTORY)
+
+        return getCpm(startDate, date, *purpose)
+    }
+
+    fun getCostPerMileByDateFlow(
+        date: LocalDate,
+        vararg purpose: Purpose? = emptyArray()
+    ): Flow<Float?> {
+        val startDate = date.minusDays(NUM_DAYS_HISTORY)
+
+        return getCpmFlow(startDate, date, *purpose)
+    }
+
+    suspend fun getCostPerMileAnnual(
+        year: Int,
+        vararg purpose: Purpose? = emptyArray()
+    ): Float {
+        val startDate = LocalDate.of(year, 1, 1)
+        val endDate = LocalDate.of(year, 12, 31)
+
+        return getCpm(startDate, endDate, *purpose)
     }
 
     data class NewCpm(
@@ -82,25 +130,6 @@ abstract class TransactionDao {
                 DeductionType.ALL_EXPENSES -> actualCpm
                 DeductionType.IRS_STD -> irsStdCpm
             }
-    }
-
-    suspend fun getCostPerMileByDate(
-        date: LocalDate,
-        vararg purpose: Purpose? = emptyArray()
-    ): Float {
-        val startDate = date.minusDays(NUM_DAYS_HISTORY)
-
-        return getCpm(startDate, date, *purpose)
-    }
-
-    suspend fun getCostPerMileAnnual(
-        year: Int,
-        vararg purpose: Purpose? = emptyArray()
-    ): Float {
-        val startDate = LocalDate.of(year, 1, 1)
-        val endDate = LocalDate.of(year, 12, 31)
-
-        return getCpm(startDate, endDate, *purpose)
     }
 
     companion object {

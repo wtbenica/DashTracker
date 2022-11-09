@@ -26,6 +26,9 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -46,16 +49,19 @@ import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQ
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogEditPurposes
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_ID
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.ARG_ENTRY_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
@@ -191,18 +197,16 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     override fun setDialogListeners() {
         super.setDialogListeners()
 
-        setFragmentResultListener(
-            RK_ADD_PURPOSE
-        ) { _, bundle ->
+        setFragmentResultListener(RK_ADD_PURPOSE) { _, bundle ->
             val result = bundle.getBoolean(ARG_CONFIRM)
-            bundle.getInt(ARG_PURPOSE_ID).let { id ->
+            bundle.getLong(ARG_ENTRY_ID).let { id ->
                 if (result) {
                     bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
                         viewModel.upsert(
                             ExpensePurpose(
                                 purposeId = id,
                                 name = purposeName
-                            ), false
+                            )
                         )
                         binding.fragExpensePurpose.apply {
                             setSelection((adapter as PurposeAdapter).getPositionByName(purposeName))
@@ -254,14 +258,15 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     companion object {
-        fun newInstance(expenseId: Int): ExpenseDialog =
+        fun newInstance(expenseId: Long): ExpenseDialog =
             ExpenseDialog().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_ITEM_ID, expenseId)
+                    putLong(ARG_ITEM_ID, expenseId)
                 }
             }
     }
 
+    @ExperimentalAnimationApi
     inner class PurposeAdapter(
         context: Context,
         private val itemList: Array<ExpensePurpose>
@@ -309,7 +314,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                         val purposeId = viewModel.upsertAsync(ExpensePurpose())
                         val prevPurpose = item?.purpose
                         ConfirmationDialogAddOrModifyPurpose.newInstance(
-                            purposeId = purposeId.toInt(),
+                            purposeId = purposeId,
                             prevPurpose = prevPurpose,
                         ).show(parentFragmentManager, null)
                     }
@@ -340,7 +345,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             return tempConvertView
         }
 
-        fun getPositionById(id: Int): Int {
+        fun getPositionById(id: Long): Int {
             var pos = -1
             itemList.forEachIndexed { index, purpose ->
                 if (id == purpose.purposeId) {

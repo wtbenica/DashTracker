@@ -23,10 +23,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -34,6 +35,22 @@ import java.time.LocalDate
 @ExperimentalCoroutinesApi
 class MainActivityViewModel : ViewModel() {
     private val repository = Repository.get()
+
+    private val _activeEntryId = MutableStateFlow(AUTO_ID)
+    private val activeEntryId: StateFlow<Long>
+        get() = _activeEntryId
+
+    fun loadActiveEntry(id: Long?) {
+        _activeEntryId.value = id ?: AUTO_ID
+    }
+
+    internal val activeEntry: StateFlow<FullEntry?> = activeEntryId.flatMapLatest { id ->
+        repository.getFullEntryFlowById(id)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
 
     private val _hourly = MutableLiveData(0f)
     val hourly: LiveData<Float>
@@ -46,6 +63,10 @@ class MainActivityViewModel : ViewModel() {
     private val _lastWeek = MutableLiveData(0f)
     val lastWeek: LiveData<Float>
         get() = _lastWeek
+
+    private val _cpm = MutableLiveData(0f)
+    val cpm: LiveData<Float>
+        get() = _cpm
 
     init {
         viewModelScope.launch {
@@ -65,24 +86,39 @@ class MainActivityViewModel : ViewModel() {
                 _lastWeek.value = lw?.totalPay
             }
         }
+
+        viewModelScope.launch {
+            repository.getCostPerMileFlow(LocalDate.now(), DeductionType.ALL_EXPENSES)
+                .collectLatest {
+                    _cpm.value = it ?: 0f
+                }
+        }
     }
+
+    fun deleteEntry(id: Long) {
+        repository.deleteEntryById(id)
+    }
+
+    suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)
 
     suspend fun upsertAsync(dataModel: DataModel): Long =
         withContext(Dispatchers.Default) {
             repository.upsertModel(dataModel)
         }
 
-    fun export() = repository.export()
+    fun export(): Unit = repository.export()
 
-    fun import(activityResultLauncher: ActivityResultLauncher<String>) = repository.import(activityResultLauncher)
+    fun import(activityResultLauncher: ActivityResultLauncher<String>): Unit =
+        repository.import(activityResultLauncher)
 
     fun insertOrReplace(
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,
         expenses: List<Expense>? = null,
-        purposes: List<ExpensePurpose>? = null
+        purposes: List<ExpensePurpose>? = null,
+        locationData: List<LocationData>? = null
     ) {
-        repository.insertOrReplace(entries, weeklies, expenses, purposes)
+        repository.insertOrReplace(entries, weeklies, expenses, purposes, locationData)
     }
 
     companion object {

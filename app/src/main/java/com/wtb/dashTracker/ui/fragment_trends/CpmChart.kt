@@ -21,6 +21,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.github.mikephil.charting.components.AxisBase
@@ -47,6 +50,9 @@ import java.lang.Integer.min
 import java.time.DayOfWeek
 import java.time.LocalDate
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class CpmChart(
     context: Context,
@@ -59,7 +65,7 @@ class CpmChart(
     R.string.lbl_cost_per_mile,
     R.string.frag_title_expenses
 ) {
-    val binding = ChartCpmBinding.inflate(LayoutInflater.from(context), this)
+    val binding: ChartCpmBinding = ChartCpmBinding.inflate(LayoutInflater.from(context), this)
     private var lineChartCpm: WeeklyLineChart = binding.cpmChartLineCpm.apply { style() }
     private val selectedDeductionType: DeductionType
         get() = when (binding.buttonGroupDeductionType.checkedButtonId) {

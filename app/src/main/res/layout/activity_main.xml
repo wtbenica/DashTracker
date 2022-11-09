@@ -38,11 +38,13 @@
             android:fitsSystemWindows="true"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <GridLayout
                 android:id="@+id/summary_bar"
                 style="@style/SummaryBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:rowCount="3"
                 app:layout_scrollFlags="scroll|enterAlways">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -50,39 +52,39 @@
                     style="@style/SummaryBarItem.Header"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_hourly"
-                    app:layout_constraintEnd_toStartOf="@id/act_main_lbl_last_week"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_row="0"
+                    android:layout_column="0"
+                    android:layout_columnWeight="1"
+                    android:text="@string/lbl_hourly" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/act_main_lbl_last_week"
                     style="@style/SummaryBarItem.Header"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_last_week"
-                    app:layout_constraintEnd_toStartOf="@id/act_main_lbl_this_week"
-                    app:layout_constraintStart_toEndOf="@id/act_main_lbl_hourly"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_row="0"
+                    android:layout_column="1"
+                    android:layout_columnWeight="1"
+                    android:text="@string/lbl_last_week" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/act_main_lbl_this_week"
                     style="@style/SummaryBarItem.Header"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_this_week"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/act_main_lbl_last_week"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_row="0"
+                    android:layout_column="2"
+                    android:layout_columnWeight="1"
+                    android:text="@string/lbl_this_week" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/act_main_hourly"
                     style="@style/SummaryBarItem.Value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toStartOf="@id/act_main_last_week"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/act_main_lbl_hourly"
+                    android:layout_row="1"
+                    android:layout_column="0"
+                    android:layout_columnWeight="1"
                     tools:text="$4.25/hr" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -90,9 +92,9 @@
                     style="@style/SummaryBarItem.Value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toStartOf="@id/act_main_this_week"
-                    app:layout_constraintStart_toEndOf="@id/act_main_hourly"
-                    app:layout_constraintTop_toBottomOf="@id/act_main_lbl_last_week"
+                    android:layout_row="1"
+                    android:layout_column="1"
+                    android:layout_columnWeight="1"
                     tools:text="$209.00" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -100,11 +102,19 @@
                     style="@style/SummaryBarItem.Value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/act_main_last_week"
-                    app:layout_constraintTop_toBottomOf="@id/act_main_lbl_this_week"
+                    android:layout_row="1"
+                    android:layout_column="2"
+                    android:layout_columnWeight="1"
                     tools:text="$209.00" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.wtb.dashTracker.views.ActiveDashBar
+                    android:id="@+id/adb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_columnSpan="3"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </GridLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.fragment.app.FragmentContainerView
@@ -116,19 +126,19 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:navGraph="@navigation/mobile_navigation" />
 
-        <com.wtb.dashTracker.views.FabMenu
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             style="@style/Widget.Material3.FloatingActionButton.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/content_desc_fab_menu"
-            android:src="@drawable/anim_fab_expand"
-            android:translationY="-16dp"
+            android:contentDescription="folo"
+            android:src="@drawable/anim_play_to_stop"
+            app:backgroundTint="?attr/colorSecondaryFaded"
             app:layout_anchor="@id/bottom_app_bar"
             app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
             app:layout_dodgeInsetEdges="bottom"
-            app:tint="?attr/colorFabIcon"
-            tools:ignore="ImageContrastCheck" />
+            app:maxImageSize="48dp"
+            app:tint="?attr/colorFab" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"
@@ -139,14 +149,12 @@
             android:animateLayoutChanges="true"
             android:backgroundTint="?attr/colorUi"
             android:minHeight="?android:attr/actionBarSize"
-            android:paddingStart="0dp"
-            android:paddingEnd="96dp"
             app:elevation="1dp"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="scale"
             app:fabCradleMargin="0dp"
-            app:fabCradleVerticalOffset="0dp"
             app:fabCradleRoundedCornerRadius="1dp"
+            app:fabCradleVerticalOffset="0dp"
             app:hideOnScroll="true"
             app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
 
@@ -155,6 +163,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
+                android:background="?attr/colorUi"
+                android:paddingStart="0dp"
+                android:paddingEnd="80dp"
                 app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"
                 app:itemIconSize="@dimen/margin_wide"
                 app:itemIconTint="?attr/colorBottomNavItem"

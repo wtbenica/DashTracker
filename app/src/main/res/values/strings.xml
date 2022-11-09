@@ -17,6 +17,8 @@
 <resources>
     <string name="app_name">DashTracker</string>
 
+    <string name="location_service_desc">DashTracker mileage tracking active</string>
+
     <string name="frag_title_daily_list">Daily</string>
     <string name="frag_title_weekly_list">Weekly</string>
     <string name="frag_title_yearly_list">Yearly</string>
@@ -60,6 +62,7 @@
     <string name="content_desc_delete">Delete</string>
     <string name="content_desc_reset">Reset</string>
     <string name="content_desc_save">Save</string>
+    <string name="content_desc_start">Start</string>
     <string name="content_desc_fab_menu">Open menu</string>
     <string name="content_desc_incomplete_entry">Incomplete entry</string>
     <string name="content_desc_fab_menu_closed">Open add item menu</string>
@@ -85,7 +88,6 @@
     <string name="dialog_text_import">Please locate the ZIP file you would like to import. The imported data will overwrite any existing data.</string>
     <string name="dialog_notes_import"><b>If you have modified the CSV files:</b>\n\n<ul>
         <li>The CSV files must be put into a zip file in order to import.\n\n</li>
-        <li>The CSV files names must start with \'dash_tracker_entries_\' or \'dash_tracker_weeklies_\', as appropriate.\n\n</li>
         <li>Specific values are expected in the header row. If you\'ve changed any of the header row values, you must change them back. You can create a new export to find the appropriate values.</li></ul>
     </string>
     <string name="dialog_text_export">This will create a ZIP file containing a CSV-formatted backup of your data.</string>
@@ -106,6 +108,7 @@
     <string name="week_number">Week %d</string>
     <string name="date_range">%1$s - %2$s</string>
     <string name="mileage_fmt">%.1f</string>
+    <string name="odometer_fmt">%.0f</string>
 
     <string name="units_pay_rate">$/hr</string>
     <string name="units_avg_delivery">$/del</string>
@@ -124,11 +127,13 @@
     <string name="delete">Delete</string>
     <string name="reset">Reset</string>
     <string name="save">Save</string>
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
+    <string name="dont_ask">Don\'t ask again</string>
 
     <string name="confirm_delete">The information you\'ve entered will not be recoverable</string>
     <string name="confirm_reset">Any changes will be permanently lost</string>
     <string name="csv_generation_failed">CSV generation failed</string>
-
 
     <string name="confirm_dialog">Confirm %s</string>
     <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>
@@ -154,4 +159,114 @@
     <string name="chart_title_avg_per_delivery">Average per delivery</string>
     <string name="chart_title_avg_dels_per_hour">Average deliveries per hour</string>
     <string name="chart_title_avg_per_hour">Average per hour</string>
+    <string name="lbl_tracked_mileage">Tracked Mileage</string>
+
+    <string-array name="list_whats_new_mileage_tracking">
+        <item>Spend less time entering mileage information</item>
+        <item>Get a real-time estimate of your expenses while you\'re dashing</item>
+        <item>We do not sell or share your location data, nor can we access it ourselves</item>
+    </string-array>
+
+    <string name="dialog_location_permission">DashTracker needs permission to access your location
+        and physical activity (on foot, in car, still or moving).
+
+        \n\nDashTracker will only access your location and physical activity while mileage tracking
+        is active.
+    </string>
+
+    <string name="dialog_bg_location_text">DashTracker needs permission to access your location
+        while it is running in the background. Without this permission, DashTracker cannot
+        provide accurate mileage tracking.</string>
+
+    <string name="dialog_notification_permission">You can have DashTracker show a notification when
+        mileage tracking is active while the app is running in the background.
+    </string>
+
+    <string name="dialog_battery_permission">Android\'s battery optimizer may interfere with
+        DashTracker\'s mileage tracking, especially if the battery is low. In order for mileage
+        tracking to work as expected, it is recommended that you allow DashTracker unrestricted
+        background battery use.
+    </string>
+
+    <string name="reenable_battery_permission_1">To reenable battery optimization, press\ </string>
+    <string name="reenable_battery_permission_2_ital">OK</string>
+    <string name="reenable_battery_permission_3">, which will open Android\'s DashTracker settings. Select\ </string>
+    <string name="reenable_battery_permission_4_ital">Battery</string>
+    <string name="reenable_battery_permission_5">\ then\ </string>
+    <string name="reenable_battery_permission_6_ital">Optimized</string>
+    <string name="reenable_battery_permission_7">, then return to DashTracker.</string>
+
+
+    <string name="action_menu_new_item">New Item</string>
+    <string name="action_add_dash">Add Dash</string>
+    <string name="action_add_weekly">Add Weekly Adjustment</string>
+    <string name="action_add_expense">Add Expense</string>
+    <string name="cont_desc_pause_mileage_tracking">Pause Mileage Tracking</string>
+    <string name="cont_desc_resume_mileage_tracking">Resume Mileage Tracking</string>
+    <string name="whats_new">Welcome to DashTracker!
+        \n\nThis update brings automatic mileage tracking to the app. Starting a new dash has been
+        simplified—when you\'re ready to start your dash, just press the start button, enter your
+        starting mileage and DashTracker takes care of the rest for you. When your dash is over,
+        verify the mileage is correct and enter your earnings.
+        \n\nAutomatic mileage tracking requires some permissions to work, so if you\'d like to take
+        advantage of its benefits, select "Enable" below. If you\'d prefer not to use automatic
+        mileage tracking, select "Decline," and you can continue to enter start and end odometer
+        values manually. You can always switch at any time by going to settings.</string>
+    <string name="enable">Enable</string>
+    <string name="decline">Decline</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="route_welcome">route_welcome</string>
+    <string name="route_whats_new">route_whats_new</string>
+    <string name="title_activity_get_permissions">GetPermissionsActivity</string>
+    <string name="route_location_permission">route_location_permission</string>
+    <string name="route_bg_location_permission">route_bg_location_permission</string>
+    <string name="route_notification_permission">route_notification_permission</string>
+    <string name="route_battery_permission">route_batter_permission</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <string name="prefs_enable_location">prefs_enable_location</string>
+    <string name="prefs_enable_notification">prefs_enable_notification</string>
+    <string name="prefs_enable_bg_battery">prefs_enable_bg_battery</string>
+
+    <string name="prefs_opt_out_location">prefs_opt_out_location</string>
+    <string name="prefs_opt_out_notification">prefs_opt_out_notification</string>
+    <string name="prefs_opt_out_battery_optimizer">prefs_opt_out_battery_optimizer</string>
+
+    <string name="prefs_ask_again_location">prefs_ask_again_location</string>
+    <string name="prefs_ask_again_bg_location">prefs_ask_again_bg_location</string>
+    <string name="prefs_ask_again_notification">prefs_ask_again_notification</string>
+    <string name="prefs_ask_again_battery_optimizer">prefs_ask_again_battery_optimizer</string>
+
+    <string name="prefs_show_onboard_intro">prefs_show_onboard_intro</string>
+    <string name="prefs_show_summary_screen">prefs_show_summary_screen</string>
+
+    <string name="prefs_show_base_pay_adjusts">prefs_show_base_pay_adjusts</string>
+
+    <string name="dialog_restart">DashTracker needs to restart for changes to take effect. Restart now?</string>
+    <string name="restart">Restart</string>
+    <string name="later">Later</string>
+    <string name="prefs_authentication_enabled">prefs_authentication_enabled</string>
+    <string name="prefs_authentication_enabled_confirmed">prefs_authentication_enabled_confirmed</string>
+    <string name="prefs_authentication_enabled_reverted">prefs_authentication_enabled_reverted</string>
+
+    <string name="show_weekly_bpa_desc">DashTracker can include fields for tracking any additions to your weekly pay. This would be useful if you live in a state with a weekly base pay adjustment or work in a market that has weekly incentives or extra pay.</string>
+    <string name="require_pin_desc">To protect your data, DashTracker can require a fingerprint or PIN to open.</string>
+    <string name="pref_title_show_weekly_adjustment_field">Show weekly adjustment field</string>
+    <string name="pref_title_require_authentication">Require authentication to open</string>
+
 </resources>

@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.dialog_confirm
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -30,7 +31,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirm2ButtonBinding
 import com.wtb.dashTracker.databinding.DialogFragConfirm3ButtonBinding
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
-import com.wtb.dashTracker.views.FullWidthDialogFragment
+import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.parcelize.Parcelize
 
 
@@ -39,7 +40,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
     @StringRes
     var text: Int? = null
     private lateinit var requestKey: String
-    private var confirmId: Int? = null
+    private var confirmId: Long? = null
     private var message: String? = null
 
     @StringRes
@@ -59,22 +60,47 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
         arguments?.apply {
             fun getIntNotZero(key: String): Int? = getInt(key).let {
-                if (it != 0)
+                if (it != 0) {
                     it
-                else
+                } else {
                     null
+                }
+            }
+
+            fun getLongNotZero(key: String): Long? = getLong(key).let {
+                if (it != 0L) {
+                    it
+                } else {
+                    null
+                }
             }
 
             text = getIntNotZero(ARG_TEXT)
             getString(ARG_REQ_KEY)?.let { requestKey = it }
-            confirmId = getIntNotZero(ARG_CONFIRM_ID)
+            confirmId = getLongNotZero(ARG_CONFIRM_ID)
             getString(ARG_MESSAGE)?.let { message = it }
             posButton = getIntNotZero(ARG_POS_TEXT) ?: R.string.yes
-            posAction = getParcelable<LambdaWrapper?>(ARG_POS_ACTION)?.action
+            posAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getParcelable(ARG_POS_ACTION, LambdaWrapper::class.java)?.action
+            } else {
+                @Suppress("DEPRECATION")
+                getParcelable<LambdaWrapper?>(ARG_POS_ACTION)?.action
+            }
+
             negButton = getIntNotZero(ARG_NEG_TEXT) ?: R.string.cancel
-            negAction = getParcelable<LambdaWrapper?>(ARG_NEG_ACTION)?.action
+            negAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getParcelable(ARG_NEG_ACTION, LambdaWrapper::class.java)?.action
+            } else {
+                @Suppress("DEPRECATION")
+                getParcelable<LambdaWrapper?>(ARG_NEG_ACTION)?.action
+            }
             posButton2 = getIntNotZero(ARG_POS_TEXT_2)
-            posAction2 = getParcelable<LambdaWrapper?>(ARG_POS_ACTION_2)?.action
+            posAction2 = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getParcelable(ARG_POS_ACTION_2, LambdaWrapper::class.java)?.action
+            } else {
+                @Suppress("DEPRECATION")
+                getParcelable<LambdaWrapper?>(ARG_POS_ACTION_2)?.action
+            }
         }
     }
 
@@ -99,7 +125,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             if (negButton != null) {
                 val mNegAction = negAction ?: {
-                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_CONFIRM to false)
+                    )
                 }
 
                 binding.noButton.apply {
@@ -117,9 +146,12 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
             val mPosAction = posAction ?: {
                 val bundlePairs = bundleOf()
                 bundlePairs.putBoolean(ARG_CONFIRM, true)
-                confirmId?.let { bundlePairs.putInt(ARG_EXTRA, it) }
+                confirmId?.let { bundlePairs.putLong(ARG_EXTRA, it) }
                 if (confirmId == null) {
-                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_CONFIRM to true)
+                    )
                 } else {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
@@ -147,7 +179,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             if (negButton != null) {
                 val mNegAction = negAction ?: {
-                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to false))
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_CONFIRM to false)
+                    )
                 }
 
                 binding.noButton.apply {
@@ -164,7 +199,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
 
             val mPosAction = posAction ?: {
                 if (confirmId == null) {
-                    parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_CONFIRM to true)
+                    )
                 } else {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
@@ -191,7 +229,10 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
                         it()
 
                         if (confirmId == null) {
-                            parentFragmentManager.setFragmentResult(requestKey, bundleOf(ARG_CONFIRM to true))
+                            parentFragmentManager.setFragmentResult(
+                                requestKey,
+                                bundleOf(ARG_CONFIRM to true)
+                            )
                         } else {
                             parentFragmentManager.setFragmentResult(
                                 requestKey,
@@ -207,8 +248,8 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
     }
 
     companion object {
-        const val ARG_CONFIRM = "confirm"
-        const val ARG_EXTRA = "extra"
+        const val ARG_CONFIRM: String = "confirm"
+        const val ARG_EXTRA: String = "extra"
         private const val ARG_TEXT = "dialog_text"
         private const val ARG_REQ_KEY = "request_key"
         private const val ARG_CONFIRM_ID = "confirm_id"
@@ -223,20 +264,20 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
         fun newInstance(
             @StringRes text: Int?,
             requestKey: String,
-            confirmId: Int? = null,
-            message: String? = null,
+            confirmId: Long? = null,
+            title: String? = null,
             @StringRes posButton: Int = R.string.yes,
             posAction: LambdaWrapper? = null,
             @StringRes negButton: Int? = null,
             negAction: (LambdaWrapper)? = null,
             @StringRes posButton2: Int? = null,
             posAction2: (LambdaWrapper)? = null,
-        ) = ConfirmationDialog().apply {
+        ): ConfirmationDialog = ConfirmationDialog().apply {
             arguments = Bundle().apply {
                 text?.let { putInt(ARG_TEXT, it) }
                 putString(ARG_REQ_KEY, requestKey)
-                confirmId?.let { putInt(ARG_CONFIRM_ID, it) }
-                putString(ARG_MESSAGE, message)
+                confirmId?.let { putLong(ARG_CONFIRM_ID, it) }
+                putString(ARG_MESSAGE, title)
                 putInt(ARG_POS_TEXT, posButton)
                 putParcelable(ARG_POS_ACTION, posAction)
                 negButton?.let { putInt(ARG_NEG_TEXT, it) }
@@ -254,15 +295,16 @@ data class LambdaWrapper(val action: () -> Unit) : Parcelable
 enum class ConfirmType(val key: String) {
     DELETE("confirmDelete"),
     RESET("confirmReset"),
-    SAVE("confirmSave")
+    SAVE("confirmSave"),
+    RESTART("confirmRestart")
 }
 
 class ConfirmDeleteDialog {
     companion object {
         fun newInstance(
-            confirmId: Int? = null,
+            confirmId: Long? = null,
             @StringRes text: Int? = null,
-        ) = ConfirmationDialog.newInstance(
+        ): ConfirmationDialog = ConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_delete,
             requestKey = ConfirmType.DELETE.key,
             confirmId = confirmId,
@@ -275,7 +317,7 @@ class ConfirmResetDialog {
     companion object {
         fun newInstance(
             @StringRes text: Int? = null,
-        ) = ConfirmationDialog.newInstance(
+        ): ConfirmationDialog = ConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_reset,
             requestKey = ConfirmType.RESET.key,
             posButton = R.string.reset
@@ -285,7 +327,7 @@ class ConfirmResetDialog {
 
 class ConfirmSaveDialog {
     companion object {
-        fun newInstance(@StringRes text: Int? = null) =
+        fun newInstance(@StringRes text: Int? = null): ConfirmationDialog =
             ConfirmationDialog.newInstance(
                 text = text,
                 requestKey = ConfirmType.SAVE.key,

@@ -33,8 +33,8 @@ val Any.TAG: String
 @ExperimentalCoroutinesApi
 class ChartsViewModel : ViewModel() {
     companion object {
-        const val MIN_NUM_WEEKS = 8
-        const val MIN_NUM_DAYS_HOURLY_TREND = 7
+        const val MIN_NUM_WEEKS: Int = 8
+        const val MIN_NUM_DAYS_HOURLY_TREND: Int = 7
     }
 
     private val repository: Repository = Repository.get()

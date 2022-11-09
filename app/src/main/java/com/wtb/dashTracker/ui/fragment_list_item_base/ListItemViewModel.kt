@@ -26,10 +26,10 @@ import kotlinx.coroutines.flow.*
 
 @ExperimentalCoroutinesApi
 abstract class ListItemViewModel<T : DataModel> : ViewModel() {
-    protected val repository = Repository.get()
+    protected val repository: Repository = Repository.get()
 
     private val _id = MutableStateFlow(AUTO_ID)
-    protected val id: StateFlow<Int>
+    protected val id: StateFlow<Long>
         get() = _id
 
     internal open val item: StateFlow<T?> = id.flatMapLatest { id ->
@@ -41,19 +41,27 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         initialValue = null
     )
 
-    abstract fun getItemFlowById(id: Int): Flow<T?>
+    abstract fun getItemFlowById(id: Long): Flow<T?>
 
-    fun loadDataModel(id: Int?) {
+    fun loadDataModel(id: Long?) {
         _id.value = id ?: AUTO_ID
     }
 
-    fun insert(dataModel: DataModel) = repository.saveModel(dataModel)
+    fun insert(dataModel: DataModel): Unit = repository.saveModel(dataModel)
 
-    fun upsert(dataModel: DataModel, loadItem: Boolean = true) {
+    suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)
+
+    fun upsert(dataModel: DataModel) {
+        CoroutineScope(Dispatchers.Default).launch {
+            repository.upsertModel(dataModel)
+        }
+    }
+
+    fun upsert(dataModel: T, loadItem: Boolean = true) {
         CoroutineScope(Dispatchers.Default).launch {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {
-                _id.value = id.toInt()
+                _id.value = id
             }
         }
     }
@@ -62,12 +70,12 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         withContext(Dispatchers.Default) {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {
-                _id.value = id.toInt()
+                _id.value = id
             }
             id
         }
 
-    fun delete(dataModel: DataModel) = repository.deleteModel(dataModel)
+    fun delete(dataModel: DataModel): Unit = repository.deleteModel(dataModel)
 
     fun clearEntry() {
         _id.value = AUTO_ID

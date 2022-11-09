@@ -16,22 +16,23 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Splash screen theme -->
-    <style name="SplashScreen" parent="Theme.SplashScreen">
+    <style name="SplashScreenBase" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@mipmap/icon_c_foreground</item>
         <item name="windowSplashScreenBackground">?attr/colorOnSecondary</item>
         <item name="postSplashScreenTheme">@style/Base.DasherCompanion</item>
+    </style>
+
+    <style name="SplashScreen" parent="SplashScreenBase">
         <item name="colorOnSecondary">@color/on_brick</item>
-        <item name="colorPrimary">@color/regular</item>
-        <item name="colorSecondaryFaded">@color/brick_faded</item>
     </style>
 
     <!-- Licenses Activities Theme -->
     <style name="LicensesActivitiesBase" parent="Theme.Material3.DayNight">
         <item name="actionBarStyle">@style/ActionBarStyle</item>
-        <item name="colorUi">@color/dark</item>
+        <item name="colorUi">@color/regular</item>
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
-        <item name="android:fontFamily">@font/lalezar</item>
-        <item name="titleFontFamily">@font/lalezar</item>
+        <item name="android:fontFamily">@font/oswald</item>
+        <item name="titleFontFamily">@font/oswald</item>
         <item name="android:statusBarColor">?attr/colorUi</item>
     </style>
 
@@ -103,6 +104,10 @@
 
         <!-- dialog fragment -->
         <item name="dialogFragCornerRadius">?attr/defaultCornerRadius</item>
+
+        <!-- Window transitions -->
+        <item name="android:windowEnterTransition">@android:transition/slide_right</item>
+        <item name="android:windowExitTransition">@android:transition/slide_left</item>
     </style>
 
     <style name="Base.DasherCompanion">
@@ -146,14 +151,21 @@
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
+        <!-- active_dash_bar -->
+        <item name="colorActiveDashBarStroke">?attr/colorPrimaryDark</item>
+        <item name="colorActiveDashBarBg">?attr/colorPrimaryFaded</item>
+        <item name="colorActiveDashBarDetailsStroke">?attr/colorPrimary</item>
+        <item name="colorActiveDashBarDetailsBg">?attr/colorSurface</item>
+
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorSecondaryDark</item>
+        <item name="colorTabIndicator">?attr/colorSecondary</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorGroupButton">?attr/colorSecondary</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
         <item name="colorGroupStroke">?attr/colorSecondary</item>
         <item name="colorOptionsMenu">?attr/colorSecondaryFaded</item>
-        <item name="colorTabLayoutBg">?attr/colorPrimaryFaded</item>
+        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
+        <item name="colorOptionsButton">?attr/colorTabIndicator</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>

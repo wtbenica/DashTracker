@@ -17,6 +17,8 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly
 
 import android.content.Context
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,22 +28,28 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
-import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemBinding
-import com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemSingleLineBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
@@ -54,8 +62,16 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        @Suppress("DEPRECATION")
         val date: LocalDate =
-            arguments?.getSerializable(ARG_DATE_ID) as LocalDate? ?: LocalDate.now().endOfWeek
+            (if (SDK_INT >= TIRAMISU)
+                arguments?.getSerializable(
+                    ARG_DATE_ID,
+                    LocalDate::class.java
+                )
+            else
+                arguments?.getSerializable(ARG_DATE_ID) as LocalDate?)
+                ?: LocalDate.now().endOfWeek
         // it is an insert here instead of upsert bc don't want to replace one if it already exists
         viewModel.insert(Weekly(date))
         viewModel.loadDate(date)
@@ -70,9 +86,8 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         }
     }
 
-    override fun getViewBinding(inflater: LayoutInflater) =
+    override fun getViewBinding(inflater: LayoutInflater): DialogFragWeeklyBinding =
         DialogFragWeeklyBinding.inflate(layoutInflater).apply {
-
             val adapter = WeekSpinnerAdapter(
                 requireContext(),
                 R.layout.dialog_frag_weekly_spinner_item_single_line,
@@ -102,6 +117,11 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
                         // Do Nothing
                     }
                 }
+
+            fragAdjustAmountRow.setVisibleIfTrue(
+                PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    .getBoolean(requireContext().PREF_SHOW_BASE_PAY_ADJUSTS, true)
+            )
 
             fragAdjustAmount.apply {
                 doOnTextChanged { text: CharSequence?, start, before, count ->
@@ -206,7 +226,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
         fun newInstance(
             date: LocalDate = LocalDate.now().endOfWeek.minusDays(7)
-        ) = WeeklyDialog().apply {
+        ): WeeklyDialog = WeeklyDialog().apply {
             arguments = Bundle().apply {
                 putSerializable(ARG_DATE_ID, date)
             }
@@ -234,7 +254,10 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             var cv = convertView
             if (cv == null) {
-                val binding = DialogFragWeeklySpinnerItemSingleLineBinding.inflate(layoutInflater)
+                val binding =
+                    com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemSingleLineBinding.inflate(
+                        layoutInflater
+                    )
                 cv = binding.root
                 viewHolder = WeekSpinnerViewHolder(
                     null,
@@ -257,7 +280,10 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         ): View {
             var cv = convertView
             if (cv == null) {
-                val binding = DialogFragWeeklySpinnerItemBinding.inflate(layoutInflater)
+                val binding =
+                    com.wtb.dashTracker.databinding.DialogFragWeeklySpinnerItemBinding.inflate(
+                        layoutInflater
+                    )
                 cv = binding.root
                 viewHolder = WeekSpinnerViewHolder(
                     binding.dialogAdjustWeekSpinnerItemWeek,

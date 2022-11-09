@@ -22,6 +22,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.res.ResourcesCompat
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.components.AxisBase
@@ -45,6 +48,9 @@ import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class ByDayOfWeekBarChart(
     context: Context,
@@ -57,7 +63,7 @@ class ByDayOfWeekBarChart(
     R.string.lbl_hourly_by_day_of_week,
     R.string.frag_title_income
 ) {
-    val binding =
+    val binding: ChartByDayOfWeekBinding =
         ChartByDayOfWeekBinding.inflate(LayoutInflater.from(context), this)
 
     private var barChartHourlyByDay: HorizontalBarChart =
@@ -254,6 +260,9 @@ class ByDayOfWeekBarChart(
 }
 
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 data class DailyStats(
     val day: DayOfWeek? = null,
@@ -266,10 +275,10 @@ data class DailyStats(
     val amNumShifts: Int? = null,
     val pmNumShifts: Int? = null
 ) {
-    val amHourly = safeDiv(amEarned, amHours)
-    val pmHourly = safeDiv(pmEarned, pmHours)
-    val amAvgDel = safeDiv(amEarned, amDels)
-    val pmAvgDel = safeDiv(pmEarned, pmDels)
-    val amDelHr = safeDiv(amDels, amHours)
-    val pmDelHr = safeDiv(pmDels, pmHours)
+    val amHourly: Float? = safeDiv(amEarned, amHours)
+    val pmHourly: Float? = safeDiv(pmEarned, pmHours)
+    val amAvgDel: Float? = safeDiv(amEarned, amDels)
+    val pmAvgDel: Float? = safeDiv(pmEarned, pmDels)
+    val amDelHr: Float? = safeDiv(amDels, amHours)
+    val pmDelHr: Float? = safeDiv(pmDels, pmHours)
 }

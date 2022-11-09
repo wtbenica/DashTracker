@@ -17,9 +17,9 @@
 package com.wtb.dashTracker.database.models
 
 import androidx.room.*
-import com.wtb.csvutil.CSVConvertible
-import com.wtb.csvutil.CSVConvertible.Column
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
+import dev.benica.csvutil.CSVConvertible
+import dev.benica.csvutil.CSVConvertible.Column
 import java.time.LocalDate
 import kotlin.reflect.KProperty1
 
@@ -37,15 +37,15 @@ import kotlin.reflect.KProperty1
     ]
 )
 data class Expense(
-    @PrimaryKey(autoGenerate = true) val expenseId: Int = AUTO_ID,
+    @PrimaryKey(autoGenerate = true) val expenseId: Long = AUTO_ID,
     var date: LocalDate = LocalDate.now(),
     var amount: Float? = null,
-    var purpose: Int = Purpose.GAS.id,
+    var purpose: Long = Purpose.GAS.id,
     var pricePerGal: Float? = null,
     @ColumnInfo(defaultValue = "0")
     var isNew: Boolean = false
 ) : DataModel() {
-    override val id: Int
+    override val id: Long
         get() = expenseId
 
     val gallons: Float?
@@ -57,7 +57,8 @@ data class Expense(
             AMOUNT("Amount", Expense::amount),
             PURPOSE("Purpose", Expense::purpose),
             PRICE_PER_GAL("Price Per Gallon", Expense::pricePerGal),
-            IS_NEW("isNew", Expense::isNew)
+            IS_NEW("isNew", Expense::isNew),
+            LAST_UPDATED("Last Updated", Expense::lastUpdated)
         }
 
         override val saveFileName: String
@@ -70,10 +71,12 @@ data class Expense(
             Expense(
                 date = LocalDate.parse(row[Columns.DATE.headerName]),
                 amount = row[Columns.AMOUNT.headerName]?.toFloatOrNull(),
-                purpose = row[Columns.PURPOSE.headerName]?.toInt() ?: Purpose.GAS.id,
+                purpose = row[Columns.PURPOSE.headerName]?.toLong() ?: Purpose.GAS.id,
                 pricePerGal = row[Columns.PRICE_PER_GAL.headerName]?.toFloatOrNull(),
                 isNew = row[Columns.IS_NEW.headerName]?.toBoolean() ?: false
-            )
+            ).apply {
+                lastUpdated = LocalDate.parse(row[Columns.LAST_UPDATED.headerName])
+            }
     }
 }
 
@@ -83,10 +86,10 @@ data class Expense(
     ]
 )
 data class ExpensePurpose(
-    @PrimaryKey(autoGenerate = true) val purposeId: Int = AUTO_ID,
+    @PrimaryKey(autoGenerate = true) val purposeId: Long = AUTO_ID,
     var name: String? = null
 ) : DataModel() {
-    override val id: Int
+    override val id: Long
         get() = purposeId
 
     override fun toString(): String = name ?: ""
@@ -100,38 +103,32 @@ data class ExpensePurpose(
             val getValue: KProperty1<ExpensePurpose, *>
         ) {
             ID("Purpose Id", ExpensePurpose::purposeId),
-            NAME("Name", ExpensePurpose::name)
+            NAME("Name", ExpensePurpose::name),
+            LAST_UPDATED("Last Updated", ExpensePurpose::lastUpdated)
         }
 
-        override fun fromCSV(row: Map<String, String>): ExpensePurpose =
-            ExpensePurpose(
-                purposeId = row[Columns.ID.headerName]?.toInt() ?: AUTO_ID,
+        override fun fromCSV(row: Map<String, String>): ExpensePurpose {
+            val idColumnValue = row[Columns.ID.headerName]
+            val purposeId = idColumnValue?.toLongOrNull()
+                ?: throw IllegalStateException("Trip column must be filled with a valid tripId, not: $idColumnValue")
+            return ExpensePurpose(
+                purposeId = purposeId,
                 name = row[Columns.NAME.headerName]
-            )
+            ).apply {
+                lastUpdated = LocalDate.parse(row[Columns.LAST_UPDATED.headerName])
+            }
+        }
 
         override fun getColumns(): Array<Column<ExpensePurpose>> =
             Columns.values().map { Column(it.headerName, it.getValue) }.toTypedArray()
     }
 }
 
-enum class Purpose(val id: Int, val purposeName: String) {
+enum class Purpose(val id: Long, val purposeName: String) {
     GAS(1, "Gas"),
     LOAN(2, "Car Payment"),
     INSURANCE(3, "Insurance"),
     OIL(4, "Oil Change")
-}
-
-@Entity
-data class StandardMileageDeduction(
-    @PrimaryKey val year: Int,
-    var amount: Float
-) : DataModel() {
-    override val id: Int
-        get() = year
-
-    companion object {
-        val STANDARD_DEDUCTIONS = mapOf(2021 to 0.56f, 2022 to 0.585f)
-    }
 }
 
 data class FullExpense(
@@ -141,7 +138,7 @@ data class FullExpense(
     @Relation(parentColumn = "purpose", entityColumn = "purposeId")
     val purpose: ExpensePurpose
 ) : ListItemType {
-    val id: Int
+    val id: Long
         get() = expense.expenseId
 
     val isEmpty: Boolean

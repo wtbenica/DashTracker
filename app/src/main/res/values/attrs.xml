@@ -58,6 +58,12 @@
     <attr name="textSizeBottomNavActive" format="reference" />
     <attr name="textSizeBottomNavInactive" format="reference" />
 
+    <!-- active_dash_bar   -->
+    <attr name="colorActiveDashBarStroke" format="reference" />
+    <attr name="colorActiveDashBarBg" format="reference" />
+    <attr name="colorActiveDashBarDetailsStroke" format="reference" />
+    <attr name="colorActiveDashBarDetailsBg" format="reference" />
+
     <!-- fragment_income -->
     <attr name="colorTabIndicator" format="reference" />
     <attr name="colorTabText" format="reference" />
@@ -65,6 +71,7 @@
     <attr name="colorGroupButtonDisabled" format="reference" />
     <attr name="colorGroupStroke" format="reference" />
     <attr name="colorOptionsMenu" format="reference" />
+    <attr name="colorOptionsButton" format="reference" />
     <attr name="colorGroupButtonText" format="reference" />
     <attr name="colorGroupButtonTextDefault" format="reference|color" />
     <attr name="colorGroupButtonTextChecked" format="reference|color" />

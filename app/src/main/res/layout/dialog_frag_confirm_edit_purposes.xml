@@ -16,9 +16,9 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:paddingHorizontal="@dimen/margin_default"
     tools:keep="@layout/dialog_frag_confirm_edit_purposes">
 
@@ -68,53 +68,53 @@
 
                         <com.google.android.material.chip.Chip
                             style="@style/ChipStyle"
-                            android:text="@string/dummy_text_label"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:text="@string/dummy_text_label" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/ChipStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/dummy_text_label"
                             tools:chipIconVisible="true"
-                            tools:closeIconVisible="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            tools:closeIconVisible="true" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/ChipStyle"
-                            android:text="@string/dummy_text_label"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:text="@string/dummy_text_label" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/ChipStyle"
-                            android:text="@string/dummy_text_label"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:text="@string/dummy_text_label" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/ChipStyle"
-                            android:text="@string/dummy_text_label"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:text="@string/dummy_text_label" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/ChipStyle"
-                            android:text="@string/dummy_text_label"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:text="@string/dummy_text_label" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/ChipStyle"
-                            android:text="@string/dummy_text_label"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:text="@string/dummy_text_label" />
 
                         <com.google.android.material.chip.Chip
                             style="@style/ChipStyle"
-                            android:text="@string/dummy_text_label"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:text="@string/dummy_text_label" />
 
                     </com.google.android.material.chip.ChipGroup>
 
@@ -130,12 +130,8 @@
 
                     <Button
                         android:id="@+id/no_button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
+                        style="@style/ConfirmDialogButton.Default"
                         android:text="@string/lbl_done"
-                        android:textSize="@dimen/text_size_large"
-                        android:textColor="?attr/colorDialogText"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/divider_hor" />
