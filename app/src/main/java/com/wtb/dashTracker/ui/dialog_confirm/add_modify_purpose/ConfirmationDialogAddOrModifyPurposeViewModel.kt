@@ -22,7 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @ExperimentalCoroutinesApi
-class ConfirmationDialogAddOrModifyPurposeViewModel: ListItemViewModel<ExpensePurpose>() {
-    override fun getItemFlowById(id: Int): Flow<ExpensePurpose?> = repository.getExpensePurposeFlowById(id)
-
+class ConfirmationDialogAddOrModifyPurposeViewModel : ListItemViewModel<ExpensePurpose>() {
+    override fun getItemFlowById(id: Long): Flow<ExpensePurpose?> =
+        repository.getExpensePurposeFlowById(id)
 }

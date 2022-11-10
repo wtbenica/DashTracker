@@ -32,8 +32,7 @@
     <style name="SummaryBar">
         <item name="android:background">?attr/colorToolbar</item>
         <item name="android:elevation">1dp</item>
-        <item name="android:paddingVertical">@dimen/margin_half</item>
-        <item name="android:paddingHorizontal">@dimen/margin_narrow</item>
+        <item name="android:padding">@dimen/margin_half</item>
     </style>
 
     <style name="SummaryBarItem" parent="Widget.MaterialComponents.TextView">

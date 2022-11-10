@@ -15,10 +15,6 @@
   ~ limitations under the License.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <stroke
-        android:width="@dimen/bg_edit_text_border"
-        android:color="?attr/colorDialogItemOutline" />
-    <corners android:radius="24dp" />
-    <solid android:color="?attr/colorDialogItemDisabled" />
-</shape>
+<resources>
+    <string name="uninit_notif_data_exception">Location Tracker Service needs to have its NotificationData set before use</string>
+</resources>

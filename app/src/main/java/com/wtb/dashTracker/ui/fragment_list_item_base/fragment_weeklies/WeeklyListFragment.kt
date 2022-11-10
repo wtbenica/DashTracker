@@ -30,6 +30,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
@@ -229,6 +230,8 @@ class WeeklyListFragment : ListItemFragment() {
                     }
 
                 }
+
+                binding.listItemBtnEdit.isVisible = showBPAs
 
                 binding.listItemTitle.text =
                     getStringOrElse(

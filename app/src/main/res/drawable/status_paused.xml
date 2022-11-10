@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +14,10 @@
   ~ limitations under the License.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <stroke
-        android:width="@dimen/bg_edit_text_border"
-        android:color="?attr/colorDialogItemOutline" />
-    <corners android:radius="24dp" />
-    <solid android:color="?attr/colorDialogItemDisabled" />
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#E0E020" />
+    <size
+        android:width="@dimen/margin_default"
+        android:height="@dimen/margin_default" />
 </shape>
