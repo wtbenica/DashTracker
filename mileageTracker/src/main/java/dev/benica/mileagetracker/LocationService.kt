@@ -200,9 +200,7 @@ class LocationService : Service() {
         NotificationUtils(
             context = this,
             nd = nd ?: throw UninitializedPropertyAccessException(
-                getString(
-                    R.string.uninit_notif_data_exception
-                )
+                getString(R.string.uninit_notif_data_exception)
             )
         )
     }

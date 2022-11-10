@@ -31,7 +31,7 @@ import java.time.LocalDate
 
 @ExperimentalCoroutinesApi
 class WeeklyViewModel : ListItemViewModel<Weekly>() {
-    override fun getItemFlowById(id: Int): Flow<Weekly?> =
+    override fun getItemFlowById(id: Long): Flow<Weekly?> =
         repository.getBasePayAdjustFlowById(id)
 
     private val _date = MutableStateFlow(LocalDate.now().endOfWeek.minusDays(7))

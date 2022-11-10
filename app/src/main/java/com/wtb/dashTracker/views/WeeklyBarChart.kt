@@ -117,15 +117,13 @@ class WeeklyXAxisRenderer(
         if (!mIsWeekly) {
             super.computeAxisValues(min, max)
         } else {
-            var newMin: Float
-            newMin = try {
+            val newMin: Float = try {
                 LocalDate.ofEpochDay(max(min, 7f).toLong()).minusDays(7L).endOfWeek.toEpochDay()
                     .toFloat()
             } catch (e: DateTimeException) {
                 0f
             }
-            var newMax: Float
-            newMax = try {
+            val newMax: Float = try {
                 LocalDate.ofEpochDay(max.toLong()).endOfWeek.toEpochDay().toFloat()
             } catch (e: DateTimeException) {
                 0f
