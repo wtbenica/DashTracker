@@ -25,27 +25,21 @@ import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.chip.Chip
-import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.FullExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmEditPurposesBinding
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_ID
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseViewModel
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
+// TODO: selecting a purpose to edit and then cancelling deletes the purpose
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
@@ -70,16 +64,16 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
             dismiss()
         }
 
-        setFragmentResultListener(RK_ADD_PURPOSE) { _, bundle ->
-            val result = bundle.getBoolean(ARG_CONFIRM)
-            bundle.getLong(ARG_PURPOSE_ID).let { id ->
-                if (result) {
-                    bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
-                        viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName))
-                    }
-                }
-            }
-        }
+//        setFragmentResultListener(REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE) { _, bundle ->
+//            val updatePurpose = bundle.getBoolean(ARG_UPDATE_PURPOSE)
+//            if (updatePurpose) {
+//                bundle.getLong(ARG_PURPOSE_ID, -1L).let { id ->
+//                    bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
+//                        viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName))
+//                    }
+//                }
+//            }
+//        }
 
         return binding.root
     }

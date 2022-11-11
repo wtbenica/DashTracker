@@ -85,8 +85,8 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.ARG_ENTRY_ID
-import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.ARG_RESULT
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.REQ_KEY_START_DASH_DIALOG
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.RESULT_START_DASH_CONFIRM_START
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
@@ -102,7 +102,9 @@ import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
 import dev.benica.csvutil.getConvertPackImport
 import dev.benica.mileagetracker.LocationService
+import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
+import dev.benica.mileagetracker.LocationService.ServiceState.TRACKING_ACTIVE
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -154,12 +156,14 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     // State
     private var activeDash: ActiveDash? = null
 
+    private val trackingEnabled: Boolean
+        get() = this.hasPermissions(*REQUIRED_PERMISSIONS)
+                && sharedPrefs.getBoolean(LOCATION_ENABLED, false)
+
     // Launchers
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (this.hasPermissions(*REQUIRED_PERMISSIONS)
-                && sharedPrefs.getBoolean(LOCATION_ENABLED, false)
-            ) {
+            if (trackingEnabled) {
                 resumeMileageTracking()
             }
         }
@@ -316,6 +320,13 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                     viewModel.activeEntry.collectLatest {
                         if (activeDash == null) activeDash = ActiveDash()
                         activeDash?.activeEntry = it
+                        activeDash?.updateUi(
+                            if (it != null) {
+                                TRACKING_ACTIVE
+                            } else {
+                                STOPPED
+                            }
+                        )
                     }
                 }
             }
@@ -335,15 +346,15 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         /**
-         * Checks [ARG_RESULT] and [ARG_ENTRY_ID]. It loads [ARG_ENTRY_ID] as the active entry. If
-         * [ARG_RESULT] is true, it passes [ARG_ENTRY_ID] to [ActiveDash.startTracking].
+         * Checks [RESULT_START_DASH_CONFIRM_START] and [ARG_ENTRY_ID]. It loads [ARG_ENTRY_ID] as the active entry. If
+         * [RESULT_START_DASH_CONFIRM_START] is true, it passes [ARG_ENTRY_ID] to [ActiveDash.startTracking].
          */
         fun setStartDashDialogResultListener() {
             supportFragmentManager.setFragmentResultListener(
                 REQ_KEY_START_DASH_DIALOG,
                 this
             ) { _, bundle ->
-                val result = bundle.getBoolean(ARG_RESULT)
+                val result = bundle.getBoolean(RESULT_START_DASH_CONFIRM_START)
                 val eid = bundle.getLong(ARG_ENTRY_ID)
 
                 viewModel.loadActiveEntry(eid)
@@ -688,6 +699,14 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
          * button and start/stop FAB.
          */
         fun initLocSvcObserver() {
+            lifecycleScope.launchWhenStarted {
+                locationService?.serviceState?.collectLatest { state ->
+//                    updateUi(state)
+                }
+            }
+        }
+
+        fun updateUi(state: ServiceState) {
             fun toggleFabToPlay() {
                 binding.fab.apply {
                     if (tag == R.drawable.anim_play_to_stop) {
@@ -710,15 +729,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 }
             }
 
-            lifecycleScope.launchWhenStarted {
-                locationService?.serviceState?.collectLatest { state ->
-                    binding.adb.updateServiceState(state)
+            binding.adb.updateServiceState(state)
 
-                    when (state) {
-                        STOPPED -> toggleFabToPlay()
-                        else -> toggleFabToStop()
-                    }
-                }
+            when (state) {
+                STOPPED -> toggleFabToPlay()
+                else -> toggleFabToStop()
             }
         }
 
@@ -730,6 +745,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
          */
         fun resumeOrStartNewTrip() {
             val id = activeEntryId
+
             if (id != null) {
                 startLocationService(id)
             } else {

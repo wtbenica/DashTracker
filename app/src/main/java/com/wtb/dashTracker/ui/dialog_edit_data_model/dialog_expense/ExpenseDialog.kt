@@ -32,30 +32,26 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.asLiveData
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.DialogFragExpenseBinding
 import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownFooterBinding
-import com.wtb.dashTracker.extensions.dtfDate
-import com.wtb.dashTracker.extensions.getStringOrElse
-import com.wtb.dashTracker.extensions.toDateOrNull
-import com.wtb.dashTracker.extensions.toFloatOrNull
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogEditPurposes
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.ARG_PURPOSE_NAME
-import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RK_ADD_PURPOSE
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RESULT_PURPOSE_ID
+import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RESULT_UPDATE_PURPOSE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
-import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.ARG_ENTRY_ID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -66,20 +62,28 @@ import java.time.LocalDate
 class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
     override var item: Expense? = null
+        set(value) {
+            field = value
+        }
+
     override val viewModel: ExpenseViewModel by viewModels()
     override lateinit var binding: DialogFragExpenseBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.expensePurposes.asLiveData().observe(viewLifecycleOwner) {
-            binding.fragExpensePurpose.adapter = PurposeAdapter(
-                requireContext(),
-                it?.toTypedArray() ?: arrayOf()
-            ).apply {
-                setDropDownViewResource(R.layout.dialog_frag_expense_purpose_spinner_item)
+        CoroutineScope(Dispatchers.Default).launch {
+            viewModel.expensePurposes.collectLatest {
+                (context as MainActivity?)?.runOnUiThread {
+                    binding.fragExpensePurpose.adapter = PurposeAdapter(
+                        requireContext(),
+                        it.toTypedArray()
+                    ).apply {
+                        setDropDownViewResource(R.layout.dialog_frag_expense_purpose_spinner_item)
+                    }
+                    updateUI()
+                }
             }
-            updateUI()
         }
     }
 
@@ -173,6 +177,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
         }
     }
 
+
     override fun saveValues() {
         item?.apply {
             date = binding.fragExpenseDate.text.toDateOrNull() ?: LocalDate.now()
@@ -197,32 +202,22 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     override fun setDialogListeners() {
         super.setDialogListeners()
 
-        setFragmentResultListener(RK_ADD_PURPOSE) { _, bundle ->
-            val result = bundle.getBoolean(ARG_CONFIRM)
-            bundle.getLong(ARG_ENTRY_ID).let { id ->
-                if (result) {
-                    bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
-                        viewModel.upsert(
-                            ExpensePurpose(
-                                purposeId = id,
-                                name = purposeName
-                            )
-                        )
-                        binding.fragExpensePurpose.apply {
-                            setSelection((adapter as PurposeAdapter).getPositionByName(purposeName))
+        setFragmentResultListener(REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE) { _, bundle ->
+            val updatePurpose = bundle.getBoolean(RESULT_UPDATE_PURPOSE)
+            if (updatePurpose) {
+                bundle.getLong(RESULT_PURPOSE_ID, -1L).let { id ->
+                    if (id != -1L) {
+                        item?.let {
+                            it.purpose = id
+                            viewModel.upsert(it)
                         }
                     }
-                } else {
-                    item?.purpose = id
                 }
-//                binding.fragExpensePurpose.hideDropdown()
             }
+            binding.fragExpensePurpose.hideDropdown()
         }
 
-        setFragmentResultListener(
-            REQUEST_KEY_DATE,
-        )
-        { _, bundle ->
+        setFragmentResultListener(REQUEST_KEY_DATE) { _, bundle ->
             val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
             val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
             val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
@@ -301,30 +296,32 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             return tempConvertView
         }
 
-        override fun getDropDownView(
-            position: Int, convertView: View?, parent: ViewGroup
-        ): View {
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+
             var tempConvertView: View?
 
             if (position == count - 1) {
                 val binding = DialogFragExpensePurposeDropdownFooterBinding.inflate(layoutInflater)
                 tempConvertView = binding.root
+
                 binding.addPurposeBtn.setOnClickListener {
                     CoroutineScope(Dispatchers.Default).launch {
                         val purposeId = viewModel.upsertAsync(ExpensePurpose())
                         val prevPurpose = item?.purpose
+
                         ConfirmationDialogAddOrModifyPurpose.newInstance(
                             purposeId = purposeId,
                             prevPurpose = prevPurpose,
                         ).show(parentFragmentManager, null)
                     }
-
                 }
+
                 binding.editPurposeBtn.setOnClickListener {
                     ConfirmationDialogEditPurposes().show(parentFragmentManager, null)
                 }
             } else {
                 tempConvertView = convertView
+
                 if (tempConvertView == null || tempConvertView.tag == null) {
                     val t: View =
                         layoutInflater.inflate(

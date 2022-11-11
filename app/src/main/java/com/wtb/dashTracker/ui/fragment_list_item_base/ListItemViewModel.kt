@@ -16,11 +16,13 @@
 
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.repository.Repository
+import com.wtb.dashTracker.ui.activity_main.TAG
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -33,6 +35,7 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         get() = _id
 
     internal open val item: StateFlow<T?> = id.flatMapLatest { id ->
+        Log.d(TAG, "New id incoming viewmodel: $id | ${this::class.simpleName}")
         val itemFlow = getItemFlowById(id)
         itemFlow
     }.stateIn(
@@ -44,6 +47,7 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
     abstract fun getItemFlowById(id: Long): Flow<T?>
 
     fun loadDataModel(id: Long?) {
+        Log.d(TAG, "loadDataModel $id")
         _id.value = id ?: AUTO_ID
     }
 
@@ -61,25 +65,21 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         CoroutineScope(Dispatchers.Default).launch {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {
+                Log.d(TAG, "upsert & load: $id")
                 _id.value = id
             }
         }
     }
 
-    suspend fun upsertAsync(dataModel: DataModel, loadItem: Boolean = true): Long =
+    suspend fun upsertAsync(dataModel: DataModel): Long =
         withContext(Dispatchers.Default) {
-            val id = repository.upsertModel(dataModel)
-            if (id != -1L && loadItem) {
-                _id.value = id
-            }
-            id
+            repository.upsertModel(dataModel)
         }
 
     fun delete(dataModel: DataModel): Unit = repository.deleteModel(dataModel)
 
     fun clearEntry() {
+        Log.d(TAG, "clearEntry")
         _id.value = AUTO_ID
     }
-
-    companion object
 }
