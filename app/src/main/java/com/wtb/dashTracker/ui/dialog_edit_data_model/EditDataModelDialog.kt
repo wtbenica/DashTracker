@@ -140,6 +140,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                 saveOnExit = false
 
                 // TODO: Is this necessary? Doesn't appear to get used anywhere
+                // It might have to do with trying to be more specific with notify data set changed
                 setFragmentResult(
                     REQUEST_KEY_ENTRY_DIALOG,
                     bundleOf(

@@ -96,7 +96,7 @@ class EntryListFragment : ListItemFragment() {
             val result = bundle.getBoolean(ARG_CONFIRM)
             val id = bundle.getLong(ARG_EXTRA)
             if (result) {
-                (activity as MainActivity).stopMileageTracking()
+                (activity as MainActivity).clearActiveEntry()
                 viewModel.deleteEntryById(id)
             }
         }

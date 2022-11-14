@@ -99,6 +99,7 @@ class LocationService : Service() {
         notificationText: (Location?) -> String,
         updateNotificationText: ((Location?) -> String)? = null
     ) {
+        Log.d(TAG, "initialize")
         this.nd = notificationData
         this.notificationChannel = notificationChannel
         this.getNotificationText = notificationText

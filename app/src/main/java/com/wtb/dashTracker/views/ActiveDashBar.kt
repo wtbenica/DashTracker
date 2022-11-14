@@ -18,6 +18,7 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.GridLayout
 import androidx.annotation.AttrRes
@@ -28,6 +29,7 @@ import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
+import com.wtb.dashTracker.ui.activity_main.TAG
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,6 +71,7 @@ class ActiveDashBar @JvmOverloads constructor(
     }
 
     fun updateEntry(fullEntry: FullEntry?, activeCpm: Float?) {
+        Log.d(TAG, "updateEntry")
         fullEntry?.let { it ->
             activeEntry = it
             binding.valMileage.text =

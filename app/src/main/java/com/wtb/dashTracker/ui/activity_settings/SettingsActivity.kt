@@ -128,6 +128,7 @@ class SettingsActivity : AuthenticatedActivity() {
 
         activityResult.apply {
             putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
+            putExtra(ACTIVITY_RESULT_LOCATION_ENABLED, mileageTrackingEnabledPref?.isChecked ?: false)
         }
 
         setResult(RESULT_OK, activityResult)
@@ -387,6 +388,9 @@ class SettingsActivity : AuthenticatedActivity() {
     companion object {
         internal const val ACTIVITY_RESULT_NEEDS_RESTART =
             "${BuildConfig.APPLICATION_ID}.result_needs_restart"
+
+        internal const val ACTIVITY_RESULT_LOCATION_ENABLED =
+            "${BuildConfig.APPLICATION_ID}.location_enabled"
 
         internal const val REQUEST_KEY_SETTINGS_ACTIVITY_RESULT =
             "${BuildConfig.APPLICATION_ID}.result_settings_fragment"
