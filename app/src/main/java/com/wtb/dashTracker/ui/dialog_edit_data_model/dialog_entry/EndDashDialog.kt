@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -36,7 +35,6 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEndDashBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
@@ -157,7 +155,6 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                     fragEndDashTrackedMileage.text = fullEntry?.distance.toString()
 
                     tempEntry.endTime?.let { et: LocalTime ->
-                        Log.d(TAG, "updateUi | endTime: ${et.format(dtfTime)}")
                         fragEndDashEndTime.text = et.format(dtfTime)
                         fragEndDashEndTime.tag = et
                     }
@@ -202,7 +199,6 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
     }
 
     override fun saveValues() {
-        Log.d(TAG, "saveValues")
         val currDate = binding.fragEndDashDate.text.toDateOrNull()
         val totalMileage =
             if (binding.fragEndDashStartMileage.text.isEmpty() && binding.fragEndDashEndMileage.text.isEmpty()) {
@@ -211,7 +207,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                 null
             }
         val endTime = binding.fragEndDashEndTime.tag as LocalTime?
-        Log.d(TAG, "saveValues | endTime: ${endTime?.format(dtfTime)}")
+
         val e = DashEntry(
             entryId = item?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
