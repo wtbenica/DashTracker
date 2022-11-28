@@ -20,7 +20,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +35,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.*
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
@@ -65,9 +63,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate ***XXX****")
         arguments?.getLong(ARG_ITEM_ID, -1L).let {
-            Log.d(TAG, "Loading id $it")
             if (it != null && it != -1L) {
                 viewModel.loadDataModel(it)
             }
@@ -96,9 +92,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.item.collectLatest {
-                    Log.d(
-                        TAG,
-                        "New item: ${it?.let { n -> n::class.simpleName } ?: this@EditDataModelDialog::class.simpleName} ${it?.id}")
                     item = it
                     updateUI()
                 }

@@ -47,7 +47,6 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
     abstract fun getItemFlowById(id: Long): Flow<T?>
 
     fun loadDataModel(id: Long?) {
-        Log.d(TAG, "loadDataModel $id")
         _id.value = id ?: AUTO_ID
     }
 
@@ -65,7 +64,6 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
         CoroutineScope(Dispatchers.Default).launch {
             val id = repository.upsertModel(dataModel)
             if (id != -1L && loadItem) {
-                Log.d(TAG, "upsert & load: $id")
                 _id.value = id
             }
         }
@@ -79,7 +77,6 @@ abstract class ListItemViewModel<T : DataModel> : ViewModel() {
     fun delete(dataModel: DataModel): Unit = repository.deleteModel(dataModel)
 
     fun clearEntry() {
-        Log.d(TAG, "clearEntry")
         _id.value = AUTO_ID
     }
 }

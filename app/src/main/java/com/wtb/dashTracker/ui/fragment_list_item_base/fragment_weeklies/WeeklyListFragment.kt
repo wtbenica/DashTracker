@@ -125,6 +125,13 @@ class WeeklyListFragment : ListItemFragment() {
             .registerOnSharedPreferenceChangeListener(sharedPrefsListener)
     }
 
+    override fun onPause() {
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .unregisterOnSharedPreferenceChangeListener(sharedPrefsListener)
+
+        super.onPause()
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private val sharedPrefsListener = OnSharedPreferenceChangeListener { sharedPrefs, key ->
         if (key == requireContext().PREF_SHOW_BASE_PAY_ADJUSTS) {

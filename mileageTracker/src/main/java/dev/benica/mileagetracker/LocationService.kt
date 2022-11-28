@@ -99,7 +99,6 @@ class LocationService : Service() {
         notificationText: (Location?) -> String,
         updateNotificationText: ((Location?) -> String)? = null
     ) {
-        Log.d(TAG, "initialize")
         this.nd = notificationData
         this.notificationChannel = notificationChannel
         this.getNotificationText = notificationText
@@ -257,8 +256,8 @@ class LocationService : Service() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
+    var oscCount = 0
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         intent?.let {
             if (it.getBooleanExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, false)) {
                 stop()
@@ -314,6 +313,8 @@ class LocationService : Service() {
         serviceScope.cancel()
         super.onDestroy()
     }
+
+    private var numBound = 0
 
     override fun onBind(intent: Intent): IBinder {
         stopForeground(STOP_FOREGROUND_REMOVE)
