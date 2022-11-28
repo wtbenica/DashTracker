@@ -166,10 +166,14 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
         ) { _, bundle ->
             val hour = bundle.getInt(TimePickerFragment.ARG_NEW_HOUR)
             val minute = bundle.getInt(TimePickerFragment.ARG_NEW_MINUTE)
+            val dialogTime = LocalTime.of(hour, minute)
+
             when (bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
                     binding.fragStartDashStartTime.text =
-                        LocalTime.of(hour, minute).format(dtfTime).toString()
+                        dialogTime.format(dtfTime).toString()
+                    binding.fragStartDashStartTime.tag =
+                        dialogTime
                 }
             }
         }

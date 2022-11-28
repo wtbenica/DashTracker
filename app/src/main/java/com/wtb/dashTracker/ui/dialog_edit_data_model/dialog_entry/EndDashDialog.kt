@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -35,6 +36,7 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEndDashBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
 import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
@@ -155,6 +157,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                     fragEndDashTrackedMileage.text = fullEntry?.distance.toString()
 
                     tempEntry.endTime?.let { et: LocalTime ->
+                        Log.d(TAG, "updateUi | endTime: ${et.format(dtfTime)}")
                         fragEndDashEndTime.text = et.format(dtfTime)
                         fragEndDashEndTime.tag = et
                     }
@@ -199,6 +202,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
     }
 
     override fun saveValues() {
+        Log.d(TAG, "saveValues")
         val currDate = binding.fragEndDashDate.text.toDateOrNull()
         val totalMileage =
             if (binding.fragEndDashStartMileage.text.isEmpty() && binding.fragEndDashEndMileage.text.isEmpty()) {
@@ -206,13 +210,15 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             } else {
                 null
             }
+        val endTime = binding.fragEndDashEndTime.tag as LocalTime?
+        Log.d(TAG, "saveValues | endTime: ${endTime?.format(dtfTime)}")
         val e = DashEntry(
             entryId = item?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
             endDate = (if (binding.fragEndDashCheckEndsNextDay.isChecked) currDate?.plusDays(1) else currDate)
                 ?: LocalDate.now(),
             startTime = binding.fragEndDashStartTime.tag as LocalTime?,
-            endTime = binding.fragEndDashEndTime.tag as LocalTime?,
+            endTime = endTime,
             startOdometer = binding.fragEndDashStartMileage.text.toFloatOrNull(),
             endOdometer = binding.fragEndDashEndMileage.text.toFloatOrNull(),
             totalMileage = totalMileage,
@@ -291,15 +297,18 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
         ) { _, bundle ->
             val hour = bundle.getInt(TimePickerFragment.ARG_NEW_HOUR)
             val minute = bundle.getInt(TimePickerFragment.ARG_NEW_MINUTE)
+            val dialogTime = LocalTime.of(hour, minute)
 
             when (bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
                     binding.fragEndDashStartTime.text =
-                        LocalTime.of(hour, minute).format(dtfTime).toString()
+                        dialogTime.format(dtfTime).toString()
+                    binding.fragEndDashStartTime.tag = dialogTime
                 }
                 R.id.frag_entry_end_time -> {
                     binding.fragEndDashEndTime.text =
-                        LocalTime.of(hour, minute).format(dtfTime).toString()
+                        dialogTime.format(dtfTime).toString()
+                    binding.fragEndDashEndTime.tag = dialogTime
                 }
             }
         }
