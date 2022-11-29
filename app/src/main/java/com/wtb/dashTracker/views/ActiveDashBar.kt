@@ -26,8 +26,7 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActiveDashBarBinding
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.getElapsedHours
+import com.wtb.dashTracker.ui.fragment_trends.getCurrencyString
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -84,4 +83,33 @@ class ActiveDashBar @JvmOverloads constructor(
 
     interface ActiveDashBarCallback
 }
+
+/**
+ * TODO
+ *
+ * @param seconds
+ * @return
+ */
+fun getElapsedHours(seconds: Long?): String =
+    if (seconds == null || seconds < 0) {
+        "-"
+    } else {
+        val mHours = seconds / 3600
+        val mMinutes = (seconds - 3600 * mHours) / 60
+
+        StringBuilder().run {
+            if (mHours > 0L) {
+                append("$mHours".format("%2d"))
+                append("h")
+            }
+            if (mMinutes > 0L) {
+                append("$mMinutes".format(" %2d"))
+                append("m")
+            }
+            if (mHours == 0L && mMinutes == 0L) {
+                append("<1m")
+            }
+            toString()
+        }
+    }
 
