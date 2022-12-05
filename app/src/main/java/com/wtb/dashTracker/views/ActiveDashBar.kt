@@ -24,10 +24,7 @@ import androidx.annotation.AttrRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActiveDashBarBinding
-import com.wtb.dashTracker.extensions.collapse
-import com.wtb.dashTracker.extensions.expand
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.getElapsedHours
+import com.wtb.dashTracker.extensions.*
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
 import dev.benica.mileagetracker.LocationService.ServiceState.TRACKING_ACTIVE
@@ -64,7 +61,13 @@ class ActiveDashBar @JvmOverloads constructor(
             TRACKING_ACTIVE -> {
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
-                    listOf(binding.activeBg, binding.lblMileage, binding.valMileage, binding.lblCost, binding.valCost).forEach {
+                    listOf(
+                        binding.activeBg,
+                        binding.lblMileage,
+                        binding.valMileage,
+                        binding.lblCost,
+                        binding.valCost
+                    ).forEach {
                         it.visibility = VISIBLE
                     }
                 }
@@ -72,7 +75,13 @@ class ActiveDashBar @JvmOverloads constructor(
             else -> {
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
-                    listOf(binding.activeBg, binding.lblMileage, binding.valMileage, binding.lblCost, binding.valCost).forEach {
+                    listOf(
+                        binding.activeBg,
+                        binding.lblMileage,
+                        binding.valMileage,
+                        binding.lblCost,
+                        binding.valCost
+                    ).forEach {
                         it.visibility = GONE
                     }
                 }

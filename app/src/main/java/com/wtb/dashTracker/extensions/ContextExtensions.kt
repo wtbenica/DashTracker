@@ -66,3 +66,13 @@ fun Context.getFloatString(value: Float?): String =
 
 fun Context.getDimen(@DimenRes res: Int): Float =
     resources.getDimension(res) / resources.displayMetrics.density
+
+fun Context.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
+    if (start == null && end == null)
+        ""
+    else
+        getString(
+            R.string.time_range,
+            start?.format(dtfTime) ?: "",
+            end?.format(dtfTime) ?: ""
+        )
