@@ -18,18 +18,18 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.GridLayout
 import androidx.annotation.AttrRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActiveDashBarBinding
-import com.wtb.dashTracker.extensions.collapse
-import com.wtb.dashTracker.extensions.expand
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.getElapsedHours
+import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.activity_main.TAG
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
+import dev.benica.mileagetracker.LocationService.ServiceState.TRACKING_ACTIVE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -54,15 +54,27 @@ class ActiveDashBar @JvmOverloads constructor(
     }
 
     fun updateServiceState(serviceState: ServiceState) {
+        Log.d(TAG, "updateServiceState | ${serviceState.name}")
         when (serviceState) {
             STOPPED -> {
                 if (binding.root.visibility == VISIBLE) {
                     binding.root.collapse()
                 }
             }
+            TRACKING_ACTIVE -> {
+                if (binding.root.visibility == GONE) {
+                    binding.root.expand()
+                    listOf(binding.activeBg, binding.lblMileage, binding.valMileage, binding.lblCost, binding.valCost).forEach {
+                        it.visibility = VISIBLE
+                    }
+                }
+            }
             else -> {
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
+                    listOf(binding.activeBg, binding.lblMileage, binding.valMileage, binding.lblCost, binding.valCost).forEach {
+                        it.visibility = GONE
+                    }
                 }
             }
         }
@@ -71,6 +83,9 @@ class ActiveDashBar @JvmOverloads constructor(
     fun updateEntry(fullEntry: FullEntry?, activeCpm: Float?) {
         fullEntry?.let { it ->
             activeEntry = it
+
+            binding.lblStarted.text = context.getHoursRangeString(it.entry.startTime, null)
+
             binding.valMileage.text =
                 context.getString(R.string.mileage_fmt, it.distance)
 
@@ -84,4 +99,3 @@ class ActiveDashBar @JvmOverloads constructor(
 
     interface ActiveDashBarCallback
 }
-

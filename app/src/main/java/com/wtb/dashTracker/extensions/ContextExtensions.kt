@@ -20,6 +20,7 @@ import android.content.Context
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import com.wtb.dashTracker.R
+import java.time.LocalTime
 
 fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?): String =
     if (args.map { it != null }.reduce { acc, b -> acc && b })
@@ -65,3 +66,14 @@ fun Context.getFloatString(value: Float?): String =
 
 fun Context.getDimen(@DimenRes res: Int): Float =
     resources.getDimension(res) / resources.displayMetrics.density
+
+fun Context.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
+    if (start == null && end == null)
+        ""
+    else
+        getString(
+            R.string.time_range,
+            start?.format(dtfTime) ?: "",
+            end?.format(dtfTime) ?: ""
+        )
+

@@ -36,7 +36,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_welcome.ui.Card.*
+import com.wtb.dashTracker.ui.activity_welcome.ui.SelectedCard.*
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.car
@@ -47,7 +47,7 @@ interface WelcomeScreenCallback {
     fun nextScreen()
 }
 
-enum class Card {
+enum class SelectedCard {
     NONE, INCOME, EXPENSES, MILEAGE
 }
 

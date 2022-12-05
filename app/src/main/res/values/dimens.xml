@@ -29,6 +29,7 @@
     <dimen name="text_size_large">18sp</dimen>
     <dimen name="text_size_med">16sp</dimen>
     <dimen name="text_size_sm">14sp</dimen>
+    <dimen name="text_size_xs">12sp</dimen>
 
     <dimen name="fragment_padding_for_bottom_nav">72dp</dimen>
     <dimen name="chart_fragment_bottom_padding">86dp</dimen>

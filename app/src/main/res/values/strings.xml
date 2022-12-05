@@ -268,5 +268,6 @@
     <string name="require_pin_desc">To protect your data, DashTracker can require a fingerprint or PIN to open.</string>
     <string name="pref_title_show_weekly_adjustment_field">Show weekly adjustment field</string>
     <string name="pref_title_require_authentication">Require authentication to open</string>
+    <string name="dialog_title_dash_entry">Dash Entry</string>
 
 </resources>

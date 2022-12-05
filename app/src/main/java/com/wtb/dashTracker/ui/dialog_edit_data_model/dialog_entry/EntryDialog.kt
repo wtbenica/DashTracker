@@ -55,7 +55,7 @@ import kotlin.math.max
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
+class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding >() {
 
     override var item: DashEntry? = null
     override val viewModel: EntryViewModel by viewModels()
@@ -76,14 +76,14 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
         }
     }
 
-    override fun getViewBinding(inflater: LayoutInflater): DialogFragEntryBinding =
+    override fun getViewBinding(inflater: LayoutInflater): DialogFragEntryBinding  =
         DialogFragEntryBinding.inflate(layoutInflater).apply {
             fragEntryDate.apply {
                 setOnClickListener {
                     DatePickerFragment.newInstance(
-                        R.id.frag_entry_date,
-                        this.text.toString(),
-                        REQUEST_KEY_DATE
+                        textViewId = R.id.frag_entry_date,
+                        currentText = this.text.toString(),
+                        requestKey = REQUEST_KEY_DATE
                     ).show(parentFragmentManager, "entry_date_picker")
                 }
             }
@@ -91,9 +91,9 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             fragEntryStartTime.apply {
                 setOnClickListener {
                     TimePickerFragment.newInstance(
-                        R.id.frag_entry_start_time,
-                        this.text.toString(),
-                        REQUEST_KEY_TIME
+                        textViewId = R.id.frag_entry_start_time,
+                        currentText = this.text.toString(),
+                        requestKey = REQUEST_KEY_TIME
                     ).show(childFragmentManager, "time_picker_start")
                     startTimeChanged = true
                 }
@@ -142,6 +142,8 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             fragEntryBtnSave.apply {
                 setOnSavePressed()
             }
+
+            fragEntryToolbar.title = getString(R.string.dialog_title_dash_entry)
         }
 
     override fun updateUI() {
@@ -152,7 +154,9 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                 tempEntry.startTime?.let { st ->
                     binding.fragEntryStartTime.text = st.format(dtfTime)
                 }
-                tempEntry.endTime?.let { et -> binding.fragEntryEndTime.text = et.format(dtfTime) }
+                tempEntry.endTime?.let { et ->
+                    binding.fragEntryEndTime.text = et.format(dtfTime)
+                }
                 binding.fragEntryCheckEndsNextDay.isChecked =
                     tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
                 tempEntry.startOdometer?.let { so ->

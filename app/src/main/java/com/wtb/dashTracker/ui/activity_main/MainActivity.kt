@@ -28,6 +28,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.PersistableBundle
 import android.provider.Settings
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -103,8 +104,7 @@ import dev.benica.csvutil.ModelMap
 import dev.benica.csvutil.getConvertPackImport
 import dev.benica.mileagetracker.LocationService
 import dev.benica.mileagetracker.LocationService.ServiceState
-import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
-import dev.benica.mileagetracker.LocationService.ServiceState.TRACKING_ACTIVE
+import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -157,8 +157,12 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     private lateinit var activeDash: ActiveDash
 
     private val trackingEnabled: Boolean
-        get() = this.hasPermissions(*REQUIRED_PERMISSIONS)
-                && sharedPrefs.getBoolean(LOCATION_ENABLED, false)
+        get() {
+            val hasPermissions = this.hasPermissions(*REQUIRED_PERMISSIONS)
+            val isEnabled = sharedPrefs.getBoolean(LOCATION_ENABLED, false)
+            Log.d(TAG, "trackingENabled | hasPermissions: $hasPermissions | isEnabled: $isEnabled")
+            return hasPermissions && isEnabled
+        }
 
     // Launchers
     /**
@@ -254,6 +258,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 RequestConfiguration.Builder()
                     .setTestDeviceIds(
                         listOf(
+                            "738E1F6D1C2057B3E7863A4081A77CB5", // Pixel 6a
                             "B7667F22237B480FF03CE252659EAA82",
                             "04CE17DF0350024007F75AE926597C03"
                         )
@@ -708,7 +713,10 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                     if (!locationServiceBound) {
                         startTracking()
                     }
-                    TRACKING_ACTIVE
+                    if (trackingEnabled)
+                        TRACKING_ACTIVE
+                    else
+                        TRACKING_INACTIVE
                 } else {
                     stopDash(beforeId)
                     STOPPED

@@ -32,7 +32,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullEntry
-import com.wtb.dashTracker.databinding.DialogFragEndDashBinding
+import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
@@ -51,11 +51,11 @@ import kotlin.math.max
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>() {
+class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
     override var item: DashEntry? = null
     var fullEntry: FullEntry? = null
     override val viewModel: EntryViewModel by viewModels()
-    override lateinit var binding: DialogFragEndDashBinding
+    override lateinit var binding: DialogFragEntryBinding
 
     private var startTimeChanged = false
 
@@ -72,9 +72,9 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
         }
     }
 
-    override fun getViewBinding(inflater: LayoutInflater): DialogFragEndDashBinding =
-        DialogFragEndDashBinding.inflate(layoutInflater).apply {
-            fragEndDashDate.apply {
+    override fun getViewBinding(inflater: LayoutInflater): DialogFragEntryBinding =
+        DialogFragEntryBinding.inflate(layoutInflater).apply {
+            fragEntryDate.apply {
                 setOnClickListener {
                     DatePickerFragment.newInstance(
                         R.id.frag_entry_date,
@@ -84,7 +84,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                 }
             }
 
-            fragEndDashStartTime.apply {
+            fragEntryStartTime.apply {
                 setOnClickListener {
                     TimePickerFragment.newInstance(
                         R.id.frag_entry_start_time,
@@ -95,18 +95,18 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                 }
             }
 
-            fragEndDashStartMileage.apply {
+            fragEntryStartMileage.apply {
                 doOnTextChanged { _, _, _, _ ->
-                    val endMileage = fragEndDashEndMileage.text?.toFloatOrNull() ?: 0f
+                    val endMileage = fragEntryEndMileage.text?.toFloatOrNull() ?: 0f
                     this.onTextChangeUpdateTotal(
-                        updateView = fragEndDashTotalMileage,
+                        updateView = fragEntryTotalMileage,
                         otherValue = endMileage,
                         stringFormat = R.string.odometer_fmt
                     ) { other, self -> max(other - self, 0f) }
                 }
             }
 
-            fragEndDashEndTime.apply {
+            fragEntryEndTime.apply {
                 setOnClickListener {
                     TimePickerFragment.newInstance(
                         R.id.frag_entry_end_time,
@@ -116,26 +116,26 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                 }
             }
 
-            fragEndDashEndMileage.apply {
+            fragEntryEndMileage.apply {
                 doOnTextChanged { _, _, _, _ ->
-                    val startMileage = fragEndDashStartMileage.text?.toFloatOrNull() ?: 0f
+                    val startMileage = fragEntryStartMileage.text?.toFloatOrNull() ?: 0f
                     this.onTextChangeUpdateTotal(
-                        updateView = fragEndDashTotalMileage,
+                        updateView = fragEntryTotalMileage,
                         otherValue = startMileage,
                         stringFormat = R.string.odometer_fmt
                     ) { other, self -> max(self - other, 0f) }
                 }
             }
 
-            fragEndDashBtnDelete.apply {
+            fragEntryBtnDelete.apply {
                 setOnDeletePressed()
             }
 
-            fragEndDashBtnCancel.apply {
+            fragEntryBtnCancel.apply {
                 setOnResetPressed()
             }
 
-            fragEndDashBtnSave.apply {
+            fragEntryBtnSave.apply {
                 setOnSavePressed()
             }
         }
@@ -145,30 +145,28 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             val tempEntry = item
             if (tempEntry != null) {
                 binding.apply {
-                    fragEndDashDate.text = tempEntry.date.format(dtfDate)
+                    fragEntryDate.text = tempEntry.date.format(dtfDate)
 
                     tempEntry.startTime?.let { st: LocalTime ->
-                        fragEndDashStartTime.text = st.format(dtfTime)
-                        fragEndDashStartTime.tag = st
+                        fragEntryStartTime.text = st.format(dtfTime)
+                        fragEntryStartTime.tag = st
                     }
-
-                    fragEndDashTrackedMileage.text = fullEntry?.distance.toString()
 
                     tempEntry.endTime?.let { et: LocalTime ->
-                        fragEndDashEndTime.text = et.format(dtfTime)
-                        fragEndDashEndTime.tag = et
+                        fragEntryEndTime.text = et.format(dtfTime)
+                        fragEntryEndTime.tag = et
                     }
 
-                    fragEndDashCheckEndsNextDay.isChecked =
+                    fragEntryCheckEndsNextDay.isChecked =
                         tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
 
                     tempEntry.startOdometer?.let { so ->
-                        fragEndDashStartMileage.setText(
+                        fragEntryStartMileage.setText(
                             getString(R.string.odometer_fmt, so)
                         )
                     }
 
-                    fragEndDashEndMileage.setText(
+                    fragEntryEndMileage.setText(
                         getString(
                             R.string.odometer_fmt,
                             tempEntry.endOdometer ?: ((tempEntry.startOdometer ?: 0f) +
@@ -177,9 +175,9 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                         )
                     )
 
-                    fragEndDashTotalMileage.setText(
+                    fragEntryTotalMileage.setText(
                         getString(
-                            R.string.mileage_fmt,
+                            R.string.odometer_fmt,
                             if (tempEntry.mileage != null)
                                 tempEntry.mileage
                             else
@@ -187,10 +185,10 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
                         )
                     )
 
-                    tempEntry.pay?.let { p -> fragEndDashPay.setText(p.toString()) }
-                    tempEntry.otherPay?.let { op -> fragEndDashPayOther.setText(op.toString()) }
-                    tempEntry.cashTips?.let { ct -> fragEndDashCashTips.setText(ct.toString()) }
-                    tempEntry.numDeliveries?.let { nd -> fragEndDashNumDeliveries.setText(nd.toString()) }
+                    tempEntry.pay?.let { p -> fragEntryPay.setText(p.toString()) }
+                    tempEntry.otherPay?.let { op -> fragEntryPayOther.setText(op.toString()) }
+                    tempEntry.cashTips?.let { ct -> fragEntryCashTips.setText(ct.toString()) }
+                    tempEntry.numDeliveries?.let { nd -> fragEntryNumDeliveries.setText(nd.toString()) }
                 }
             } else {
                 clearFields()
@@ -199,75 +197,72 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
     }
 
     override fun saveValues() {
-        val currDate = binding.fragEndDashDate.text.toDateOrNull()
+        val currDate = binding.fragEntryDate.text.toDateOrNull()
         val totalMileage =
-            if (binding.fragEndDashStartMileage.text.isEmpty() && binding.fragEndDashEndMileage.text.isEmpty()) {
-                binding.fragEndDashTotalMileage.text.toFloatOrNull()
+            if (binding.fragEntryStartMileage.text.isEmpty() && binding.fragEntryEndMileage.text.isEmpty()) {
+                binding.fragEntryTotalMileage.text.toFloatOrNull()
             } else {
                 null
             }
-        val endTime = binding.fragEndDashEndTime.tag as LocalTime?
+        val endTime = binding.fragEntryEndTime.tag as LocalTime?
 
         val e = DashEntry(
             entryId = item?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),
-            endDate = (if (binding.fragEndDashCheckEndsNextDay.isChecked) currDate?.plusDays(1) else currDate)
+            endDate = (if (binding.fragEntryCheckEndsNextDay.isChecked) currDate?.plusDays(1) else currDate)
                 ?: LocalDate.now(),
-            startTime = binding.fragEndDashStartTime.tag as LocalTime?,
+            startTime = binding.fragEntryStartTime.tag as LocalTime?,
             endTime = endTime,
-            startOdometer = binding.fragEndDashStartMileage.text.toFloatOrNull(),
-            endOdometer = binding.fragEndDashEndMileage.text.toFloatOrNull(),
+            startOdometer = binding.fragEntryStartMileage.text.toFloatOrNull(),
+            endOdometer = binding.fragEntryEndMileage.text.toFloatOrNull(),
             totalMileage = totalMileage,
-            pay = binding.fragEndDashPay.text.toFloatOrNull(),
-            otherPay = binding.fragEndDashPayOther.text.toFloatOrNull(),
-            cashTips = binding.fragEndDashCashTips.text.toFloatOrNull(),
-            numDeliveries = binding.fragEndDashNumDeliveries.text.toIntOrNull(),
+            pay = binding.fragEntryPay.text.toFloatOrNull(),
+            otherPay = binding.fragEntryPayOther.text.toFloatOrNull(),
+            cashTips = binding.fragEntryCashTips.text.toFloatOrNull(),
+            numDeliveries = binding.fragEntryNumDeliveries.text.toIntOrNull(),
         )
         viewModel.upsert(e)
     }
 
     override fun clearFields() {
         binding.apply {
-            fragEndDashDate.text = item?.date?.format(dtfDate) ?: LocalDate.now().format(dtfDate)
-            fragEndDashStartTime.text =
+            fragEntryDate.text = item?.date?.format(dtfDate) ?: LocalDate.now().format(dtfDate)
+            fragEntryStartTime.text =
                 item?.startTime?.format(dtfTime) ?: LocalDateTime.now().format(dtfTime)
-            fragEndDashStartTime.tag = item?.startTime ?: LocalTime.now()
-            fragEndDashStartMileage.setText(
+            fragEntryStartTime.tag = item?.startTime ?: LocalTime.now()
+            fragEntryStartMileage.setText(
                 item?.startOdometer?.let {
                     getString(R.string.odometer_fmt, it)
                 } ?: ""
             )
-            fragEndDashTrackedMileage.text = fullEntry?.distance?.let {
-                getString(R.string.mileage_fmt, it)
-            } ?: ""
-            fragEndDashEndTime.text = LocalDateTime.now().format(dtfTime)
-            fragEndDashEndTime.tag = LocalTime.now()
-            fragEndDashEndMileage.setText(
+            fragEntryEndTime.text = LocalDateTime.now().format(dtfTime)
+            fragEntryEndTime.tag = LocalTime.now()
+            fragEntryEndMileage.setText(
                 item?.startOdometer?.let { so ->
                     fullEntry?.distance?.let { dist ->
                         getString(R.string.odometer_fmt, so + dist)
                     }
                 } ?: ""
             )
-            fragEndDashTotalMileage.setText((fullEntry?.distance ?: 0).toString())
-            fragEndDashPay.text.clear()
-            fragEndDashPayOther.text.clear()
-            fragEndDashCashTips.text.clear()
-            fragEndDashNumDeliveries.text.clear()
+            fragEntryTotalMileage.setText((fullEntry?.distance ?: 0).toString())
+            fragEntryPay.text.clear()
+            fragEntryPayOther.text.clear()
+            fragEntryCashTips.text.clear()
+            fragEntryNumDeliveries.text.clear()
         }
     }
 
     override fun isEmpty(): Boolean {
-        val isTodaysDate = binding.fragEndDashDate.text == LocalDate.now().format(dtfDate)
+        val isTodaysDate = binding.fragEntryDate.text == LocalDate.now().format(dtfDate)
         return isTodaysDate &&
                 !startTimeChanged &&
-                binding.fragEndDashEndTime.text.isBlank() &&
-                binding.fragEndDashStartMileage.text.isBlank() &&
-                binding.fragEndDashEndMileage.text.isBlank() &&
-                binding.fragEndDashPay.text.isBlank() &&
-                binding.fragEndDashPayOther.text.isBlank() &&
-                binding.fragEndDashCashTips.text.isBlank() &&
-                binding.fragEndDashNumDeliveries.text.isBlank()
+                binding.fragEntryEndTime.text.isBlank() &&
+                binding.fragEntryStartMileage.text.isBlank() &&
+                binding.fragEntryEndMileage.text.isBlank() &&
+                binding.fragEntryPay.text.isBlank() &&
+                binding.fragEntryPayOther.text.isBlank() &&
+                binding.fragEntryCashTips.text.isBlank() &&
+                binding.fragEntryNumDeliveries.text.isBlank()
     }
 
     override fun setDialogListeners() {
@@ -281,7 +276,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
             val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
             when (bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)) {
                 R.id.frag_entry_date -> {
-                    binding.fragEndDashDate.text =
+                    binding.fragEntryDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
                 }
             }
@@ -297,14 +292,14 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEndDashBinding>()
 
             when (bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
-                    binding.fragEndDashStartTime.text =
+                    binding.fragEntryStartTime.text =
                         dialogTime.format(dtfTime).toString()
-                    binding.fragEndDashStartTime.tag = dialogTime
+                    binding.fragEntryStartTime.tag = dialogTime
                 }
                 R.id.frag_entry_end_time -> {
-                    binding.fragEndDashEndTime.text =
+                    binding.fragEntryEndTime.text =
                         dialogTime.format(dtfTime).toString()
-                    binding.fragEndDashEndTime.tag = dialogTime
+                    binding.fragEntryEndTime.tag = dialogTime
                 }
             }
         }

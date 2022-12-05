@@ -121,7 +121,7 @@
                         android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
-                        android:inputType="number" />
+                        android:inputType="number"/>
                 </GridLayout>
             </androidx.cardview.widget.CardView>
 
