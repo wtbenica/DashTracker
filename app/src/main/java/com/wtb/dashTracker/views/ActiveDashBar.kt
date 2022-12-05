@@ -18,15 +18,16 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.GridLayout
 import androidx.annotation.AttrRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActiveDashBarBinding
-import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.activity_main.TAG
+import com.wtb.dashTracker.extensions.collapse
+import com.wtb.dashTracker.extensions.expand
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getElapsedHours
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
 import dev.benica.mileagetracker.LocationService.ServiceState.TRACKING_ACTIVE
@@ -54,7 +55,6 @@ class ActiveDashBar @JvmOverloads constructor(
     }
 
     fun updateServiceState(serviceState: ServiceState) {
-        Log.d(TAG, "updateServiceState | ${serviceState.name}")
         when (serviceState) {
             STOPPED -> {
                 if (binding.root.visibility == VISIBLE) {
