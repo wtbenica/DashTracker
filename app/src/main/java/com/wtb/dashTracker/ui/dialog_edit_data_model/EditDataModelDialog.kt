@@ -63,8 +63,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.getLong(ARG_ITEM_ID, -1L)?.let {
-            if (it != -1L) {
+        arguments?.getLong(ARG_ITEM_ID, -1L).let {
+            if (it != null && it != -1L) {
                 viewModel.loadDataModel(it)
             }
         }
@@ -133,6 +133,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                 saveOnExit = false
 
                 // TODO: Is this necessary? Doesn't appear to get used anywhere
+                // It might have to do with trying to be more specific with notify data set changed
                 setFragmentResult(
                     REQUEST_KEY_ENTRY_DIALOG,
                     bundleOf(

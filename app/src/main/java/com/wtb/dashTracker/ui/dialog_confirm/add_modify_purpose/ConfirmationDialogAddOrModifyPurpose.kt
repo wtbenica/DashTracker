@@ -21,7 +21,6 @@ package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,12 +30,11 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmAddPurposeBinding
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.TAG
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,8 +55,6 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
 
     private lateinit var binding: DialogFragConfirmAddPurposeBinding
     private var deleteButtonPressed = false
-
-    private val prevPurpose: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,19 +83,22 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
         }
 
         binding.noButton.setOnClickListener {
-            Log.d(TAG, "Cancelling, reverting to old purposeId: $prevPurpose")
             deleteButtonPressed = true
-            setFragmentResult(RK_ADD_PURPOSE, Bundle().apply {
-                putBoolean(ARG_CONFIRM, true)
-                prevPurpose?.let { purpose -> putInt(ARG_PURPOSE_ID, purpose) }
+            setFragmentResult(REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE, Bundle().apply {
+                putBoolean(RESULT_UPDATE_PURPOSE, false)
             })
             dismiss()
         }
 
-        binding.yesButton1.apply {
-            setOnClickListener {
-                dismiss()
-            }
+        binding.yesButton1.setOnClickListener {
+            setFragmentResult(
+                REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE,
+                Bundle().apply {
+                    putBoolean(RESULT_UPDATE_PURPOSE, true)
+                    expensePurpose?.id?.let { id -> putLong(RESULT_PURPOSE_ID, id) }
+                }
+            )
+            dismiss()
         }
 
         return binding.root
@@ -122,28 +121,37 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
         }
     }
 
-    private fun saveValues() {
-        val name = binding.dialogPurposeEditText.text
-        if (!deleteButtonPressed && !name.isNullOrBlank()) {
-            expensePurpose?.let { ep ->
-                ep.name = name.toString().replaceFirstChar { it.uppercase() }
-                viewModel.upsert(ep)
-            }
-        } else {
-            expensePurpose?.let { viewModel.delete(it) }
-        }
-    }
-
+    /**
+     * saves or deletes [expensePurpose]
+     *
+     */
     override fun onDestroy() {
+        /**
+         * Saves [expensePurpose] if not [deleteButtonPressed] && purpose name is not null/blank
+         */
+        fun saveValues() {
+            val name = binding.dialogPurposeEditText.text
+            if (!deleteButtonPressed && !name.isNullOrBlank()) {
+                expensePurpose?.let { ep ->
+                    ep.name = name.toString().replaceFirstChar { it.uppercase() }
+                    viewModel.upsert(ep)
+                }
+            } else {
+                if (isNew) expensePurpose?.let { viewModel.delete(it) }
+            }
+        }
+
         saveValues()
 
         super.onDestroy()
     }
 
     companion object {
-        const val ARG_PURPOSE_NAME: String = "arg_purpose_name"
-        const val ARG_PURPOSE_ID: String = "arg_purpose_id"
-        const val RK_ADD_PURPOSE: String = "add_purpose"
+        internal const val REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE: String = "add_purpose"
+        internal val RESULT_PURPOSE_ID: String = "${BuildConfig.APPLICATION_ID}.${this::class.simpleName}.result_purpose_id"
+        internal const val RESULT_UPDATE_PURPOSE = "${BuildConfig.APPLICATION_ID}.arg_update_purpose"
+
+        private const val ARG_PURPOSE_ID: String = "arg_purpose_id"
         private const val ARG_IS_NEW = "arg_is_new"
         private const val ARG_PREV_PURPOSE = "arg_prev_purpose"
 

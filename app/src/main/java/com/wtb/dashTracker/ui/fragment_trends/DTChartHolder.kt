@@ -22,6 +22,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.wtb.dashTracker.R
@@ -151,3 +152,12 @@ abstract class DTChart @JvmOverloads constructor(
     internal var mEntries = listOf<DashEntry>()
     internal var mWeeklies = listOf<FullWeekly>()
 }
+
+/**
+ * TODO
+ *
+ * @param res
+ * @return
+ */
+fun Context.getDimen(@DimenRes res: Int): Float =
+    resources.getDimension(res) / resources.displayMetrics.density
