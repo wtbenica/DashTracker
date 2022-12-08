@@ -69,10 +69,10 @@ data class DashEntry(
         get() = startTime == null || endTime == null || pay == null || mileage == null || numDeliveries == null
 
     val startDateTime: LocalDateTime?
-        get() = startTime?.let { st -> LocalDateTime.of(date, st) }
+        get() = startTime?.let { st -> LocalDateTime.of(date, LocalTime.of(st.hour, st.minute)) }
 
     private val endDateTime
-        get() = endTime?.let { et -> LocalDateTime.of(endDate, et) }
+        get() = endTime?.let { et -> LocalDateTime.of(endDate, LocalTime.of(et.hour, et.minute)) }
 
     val totalHours: Float?
         get() = startDateTime?.let { st ->
