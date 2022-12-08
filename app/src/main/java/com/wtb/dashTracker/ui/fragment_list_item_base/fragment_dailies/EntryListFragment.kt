@@ -231,8 +231,6 @@ class EntryListFragment : ListItemFragment() {
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)
                 binding.listItemAlert.setVisibleIfTrue(this.item.entry.isIncomplete)
-                val mileageString = getMileageString(item.distance.toFloat())
-                binding.trackedValue.text = mileageString
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.entry.pay)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.item.entry.cashTips)
@@ -247,11 +245,8 @@ class EntryListFragment : ListItemFragment() {
                         this.item.entry.startOdometer,
                         this.item.entry.endOdometer
                     )
-                detailsBinding.listItemEntryMileage.text = getStringOrElse(
-                    R.string.odometer_fmt,
-                    "-",
-                    this.item.entry.mileage
-                )
+                detailsBinding.listItemEntryMileage.text =
+                    getStringOrElse(R.string.odometer_fmt, "-", this.item.entry.mileage)
                 detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.entry.mileage == null)
                 detailsBinding.listItemEntryNumDeliveries.text =
                     "${this.item.entry.numDeliveries ?: "-"}"

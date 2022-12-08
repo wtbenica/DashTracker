@@ -49,6 +49,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.math.floor
 import kotlin.math.max
 
 @ExperimentalAnimationApi
@@ -168,9 +169,9 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding >() {
                 tempEntry.mileage?.let { m ->
                     binding.fragEntryTotalMileage.text = getString(R.string.odometer_fmt, m)
                 }
-                tempEntry.pay?.let { p -> binding.fragEntryPay.setText(p.toString()) }
-                tempEntry.otherPay?.let { op -> binding.fragEntryPayOther.setText(op.toString()) }
-                tempEntry.cashTips?.let { ct -> binding.fragEntryCashTips.setText(ct.toString()) }
+                tempEntry.pay?.let { p -> binding.fragEntryPay.setText(p.toCurrencyString()) }
+                tempEntry.otherPay?.let { op -> binding.fragEntryPayOther.setText(op.toCurrencyString()) }
+                tempEntry.cashTips?.let { ct -> binding.fragEntryCashTips.setText(ct.toCurrencyString()) }
                 tempEntry.numDeliveries?.let { nd -> binding.fragEntryNumDeliveries.setText(nd.toString()) }
             } else {
                 clearFields()
@@ -297,3 +298,13 @@ fun EditText.onTextChangeUpdateTotal(
         }
     }
 }
+
+/**
+ * @return 2.83234f -> "2.83", 2f -> "2", 2.0f -> "2", "2.1f" -> "2.10"
+ */
+fun Float.toCurrencyString(): String =
+    if (this != floor(this)) {
+        "%.2f".format(this)
+    } else {
+        "%.0f".format(this)
+    }

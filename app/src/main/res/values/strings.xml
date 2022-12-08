@@ -99,6 +99,8 @@
     <!-- String Formats -->
     <string name="currency_unit">$%.2f</string>
     <string name="cpm_unit">$%.3f</string>
+    <string name="gas_price_edit">%.3f</string>
+    <string name="gas_price_display">$%.3f</string>
     <string name="blank_currency">$  -  </string>
     <string name="odometer_range" formatted="true">%1$.0f - %2$.0f</string>
     <string name="time_range" formatted="true">%1$s - %2$s</string>

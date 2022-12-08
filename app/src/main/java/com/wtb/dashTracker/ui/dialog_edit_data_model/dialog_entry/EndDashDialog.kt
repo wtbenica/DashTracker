@@ -185,9 +185,9 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                         )
                     )
 
-                    tempEntry.pay?.let { p -> fragEntryPay.setText(p.toString()) }
-                    tempEntry.otherPay?.let { op -> fragEntryPayOther.setText(op.toString()) }
-                    tempEntry.cashTips?.let { ct -> fragEntryCashTips.setText(ct.toString()) }
+                    tempEntry.pay?.let { p -> fragEntryPay.setText(p.toCurrencyString()) }
+                    tempEntry.otherPay?.let { op -> fragEntryPayOther.setText(op.toCurrencyString()) }
+                    tempEntry.cashTips?.let { ct -> fragEntryCashTips.setText(ct.toCurrencyString()) }
                     tempEntry.numDeliveries?.let { nd -> fragEntryNumDeliveries.setText(nd.toString()) }
                 }
             } else {
