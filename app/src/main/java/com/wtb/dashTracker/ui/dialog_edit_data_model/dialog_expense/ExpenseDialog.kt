@@ -48,6 +48,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDial
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RESULT_PURPOSE_ID
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RESULT_UPDATE_PURPOSE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.toCurrencyString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -155,11 +156,9 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             val tempExpense = item
             if (tempExpense != null) {
                 binding.fragExpenseDate.text = tempExpense.date.format(dtfDate)
-                binding.fragExpenseAmount.setText(
-                    getStringOrElse(R.string.float_fmt, "", tempExpense.amount)
-                )
+                binding.fragExpenseAmount.setText(tempExpense.amount?.toCurrencyString() ?: "")
                 binding.fragExpensePrice.setText(
-                    getStringOrElse(R.string.float_fmt, "", tempExpense.pricePerGal)
+                    getStringOrElse(R.string.gas_price_edit, "", tempExpense.pricePerGal)
                 )
 
                 binding.fragExpensePurpose.apply {

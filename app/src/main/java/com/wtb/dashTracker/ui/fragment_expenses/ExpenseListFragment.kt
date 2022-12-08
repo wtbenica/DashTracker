@@ -181,7 +181,7 @@ class ExpenseListFragment : ListItemFragment() {
                 binding.listItemSubtitle.text = this.item.purpose.name
                 binding.listItemPrice.text =
                     getStringOrElse(
-                        R.string.currency_unit,
+                        R.string.gas_price_display,
                         "-",
                         this.item.expense.pricePerGal
                     )
