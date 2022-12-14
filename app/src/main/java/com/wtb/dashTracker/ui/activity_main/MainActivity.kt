@@ -592,7 +592,12 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
     override val onAuthFailed: (() -> Unit)? = null
 
-    override val onAuthError: (() -> Unit)? = null
+    override val onAuthError: (() -> Unit)? = ::a
+
+    fun a() {
+        Log.d(TAG, "Apple bottom jeans")
+        authenticate(onAuthentication, onAuthFailed, onAuthError)
+    }
 
     override fun lockScreen() {
         binding.container.visibility = INVISIBLE

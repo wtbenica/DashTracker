@@ -87,6 +87,7 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
+                        Log.d(TAG, "Authentication: SUCCESS $result")
                         isAuthenticated = true
                         disableBackButtonCallback?.remove()
                         disableBackButtonCallback = null
@@ -95,16 +96,19 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                         super.onAuthenticationError(errorCode, errString)
+                        Log.d(TAG, "Authentication: ERROR $errString")
                         isAuthenticated = false
                         onError?.invoke()
                     }
 
                     override fun onAuthenticationFailed() {
                         super.onAuthenticationFailed()
+                        Log.d(TAG, "Authentication: FAIL")
                         isAuthenticated = false
                         onFailed?.invoke()
                     }
-                })
+                }
+            )
 
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Unlock to access DashTracker")
