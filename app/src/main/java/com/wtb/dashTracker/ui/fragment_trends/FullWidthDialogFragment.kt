@@ -28,4 +28,9 @@ open class FullWidthDialogFragment: DialogFragment() {
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT
         dialog!!.window!!.attributes = params as WindowManager.LayoutParams
     }
+
+    override fun onPause() {
+        dismiss()
+        super.onPause()
+    }
 }
