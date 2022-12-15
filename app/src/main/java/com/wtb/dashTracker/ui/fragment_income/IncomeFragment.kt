@@ -89,7 +89,7 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
             }
         }.attach()
 
-        val btnGroup = binding.filterBox
+        val btnGroup = binding.filterBoxCollapsableArea
         binding.filterBtn.setOnClickListener {
             if (btnGroup.isVisible) {
                 btnGroup.collapse()

@@ -22,15 +22,6 @@
     android:orientation="vertical"
     tools:context=".ui.fragment_income.IncomeFragment">
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="?attr/colorTabIndicator"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/frag_income_tab_layout"
         style="@style/FragIncomeTabLayout"
@@ -57,34 +48,35 @@
             android:text="@string/frag_title_yearly_list" />
     </com.google.android.material.tabs.TabLayout>
 
+    <View
+        android:id="@+id/divider_3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="?attr/colorTabIndicator"
+        android:elevation="1dp"
+        app:layout_constraintEnd_toEndOf="@id/frag_income_tab_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/filter_btn"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/min_touch_target"
-        android:background="@drawable/bg_button_cpm"
         android:contentDescription="@string/content_desc_expand_item_list_options_button"
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:minWidth="@dimen/min_touch_target"
         android:text="@string/lbl_cpm"
         android:textColor="?attr/colorTextPrimary"
-        app:backgroundTint="?attr/colorOptionsButton"
+        app:backgroundTint="?attr/colorOptionsMenu"
         app:cornerRadius="0dp"
         app:icon="@drawable/ic_arrow_expand"
         app:iconTint="?attr/colorTextPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/divider_3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight=".25"
         app:layout_constraintStart_toEndOf="@id/frag_income_tab_layout"
-        app:layout_constraintTop_toBottomOf="@id/divider" />
-
-    <View
-        android:id="@+id/divider_2"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="?attr/colorTabIndicator"
-        app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"
-        app:layout_constraintEnd_toStartOf="@id/filter_btn"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/filter_box"
@@ -92,48 +84,60 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorOptionsMenu"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/margin_default"
-        android:paddingVertical="@dimen/margin_default"
-        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout"
-        tools:visibility="visible">
+        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/button_group_deduction_type"
-            android:text="@string/lbl_set_cpm_method" />
-
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/button_group_deduction_type"
+        <LinearLayout
+            android:id="@+id/filter_box_collapsable_area"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:checkedButton="@id/none_button"
-            app:selectionRequired="true"
-            app:singleSelection="true">
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/margin_default"
+            android:paddingVertical="@dimen/margin_default"
+            android:visibility="gone">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/none_button"
-                style="@style/materialToggleButton"
-                android:text="@string/lbl_none" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@id/button_group_deduction_type"
+                android:text="@string/lbl_set_cpm_method" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/gas_button"
-                style="@style/materialToggleButton"
-                android:text="@string/expense_purpose_gas" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/button_group_deduction_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:checkedButton="@id/none_button"
+                app:selectionRequired="true"
+                app:singleSelection="true">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/actual_button"
-                style="@style/materialToggleButton"
-                android:text="@string/expense_purpose_all" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/none_button"
+                    style="@style/materialToggleButton"
+                    android:text="@string/lbl_none" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/standard_button"
-                style="@style/materialToggleButton"
-                android:text="@string/expense_purpose_standard" />
-        </com.google.android.material.button.MaterialButtonToggleGroup>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/gas_button"
+                    style="@style/materialToggleButton"
+                    android:text="@string/expense_purpose_gas" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/actual_button"
+                    style="@style/materialToggleButton"
+                    android:text="@string/expense_purpose_all" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/standard_button"
+                    style="@style/materialToggleButton"
+                    android:text="@string/expense_purpose_standard" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/divider_2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorTabIndicator" />
     </LinearLayout>
 
 
