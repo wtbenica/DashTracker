@@ -92,6 +92,7 @@ fun DashTrackerTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -101,6 +102,15 @@ fun DashTrackerTheme(
                 darkTheme
         }
     }
+
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = colorScheme.primary,
+            darkIcons = !darkTheme
+        )
+    }
+
 
     MaterialTheme(
         colorScheme = colorScheme,
