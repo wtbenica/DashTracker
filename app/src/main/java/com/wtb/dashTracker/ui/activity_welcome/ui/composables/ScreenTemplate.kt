@@ -37,7 +37,9 @@ import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.OnboardingIntroNav
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
-import com.wtb.dashTracker.ui.theme.*
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.cardShape
+import com.wtb.dashTracker.ui.theme.secondary
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalTextApi
@@ -61,10 +63,10 @@ fun ScreenTemplate(
             OutlinedCard(
                 shape = cardShape,
                 colors = cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
             ) {
                 WideSpacer()
 
@@ -75,7 +77,7 @@ fun ScreenTemplate(
                         Text(
                             text = headerText,
                             modifier = Modifier.padding(0.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = subtitleText?.let { 18.sp } ?: 20.sp,
                             fontWeight = FontWeight.Bold,
                         )
@@ -99,10 +101,10 @@ fun ScreenTemplate(
                             .padding(end = dimensionResource(R.dimen.margin_half)),
                         shape = cardShape,
                         colors = cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
+                            containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = secondary()
                         ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface)
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                     ) {
                         Column(
                             modifier = Modifier.align(

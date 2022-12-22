@@ -106,7 +106,7 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
 
     companion object {
         @Composable
-        fun welcomeIconColor(): Color = MaterialTheme.colorScheme.tertiary
+        fun welcomeIconColor(): Color = MaterialTheme.colorScheme.primary
 
     }
 }

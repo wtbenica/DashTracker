@@ -31,17 +31,20 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val cardShape: RoundedCornerShape = RoundedCornerShape(24.dp)
 
 private val DarkColorScheme: ColorScheme = darkColorScheme(
     primary = darkPrimary,
     secondary = darkPrimaryLight,
-    tertiary = darkPrimaryFaded,
+    tertiary = darkPrimaryDark,
     onPrimary = darkOnPrimary,
     primaryContainer = darkOnPrimary,
     secondaryContainer = darkOnPrimary,
-    tertiaryContainer = darkOnPrimary
+    tertiaryContainer = darkOnPrimary,
+    surface = darkSurface,
+    onSurface = darkOnSurface
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

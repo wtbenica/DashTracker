@@ -74,7 +74,6 @@ import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
-import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_LOCATION_ENABLED
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
@@ -115,7 +114,7 @@ import java.time.format.DateTimeParseException
 import kotlin.system.exitProcess
 
 private const val APP = "GT_"
-
+private var IS_TESTING = true
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
 
@@ -134,6 +133,7 @@ internal val Any.TAG: String
 @ExperimentalCoroutinesApi
 class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
+    private var isTesting: Boolean = false
 
     internal val permissionsHelper = PermissionsHelper(this)
 
@@ -187,16 +187,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             if (needsRestart == true) {
                 restartApp()
             } else {
-                val locationEnabled =
-                    it.data?.getBooleanExtra(ACTIVITY_RESULT_LOCATION_ENABLED, false)
-
-//                if (locationEnabled == true) {
-//                    Log.d(TAG, "Location Enabled && activeDash? ${activeDash != null}")
-//                    activeDash?.startTracking()
-//                } else {
-//                    activeDash?.stopLocationService()
-//                }
-//
                 val auth = it.data?.getBooleanExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, false)
 
                 if (auth != true) {
@@ -408,6 +398,8 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             }
             settingsActivityLauncher.launch(intent)
         }
+
+        isTesting = IS_TESTING
     }
 
     override fun onResume() {
@@ -445,7 +437,8 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             expectedExit = false
         }
 
-        if (sharedPrefs.getBoolean(PREF_SHOW_ONBOARD_INTRO, true)) {
+        if (isTesting || sharedPrefs.getBoolean(PREF_SHOW_ONBOARD_INTRO, true)) {
+            isTesting = false
             onFirstRun()
         } else {
             cleanupFiles()

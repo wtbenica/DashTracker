@@ -135,8 +135,11 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                     DefaultSpacer()
                 }
             }
+        },
+        navContent = {
+            WelcomeNav(callback)
         }
-    ) { WelcomeNav(callback) }
+    )
 
 @ExperimentalTextApi
 @Composable

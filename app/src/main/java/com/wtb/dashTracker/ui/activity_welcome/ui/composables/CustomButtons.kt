@@ -41,7 +41,7 @@ fun CustomButton(
     DashTrackerTheme {
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onSecondary,
             ),
             onClick = onClick,
@@ -85,7 +85,7 @@ fun CustomOutlinedButton(
                 containerColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary),
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
             onClick = onClick,
             modifier = modifier,
             content = content
