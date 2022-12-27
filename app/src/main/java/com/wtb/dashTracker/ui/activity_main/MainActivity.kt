@@ -114,7 +114,7 @@ import java.time.format.DateTimeParseException
 import kotlin.system.exitProcess
 
 private const val APP = "GT_"
-private var IS_TESTING = true
+private var IS_TESTING = false
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
 
