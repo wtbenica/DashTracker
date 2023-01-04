@@ -37,8 +37,8 @@ val cardShape: RoundedCornerShape = RoundedCornerShape(24.dp)
 
 private val DarkColorScheme: ColorScheme = darkColorScheme(
     primary = darkPrimary,
-    secondary = darkPrimaryLight,
-    tertiary = darkPrimaryDark,
+    secondary = darkSecondary,
+    tertiary = darkTertiary,
     onPrimary = darkOnPrimary,
     primaryContainer = darkOnPrimary,
     secondaryContainer = darkOnPrimary,

@@ -22,6 +22,15 @@
     android:orientation="vertical"
     tools:context=".ui.fragment_income.IncomeFragment">
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorTabIndicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/frag_income_tab_layout"
         style="@style/FragIncomeTabLayout"
@@ -30,7 +39,7 @@
         app:layout_constraintEnd_toStartOf="@id/filter_btn"
         app:layout_constraintHorizontal_weight=".75"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/divider">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -48,15 +57,25 @@
             android:text="@string/frag_title_yearly_list" />
     </com.google.android.material.tabs.TabLayout>
 
-<!--    <View-->
-<!--        android:id="@+id/divider_3"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="1dp"-->
-<!--        android:background="?attr/colorTabIndicator"-->
-<!--        android:elevation="1dp"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout" />-->
+    <View
+        android:id="@+id/divider_3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="?attr/colorTabIndicator"
+        android:elevation="1dp"
+        app:layout_constraintEnd_toEndOf="@id/frag_income_tab_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout" />
+
+    <View
+        android:id="@+id/divider_4"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="?attr/colorTabIndicator"
+        android:elevation="1dp"
+        app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"
+        app:layout_constraintEnd_toEndOf="@id/frag_income_tab_layout"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/filter_btn"
@@ -76,7 +95,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight=".25"
         app:layout_constraintStart_toEndOf="@id/frag_income_tab_layout"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:rippleColor="?attr/colorGroupStroke" />
 
     <LinearLayout
         android:id="@+id/filter_box"
@@ -95,12 +115,14 @@
             android:orientation="vertical"
             android:paddingHorizontal="@dimen/margin_default"
             android:paddingVertical="@dimen/margin_default"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:labelFor="@id/button_group_deduction_type"
+                android:paddingStart="@dimen/margin_default"
                 android:text="@string/lbl_set_cpm_method" />
 
             <com.google.android.material.button.MaterialButtonToggleGroup
@@ -113,22 +135,22 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/none_button"
-                    style="@style/materialToggleButton"
+                    style="@style/MaterialToggleButton"
                     android:text="@string/lbl_none" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gas_button"
-                    style="@style/materialToggleButton"
+                    style="@style/MaterialToggleButton"
                     android:text="@string/expense_purpose_gas" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/actual_button"
-                    style="@style/materialToggleButton"
+                    style="@style/MaterialToggleButton"
                     android:text="@string/expense_purpose_all" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/standard_button"
-                    style="@style/materialToggleButton"
+                    style="@style/MaterialToggleButton"
                     android:text="@string/expense_purpose_standard" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>

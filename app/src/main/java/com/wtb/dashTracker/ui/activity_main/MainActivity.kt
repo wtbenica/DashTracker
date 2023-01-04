@@ -376,7 +376,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         setContentView(binding.root)
 
         initBiometrics()
-//        initMobileAds()
+        initMobileAds()
         initBottomNavBar()
         initObservers()
 

@@ -33,6 +33,7 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar_layout"
+            style="@style/SummaryBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
@@ -40,10 +41,10 @@
 
             <GridLayout
                 android:id="@+id/summary_bar"
-                style="@style/SummaryBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="3"
+                android:padding="@dimen/margin_default"
                 android:rowCount="3"
                 app:layout_scrollFlags="scroll|enterAlways">
 
@@ -133,12 +134,12 @@
             android:layout_height="wrap_content"
             android:contentDescription="folo"
             android:src="@drawable/anim_play_to_stop"
-            app:backgroundTint="?attr/colorSecondaryFaded"
+            app:backgroundTint="?attr/colorFab"
             app:layout_anchor="@id/bottom_app_bar"
             app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
             app:layout_dodgeInsetEdges="bottom"
             app:maxImageSize="48dp"
-            app:tint="?attr/colorFab" />
+            app:tint="?attr/colorFabIcon" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"
@@ -147,7 +148,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:animateLayoutChanges="true"
-            android:backgroundTint="?attr/colorUi"
+            android:backgroundTint="?attr/colorBottomNavBar"
             android:minHeight="?android:attr/actionBarSize"
             app:elevation="1dp"
             app:fabAlignmentMode="end"
@@ -163,10 +164,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
-                android:background="?attr/colorUi"
+                android:background="?attr/selectableItemBackground"
                 android:paddingStart="0dp"
                 android:paddingEnd="80dp"
                 app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"
+                app:itemBackground="@drawable/ripple_bottom_nav"
                 app:itemIconSize="@dimen/margin_wide"
                 app:itemIconTint="?attr/colorBottomNavItem"
                 app:itemTextColor="?attr/colorBottomNavItemText"
@@ -181,8 +183,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:background="?attr/colorUi"
+        android:background="?attr/colorBottomNavBar"
         android:paddingVertical="4dp"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-2598018805199505/8852659795" />
-</LinearLayout>
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+</LinearLayout><!--            "ca-app-pub-2598018805199505/8852659795" />-->

@@ -53,7 +53,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_list_item"
+                    android:background="@drawable/bg_dialog_fragment"
                     android:orientation="vertical">
 
                     <TextView
@@ -190,6 +190,7 @@
                             android:layout_column="0"
                             android:layout_columnWeight="1"
                             android:layout_marginStart="@dimen/margin_default"
+                            android:layout_marginBottom="@dimen/margin_default"
                             android:importantForAutofill="no"
                             android:inputType="number"
                             tools:text="125343" />
@@ -218,6 +219,14 @@
                             android:inputType="number" />
 
                         <!--    Row 5   -->
+                        <View
+                            android:layout_row="6"
+                            android:layout_column="0"
+                            android:layout_columnSpan="3"
+                            android:layout_rowWeight="1"
+                            android:layout_height="0dp"
+                            android:background="@drawable/dialog_frag_bottom_row_bg" />
+
                         <TextView
                             style="@style/FragEntryHeaderTextView"
                             android:layout_width="0dp"

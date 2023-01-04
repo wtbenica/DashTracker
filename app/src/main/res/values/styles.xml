@@ -30,7 +30,7 @@
 
     <style name="ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">
         <item name="titleTextStyle">@style/TitleTextAppearance</item>
-        <item name="background">?attr/colorUi</item>
+        <item name="background">?android:attr/statusBarColor</item>
     </style>
 
     <style name="ThisText" parent="TextAppearance.Material3.BodyLarge">
