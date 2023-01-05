@@ -15,26 +15,12 @@
   -->
 
 <resources>
-<!--    <color name="brick_dark">#0288d1</color>-->
-<!--    <color name="brick">#4fc3f7</color>-->
-<!--    <color name="brick_light">#b3e5fc</color>-->
-<!--    <color name="brick_faded">#e1f5fe</color>-->
-<!--    <color name="on_brick">#FEFEFE</color>-->
-<!--    <color name="on_brick_light">#EDEDED</color>-->
-
-<!--    <color name="accent">#069</color>-->
-
-<!--    <color name="dark">#70B850</color>-->
-<!--    <color name="regular">#B0F0A0</color>-->
-<!--    <color name="light">#D0F8C0</color>-->
-<!--    <color name="faded">#F0FFE0</color>-->
-    <color name="on_regular">#353539</color>
-    <color name="on_regular_light">#686879</color>
-
     <color name="dark">#90C860</color>
     <color name="regular">#E0F8C0</color>
     <color name="light">#E8FFD0</color>
     <color name="faded">#f8fff0</color>
+    <color name="on_regular">#353539</color>
+    <color name="on_regular_light">#686879</color>
 
     <color name="brick_dark">#9ce</color>
     <color name="brick">#e0f0ff</color>
@@ -51,6 +37,7 @@
     <color name="nighttime_light">#CCEEEE</color>
 
     <color name="alert">#EE5522</color>
+
     <color name="light_blue_400">#FF29B6F6</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="gray_400">#FFBDBDBD</color>

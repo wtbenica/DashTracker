@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
@@ -63,10 +64,10 @@ fun ScreenTemplate(
             OutlinedCard(
                 shape = cardShape,
                 colors = cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary)
             ) {
                 WideSpacer()
 
@@ -104,7 +105,7 @@ fun ScreenTemplate(
                             containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = secondary()
                         ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary)
                     ) {
                         Column(
                             modifier = Modifier.align(
@@ -168,7 +169,44 @@ fun PreviewScreenTemplate() {
                     ContentCard(
                         titleText = "ContentCard",
                         icon = Icons.TwoTone.AccessAlarm,
-                        iconTint = MaterialTheme.colorScheme.secondary,
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        iconDescription = "Access Alarm"
+                    )
+                },
+                navContent = {
+                    OnboardingIntroNav()
+                }
+            )
+        }
+    }
+}
+
+
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewScreenTemplateNight() {
+    DashTrackerTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            ScreenTemplate(
+                headerText = "ScreenTemplate",
+                subtitleText = "Subtitle",
+                iconImage = {
+                    Icon(
+                        imageVector = Icons.TwoTone.Dangerous,
+                        contentDescription = "Dangerous",
+                        modifier = Modifier.size(96.dp),
+                        tint = welcomeIconColor()
+                    )
+                },
+                mainContent = {
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconTint = MaterialTheme.colorScheme.primary,
                         iconDescription = "Access Alarm"
                     )
                 },

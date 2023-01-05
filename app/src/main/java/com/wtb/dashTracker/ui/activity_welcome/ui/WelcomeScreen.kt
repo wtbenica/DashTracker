@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,9 +40,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_welcome.ui.SelectedCard.*
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.car
-import com.wtb.dashTracker.ui.theme.down
-import com.wtb.dashTracker.ui.theme.up
+import com.wtb.dashTracker.ui.theme.welcomeIconColor
 
 interface WelcomeScreenCallback {
     fun nextScreen()
@@ -66,7 +65,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                 SingleExpandableCard(
                     text = "Track your income",
                     icon = Icons.TwoTone.MonetizationOn,
-                    iconTint = up,
+                    iconTint = welcomeIconColor(),
                     iconDescription = "Drawing of a car",
                     isExpanded = expandedCard == INCOME,
                     callback = {
@@ -90,7 +89,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                 SingleExpandableCard(
                     text = "Track your expenses",
                     icon = Icons.TwoTone.Wallet,
-                    iconTint = down,
+                    iconTint = welcomeIconColor(),
                     iconDescription = "Drawing of a car",
                     isExpanded = expandedCard == EXPENSES,
                     callback = {
@@ -114,7 +113,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                 SingleExpandableCard(
                     text = "Track your mileage",
                     icon = Icons.TwoTone.DirectionsCar,
-                    iconTint = car,
+                    iconTint = welcomeIconColor(),
                     iconDescription = "Drawing of a car",
                     isExpanded = expandedCard == MILEAGE,
                     callback = {
@@ -170,6 +169,26 @@ fun WelcomeNav(callback: WelcomeScreenCallback) {
 @Preview
 @Composable
 fun PreviewWelcome() {
+    val callback = object : WelcomeScreenCallback {
+        override fun nextScreen() {
+
+        }
+    }
+
+    DashTrackerTheme {
+        Surface {
+            Column {
+                WelcomeScreen(modifier = Modifier.weight(1f), callback)
+            }
+        }
+    }
+}
+
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewWelcomeNight() {
     val callback = object : WelcomeScreenCallback {
         override fun nextScreen() {
 

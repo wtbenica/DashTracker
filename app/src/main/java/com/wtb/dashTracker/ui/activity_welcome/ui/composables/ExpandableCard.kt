@@ -21,6 +21,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -28,9 +29,11 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.twotone.AttachMoney
 import androidx.compose.material.icons.twotone.Circle
 import androidx.compose.material.icons.twotone.SquareFoot
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +51,10 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.theme.*
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.cardShape
+import com.wtb.dashTracker.ui.theme.down
+import com.wtb.dashTracker.ui.theme.up
 
 @Composable
 fun fontSizeDimensionResource(@DimenRes id: Int): TextUnit =
@@ -76,15 +82,24 @@ fun SingleExpandableCard(
     content: @Composable (() -> Unit)? = null
 ) {
     DashTrackerTheme {
-        val outlineColor = MaterialTheme.colorScheme.secondary
+        val outlineColor = MaterialTheme.colorScheme.primary
+        val interactionSource = remember { MutableInteractionSource() }
         OutlinedCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(cardShape)
-                .clickable(content != null) { callback() },
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = rememberRipple(
+                        bounded = true,
+                        radius = Dp.Unspecified,
+                        color = MaterialTheme.colorScheme.tertiary
+                    ),
+                    enabled = content != null
+                ) { callback() },
             shape = cardShape,
             colors = customCardColors(),
-            border = BorderStroke(width = 1.dp, color = outlineColor)
+            border = BorderStroke(width = 2.dp, color = outlineColor)
         ) {
             Column {
                 Row(
@@ -141,7 +156,7 @@ fun SingleExpandableCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(16.dp),
-                            tint = outlineColor
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                         false -> Icon(
                             Icons.Filled.KeyboardArrowDown,
@@ -149,7 +164,7 @@ fun SingleExpandableCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(16.dp),
-                            tint = outlineColor
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
@@ -171,7 +186,7 @@ fun CustomOutlinedCard(
             .clip(cardShape),
         shape = cardShape,
         colors = customCardColors(),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary),
+        border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary),
     ) {
         Column(
             modifier = Modifier.padding(
@@ -208,7 +223,7 @@ fun ContentCard(
                 .clip(cardShape),
             shape = cardShape,
             colors = customCardColors(),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
+            border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary)
         ) {
             Row(
                 modifier = if (content == null) {
@@ -289,7 +304,7 @@ fun ListRow(
                 .size(iconSize + 6.dp)
                 .align(Alignment.CenterVertically)
                 .padding(6.dp),
-            tint = primaryDark
+            tint = MaterialTheme.colorScheme.secondary
         )
 
         Spacer(modifier = Modifier.width(8.dp))

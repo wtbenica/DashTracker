@@ -23,7 +23,7 @@
     <style name="TitleTextAppearance" parent="TextAppearance.AppCompat.Title">
         <item name="android:textSize">?attr/textSizeActionBarTitle</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">?attr/titleFontFamily</item>
         <item name="android:textColor">?attr/colorActionBarText</item>
     </style>
