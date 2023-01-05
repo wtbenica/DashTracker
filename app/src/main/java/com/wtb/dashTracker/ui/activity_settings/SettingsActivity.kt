@@ -71,7 +71,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class SettingsActivity : AuthenticatedActivity() {
-    val ph: PermissionsHelper
+    private val permissionsHelper: PermissionsHelper
         get() = PermissionsHelper(this)
 
     var mileageTrackingEnabledPref: SwitchPreference? = null
@@ -262,7 +262,7 @@ class SettingsActivity : AuthenticatedActivity() {
                         fun startOnboarding() =
                             startActivity(Intent(this, OnboardingMileageActivity::class.java))
 
-                        ph.whenHasDecided(
+                        permissionsHelper.whenHasDecided(
                             hasNotification = ::startOnboarding,
                             hasBgLocation = ::startOnboarding,
                             hasLocation = ::startOnboarding,

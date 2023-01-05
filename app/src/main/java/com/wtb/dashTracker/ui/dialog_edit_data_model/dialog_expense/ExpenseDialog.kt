@@ -63,9 +63,6 @@ import java.time.LocalDate
 class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
     override var item: Expense? = null
-        set(value) {
-            field = value
-        }
 
     override val viewModel: ExpenseViewModel by viewModels()
     override lateinit var binding: DialogFragExpenseBinding

@@ -66,7 +66,7 @@
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavItemIndicator">?attr/colorSecondaryDark</item>
-        <item name="colorBottomNavRipple">?attr/colorSecondaryFaded</item>
+        <item name="colorBottomNavRipple">?attr/colorSecondaryVariant</item>
         <item name="colorPopupBackground">?attr/colorSecondaryVariant</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>

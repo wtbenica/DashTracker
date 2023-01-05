@@ -96,7 +96,7 @@
         app:layout_constraintHorizontal_weight=".25"
         app:layout_constraintStart_toEndOf="@id/frag_income_tab_layout"
         app:layout_constraintTop_toTopOf="parent"
-        app:rippleColor="?attr/colorGroupStroke" />
+        app:rippleColor="?attr/colorTabIndicator" />
 
     <LinearLayout
         android:id="@+id/filter_box"

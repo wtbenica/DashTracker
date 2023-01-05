@@ -51,7 +51,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.theme.*
 
 @Composable
-public fun fontSizeDimensionResource(@DimenRes id: Int): TextUnit =
+fun fontSizeDimensionResource(@DimenRes id: Int): TextUnit =
     dimensionResource(id = id).value.sp
 
 @Composable
@@ -365,7 +365,7 @@ fun PreviewCustomOutlined() {
 @Composable
 @Preview
 fun PreviewSecondaryCustomOutlined() {
-    SecondaryOutlinedCard() {
+    SecondaryOutlinedCard {
         val str = buildAnnotatedString {
             append("To grant location permissions, select ")
 
