@@ -31,49 +31,44 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val cardShape: RoundedCornerShape = RoundedCornerShape(24.dp)
 
 private val DarkColorScheme: ColorScheme = darkColorScheme(
     primary = darkPrimary,
-    secondary = darkPrimaryLight,
-    tertiary = darkPrimaryFaded,
+    secondary = darkPrimaryFaded,
+    tertiary = darkPrimaryLight,
+    surface = darkOnSecondary,
+    background = Color.Yellow,
     onPrimary = darkOnPrimary,
-    primaryContainer = darkOnPrimary,
-    secondaryContainer = darkOnPrimary,
-    tertiaryContainer = darkOnPrimary
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    onSecondary = darkOnSecondary,
+    onSurface = darkOnPrimary,
+    onBackground = darkOnPrimary,
+    primaryContainer = darkPrimary,
+    secondaryContainer = darkPrimaryFaded,
+    tertiaryContainer = Color.Green,
+    onPrimaryContainer = darkOnPrimary,
+    onSecondaryContainer = Color.Blue,
+    outline = darkPrimaryDark,
 )
 
 private val LightColorScheme: ColorScheme = lightColorScheme(
     primary = primary,
-    onPrimary = onPrimary,
-    primaryContainer = primaryFaded,
-    onPrimaryContainer = onPrimary,
     secondary = primaryDark,
-    onSecondary = onSecondary,
-    secondaryContainer = primaryFaded,
-    onSecondaryContainer = onSecondary,
-    tertiary = primaryFaded,
-    tertiaryContainer = Color.Green,
+    tertiary = primaryLight,
+    surface = onSecondary,
     background = Color.Yellow,
-    onBackground = onPrimary,
+    onPrimary = onPrimary,
+    onSecondary = onSecondary,
     onSurface = onPrimary,
+    primaryContainer = primary,
+    secondaryContainer = primaryFaded,
+    tertiaryContainer = Color.Green,
+    onPrimaryContainer = onPrimary,
+    onSecondaryContainer = onSecondary,
+    onBackground = onPrimary,
     outline = primaryDark,
-
-    /* Other default colors to override
-    surface = Color(0xFFFFFBFE),
-    onTertiary = Color.White,
-    */
 )
 
 @ExperimentalTextApi
@@ -92,6 +87,7 @@ fun DashTrackerTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -101,6 +97,15 @@ fun DashTrackerTheme(
                 darkTheme
         }
     }
+
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = colorScheme.primary,
+            darkIcons = !darkTheme
+        )
+    }
+
 
     MaterialTheme(
         colorScheme = colorScheme,

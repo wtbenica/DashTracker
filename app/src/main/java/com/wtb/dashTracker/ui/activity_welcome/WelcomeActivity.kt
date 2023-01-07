@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.activity_welcome
 
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -106,7 +107,7 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
 
     companion object {
         @Composable
-        fun welcomeIconColor(): Color = MaterialTheme.colorScheme.tertiary
+        fun welcomeIconColor(): Color = MaterialTheme.colorScheme.secondary
 
     }
 }
@@ -118,7 +119,7 @@ enum class WelcomeActivityScreen {
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun DefaultPreview() {
     val callback = object : WelcomeScreenCallback {

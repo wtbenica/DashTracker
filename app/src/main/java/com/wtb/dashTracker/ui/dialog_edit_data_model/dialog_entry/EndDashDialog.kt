@@ -175,14 +175,12 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                         )
                     )
 
-                    fragEntryTotalMileage.setText(
-                        getString(
-                            R.string.odometer_fmt,
-                            if (tempEntry.mileage != null)
-                                tempEntry.mileage
-                            else
-                                fullEntry?.distance?.toFloat()
-                        )
+                    fragEntryTotalMileage.text = getString(
+                        R.string.odometer_fmt,
+                        if (tempEntry.mileage != null)
+                            tempEntry.mileage
+                        else
+                            fullEntry?.distance?.toFloat()
                     )
 
                     tempEntry.pay?.let { p -> fragEntryPay.setText(p.toCurrencyString()) }
@@ -244,7 +242,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                     }
                 } ?: ""
             )
-            fragEntryTotalMileage.setText((fullEntry?.distance ?: 0).toString())
+            fragEntryTotalMileage.text = (fullEntry?.distance ?: 0).toString()
             fragEntryPay.text.clear()
             fragEntryPayOther.text.clear()
             fragEntryCashTips.text.clear()

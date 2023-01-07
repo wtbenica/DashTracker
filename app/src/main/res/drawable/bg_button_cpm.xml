@@ -18,7 +18,14 @@
     <item android:top="@dimen/margin_narrow">
         <shape>
             <corners android:topLeftRadius="@dimen/margin_default" />
-            <solid android:color="?attr/colorTabIndicator" />
+            <solid android:color="?attr/colorOptionsButton" />
+        </shape>
+    </item>
+    <item android:top="@dimen/margin_narrow">
+        <shape>
+            <corners android:topLeftRadius="@dimen/margin_default" />
+            <solid android:color="?attr/colorOptionsMenu" />
+            <padding android:bottom="1dp" />
         </shape>
     </item>
     <item>

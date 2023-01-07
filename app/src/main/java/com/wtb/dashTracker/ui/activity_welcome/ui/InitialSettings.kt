@@ -41,20 +41,20 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcome
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.secondary
+import com.wtb.dashTracker.ui.theme.secondaryDark
 import com.wtb.dashTracker.ui.theme.secondaryFaded
-import com.wtb.dashTracker.ui.theme.secondaryLight
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Composable
 fun customSwitchColors(): SwitchColors {
     return SwitchDefaults.colors(
-        checkedThumbColor = secondary(),
+        checkedThumbColor = secondaryDark(),
         checkedTrackColor = secondaryFaded(),
-        checkedBorderColor = secondary(),
-        uncheckedThumbColor = secondaryLight(),
+        checkedBorderColor = MaterialTheme.colorScheme.primary,
+        uncheckedThumbColor = secondary(),
         uncheckedTrackColor = secondaryFaded(),
-        uncheckedBorderColor = secondary()
+        uncheckedBorderColor = MaterialTheme.colorScheme.primary
     )
 }
 

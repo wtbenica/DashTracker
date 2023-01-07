@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FirstPage
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.TextSnippet
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -41,7 +43,7 @@ fun CustomButton(
     DashTrackerTheme {
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onSecondary,
             ),
             onClick = onClick,
@@ -80,12 +82,14 @@ fun CustomOutlinedButton(
     content: @Composable RowScope.() -> Unit
 ) {
     DashTrackerTheme {
+        val interactionSource = remember { MutableInteractionSource() }
+
         OutlinedButton(
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary),
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
             onClick = onClick,
             modifier = modifier,
             content = content

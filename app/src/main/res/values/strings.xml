@@ -224,7 +224,7 @@
     <string name="route_bg_location_permission">route_bg_location_permission</string>
     <string name="route_notification_permission">route_notification_permission</string>
     <string name="route_battery_permission">route_batter_permission</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

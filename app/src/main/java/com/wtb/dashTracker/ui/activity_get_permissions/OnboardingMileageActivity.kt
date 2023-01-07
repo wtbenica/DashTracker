@@ -259,7 +259,7 @@ class OnboardingMileageActivity : ComponentActivity() {
      * @param T return type
      * @param optOutLocation Has opted out of mileage tracking
      * @param hasAllPermissions Has [REQUIRED_PERMISSIONS] + [AppCompatActivity.hasBatteryPermission]
-     * + [OPTIONAL_PERMISSIONS] or has opted out of optional permissions
+     * & [OPTIONAL_PERMISSIONS] or has opted out of optional permissions
      * @param hasNotification Has [REQUIRED_PERMISSIONS] + []
      * @param hasBgLocation SDK_INT >= TIRAMISU and has [ACCESS_BACKGROUND_LOCATION] and
      * [LOCATION_PERMISSIONS]
@@ -267,7 +267,7 @@ class OnboardingMileageActivity : ComponentActivity() {
      * @param noPermissions also the default return value
      * @return the matching parameter
      */
-    internal fun <T : Any> whenHasDecided(
+    private fun <T : Any> whenHasDecided(
         optOutLocation: T? = null,
         hasAllPermissions: T? = null,
         hasNotification: T? = null,
@@ -496,7 +496,7 @@ internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selecte
                 if (i == selectedPage) Icons.Filled.Circle else Icons.TwoTone.Circle,
                 contentDescription = "circle",
                 modifier = Modifier.size(8.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.secondary
             )
         }
     }
