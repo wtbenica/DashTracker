@@ -27,6 +27,7 @@
     <attr name="colorOnSecondaryVariant" format="reference|color" />
 
     <attr name="defaultCornerRadius" format="reference" />
+    <attr name="colorTabItemRipple" format="reference|color" />
 
     <!-- Text -->
     <attr name="titleFontFamily" format="reference" />
@@ -38,7 +39,9 @@
     <!--    activity_main   -->
     <attr name="colorToolbar" format="reference" />
     <attr name="colorActionBarText" format="reference" />
+    <attr name="colorSummaryBar" format="reference" />
     <attr name="colorSummaryBarItemText" format="reference" />
+    <attr name="colorBottomNavBar" format="reference|color" />
     <attr name="colorBottomNavItem" format="reference|color" />
     <attr name="colorBottomNavItemText" format="reference|color" />
     <attr name="colorBottomNavEnabled" format="reference|color" />
@@ -46,6 +49,7 @@
     <attr name="colorBottomNavTextEnabled" format="reference|color" />
     <attr name="colorBottomNavTextDisabled" format="reference|color" />
     <attr name="colorBottomNavItemIndicator" format="reference|color" />
+    <attr name="colorBottomNavRipple" format="reference|color" />
     <attr name="colorFab" format="reference|color" />
     <attr name="colorFabDisabled" format="reference|color" />
     <attr name="colorFabIcon" format="reference|color" />
@@ -124,12 +128,16 @@
 
     <!-- dialog -->
     <attr name="colorDialog" format="reference" />
+    <attr name="colorDialogBg" format="reference" />
     <attr name="colorDialogSecondary" format="reference" />
+    <attr name="colorDialogGroupBg" format="reference" />
+    <attr name="colorDialogGroupStroke" format="reference" />
     <attr name="colorDialogContentBg" format="reference" />
     <attr name="colorDialogTitle" format="reference" />
     <attr name="colorDialogText" format="reference" />
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
+    <attr name="colorDialogItem2" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
     <attr name="colorDialogButtonIcon" format="reference|color" />
     <attr name="colorDialogButtonBg" format="reference|color" />

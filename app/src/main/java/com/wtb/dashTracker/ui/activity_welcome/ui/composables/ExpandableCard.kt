@@ -21,15 +21,19 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.twotone.AttachMoney
 import androidx.compose.material.icons.twotone.Circle
+import androidx.compose.material.icons.twotone.SquareFoot
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.material3.CardDefaults.cardColors
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,11 +53,12 @@ import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.cardShape
-import com.wtb.dashTracker.ui.theme.primaryDark
+import com.wtb.dashTracker.ui.theme.down
 import com.wtb.dashTracker.ui.theme.up
 
 @Composable
-fun fontSizeDimensionResource(@DimenRes id: Int) = dimensionResource(id = id).value.sp
+fun fontSizeDimensionResource(@DimenRes id: Int): TextUnit =
+    dimensionResource(id = id).value.sp
 
 @Composable
 fun customCardColors(): CardColors {
@@ -63,98 +68,6 @@ fun customCardColors(): CardColors {
         disabledContainerColor = MaterialTheme.colorScheme.primary,
         disabledContentColor = MaterialTheme.colorScheme.onPrimary
     )
-}
-
-@ExperimentalTextApi
-@Composable
-fun ExpandableCard(
-    text: String,
-    icon: ImageVector,
-    iconTint: Color,
-    iconDescription: String,
-    content: @Composable (() -> Unit)? = null
-) {
-    var isExpanded by remember { mutableStateOf(false) }
-
-    DashTrackerTheme {
-        OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(cardShape)
-                .clickable(content != null) { isExpanded = !isExpanded },
-            shape = cardShape,
-            colors = customCardColors(),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary)
-        ) {
-            Column {
-                Row(
-                    modifier = if (content == null) {
-                        Modifier
-                            .padding(all = 16.dp)
-                    } else {
-                        Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                    }
-                ) {
-                    Text(
-                        text = text,
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .weight(1f),
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Start,
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Icon(
-                        icon,
-                        contentDescription = iconDescription,
-                        modifier = Modifier
-                            .width(48.dp)
-                            .height(48.dp),
-                        tint = iconTint
-                    )
-                }
-
-                if (content != null) {
-                    AnimatedVisibility(visible = isExpanded) {
-                        Row(
-                            modifier = Modifier
-                                .padding(16.dp)
-                        ) {
-                            content()
-                        }
-                    }
-                }
-            }
-
-            if (content != null) {
-                Crossfade(
-                    targetState = isExpanded,
-                ) {
-                    when (it) {
-                        true -> Icon(
-                            Icons.Filled.KeyboardArrowUp,
-                            contentDescription = "Show less",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(16.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                        false -> Icon(
-                            Icons.Filled.KeyboardArrowDown,
-                            contentDescription = "Show more",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(16.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                }
-            }
-        }
-    }
 }
 
 @ExperimentalTextApi
@@ -169,14 +82,24 @@ fun SingleExpandableCard(
     content: @Composable (() -> Unit)? = null
 ) {
     DashTrackerTheme {
+        val outlineColor = MaterialTheme.colorScheme.primary
+        val interactionSource = remember { MutableInteractionSource() }
         OutlinedCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(cardShape)
-                .clickable(content != null) { callback() },
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = rememberRipple(
+                        bounded = true,
+                        radius = Dp.Unspecified,
+                        color = MaterialTheme.colorScheme.tertiary
+                    ),
+                    enabled = content != null
+                ) { callback() },
             shape = cardShape,
             colors = customCardColors(),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary)
+            border = BorderStroke(width = 2.dp, color = outlineColor)
         ) {
             Column {
                 Row(
@@ -193,6 +116,7 @@ fun SingleExpandableCard(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .weight(1f),
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 18.sp,
                         textAlign = TextAlign.Start,
                     )
@@ -262,9 +186,13 @@ fun CustomOutlinedCard(
             .clip(cardShape),
         shape = cardShape,
         colors = customCardColors(),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary),
+        border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary),
     ) {
-        Column(modifier = Modifier.padding(padding?.dp ?: dimensionResource(id = R.dimen.margin_wide))) {
+        Column(
+            modifier = Modifier.padding(
+                padding?.dp ?: dimensionResource(id = R.dimen.margin_wide)
+            )
+        ) {
             content()
         }
     }
@@ -295,7 +223,7 @@ fun ContentCard(
                 .clip(cardShape),
             shape = cardShape,
             colors = customCardColors(),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.secondary)
+            border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary)
         ) {
             Row(
                 modifier = if (content == null) {
@@ -349,7 +277,7 @@ fun SecondaryOutlinedCard(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
     ) {
         content()
     }
@@ -367,15 +295,16 @@ fun ListRow(
 ) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             icon,
             contentDescription = "Bulleted item",
             modifier = Modifier
                 .size(iconSize + 6.dp)
-                .padding(start = 0.dp, top = 6.dp, end = 0.dp, bottom = 0.dp),
-            tint = primaryDark
+                .align(Alignment.CenterVertically)
+                .padding(6.dp),
+            tint = MaterialTheme.colorScheme.secondary
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -383,7 +312,8 @@ fun ListRow(
         Text(
             text,
             fontSize = fontSize,
-            fontFamily = fontFamily
+            fontFamily = fontFamily,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -402,15 +332,18 @@ fun HeaderRow(text: String, modifier: Modifier = Modifier, icon: ImageVector): U
 @ExperimentalTextApi
 @Composable
 @Preview
-fun PreviewExpandableCard() {
-    ExpandableCard(
-        text = "Track your income",
-        icon = Icons.TwoTone.AttachMoney,
-        iconTint = up,
-        iconDescription = "Drawing of a car",
-    ) {
-        ListRow("Eat your potato salad, dearie")
-    }
+fun PreviewSingleExpandableCard() {
+    SingleExpandableCard(
+        text = "Track Your Income",
+        icon = Icons.TwoTone.SquareFoot,
+        iconTint = down,
+        iconDescription = "Stinky Fish",
+        isExpanded = true,
+        callback = { },
+        content = {
+            ListRow("Eat your potato salad, dearie")
+        }
+    )
 }
 
 @ExperimentalTextApi
@@ -447,7 +380,7 @@ fun PreviewCustomOutlined() {
 @Composable
 @Preview
 fun PreviewSecondaryCustomOutlined() {
-    SecondaryOutlinedCard() {
+    SecondaryOutlinedCard {
         val str = buildAnnotatedString {
             append("To grant location permissions, select ")
 

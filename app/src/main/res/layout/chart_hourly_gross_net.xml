@@ -92,7 +92,7 @@
                             android:min="7"
                             android:padding="0dp"
                             android:progress="41"
-                            android:progressBackgroundTint="?attr/colorSecondaryFaded"
+                            android:progressBackgroundTint="?attr/colorOnPrimaryVariant"
                             android:progressBackgroundTintMode="screen"
                             android:progressTint="?attr/colorSecondaryDark"
                             android:thumb="@drawable/ic_circle"
@@ -122,7 +122,7 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/hourly_trend_daily"
-                            style="@style/materialToggleButton"
+                            style="@style/MaterialToggleButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -130,7 +130,7 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/hourly_trend_weekly"
-                            style="@style/materialToggleButton"
+                            style="@style/MaterialToggleButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -160,17 +160,17 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/gas_button"
-                            style="@style/materialToggleButton"
+                            style="@style/MaterialToggleButton"
                             android:text="@string/expense_purpose_gas" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/actual_button"
-                            style="@style/materialToggleButton"
+                            style="@style/MaterialToggleButton"
                             android:text="@string/expense_purpose_all" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/standard_button"
-                            style="@style/materialToggleButton"
+                            style="@style/MaterialToggleButton"
                             android:text="@string/expense_purpose_standard" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </TableRow>

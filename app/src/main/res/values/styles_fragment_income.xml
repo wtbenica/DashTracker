@@ -22,10 +22,12 @@
         <item name="tabIndicatorFullWidth">false</item>
         <item name="tabIndicatorHeight">@dimen/margin_narrow</item>
         <item name="android:backgroundTint">?attr/colorTabLayoutBg</item>
+        <item name="tabRippleColor">?attr/colorUIBackground</item>
+        <item name="tabBackground">@drawable/tab_background_something</item>
     </style>
 
 
-    <style name="materialToggleButton" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="MaterialToggleButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:singleLine">false</item>
         <item name="singleLine">false</item>
@@ -33,7 +35,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
         <item name="backgroundTint">@color/button_group_button</item>
+        <item name="android:textColor">?attr/colorGroupButtonText</item>
         <item name="strokeColor">?attr/colorGroupStroke</item>
         <item name="strokeWidth">1dp</item>
+        <item name="rippleColor">?attr/colorGroupStroke</item>
     </style>
 </resources>

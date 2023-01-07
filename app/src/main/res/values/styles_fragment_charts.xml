@@ -48,7 +48,7 @@
     </style>
 
     <style name="DashTrackerChart">
-        <item name="android:background">?attr/colorPrimaryFaded</item>
+        <item name="android:background">?attr/colorListItemDetails</item>
         <item name="android:padding">@dimen/margin_default</item>
     </style>
 </resources>

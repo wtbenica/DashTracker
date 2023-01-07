@@ -100,7 +100,7 @@
                     style="@style/PayTable.Gas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/colorPrimaryFaded">
+                    android:background="?attr/colorListItemDetails">
 
                     <TableRow
                         android:layout_width="match_parent"
