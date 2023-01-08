@@ -14,88 +14,63 @@
   ~ limitations under the License.
   -->
 
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_mileage_breakdown"
-    android:columnCount="4"
-    android:padding="@dimen/margin_default"
-    android:paddingHorizontal="@dimen/margin_default">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_columnSpan="4"
-        android:layout_columnWeight="1"
-        android:text="Mileage Breakdown"
-        android:textAlignment="center"
-        android:textSize="@dimen/text_size_large" />
+    <GridLayout
 
-    <TextView
-        style="@style/HeaderStyle"
-        android:layout_columnWeight=".25"
-        tools:text="Dates" />
+        android:id="@+id/mileage_breakdown_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_list_item"
+        android:columnCount="3"
+        android:paddingBottom="@dimen/margin_half">
 
-    <TextView
-        style="@style/HeaderStyle"
-        android:layout_columnWeight=".25"
-        tools:text="@string/header_mileage" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_row="0"
+            android:layout_rowSpan="2"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_columnSpan="3"
+            android:layout_marginBottom="@dimen/margin_half"
+            android:src="@drawable/bg_list_item_subtable" />
 
-    <TextView
-        style="@style/HeaderStyle"
-        android:layout_columnWeight=".25"
-        tools:text="@string/lbl_cpm" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_columnSpan="3"
+            android:paddingTop="@dimen/margin_half"
+            android:text="Mileage Breakdown"
+            android:textAlignment="center"
+            android:textSize="@dimen/text_size_large" />
 
-    <TextView
-        style="@style/HeaderStyle"
-        android:layout_columnWeight=".25"
-        android:layout_marginEnd="0dp"
-        android:textAlignment="textEnd"
-        tools:text="@string/header_mileage" />
+        <TextView
+            style="@style/HeaderStyle"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:layout_marginBottom="@dimen/margin_default"
+            android:paddingStart="@dimen/margin_default"
+            android:text="Dates" />
 
-    <TextView
-        style="@style/ValueStyle"
-        android:layout_columnWeight=".25"
-        android:textAlignment="textStart"
-        android:textSize="@dimen/text_size_med"
-        tools:text="Jan 1 - Jun 30" />
+        <TextView
+            style="@style/HeaderStyle"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:text="@string/lbl_cpm" />
 
-    <TextView
-        style="@style/HeaderStyle"
-        android:layout_columnWeight=".25"
-        tools:text="76126-81220" />
-
-    <TextView
-        style="@style/HeaderStyle"
-        android:layout_columnWeight=".25"
-        tools:text="$0.565" />
-
-    <TextView
-        style="@style/ValueStyle"
-        android:layout_columnWeight=".25"
-        android:textSize="@dimen/text_size_med"
-        tools:text="5994" />
-
-    <TextView
-        style="@style/ValueStyle"
-        android:layout_columnWeight=".25"
-        android:textAlignment="textStart"
-        android:textSize="@dimen/text_size_med"
-        android:textStyle="bold"
-        tools:text="Jul 1 - Dec 31" />
-
-    <TextView
-        style="@style/HeaderStyle"
-        android:layout_columnWeight=".25"
-        tools:text="81220-90210" />
-
-    <TextView
-        style="@style/HeaderStyle"
-        android:layout_columnWeight=".25"
-        tools:text="$0.585" />
-
-    <TextView
-        style="@style/ValueStyle"
-        android:layout_columnWeight=".25"
-        android:textSize="@dimen/text_size_med"
-        tools:text="8990" />
-</GridLayout>
+        <TextView
+            style="@style/HeaderStyle"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:layout_marginEnd="0dp"
+            android:paddingEnd="@dimen/margin_default"
+            android:text="@string/header_mileage"
+            android:textAlignment="textEnd" />
+    </GridLayout>
+</androidx.cardview.widget.CardView>

@@ -288,7 +288,7 @@ class WeeklyListFragment : ListItemFragment() {
                 detailsBinding.listItemWeeklyMiles.text =
                     getStringOrElse(R.string.odometer_fmt, "-", this.item.miles)
 
-                setPayloadVisibility(payloads)
+                setVisibilityFromPayloads(payloads)
             }
         }
     }
