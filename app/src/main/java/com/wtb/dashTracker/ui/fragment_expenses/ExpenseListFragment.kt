@@ -188,7 +188,7 @@ class ExpenseListFragment : ListItemFragment() {
                 binding.listItemGallons.text =
                     getStringOrElse(R.string.float_fmt, "-", this.item.expense.gallons)
 
-                setPayloadVisibility(payloads)
+                setVisibilityFromPayloads(payloads)
             }
         }
 
@@ -230,7 +230,7 @@ class ExpenseListFragment : ListItemFragment() {
                     getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
                 binding.listItemSubtitle.text = this.item.purpose.name
 
-                setPayloadVisibility(payloads)
+                setVisibilityFromPayloads(payloads)
             }
         }
     }

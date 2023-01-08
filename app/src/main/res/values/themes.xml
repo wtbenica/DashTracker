@@ -76,6 +76,7 @@
         <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
 
         <!-- Text -->
+        <item name="defaultFontFamily">@style/ValueStyle</item>
         <item name="android:fontFamily">@font/oswald</item>
         <item name="titleFontFamily">@font/oswald</item>
 

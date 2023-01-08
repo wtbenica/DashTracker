@@ -30,6 +30,7 @@
     <attr name="colorTabItemRipple" format="reference|color" />
 
     <!-- Text -->
+    <attr name="defaultFontFamily" format="reference" />
     <attr name="titleFontFamily" format="reference" />
     <attr name="colorTextPrimary" format="reference" />
     <attr name="colorTextPrimaryDisabled" format="reference" />

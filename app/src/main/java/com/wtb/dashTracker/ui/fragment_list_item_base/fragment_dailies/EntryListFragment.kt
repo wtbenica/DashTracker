@@ -258,7 +258,7 @@ class EntryListFragment : ListItemFragment() {
                 detailsBinding.listItemEntryHourlyDels.text =
                     getFloatString(this.item.entry.hourlyDeliveries)
 
-                setPayloadVisibility(payloads)
+                setVisibilityFromPayloads(payloads)
             }
         }
     }
