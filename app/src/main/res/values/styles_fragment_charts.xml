@@ -41,7 +41,7 @@
     <style name="chartTunerTable">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?attr/colorOptionsMenu</item>
+        <item name="android:background">@drawable/chart_options_menu_bg</item>
         <item name="android:padding">@dimen/margin_default</item>
         <item name="android:visibility">gone</item>
         <item name="android:columnCount">2</item>

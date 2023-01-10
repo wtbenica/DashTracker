@@ -35,8 +35,10 @@
             android:padding="@dimen/margin_half">
 
             <TextView
-                android:id="@+id/chart_title_cpm"
+                android:id="@+id/chart_holder_title"
                 style="@style/ListItemHeaderTextView.Title"
+                android:layout_marginStart="@dimen/margin_half"
+                android:layout_marginTop="@dimen/margin_half"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="@string/lbl_cost_per_mile" />
@@ -58,7 +60,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/min_touch_target"
                     android:background="?attr/colorShowFiltersButtonBg"
-                    android:elevation="4dp"
                     android:minWidth="@dimen/min_touch_target"
                     android:src="@drawable/anim_tune_to_close"
                     app:tint="?attr/colorShowFiltersButton" />

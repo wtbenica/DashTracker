@@ -70,7 +70,7 @@ class DTChartHolder @JvmOverloads constructor(
         mCallback = callback
         mChart = chart
         binding.cpmBottom.addView(mChart)
-        chart.title?.let { binding.chartTitleCpm.setText(it) }
+        chart.title?.let { binding.chartHolderTitle.setText(it) }
     }
 
     private fun runShowTuneIconCollapseAnimation() {

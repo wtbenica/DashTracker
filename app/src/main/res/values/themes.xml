@@ -138,7 +138,6 @@
 
         <!-- activity_main.xml -->
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
-        <item name="colorToolbar">?android:attr/statusBarColor</item>
         <item name="colorSummaryBar">?attr/colorOnSecondary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorFab">?attr/colorSecondaryVariant</item>
@@ -151,7 +150,7 @@
         <item name="colorBottomNavTextEnabled">?attr/colorAccent</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryDark</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorSecondaryFaded</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorSecondary</item>
         <item name="colorBottomNavRipple">?attr/colorSecondary</item>
         <item name="colorPopupBackground">?attr/colorSecondaryFaded</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
@@ -175,10 +174,12 @@
         <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
         <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
         <item name="colorOptionsButton">?attr/colorTabIndicator</item>
+        <item name="colorOptionsMenuStroke">?attr/colorTabIndicator</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>
-        <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemExpanded">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
@@ -187,7 +188,7 @@
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
-        <item name="colorListItemDetailsToolbar">?attr/colorListItemAccent</item>
+        <item name="colorListItemDetailsToolbar">?attr/colorOnSecondary</item>
         <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
         <item name="colorRowHeaderText">?attr/colorOnPrimaryVariant</item>
@@ -206,7 +207,7 @@
         <item name="colorNightHeader">@color/nighttime_solid</item>
         <item name="colorNightValue">@color/nighttime_light</item>
         <item name="colorShowFiltersButton">?attr/colorSecondaryDark</item>
-        <item name="colorShowFiltersButtonBg">?attr/colorSecondaryFaded</item>
+        <item name="colorShowFiltersButtonBg">?attr/colorSecondary</item>
         <item name="colorChartBackground">?attr/colorListItem</item>
 
         <!-- dialog fragment -->
@@ -215,12 +216,12 @@
         <item name="colorDialogBg">?attr/colorOnSecondary</item>
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?attr/colorTextPrimary</item>
-        <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogGroupBg">?attr/colorOnSecondary</item>
         <item name="colorDialogGroupStroke">?attr/colorPrimary</item>
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorPrimaryFaded</item>
-        <item name="colorDialogItem2">?attr/colorPrimaryFaded</item>
+        <item name="colorDialogUneditableItem">?attr/colorPrimaryFaded</item>
+        <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryVariant</item>
         <item name="colorDialogButtonIcon">?attr/colorPrimaryDark</item>
         <item name="colorDialogButtonBg">?attr/colorPrimaryDark</item>

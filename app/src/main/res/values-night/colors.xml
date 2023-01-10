@@ -15,12 +15,12 @@
   -->
 
 <resources>
-    <color name="dark">#182018</color>
+    <color name="dark">#1b201b</color>
     <color name="regular">#283028</color>
     <color name="light">#384038</color>
     <color name="faded">#a0a080</color>
-    <color name="on_regular">#17171a</color>
-    <color name="on_regular_light">#28282a</color>
+    <color name="on_regular">#101014</color>
+    <color name="on_regular_light">#202024</color>
 
     <color name="brick_dark">#103038</color>
     <color name="brick">#205060</color>

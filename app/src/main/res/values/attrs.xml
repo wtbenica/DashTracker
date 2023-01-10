@@ -72,20 +72,23 @@
     <!-- fragment_income -->
     <attr name="colorTabIndicator" format="reference" />
     <attr name="colorTabText" format="reference" />
+    <attr name="colorTabLayoutBg" format="reference|color" />
+
+    <attr name="colorOptionsMenu" format="reference" />
     <attr name="colorGroupButton" format="reference" />
     <attr name="colorGroupButtonDisabled" format="reference" />
-    <attr name="colorGroupStroke" format="reference" />
-    <attr name="colorOptionsMenu" format="reference" />
-    <attr name="colorOptionsButton" format="reference" />
     <attr name="colorGroupButtonText" format="reference" />
     <attr name="colorGroupButtonTextDefault" format="reference|color" />
     <attr name="colorGroupButtonTextChecked" format="reference|color" />
-    <attr name="colorTabLayoutBg" format="reference|color" />
+    <attr name="colorGroupStroke" format="reference" />
+    <attr name="colorOptionsButton" format="reference" />
+    <attr name="colorOptionsMenuStroke" format="reference" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
     <attr name="colorListItemAccent" format="reference" />
     <attr name="colorListItemExpanded" format="reference" />
+    <attr name="colorListItemExpandedBorder" format="reference|color" />
     <attr name="colorListItemTitle" format="reference" />
     <attr name="colorListItemSubtitle" format="reference" />
     <attr name="colorListItemButtonIcon" format="reference|color" />
@@ -111,6 +114,8 @@
     <attr name="textSizeItemSecondaryValue" format="reference" />
 
     <!-- charts -->
+    <attr name="colorChartOptionsMenuOutline" format="color|reference" />
+
     <!-- daily stats row -->
     <attr name="colorChartGrossIncome" format="reference|color" />
     <attr name="colorChartNetIncome" format="reference|color" />
@@ -138,7 +143,7 @@
     <attr name="colorDialogText" format="reference" />
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
-    <attr name="colorDialogItem2" format="reference" />
+    <attr name="colorDialogUneditableItem" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
     <attr name="colorDialogButtonIcon" format="reference|color" />
     <attr name="colorDialogButtonBg" format="reference|color" />

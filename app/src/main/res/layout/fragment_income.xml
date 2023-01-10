@@ -26,7 +26,7 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?attr/colorTabIndicator"
+        android:background="?attr/colorOptionsMenuStroke"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -58,21 +58,10 @@
     </com.google.android.material.tabs.TabLayout>
 
     <View
-        android:id="@+id/divider_3"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="?attr/colorTabIndicator"
-        android:elevation="1dp"
-        app:layout_constraintEnd_toEndOf="@id/frag_income_tab_layout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout" />
-
-    <View
         android:id="@+id/divider_4"
         android:layout_width="1dp"
         android:layout_height="0dp"
-        android:background="?attr/colorTabIndicator"
-        android:elevation="1dp"
+        android:background="?attr/colorOptionsMenuStroke"
         app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"
         app:layout_constraintEnd_toEndOf="@id/frag_income_tab_layout"
         app:layout_constraintTop_toTopOf="parent" />
@@ -106,7 +95,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout">
+        app:layout_constraintTop_toBottomOf="@id/filter_btn">
 
         <LinearLayout
             android:id="@+id/filter_box_collapsable_area"
@@ -159,9 +148,17 @@
             android:id="@+id/divider_2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="?attr/colorTabIndicator" />
+            android:background="?attr/colorOptionsMenuStroke" />
     </LinearLayout>
 
+    <View
+        android:id="@+id/divider_3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="?attr/colorOptionsMenuStroke"
+        app:layout_constraintEnd_toEndOf="@id/frag_income_tab_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/frag_income_view_pager"
