@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2022 Wesley T. Benica
+  ~ Copyright 2023 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,16 +17,16 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <padding android:bottom="4dp" />
-            <solid android:color="?attr/colorListItemExpanded" />
+            <solid android:color="?attr/colorOptionsMenuStroke" />
             <corners
                 android:topLeftRadius="?attr/listItemCornerRadius"
                 android:topRightRadius="?attr/listItemCornerRadius" />
+            <padding android:top="4dp" />
         </shape>
     </item>
     <item>
         <shape>
-            <solid android:color="?attr/colorListItemDetailsToolbar" />
+            <solid android:color="?attr/colorOptionsMenu" />
             <corners
                 android:topLeftRadius="?attr/listItemCornerRadius"
                 android:topRightRadius="?attr/listItemCornerRadius" />

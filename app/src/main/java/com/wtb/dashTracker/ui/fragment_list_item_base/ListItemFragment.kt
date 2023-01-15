@@ -187,7 +187,7 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
         bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
     }
 
-    protected fun setPayloadVisibility(payloads: List<Any>?) {
+    protected fun setVisibilityFromPayloads(payloads: List<Any>?) {
         val listItemDetailsVisibility = (payloads?.let {
             if (it.isNotEmpty() && it[0] in listOf(
                     VISIBLE,

@@ -60,7 +60,8 @@
                     style="@style/chartTunerTable"
                     tools:visibility="visible">
 
-                    <TableRow android:layout_marginBottom="@dimen/margin_default">
+                    <TableRow android:layout_marginBottom="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/margin_narrow">
 
                         <TextView
                             android:id="@+id/cpm_label_num_weeks_tv"

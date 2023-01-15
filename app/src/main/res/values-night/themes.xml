@@ -78,21 +78,22 @@
         <item name="colorActiveDashBarDetailsBg">?attr/colorOnPrimary</item>
 
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorSecondaryVariant</item>
+        <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
-        <item name="colorGroupButton">?attr/colorSecondaryDark</item>
-        <item name="colorGroupButtonDisabled">?attr/colorSecondary</item>
+        <item name="colorGroupButton">?attr/colorSecondary</item>
+        <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
         <item name="colorGroupButtonText">@color/button_group_button_text</item>
         <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>
         <item name="colorGroupButtonTextChecked">?attr/colorTextPrimary</item>
         <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
-        <item name="colorOptionsMenu">?attr/colorSecondaryFaded</item>
         <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
-        <item name="colorOptionsButton">?attr/colorTabIndicator</item>
+        <item name="colorOptionsMenu">?attr/colorSecondaryDark</item>
+        <item name="colorOptionsMenuStroke">?attr/colorSecondaryVariant</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnPrimary</item>
-        <item name="colorListItemExpanded">?attr/colorPrimary</item>
+        <item name="colorListItemExpanded">?attr/colorPrimaryDark</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
@@ -108,6 +109,7 @@
         <item name="colorRowValueText">?attr/colorOnSurface</item>
         <item name="colorRowValueSecondaryText">?attr/colorOnSurface</item>
 
+        <!-- charts -->
         <!-- daily stats row -->
         <item name="colorChartGrossIncome">#848</item>
         <item name="colorChartNetIncome">#488</item>
@@ -118,8 +120,8 @@
         <item name="colorDayValue">@color/daytime_light</item>
         <item name="colorNightHeader">@color/nighttime_solid</item>
         <item name="colorNightValue">@color/nighttime_light</item>
-        <item name="colorShowFiltersButton">?attr/colorSecondaryFaded</item>
-        <item name="colorShowFiltersButtonBg">?attr/colorSecondaryDark</item>
+        <item name="colorShowFiltersButton">?attr/colorAccent</item>
+        <item name="colorShowFiltersButtonBg">?attr/colorSecondaryVariant</item>
         <item name="colorChartBackground">?attr/colorOnPrimaryVariant</item>
 
         <!-- dialog fragment -->
@@ -133,7 +135,7 @@
         <item name="colorDialogGroupStroke">?attr/colorPrimaryVariant</item>
         <item name="colorDialogContentBg">?attr/colorOnPrimary</item>
         <item name="colorDialogItem">?attr/colorOnPrimaryVariant</item>
-        <item name="colorDialogItem2">?attr/colorPrimary</item>
+        <item name="colorDialogUneditableItem">?attr/colorPrimary</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryDark</item>
         <item name="colorDialogButtonIcon">?attr/colorPrimaryFaded</item>
         <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>

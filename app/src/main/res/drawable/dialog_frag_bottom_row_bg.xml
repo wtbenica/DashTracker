@@ -30,7 +30,7 @@
     </item>
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="?attr/colorDialogItem2" />
+            <solid android:color="?attr/colorDialogUneditableItem" />
             <corners
                 android:bottomLeftRadius="@dimen/margin_wide"
                 android:bottomRightRadius="@dimen/margin_wide" />
