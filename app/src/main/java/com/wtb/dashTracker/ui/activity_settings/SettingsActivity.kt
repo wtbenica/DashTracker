@@ -100,12 +100,13 @@ class SettingsActivity : AuthenticatedActivity() {
         supportFragmentManager.setFragmentResultListener(
             /* requestKey = */ REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
             /* lifecycleOwner = */ this
-        ) { str, bundle ->
+        ) { _, bundle ->
             val needsRestart = bundle.getBoolean(ACTIVITY_RESULT_NEEDS_RESTART)
-
             activityResult.apply {
                 putExtra(ACTIVITY_RESULT_NEEDS_RESTART, needsRestart)
+                putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
             }
+            setResult(RESULT_OK, activityResult)
             finish()
         }
     }
@@ -126,26 +127,7 @@ class SettingsActivity : AuthenticatedActivity() {
     override fun onPause() {
         sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
 
-        activityResult.apply {
-            putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
-            putExtra(ACTIVITY_RESULT_LOCATION_ENABLED, mileageTrackingEnabledPref?.isChecked ?: false)
-        }
-
-        setResult(RESULT_OK, activityResult)
-
         super.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        if (!activityResult.hasExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED)) {
-            activityResult.apply {
-                putExtra(EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED, isAuthenticated)
-            }
-
-            setResult(RESULT_OK, activityResult)
-        }
     }
 
     override val onAuthentication: () -> Unit
@@ -174,11 +156,11 @@ class SettingsActivity : AuthenticatedActivity() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View {
-
             setFragmentResultListener(
                 ConfirmType.RESTART.key,
             ) { _, bundle ->
                 val result = bundle.getBoolean(ARG_CONFIRM)
+
                 if (result) {
                     setFragmentResult(
                         REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
@@ -244,6 +226,14 @@ class SettingsActivity : AuthenticatedActivity() {
     private val listener: OnSharedPreferenceChangeListener =
         OnSharedPreferenceChangeListener { sharedPreferences, key ->
             when (key) {
+                PREF_SHOW_BASE_PAY_ADJUSTS -> {
+                    ConfirmationDialog.newInstance(
+                        text = R.string.dialog_restart,
+                        requestKey = ConfirmType.RESTART.key,
+                        posButton = R.string.restart,
+                        negButton = R.string.later
+                    ).show(supportFragmentManager, null)
+                }
                 LOCATION_ENABLED -> {
                     val isChecked = sharedPrefs.getBoolean(key, false)
                     if (isChecked) {

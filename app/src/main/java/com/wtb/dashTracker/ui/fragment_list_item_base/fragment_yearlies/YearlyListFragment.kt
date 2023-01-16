@@ -26,6 +26,7 @@ import android.view.View.*
 import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.LinearLayout
+import android.widget.Space
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -40,7 +41,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
-import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTable2Binding
+import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.databinding.YearlyMileageGridBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
@@ -123,8 +124,8 @@ class YearlyListFragment : ListItemFragment() {
                 .inflate(R.layout.list_item_yearly, parent, false)
         ) {
             private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
-            private val detailsBinding: ListItemYearlyDetailsTable2Binding =
-                ListItemYearlyDetailsTable2Binding.bind(itemView)
+            private val detailsBinding: ListItemYearlyDetailsTableBinding =
+                ListItemYearlyDetailsTableBinding.bind(itemView)
             private val mileageGridBinding: YearlyMileageGridBinding =
                 YearlyMileageGridBinding.bind(itemView)
 
@@ -216,15 +217,17 @@ class YearlyListFragment : ListItemFragment() {
                                         showExpenseFields(hasMultipleStdDeductions = hasMultipleStdDeductions)
 
                                         if (hasMultipleStdDeductions) {
+                                            val initChildren = 7
+                                            val spannedColumns = 8
                                             mileageGridBinding.mileageBreakdownGrid.apply {
-                                                removeViews(5, childCount - 5)
+                                                removeViews(initChildren, childCount - initChildren)
                                             }
 
                                             var startMonth = 1
                                             val mbd = getMileageBreakdownData(cpm)
                                             mbd.forEach { entry ->
                                                 mileageGridBinding.mileageBreakdownGrid.apply {
-                                                    val row = (childCount + 1) / 3
+                                                    val row = (childCount + spannedColumns) / 3
                                                     val dates = "${
                                                         Month.of(startMonth).toString()
                                                             .substring(0..2)
@@ -242,6 +245,28 @@ class YearlyListFragment : ListItemFragment() {
                                                         entry.value["miles"] ?: 0f
                                                     )
                                                 }
+                                            }
+                                            mileageGridBinding.apply {
+                                                val endRow =
+                                                    (mileageBreakdownGrid.childCount + spannedColumns) / 3
+//                                                yearlyMileageGridBottomBg.apply {
+//                                                    val lp = layoutParams as GridLayout.LayoutParams
+//                                                    lp.rowSpec = GridLayout.spec(2, endRow - 1, 1f)
+//                                                    layoutParams = lp
+//                                                }
+                                                mileageBreakdownGrid.addView(
+                                                    Space(context).apply {
+                                                        val lp = GridLayout.LayoutParams().apply {
+                                                            height =
+                                                                resources.getDimension(R.dimen.margin_default)
+                                                                    .toInt()
+                                                            columnSpec =
+                                                                GridLayout.spec(0, 3, 1f)
+                                                            rowSpec = GridLayout.spec(endRow)
+                                                        }
+                                                        layoutParams = lp
+                                                    }
+                                                )
                                             }
                                         } else {
                                             detailsBinding.listItemDeductionType.text =
@@ -340,6 +365,7 @@ fun yearlyMileageRow(
             columnSpec = GridLayout.spec(0, 1, 1f)
             rowSpec = GridLayout.spec(row)
         }
+
         root.addView(ValueTextView(context, pos = 0).apply {
             layoutParams = lp
             text = it
@@ -382,8 +408,8 @@ class ValueTextView @JvmOverloads constructor(
     init {
         inflate(context, R.layout.textview_value_style, null)
         when (pos) {
-            0 -> setPaddingRelative(resources.getDimension(R.dimen.margin_default).toInt(), 0, 0, 0)
-            2 -> setPaddingRelative(0, 0, resources.getDimension(R.dimen.margin_default).toInt(), 0)
+            0 -> setPaddingRelative(resources.getDimension(R.dimen.margin_wide).toInt(), 0, 0, 0)
+            2 -> setPaddingRelative(0, 0, resources.getDimension(R.dimen.margin_wide).toInt(), 0)
         }
     }
 }
@@ -397,8 +423,8 @@ class HeaderTextView @JvmOverloads constructor(
     init {
         inflate(context, R.layout.textview_header_style, null)
         when (pos) {
-            0 -> setPaddingRelative(resources.getDimension(R.dimen.margin_default).toInt(), 0, 0, 0)
-            2 -> setPaddingRelative(0, 0, resources.getDimension(R.dimen.margin_default).toInt(), 0)
+            0 -> setPaddingRelative(resources.getDimension(R.dimen.margin_wide).toInt(), 0, 0, 0)
+            2 -> setPaddingRelative(0, 0, resources.getDimension(R.dimen.margin_wide).toInt(), 0)
         }
     }
 }

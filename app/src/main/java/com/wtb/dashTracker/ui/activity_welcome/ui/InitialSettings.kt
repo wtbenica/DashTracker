@@ -78,7 +78,7 @@ fun InitialSettings(context: WelcomeActivity? = null) {
             CustomOutlinedCard(padding = 0) {
                 Column {
                     Surface(
-                        color = MaterialTheme.colorScheme.tertiary,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Row(
@@ -130,7 +130,7 @@ fun InitialSettings(context: WelcomeActivity? = null) {
             CustomOutlinedCard(padding = 0) {
                 Column {
                     Surface(
-                        color = MaterialTheme.colorScheme.tertiary,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Row(
