@@ -17,139 +17,162 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list_item_details_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/colorUIBackground"
+    android:orientation="vertical"
     tools:showIn="@layout/list_item_yearly">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_list_item"
+        android:background="?attr/colorListItemExpanded"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/list_item_details_card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp">
+            android:layout_height="wrap_content">
 
-            <TableLayout
-                style="@style/PayTable"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_list_item"
+                android:orientation="vertical">
 
-                <TableRow
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="0dp">
+
+                    <TableLayout
+                        style="@style/PayTable"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                style="@style/PayTableHeaderStyle"
+                                android:text="@string/lbl_reported_income" />
+
+                            <TextView
+                                style="@style/PayTableHeaderStyle"
+                                android:text="@string/lbl_cash_tips" />
+
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/list_item_reported_income"
+                                style="@style/PayTableValueStyle"
+                                tools:text="$2073.25" />
+
+                            <TextView
+                                android:id="@+id/list_item_cash_tips"
+                                style="@style/PayTableValueStyle"
+                                tools:text="$8.00" />
+                        </TableRow>
+                    </TableLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TableLayout
+                    style="@style/DetailsTable"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView
-                        style="@style/PayTableHeaderStyle"
-                        android:text="@string/lbl_reported_income" />
+                    <TableRow style="@style/DetailsRow">
 
-                    <TextView
-                        style="@style/PayTableHeaderStyle"
-                        android:text="@string/lbl_cash_tips" />
+                        <TextView
+                            style="@style/HeaderStyle"
+                            android:layout_span="2"
+                            android:layout_weight="1"
+                            android:text="@string/header_mileage" />
 
-                </TableRow>
+                        <TextView
+                            android:id="@+id/list_item_yearly_mileage"
+                            style="@style/ValueStyle"
+                            tools:text="3,201" />
+                    </TableRow>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    <TableRow
+                        android:id="@+id/list_item_yearly_cpm_row"
+                        style="@style/DetailsRow">
 
-                    <TextView
-                        android:id="@+id/list_item_reported_income"
-                        style="@style/PayTableValueStyle"
-                        tools:text="$2073.25" />
+                        <TextView
+                            style="@style/HeaderStyle"
+                            android:text="@string/lbl_cost_per_mile" />
 
-                    <TextView
-                        android:id="@+id/list_item_cash_tips"
-                        style="@style/PayTableValueStyle"
-                        tools:text="$8.00" />
-                </TableRow>
-            </TableLayout>
+                        <TextView
+                            android:id="@+id/list_item_deduction_type"
+                            style="@style/SecondaryValueStyle"
+                            tools:text="Gas Only" />
+
+                        <TextView
+                            android:id="@+id/list_item_yearly_cpm"
+                            style="@style/ValueStyle"
+                            tools:text="$0.18" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/list_item_yearly_expenses_row"
+                        style="@style/DetailsRow">
+
+                        <TextView
+                            style="@style/HeaderStyle"
+                            android:text="@string/lbl_net_expenses" />
+
+                        <TextView
+                            android:id="@+id/list_item_yearly_expenses"
+                            style="@style/ValueStyle"
+                            android:layout_weight="1"
+                            tools:text="$56.18" />
+                    </TableRow>
+
+                    <TableRow style="@style/DetailsRow">
+
+                        <TextView
+                            style="@style/HeaderStyle"
+                            android:layout_span="2"
+                            android:layout_weight="1"
+                            android:text="@string/header_hours" />
+
+                        <TextView
+                            android:id="@+id/list_item_yearly_hours"
+                            style="@style/ValueStyle"
+                            tools:text="2.93h" />
+                    </TableRow>
+
+                    <TableRow style="@style/DetailsRow">
+
+                        <TextView
+                            style="@style/HeaderStyle"
+                            android:layout_column="0"
+                            android:layout_span="2"
+                            android:layout_weight="1"
+                            android:text="@string/units_pay_rate" />
+
+                        <TextView
+                            android:id="@+id/list_item_yearly_hourly"
+                            style="@style/ValueStyle"
+                            tools:text="$22.41" />
+                    </TableRow>
+                </TableLayout>
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <TableLayout
+        <androidx.cardview.widget.CardView
+            android:id="@+id/mileage_breakdown_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp">
+            android:layout_marginTop="@dimen/margin_half">
 
-            <TableRow style="@style/DetailsRow">
-
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:layout_span="2"
-                    android:layout_weight="1"
-                    android:text="@string/header_mileage" />
-
-                <TextView
-                    android:id="@+id/list_item_yearly_mileage"
-                    style="@style/ValueStyle"
-                    tools:text="3,201" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/list_item_yearly_cpm_row"
-                style="@style/DetailsRow">
-
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:text="@string/lbl_cost_per_mile" />
-
-                <TextView
-                    android:id="@+id/list_item_deduction_type"
-                    style="@style/SecondaryValueStyle"
-                    tools:text="Gas Only" />
-
-                <TextView
-                    android:id="@+id/list_item_yearly_cpm"
-                    style="@style/ValueStyle"
-                    tools:text="$0.18" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/list_item_yearly_expenses_row"
-                style="@style/DetailsRow">
-
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:text="@string/lbl_net_expenses" />
-
-                <TextView
-                    android:id="@+id/list_item_yearly_expenses"
-                    style="@style/ValueStyle"
-                    android:layout_weight="1"
-                    tools:text="$56.18" />
-            </TableRow>
-
-            <TableRow style="@style/DetailsRow">
-
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:layout_span="2"
-                    android:layout_weight="1"
-                    android:text="@string/header_hours" />
-
-                <TextView
-                    android:id="@+id/list_item_yearly_hours"
-                    style="@style/ValueStyle"
-                    tools:text="2.93h" />
-            </TableRow>
-
-            <TableRow style="@style/DetailsRow">
-
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:layout_column="0"
-                    android:layout_span="2"
-                    android:layout_weight="1"
-                    android:text="@string/units_pay_rate" />
-
-                <TextView
-                    android:id="@+id/list_item_yearly_hourly"
-                    style="@style/ValueStyle"
-                    tools:text="$22.41" />
-            </TableRow>
-        </TableLayout>
+            <include layout="@layout/yearly_mileage_grid" />
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

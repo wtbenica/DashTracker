@@ -82,7 +82,7 @@
             tools:visibility="visible">
 
             <include
-                layout="@layout/list_item_yearly_details_table_2"
+                layout="@layout/list_item_yearly_details_table"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"

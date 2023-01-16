@@ -30,6 +30,7 @@
             <corners
                 android:topLeftRadius="?attr/listItemCornerRadius"
                 android:topRightRadius="?attr/listItemCornerRadius" />
+            <stroke android:color="?attr/colorListItemExpandedBorder" android:width="2dp" />
         </shape>
     </item>
 </layer-list>
