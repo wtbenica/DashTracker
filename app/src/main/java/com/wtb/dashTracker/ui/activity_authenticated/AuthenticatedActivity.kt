@@ -69,6 +69,9 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
         onSuccess: () -> Unit = onAuthentication,
         onError: (() -> Unit)? = onAuthError,
         onFailed: (() -> Unit)? = onAuthFailed,
+        titleText: CharSequence = "Unlock DashTracker",
+        subtitleText: CharSequence? = null,
+        descriptionText: CharSequence? = null,
         forceAuthentication: Boolean = false
     ) {
         Log.d(TAG, "authenticate | isAuthenticated: $isAuthenticated")
@@ -80,7 +83,12 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
 
             disableBackButtonCallback?.remove()
             disableBackButtonCallback = onBackPressedDispatcher.addCallback(this, true) {
-                authenticate(onSuccess, onError, onFailed)
+                authenticate(
+                    onSuccess,
+                    onError,
+                    onFailed,
+                    titleText = "Authenticate to unlock DashTracker",
+                )
             }
 
             val biometricPrompt = BiometricPrompt(this, executor,
@@ -111,7 +119,9 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
             )
 
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Unlock to access DashTracker")
+                .setTitle(titleText)
+                .setSubtitle(subtitleText)
+                .setDescription(descriptionText)
                 .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 .build()
 
