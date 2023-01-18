@@ -80,6 +80,9 @@ class StandardMileageDeductionTable {
             2022 to mapOf(
                 6 to 0.585f,
                 12 to 0.625f
+            ),
+            2023 to mapOf(
+                12 to 0.655f
             )
         )
     }

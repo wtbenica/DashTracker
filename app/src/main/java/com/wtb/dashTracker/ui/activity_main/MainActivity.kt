@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_main
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -256,7 +257,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             )
 
             mAdView = binding.adView
-            val adRequest = AdRequest.Builder().build()
+            @SuppressLint("VisibleForTests") val adRequest = AdRequest.Builder().build()
             mAdView.loadAd(adRequest)
         }
 
@@ -585,11 +586,18 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
     override val onAuthFailed: (() -> Unit)? = null
 
-    override val onAuthError: (() -> Unit)? = ::a
+    override val onAuthError: (() -> Unit)? = ::reauthenticate
 
-    fun a() {
-        Log.d(TAG, "Apple bottom jeans")
-        authenticate(onAuthentication, onAuthFailed, onAuthError)
+    // TODO: This might should be moved to AuthenticatedActivity
+    /**
+     * If there's an auth error, this is used to call authenticate again with the same parameters
+     */
+    fun reauthenticate() {
+        authenticate(
+            onAuthentication,
+            onAuthFailed,
+            onAuthError,
+        )
     }
 
     override fun lockScreen() {

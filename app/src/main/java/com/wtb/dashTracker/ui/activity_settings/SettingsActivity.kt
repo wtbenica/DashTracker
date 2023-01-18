@@ -365,6 +365,16 @@ class SettingsActivity : AuthenticatedActivity() {
                             onSuccess = { },
                             onError = ::revert,
                             onFailed = ::revert,
+                            titleText = if (isChecked) {
+                                "Enable"
+                            } else {
+                                "Disable"
+                            } + " authentication",
+                            descriptionText = "Authentication will " + if (!isChecked) {
+                                "no longer "
+                            } else {
+                                ""
+                            } + "be required to unlock DashTracker",
                             forceAuthentication = true
                         )
                     } else {

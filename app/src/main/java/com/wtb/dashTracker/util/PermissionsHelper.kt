@@ -238,6 +238,10 @@ class PermissionsHelper(val context: Context) {
         internal val Context.AUTHENTICATION_ENABLED
             get() = getString(R.string.prefs_authentication_enabled)
 
+        /**
+         * If enabling/disabling authentication fails, this prevents re-authentication when the
+         * setting is reverted
+         */
         internal val Context.AUTHENTICATION_ENABLED_REVERTED
             get() = getString(R.string.prefs_authentication_enabled_reverted)
 
