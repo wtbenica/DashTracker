@@ -294,8 +294,11 @@ class HourlyBarChart(
                     it.map { it1 -> it1.second }.reversed()
                         .subList(Integer.max(startIndex, 0), it.size)
                 Pair(
-                    BarDataSet(subListGross, "Gross").apply { style() },
-                    BarDataSet(subListNet, "Net").apply { style() })
+                    BarDataSet(
+                        subListGross,
+                        context.getString(R.string.lbl_gross)
+                    ).apply { style() },
+                    BarDataSet(subListNet, context.getString(R.string.lbl_net)).apply { style() })
             }
 
         fun getWeeklyList(): Pair<BarDataSet, BarDataSet> =
@@ -317,8 +320,14 @@ class HourlyBarChart(
                 val startIndex = it.size - binding.seekBarNumWeeksHourlyTrend.progress
                 val subList = it.reversed().subList(Integer.max(startIndex, 0), it.size)
                 Pair(
-                    BarDataSet(subList.map { p -> p.first }, "Gross").apply { style() },
-                    BarDataSet(subList.map { p -> p.second }, "Net").apply { style() }
+                    BarDataSet(
+                        subList.map { p -> p.first },
+                        context.getString(R.string.lbl_gross)
+                    ).apply { style() },
+                    BarDataSet(
+                        subList.map { p -> p.second },
+                        context.getString(R.string.lbl_net)
+                    ).apply { style() }
                 )
             }
 

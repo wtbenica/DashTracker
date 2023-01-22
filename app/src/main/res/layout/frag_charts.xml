@@ -38,17 +38,17 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cost per mile" />
+            android:text="@string/lbl_cost_per_mile" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Day of week" />
+            android:text="@string/lbl_day_of_week" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hourly gross/net" />
+            android:text="@string/lbl_hourly_gross_net" />
     </com.google.android.material.tabs.TabLayout>
 
     <View

@@ -61,7 +61,7 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding >() {
     override var item: DashEntry? = null
     override val viewModel: EntryViewModel by viewModels()
     override lateinit var binding: DialogFragEntryBinding
-    var fullEntry: FullEntry? = null
+    private var fullEntry: FullEntry? = null
 
     private var startTimeChanged = false
 

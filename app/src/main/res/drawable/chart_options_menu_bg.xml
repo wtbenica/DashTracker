@@ -17,19 +17,19 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <solid android:color="?attr/colorOptionsMenuStroke" />
-            <corners
-                android:topLeftRadius="?attr/listItemCornerRadius"
-                android:topRightRadius="?attr/listItemCornerRadius" />
-            <padding android:top="4dp" />
+            <solid android:color="?attr/colorTabIndicator" />
+            <corners android:radius="?attr/listItemCornerRadius" />
+            <padding
+                android:bottom="1dp"
+                android:left="1dp"
+                android:right="1dp"
+                android:top="@dimen/margin_narrow" />
         </shape>
     </item>
     <item>
         <shape>
             <solid android:color="?attr/colorOptionsMenu" />
-            <corners
-                android:topLeftRadius="?attr/listItemCornerRadius"
-                android:topRightRadius="?attr/listItemCornerRadius" />
+            <corners android:radius="?attr/listItemCornerRadius" />
         </shape>
     </item>
 </layer-list>

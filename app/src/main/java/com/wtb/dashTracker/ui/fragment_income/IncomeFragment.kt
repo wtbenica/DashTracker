@@ -126,12 +126,12 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 callback.deductionType.collectLatest {
-                    cpmButtonText =
-                        if (it == DeductionType.NONE) {
-                            "CPM"
-                        } else {
-                            "CPM: " + it.text
-                        }
+                    cpmButtonText = getString(R.string.lbl_cpm) +
+                            if (it == DeductionType.NONE) {
+                                ""
+                            } else {
+                                ": " + it.text
+                            }
                     if (!btnGroup.isVisible) {
                         binding.filterBtn.text = this@IncomeFragment.cpmButtonText
                     }

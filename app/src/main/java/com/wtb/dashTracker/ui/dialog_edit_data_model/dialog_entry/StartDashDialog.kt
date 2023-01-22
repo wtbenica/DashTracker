@@ -180,10 +180,6 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     }
 
     companion object {
-        private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
-        private const val LOC_SVC_CHANNEL_NAME = "dt_mileage_tracker"
-        private const val LOC_SVC_CHANNEL_DESC = "Dashtracker mileage tracker is active"
-
         internal const val REQ_KEY_START_DASH_DIALOG = "result: start dash dialog"
         internal const val RESULT_START_DASH_CONFIRM_START = "arg: start dash dialog result"
         internal const val ARG_ENTRY_ID = "arg: start dash entry id"

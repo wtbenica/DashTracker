@@ -70,8 +70,18 @@
         <item name="actionOverflowButtonStyle">@style/ActionBarOverflowButtonStyle</item>
         <item name="cardViewStyle">@style/CardViewStyle</item>
         <item name="actionOverflowMenuStyle">@style/ActionBarOverflowMenuStyle</item>
-        <item name="chipStyle">@style/ChipStyle</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListStyle</item>
 
+        <!-- Chips -->
+        <item name="chipStyle">@style/ChipStyle</item>
+        <item name="chipStrokeColorDefault">?attr/colorPrimary</item>
+        <item name="chipStrokeColorDisabled">?attr/colorPrimaryVariant</item>
+        <item name="chipBackgroundColorDefault">?attr/colorPrimaryDark</item>
+        <item name="chipBackgroundColorDisabled">?attr/colorPrimaryVariant</item>
+        <item name="colorChipText">?attr/colorOnSecondary</item>
+        <item name="colorChipCloseIcon">?attr/colorOnSecondary</item>
+
+        <!-- Picker Dialogs -->
         <item name="android:datePickerDialogTheme">@style/MyDatePickerStyle</item>
         <item name="android:timePickerDialogTheme">@style/MyDatePickerStyle</item>
 
@@ -105,6 +115,7 @@
 
         <!-- dialog fragment -->
         <item name="dialogFragCornerRadius">?attr/defaultCornerRadius</item>
+        <item name="colorDialogFragSpinnerPopupBg">?attr/colorPrimaryFaded</item>
 
         <!-- Window transitions -->
         <item name="android:windowEnterTransition">@android:transition/slide_right</item>
@@ -163,14 +174,14 @@
         <item name="colorActiveDashBarDetailsBg">?attr/colorOnSecondary</item>
 
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorSecondaryDark</item>
+        <item name="colorTabIndicator">?attr/colorAccent</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
-        <item name="colorGroupButton">?attr/colorSecondary</item>
-        <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
+        <item name="colorGroupButton">?attr/colorSecondaryDark</item>
+        <item name="colorGroupButtonDisabled">?attr/colorSecondary</item>
         <item name="colorGroupButtonText">@color/button_group_button_text</item>
         <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>
         <item name="colorGroupButtonTextChecked">?attr/colorTextPrimary</item>
-        <item name="colorGroupStroke">?attr/colorSecondary</item>
+        <item name="colorGroupStroke">?attr/colorAccent</item>
         <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
         <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
         <item name="colorOptionsButton">?attr/colorTabIndicator</item>
@@ -179,7 +190,7 @@
         <!-- list_item -->
         <item name="colorListItem">?attr/colorOnSecondary</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryFaded</item>
-        <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
@@ -196,6 +207,13 @@
         <item name="colorRowValueSecondaryText">?attr/colorOnPrimaryVariant</item>
 
         <!-- charts -->
+        <item name="colorBarChartDatasetDefault">?attr/colorSecondary</item>
+
+        <!-- CPM Chart-->
+        <item name="colorSeekBarThumb">?attr/colorAccent</item>
+        <item name="colorSeekBarProgress">?attr/colorAccent</item>
+        <item name="colorSeekBarProgressBg">?attr/colorSecondaryDark</item>
+
         <!-- daily stats row -->
         <item name="colorChartGrossIncome">#8fc</item>
         <item name="colorChartNetIncome">#cf8</item>
@@ -206,7 +224,7 @@
         <item name="colorDayValue">@color/daytime_light</item>
         <item name="colorNightHeader">@color/nighttime_solid</item>
         <item name="colorNightValue">@color/nighttime_light</item>
-        <item name="colorShowFiltersButton">?attr/colorSecondaryDark</item>
+        <item name="colorShowFiltersButton">?attr/colorAccent</item>
         <item name="colorShowFiltersButtonBg">?attr/colorSecondary</item>
         <item name="colorChartBackground">?attr/colorListItem</item>
 
@@ -221,7 +239,7 @@
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorPrimaryFaded</item>
         <item name="colorDialogUneditableItem">?attr/colorPrimaryFaded</item>
-        <item name="colorDialogItemOutline">?attr/colorPrimaryDark</item>
+        <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryVariant</item>
         <item name="colorDialogButtonIcon">?attr/colorPrimaryDark</item>
         <item name="colorDialogButtonBg">?attr/colorPrimaryDark</item>

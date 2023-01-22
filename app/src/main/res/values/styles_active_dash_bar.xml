@@ -33,13 +33,4 @@
         <item name="android:layout_columnWeight">1</item>
         <item name="android:textAlignment">textEnd</item>
     </style>
-
-    <style name="ActiveDashImageButton" parent="Widget.AppCompat.ImageButton">
-        <item name="android:layout_width">@dimen/min_touch_target</item>
-        <item name="android:layout_height">@dimen/min_touch_target</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:backgroundTint">@android:color/transparent</item>
-        <item name="tint">?attr/colorPrimaryDark</item>
-<!--        <item name="android:layout_margin">4dp</item>-->
-    </style>
 </resources>

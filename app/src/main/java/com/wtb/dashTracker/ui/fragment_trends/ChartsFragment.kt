@@ -111,9 +111,9 @@ class ChartsFragment : Fragment(), DTChartHolder.DTChartHolderCallback {
 
         TabLayoutMediator(binding.chartsTabs, viewPager) { tab, position ->
             tab.text = when (position) {
-                1 -> "Cost per mile"
-                2 -> "Daily stats"
-                else -> "Hourly gross/net"
+                1 -> getString(R.string.lbl_cost_per_mile)
+                2 -> getString(R.string.lbl_daily_stats)
+                else -> getString(R.string.lbl_hourly_gross_net)
             }
         }.attach()
 

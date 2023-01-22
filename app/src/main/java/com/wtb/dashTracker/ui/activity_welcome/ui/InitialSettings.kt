@@ -65,11 +65,11 @@ fun customSwitchColors(): SwitchColors {
 @Composable
 fun InitialSettings(context: WelcomeActivity? = null) {
     ScreenTemplate(
-        headerText = "Initial Setup",
+        headerText = stringResource(R.string.welcome_header_initial_setup),
         iconImage = {
             Icon(
                 imageVector = Icons.Outlined.Settings,
-                contentDescription = "Settings",
+                contentDescription = null,
                 modifier = Modifier.size(96.dp),
                 tint = welcomeIconColor()
             )
@@ -202,10 +202,10 @@ fun InitialSettingsNav(callback: InitialScreenCallback? = null) {
             },
         ) {
             HalfSpacer()
-            Text("Mileage Tracking")
+            Text(stringResource(R.string.lbl_mileage_tracking))
             Icon(
                 Icons.Rounded.NavigateNext,
-                contentDescription = "Next screen"
+                contentDescription = stringResource(R.string.content_desc_icon_next_screen)
             )
         }
     }

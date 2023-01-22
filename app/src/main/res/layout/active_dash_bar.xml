@@ -32,7 +32,7 @@
         android:padding="0dp"
         android:paddingStart="@dimen/margin_half"
         android:paddingEnd="0dp"
-        android:text="Current Dash"
+        android:text="@string/adb_current_dash"
         android:textSize="@dimen/text_size_large" />
 
     <TextView
@@ -67,7 +67,8 @@
         android:layout_columnWeight="1"
         android:layout_gravity="fill"
         android:layout_marginTop="@dimen/margin_half"
-        android:src="@drawable/bg_active_dash_bar_details" />
+        android:src="@drawable/bg_active_dash_bar_details"
+        android:contentDescription="@null" />
 
     <!--    Row 2            -->
     <TextView

@@ -154,7 +154,7 @@
     <string name="expense_purpose_standard">IRS Rate</string>
     <string name="dummy_text_label">Lorem ipso</string>
     <string name="lbl_net_expenses">Expenses</string>
-    <string name="lbl_hourly_gross_net">Hourly Gross/Net</string>
+    <string name="lbl_hourly_gross_net">Hourly gross/net</string>
     <string name="lbl_hourly_by_day_of_week">Stats by Day of Week</string>
     <string name="lbl_num_days">Num Days</string>
     <string name="lbl_num_weeks">Num Weeks</string>
@@ -271,5 +271,37 @@
     <string name="pref_title_show_weekly_adjustment_field">Show weekly adjustment field</string>
     <string name="pref_title_require_authentication">Require authentication to open</string>
     <string name="dialog_title_dash_entry">Dash Entry</string>
-
+    <string name="content_desc_show_chart_filtering_options">Show chart filtering options</string>
+    <string name="adb_current_dash">Current Dash</string>
+    <string name="content_desc_fab_start_new_dash">Start new dash</string>
+    <string name="content_desc_chart_dow_show">Show</string>
+    <string name="lbl_cpm_basis">Expense Type</string>
+    <string name="lbl_grouping">Grouping</string>
+    <string name="lbl_expenses">Expenses</string>
+    <string name="lbl_day_of_week">Day of week</string>
+    <string name="header_mileage_breakdown">Mileage breakdown</string>
+    <string name="lbl_dates">Dates</string>
+    <string name="bioprompt_title_default">Unlock DashTracker</string>
+    <string name="content_desc_page_indicator">Page %d of %d</string>
+    <string name="notification_button_open_app">Open</string>
+    <string name="notification_button_stop">Stop</string>
+    <string name="notification_text_tracking_on">Mileage tracking is on. Background location is in use.</string>
+    <string name="bioprompt_title_settings_enable_auth">Enable authentication</string>
+    <string name="bioprompt_title_settings_disable_auth">Disable authentication</string>
+    <string name="bioprompt_desc_settings_disable_auth">Authentication will no longer be required to unlock DashTracker</string>
+    <string name="bioprompt_desc_settings_enable_auth">Authentication will be required to unlock DashTracker</string>
+    <string name="welcome_header_initial_setup">Initial Setup</string>
+    <string name="content_desc_icon_next_screen">Next screen</string>
+    <string name="lbl_mileage_tracking">Mileage Tracking</string>
+    <string name="welcome_header_welcome_screen">Welcome to DashTracker</string>
+    <string name="welcome_screen_item_track_income">Track your income</string>
+    <string name="content_desc_welcome_screen_car_icon">Image of a car</string>
+    <string name="welcome_screen_item_track_expenses">Track your expenses</string>
+    <string name="content_desc_welcome_screen_wallet_icon">Image of a wallet</string>
+    <string name="welcome_screen_item_track_mileage">Track your mileage</string>
+    <string name="content_desc_welcome_screen_dollar_icon">Image of a dollar sign</string>
+    <string name="lbl_setup">Setup</string>
+    <string name="lbl_daily_stats">Daily stats</string>
+    <string name="lbl_gross">Gross</string>
+    <string name="lbl_net">Net</string>
 </resources>

@@ -74,7 +74,7 @@
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginEnd="@dimen/margin_half"
                             android:lineHeight="@dimen/text_size_med"
-                            android:text="Show"
+                            android:text="@string/content_desc_chart_dow_show"
                             android:textAlignment="gravity" />
 
                         <com.google.android.material.button.MaterialButtonToggleGroup
@@ -96,7 +96,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="$/hr" />
+                                android:text="@string/units_pay_rate" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_chart_per_delivery"
@@ -104,7 +104,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="$/del" />
+                                android:text="@string/units_avg_delivery" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_chart_del_per_hr"
@@ -112,7 +112,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="dels/hr" />
+                                android:text="@string/units_del_per_hr" />
 
                         </com.google.android.material.button.MaterialButtonToggleGroup>
                     </TableRow>

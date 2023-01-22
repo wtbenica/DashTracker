@@ -94,11 +94,11 @@
                             android:min="7"
                             android:padding="0dp"
                             android:progress="41"
-                            android:progressBackgroundTint="?attr/colorSecondaryDark"
+                            android:progressBackgroundTint="?attr/colorSeekBarProgressBg"
                             android:progressBackgroundTintMode="src_over"
-                            android:progressTint="?attr/colorAccent"
+                            android:progressTint="?attr/colorSeekBarProgress"
                             android:thumb="@drawable/ic_circle"
-                            android:thumbTint="?attr/colorAccent"
+                            android:thumbTint="?attr/colorSeekBarThumb"
                             app:tickMarkTint="@android:color/transparent" />
                     </LinearLayout>
                 </TableRow>
@@ -110,7 +110,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|start"
                         android:layout_marginEnd="@dimen/margin_half"
-                        android:text="Grouping"
+                        android:text="@string/lbl_grouping"
                         android:textAlignment="gravity" />
 
                     <com.google.android.material.button.MaterialButtonToggleGroup
@@ -148,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|start"
                         android:layout_marginEnd="@dimen/margin_half"
-                        android:text="Expenses"
+                        android:text="@string/lbl_expenses"
                         android:textAlignment="gravity" />
 
                     <com.google.android.material.button.MaterialButtonToggleGroup

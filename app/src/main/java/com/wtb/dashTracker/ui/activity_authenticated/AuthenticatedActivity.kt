@@ -19,7 +19,6 @@ package com.wtb.dashTracker.ui.activity_authenticated
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +26,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
-import com.wtb.dashTracker.ui.activity_main.TAG
+import com.wtb.dashTracker.R
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 
 /**
@@ -69,13 +68,11 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
         onSuccess: () -> Unit = onAuthentication,
         onError: (() -> Unit)? = onAuthError,
         onFailed: (() -> Unit)? = onAuthFailed,
-        titleText: CharSequence = "Unlock DashTracker",
+        titleText: CharSequence = getString(R.string.bioprompt_title_default),
         subtitleText: CharSequence? = null,
         descriptionText: CharSequence? = null,
         forceAuthentication: Boolean = false
     ) {
-        Log.d(TAG, "authenticate | isAuthenticated: $isAuthenticated")
-
         if (forceAuthentication || (authenticationEnabled && !isAuthenticated)) {
             if (!forceAuthentication) lockScreen()
 
@@ -86,8 +83,7 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
                 authenticate(
                     onSuccess,
                     onError,
-                    onFailed,
-                    titleText = "Authenticate to unlock DashTracker",
+                    onFailed
                 )
             }
 
@@ -95,7 +91,6 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-                        Log.d(TAG, "Authentication: SUCCESS $result")
                         isAuthenticated = true
                         disableBackButtonCallback?.remove()
                         disableBackButtonCallback = null
@@ -104,14 +99,12 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                         super.onAuthenticationError(errorCode, errString)
-                        Log.d(TAG, "Authentication: ERROR $errString")
                         isAuthenticated = false
                         onError?.invoke()
                     }
 
                     override fun onAuthenticationFailed() {
                         super.onAuthenticationFailed()
-                        Log.d(TAG, "Authentication: FAIL")
                         isAuthenticated = false
                         onFailed?.invoke()
                     }
@@ -134,16 +127,16 @@ abstract class AuthenticatedActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        outState.putBoolean(ARG_EXPECTED_EXIT, expectedExit)
         super.onSaveInstanceState(outState)
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        outState.putBoolean(EXPECTED_EXIT, expectedExit)
+        outState.putBoolean(ARG_EXPECTED_EXIT, expectedExit)
         super.onSaveInstanceState(outState, outPersistentState)
     }
 
     companion object {
-        internal const val EXPECTED_EXIT = "expected_exit"
+        internal const val ARG_EXPECTED_EXIT = "expected_exit"
     }
 }

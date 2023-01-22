@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.activity_get_permissions
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
@@ -41,6 +42,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +51,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -494,7 +497,11 @@ internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selecte
         for (i in 0 until numPages) {
             Icon(
                 if (i == selectedPage) Icons.Filled.Circle else Icons.TwoTone.Circle,
-                contentDescription = "circle",
+                contentDescription = stringResource(
+                    R.string.content_desc_page_indicator,
+                    selectedPage + 1,
+                    numPages
+                ),
                 modifier = Modifier.size(8.dp),
                 tint = MaterialTheme.colorScheme.secondary
             )
@@ -519,4 +526,29 @@ fun GetPermissionsActivityPreview() {
             }
         }
     }
+}
+
+@ExperimentalCoroutinesApi
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun GetPermissionsActivityPreviewNight() {
+    DashTrackerTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Column {
+                GetLocationPermissionsScreen()
+                PageIndicator(numPages = 4, selectedPage = 0)
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PageIndicatorPreview() {
+    PageIndicator(numPages = 4, selectedPage = 1)
 }

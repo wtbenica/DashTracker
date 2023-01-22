@@ -29,6 +29,14 @@
     <attr name="defaultCornerRadius" format="reference" />
     <attr name="colorTabItemRipple" format="reference|color" />
 
+    <!-- Chip -->
+    <attr name="chipStrokeColorDefault" format="reference" />
+    <attr name="chipStrokeColorDisabled" format="reference" />
+    <attr name="chipBackgroundColorDefault" format="reference" />
+    <attr name="chipBackgroundColorDisabled" format="reference" />
+    <attr name="colorChipText" format="reference" />
+    <attr name="colorChipCloseIcon" format="reference" />
+
     <!-- Text -->
     <attr name="defaultFontFamily" format="reference" />
     <attr name="titleFontFamily" format="reference" />
@@ -114,7 +122,12 @@
     <attr name="textSizeItemSecondaryValue" format="reference" />
 
     <!-- charts -->
-    <attr name="colorChartOptionsMenuOutline" format="color|reference" />
+    <attr name="colorBarChartDatasetDefault" format="reference" />
+
+    <!-- CPM Chart-->
+    <attr name="colorSeekBarThumb" format="reference" />
+    <attr name="colorSeekBarProgress" format="reference" />
+    <attr name="colorSeekBarProgressBg" format="reference" />
 
     <!-- daily stats row -->
     <attr name="colorChartGrossIncome" format="reference|color" />
@@ -148,7 +161,7 @@
     <attr name="colorDialogButtonIcon" format="reference|color" />
     <attr name="colorDialogButtonBg" format="reference|color" />
     <attr name="dialogFragCornerRadius" format="reference" />
-
+    <attr name="colorDialogFragSpinnerPopupBg" format="reference" />
     <!-- datetime picker -->
     <attr name="colorDatePickerSelected" format="reference" />
     <attr name="colorDatePickerNavButton" format="reference" />

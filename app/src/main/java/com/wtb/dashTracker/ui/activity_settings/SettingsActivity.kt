@@ -92,7 +92,7 @@ class SettingsActivity : AuthenticatedActivity() {
                 .commit()
         }
 
-        if (savedInstanceState?.getBoolean(EXPECTED_EXIT) == true) {
+        if (savedInstanceState?.getBoolean(ARG_EXPECTED_EXIT) == true) {
             isAuthenticated = true
             expectedExit = false
         }
@@ -366,15 +366,15 @@ class SettingsActivity : AuthenticatedActivity() {
                             onError = ::revert,
                             onFailed = ::revert,
                             titleText = if (isChecked) {
-                                "Enable"
+                                getString(R.string.bioprompt_title_settings_enable_auth)
                             } else {
-                                "Disable"
-                            } + " authentication",
-                            descriptionText = "Authentication will " + if (!isChecked) {
-                                "no longer "
+                                getString(R.string.bioprompt_title_settings_disable_auth)
+                            },
+                            descriptionText = if (isChecked) {
+                                getString(R.string.bioprompt_desc_settings_enable_auth)
                             } else {
-                                ""
-                            } + "be required to unlock DashTracker",
+                                getString(R.string.bioprompt_desc_settings_disable_auth)
+                            },
                             forceAuthentication = true
                         )
                     } else {

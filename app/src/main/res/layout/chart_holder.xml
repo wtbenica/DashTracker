@@ -62,7 +62,8 @@
                     android:background="?attr/colorShowFiltersButtonBg"
                     android:minWidth="@dimen/min_touch_target"
                     android:src="@drawable/anim_tune_to_close"
-                    app:tint="?attr/colorShowFiltersButton" />
+                    app:tint="?attr/colorShowFiltersButton"
+                    android:contentDescription="@string/content_desc_show_chart_filtering_options" />
             </androidx.cardview.widget.CardView>
 
             <FrameLayout

@@ -242,18 +242,23 @@ class Repository private constructor(private val context: Context) {
                 is Weekly -> weeklyDao.insert(model)
                 is Expense -> expenseDao.insert(model)
                 is ExpensePurpose -> expensePurposeDao.insert(model)
-                is LocationData -> locationDao.insert(model)
+                is LocationData -> locationDao.attemptInsert(model)
             }
         }
     }
 
+
+    /**
+     * returns -1L if model is [LocationData] and there is a foreign key constraint exception
+     * (e.g. dashentry has been deleted)
+     */
     suspend fun saveModelSus(model: DataModel): Long =
         when (model) {
             is DashEntry -> entryDao.insertSus(model)
             is Weekly -> weeklyDao.insertSus(model)
             is Expense -> expenseDao.insertSus(model)
             is ExpensePurpose -> expensePurposeDao.insertSus(model)
-            is LocationData -> locationDao.insertSus(model)
+            is LocationData -> locationDao.attemptInsertSus(model)
         }
 
 
