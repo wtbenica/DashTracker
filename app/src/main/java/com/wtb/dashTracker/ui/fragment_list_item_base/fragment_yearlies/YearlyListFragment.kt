@@ -112,6 +112,10 @@ class YearlyListFragment : ListItemFragment() {
 
     interface YearlyListFragmentCallback : DeductionCallback
 
+    enum class MileageBreakdownKey {
+        CPM, MILES
+    }
+
     inner class YearlyAdapter : BaseItemListAdapter<Yearly>(DIFF_CALLBACK) {
         override fun getViewHolder(
             parent: ViewGroup,
@@ -182,8 +186,8 @@ class YearlyListFragment : ListItemFragment() {
 
                     fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / item.hours
 
-                    fun getMileageBreakdownData(cpm: Map<Int, Float>?): MutableMap<Int, Map<String, Float?>> {
-                        val res = mutableMapOf<Int, Map<String, Float?>>()
+                    fun getMileageBreakdownData(cpm: Map<Int, Float>?): MutableMap<Int, Map<MileageBreakdownKey, Float?>> {
+                        val res = mutableMapOf<Int, Map<MileageBreakdownKey, Float?>>()
                         var startMonth = 0
                         cpm?.keys?.forEach { endMonth ->
                             val miles: Float =
@@ -192,7 +196,7 @@ class YearlyListFragment : ListItemFragment() {
                                     .fold(0f) { acc, value ->
                                         acc + value.second.mileage
                                     }
-                            res[endMonth] = mapOf("cpm" to cpm[endMonth], "miles" to miles)
+                            res[endMonth] = mapOf(MileageBreakdownKey.CPM to cpm[endMonth], MileageBreakdownKey.MILES to miles)
                             startMonth = endMonth + 1
                         }
 
@@ -241,19 +245,15 @@ class YearlyListFragment : ListItemFragment() {
                                                         this,
                                                         row,
                                                         dates,
-                                                        entry.value["cpm"] ?: 0f,
-                                                        entry.value["miles"] ?: 0f
+                                                        entry.value[MileageBreakdownKey.CPM] ?: 0f,
+                                                        entry.value[MileageBreakdownKey.MILES] ?: 0f
                                                     )
                                                 }
                                             }
                                             mileageGridBinding.apply {
                                                 val endRow =
                                                     (mileageBreakdownGrid.childCount + spannedColumns) / 3
-//                                                yearlyMileageGridBottomBg.apply {
-//                                                    val lp = layoutParams as GridLayout.LayoutParams
-//                                                    lp.rowSpec = GridLayout.spec(2, endRow - 1, 1f)
-//                                                    layoutParams = lp
-//                                                }
+
                                                 mileageBreakdownGrid.addView(
                                                     Space(context).apply {
                                                         val lp = GridLayout.LayoutParams().apply {

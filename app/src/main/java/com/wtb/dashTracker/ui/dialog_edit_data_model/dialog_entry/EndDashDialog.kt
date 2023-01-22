@@ -53,7 +53,7 @@ import kotlin.math.max
 @ExperimentalCoroutinesApi
 class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
     override var item: DashEntry? = null
-    var fullEntry: FullEntry? = null
+    private var fullEntry: FullEntry? = null
     override val viewModel: EntryViewModel by viewModels()
     override lateinit var binding: DialogFragEntryBinding
 

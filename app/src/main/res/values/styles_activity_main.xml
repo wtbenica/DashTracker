@@ -51,20 +51,6 @@
         <item name="android:textColor">?attr/colorOverflowMenuText</item>
     </style>
 
-    <style name="BottomNavItemTextAppearance">
-
-    </style>
-
-    <style name="BottomNavItemTextAppearance.Active">
-        <item name="android:textSize">?attr/textSizeBottomNavActive</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
-    </style>
-
-    <style name="BottomNavItemTextAppearance.Inactive">
-        <item name="android:textSize">?attr/textSizeBottomNavInactive</item>
-        <item name="android:textColor">?attr/colorOnSecondary</item>
-    </style>
-
     <style name="BottomNavActiveIndicatorStyle" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">?attr/colorBottomNavItemIndicator</item>
     </style>

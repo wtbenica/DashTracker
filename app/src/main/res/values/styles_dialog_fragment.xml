@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@
   -->
 
 <resources>
+
     <style name="DialogToolbar" parent="Widget.AppCompat.Toolbar">
         <item name="titleMarginStart">24dp</item>
         <item name="titleTextAppearance">@style/TitleTextAppearance</item>
@@ -30,5 +30,26 @@
         <item name="android:paddingVertical">@dimen/margin_default</item>
         <item name="android:paddingHorizontal">@dimen/margin_wide</item>
         <item name="android:background">?attr/colorDialogContentBg</item>
+    </style>
+
+    <style name="DialogFragSpinnerStyle">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginTop">@dimen/margin_narrow</item>
+        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/bg_edit_text</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:textColor">?attr/colorDialogText</item>
+        <item name="android:popupBackground">@drawable/bg_dialog_frag_spinner_popup</item>
+        <item name="android:dropDownSelector">@drawable/ripple_drop_down_selector</item>
+    </style>
+
+    <style name="DropDownListStyle" parent="Widget.AppCompat.Light.ListView.DropDown">
+        <item name="android:listSelector">@drawable/ripple_drop_down_selector</item>
     </style>
 </resources>

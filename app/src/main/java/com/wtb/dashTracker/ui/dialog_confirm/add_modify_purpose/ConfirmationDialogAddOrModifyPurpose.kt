@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:Suppress("RedundantNullableReturnType", "RedundantNullableReturnType")
+@file:Suppress("RedundantNullableReturnType")
 
 package com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose
 

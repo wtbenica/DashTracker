@@ -32,7 +32,7 @@
             android:layout_columnSpan="3"
             android:paddingTop="@dimen/margin_default"
             android:paddingBottom="@dimen/margin_half"
-            android:text="Mileage Breakdown"
+            android:text="@string/header_mileage_breakdown"
             android:textAlignment="center"
             android:textSize="@dimen/text_size_large" />
 
@@ -58,7 +58,7 @@
             android:layout_columnWeight="1"
             android:paddingStart="@dimen/margin_wide"
             android:paddingEnd="0dp"
-            android:text="Dates" />
+            android:text="@string/lbl_dates" />
 
         <TextView
             style="@style/HeaderStyle"

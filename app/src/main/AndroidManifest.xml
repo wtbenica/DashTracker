@@ -69,7 +69,7 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location"
-            android:permission="android.permissions.FOREGROUND_SERVICE" />
+            android:permission="android.permission.FOREGROUND_SERVICE" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

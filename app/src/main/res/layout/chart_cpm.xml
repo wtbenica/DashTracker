@@ -102,11 +102,11 @@
                                 android:min="7"
                                 android:padding="0dp"
                                 android:progress="41"
-                                android:progressBackgroundTint="?attr/colorSecondary"
+                                android:progressBackgroundTint="?attr/colorSeekBarProgressBg"
                                 android:progressBackgroundTintMode="screen"
-                                android:progressTint="?attr/colorSecondaryDark"
+                                android:progressTint="?attr/colorSeekBarProgress"
                                 android:thumb="@drawable/ic_circle"
-                                android:thumbTint="?attr/colorSecondaryDark"
+                                android:thumbTint="?attr/colorSeekBarThumb"
                                 app:tickMarkTint="@android:color/transparent" />
                         </LinearLayout>
                     </TableRow>
@@ -118,7 +118,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical|start"
                             android:layout_marginEnd="@dimen/margin_half"
-                            android:text="Expense Type"
+                            android:text="@string/lbl_cpm_basis"
                             android:textAlignment="gravity" />
 
                         <com.google.android.material.button.MaterialButtonToggleGroup

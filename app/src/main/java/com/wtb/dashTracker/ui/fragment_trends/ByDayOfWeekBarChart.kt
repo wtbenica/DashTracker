@@ -58,7 +58,7 @@ class ByDayOfWeekBarChart(
     context,
     attrSet,
     defStyleAttr,
-    R.string.lbl_hourly_by_day_of_week,
+    R.string.lbl_daily_stats,
     R.string.frag_title_income
 ) {
     val binding: ChartByDayOfWeekBinding =
@@ -173,7 +173,7 @@ class ByDayOfWeekBarChart(
 
         val dataSetAm: BarDataSet =
             dailyStats.getBarDataSet(
-                label = "AM",
+                label = context.getString(R.string.ante_meridiem),
                 barColor = R.attr.colorDayHeader
             ) { ds: DailyStats ->
                 amLambda(ds)?.let { hourly ->
@@ -183,7 +183,10 @@ class ByDayOfWeekBarChart(
             }
 
         val dataSetPm: BarDataSet =
-            dailyStats.getBarDataSet(label = "PM", barColor = R.attr.colorNightHeader) { ds ->
+            dailyStats.getBarDataSet(
+                label = context.getString(R.string.post_meridiem),
+                barColor = R.attr.colorNightHeader
+            ) { ds ->
                 pmLambda(ds)?.let { hourly ->
                     ds.day?.value?.toFloat()
                         ?.let { day -> BarEntry(8 - day + amPmBarOffset, hourly) }
@@ -229,7 +232,7 @@ class ByDayOfWeekBarChart(
         return dataSet
     }
 
-    private fun BarDataSet.style(@AttrRes barColor: Int = R.attr.colorSecondary) {
+    private fun BarDataSet.style(@AttrRes barColor: Int = R.attr.colorBarChartDatasetDefault) {
         valueTypeface = ResourcesCompat.getFont(context, R.font.lalezar)
         color = getAttrColor(context, barColor)
         valueTextSize = context.getDimen(R.dimen.text_size_sm)

@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import com.wtb.dashTracker.R
@@ -56,17 +57,17 @@ enum class SelectedCard {
 internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScreenCallback) =
     ScreenTemplate(
         modifier = modifier,
-        headerText = "Welcome to DashTracker",
+        headerText = stringResource(R.string.welcome_header_welcome_screen),
         iconImage = { Logo() },
         mainContent = {
             Column {
                 var expandedCard by remember { mutableStateOf(NONE) }
 
                 SingleExpandableCard(
-                    text = "Track your income",
+                    text = stringResource(R.string.welcome_screen_item_track_income),
                     icon = Icons.TwoTone.MonetizationOn,
                     iconTint = welcomeIconColor(),
-                    iconDescription = "Drawing of a car",
+                    iconDescription = stringResource(R.string.content_desc_welcome_screen_wallet_icon),
                     isExpanded = expandedCard == INCOME,
                     callback = {
                         expandedCard =
@@ -87,10 +88,10 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                 WideSpacer()
 
                 SingleExpandableCard(
-                    text = "Track your expenses",
+                    text = stringResource(R.string.welcome_screen_item_track_expenses),
                     icon = Icons.TwoTone.Wallet,
                     iconTint = welcomeIconColor(),
-                    iconDescription = "Drawing of a car",
+                    iconDescription = stringResource(R.string.content_desc_welcome_screen_wallet_icon),
                     isExpanded = expandedCard == EXPENSES,
                     callback = {
                         expandedCard =
@@ -111,10 +112,10 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                 WideSpacer()
 
                 SingleExpandableCard(
-                    text = "Track your mileage",
+                    text = stringResource(R.string.welcome_screen_item_track_mileage),
                     icon = Icons.TwoTone.DirectionsCar,
                     iconTint = welcomeIconColor(),
-                    iconDescription = "Drawing of a car",
+                    iconDescription = stringResource(R.string.content_desc_welcome_screen_car_icon),
                     isExpanded = expandedCard == MILEAGE,
                     callback = {
                         expandedCard =
@@ -155,10 +156,10 @@ fun WelcomeNav(callback: WelcomeScreenCallback) {
             },
         ) {
             HalfSpacer()
-            Text("Setup")
+            Text(stringResource(R.string.lbl_setup))
             Icon(
                 Icons.Rounded.NavigateNext,
-                contentDescription = "Next screen"
+                contentDescription = stringResource(R.string.content_desc_icon_next_screen)
             )
         }
     }

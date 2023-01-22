@@ -112,6 +112,7 @@
                 android:layout_height="wrap_content"
                 android:labelFor="@id/button_group_deduction_type"
                 android:paddingStart="@dimen/margin_default"
+                android:paddingEnd="0dp"
                 android:text="@string/lbl_set_cpm_method" />
 
             <com.google.android.material.button.MaterialButtonToggleGroup

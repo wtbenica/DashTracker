@@ -67,7 +67,7 @@ fun ScreenTemplate(
                     containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
             ) {
                 WideSpacer()
 
@@ -105,7 +105,7 @@ fun ScreenTemplate(
                             containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = secondary()
                         ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
                     ) {
                         Column(
                             modifier = Modifier.align(
