@@ -31,9 +31,7 @@ import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
-open class ConfirmationDialogImport(
-    val actionImport: () -> Unit
-) : FullWidthDialogFragment() {
+open class ConfirmationDialogImport(val actionImport: () -> Unit) : FullWidthDialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
