@@ -188,7 +188,7 @@
         <item name="colorOptionsMenuStroke">?attr/colorTabIndicator</item>
 
         <!-- list_item -->
-        <item name="colorListItem">?attr/colorOnSecondary</item>
+        <item name="colorListItem">?attr/colorUIBackground</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryFaded</item>
         <item name="colorListItemExpandedBorder">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
@@ -207,6 +207,7 @@
         <item name="colorRowValueSecondaryText">?attr/colorOnPrimaryVariant</item>
 
         <!-- charts -->
+        <item name="colorChartBackground">?attr/colorListItem</item>
         <item name="colorBarChartDatasetDefault">?attr/colorSecondary</item>
 
         <!-- CPM Chart-->
@@ -226,7 +227,6 @@
         <item name="colorNightValue">@color/nighttime_light</item>
         <item name="colorShowFiltersButton">?attr/colorAccent</item>
         <item name="colorShowFiltersButtonBg">?attr/colorSecondary</item>
-        <item name="colorChartBackground">?attr/colorListItem</item>
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryVariant</item>

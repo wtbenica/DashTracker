@@ -121,12 +121,9 @@ class HourlyBarChart(
         }
 
         setBackgroundColor(
-            ResourcesCompat.getColor(
-                resources,
-                android.R.color.transparent,
-                null
-            )
+            getAttrColor(context, R.attr.colorUIBackground)
         )
+
         description.isEnabled = false
 
         legend.isEnabled = false

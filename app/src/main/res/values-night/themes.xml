@@ -17,7 +17,7 @@
 <resources>
     <!-- Splash screen theme -->
     <style name="SplashScreen" parent="SplashScreenBase">
-        <item name="colorOnSecondary">@color/on_regular_light</item>
+        <item name="colorOnSecondary">@color/on_brick</item>
     </style>
 
     <!-- Licenses Activities Theme -->
@@ -28,7 +28,7 @@
 
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
-        <item name="colorUIBackground">?attr/colorOnPrimary</item>
+        <item name="colorUIBackground">?attr/colorOnSecondary</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
@@ -41,19 +41,19 @@
         <item name="android:textColorPrimary">@color/primary_text_color</item>
         <item name="android:textColorSecondary">@color/secondary_text_color</item>
 
-        <item name="colorTextPrimary">?attr/colorOnSecondary</item>
-        <item name="colorTextPrimaryDisabled">?attr/colorOnSecondaryVariant</item>
-        <item name="colorTextSecondary">?attr/colorOnPrimary</item>
-        <item name="colorTextSecondaryDisabled">?attr/colorSecondaryFaded</item>
+        <item name="colorTextPrimary">?attr/colorOnPrimary</item>
+        <item name="colorTextPrimaryDisabled">?attr/colorOnPrimaryVariant</item>
+        <item name="colorTextSecondary">?attr/colorOnSecondary</item>
+        <item name="colorTextSecondaryDisabled">?attr/colorOnSecondaryVariant</item>
 
         <item name="colorSurface">?attr/colorSecondary</item>
-        <item name="colorOnSurface">?attr/colorOnSecondary</item>
+        <item name="colorOnSurface">?attr/colorOnPrimary</item>
 
         <item name="colorTabItemRipple">?attr/colorTabIndicator</item>
 
         <!-- activity_main.xml -->
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBar">?attr/colorOnPrimary</item>
+        <item name="colorSummaryBar">?attr/colorUIBackground</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorFab">?attr/colorSecondary</item>
         <item name="colorFabDisabled">?attr/colorPrimary</item>
@@ -86,12 +86,13 @@
         <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>
         <item name="colorGroupButtonTextChecked">?attr/colorTextPrimary</item>
         <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
-        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
         <item name="colorOptionsMenu">?attr/colorSecondaryDark</item>
+        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
+        <item name="colorOptionsButton">?attr/colorTabIndicator</item>
         <item name="colorOptionsMenuStroke">?attr/colorSecondaryVariant</item>
 
         <!-- list_item -->
-        <item name="colorListItem">?attr/colorOnPrimary</item>
+        <item name="colorListItem">?attr/colorUIBackground</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryDark</item>
         <item name="colorListItemExpandedBorder">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
@@ -103,13 +104,21 @@
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
         <item name="colorListItemDetailsToolbar">?attr/colorListItemAccent</item>
-        <item name="colorRowHeaderPayText">?attr/colorTextPrimary</item>
+        <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
-        <item name="colorRowHeaderText">?attr/colorOnSurface</item>
-        <item name="colorRowValueText">?attr/colorOnSurface</item>
-        <item name="colorRowValueSecondaryText">?attr/colorOnSurface</item>
+        <item name="colorRowHeaderText">?attr/colorOnPrimaryVariant</item>
+        <item name="colorRowValueText">?attr/colorTextPrimary</item>
+        <item name="colorRowValueSecondaryText">?attr/colorTextPrimary</item>
 
         <!-- charts -->
+        <item name="colorChartBackground">?attr/colorListItem</item>
+        <item name="colorBarChartDatasetDefault">?attr/colorSecondary</item>
+
+        <!-- CPM Chart-->
+        <item name="colorSeekBarThumb">?attr/colorAccent</item>
+        <item name="colorSeekBarProgress">?attr/colorAccent</item>
+        <item name="colorSeekBarProgressBg">?attr/colorSecondaryDark</item>
+
         <!-- daily stats row -->
         <item name="colorChartGrossIncome">#848</item>
         <item name="colorChartNetIncome">#488</item>
@@ -122,19 +131,18 @@
         <item name="colorNightValue">@color/nighttime_light</item>
         <item name="colorShowFiltersButton">?attr/colorAccent</item>
         <item name="colorShowFiltersButtonBg">?attr/colorSecondaryVariant</item>
-        <item name="colorChartBackground">?attr/colorOnPrimaryVariant</item>
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimary</item>
         <item name="colorDialogSecondary">?attr/colorPrimary</item>
-        <item name="colorDialogBg">?attr/colorOnPrimary</item>
+        <item name="colorDialogBg">?attr/colorOnSecondary</item>
         <item name="colorDialogTitle">?attr/colorOnSecondary</item>
         <item name="colorDialogText">?attr/colorOnSurface</item>
         <item name="colorDialogItemOutline">?attr/colorPrimaryVariant</item>
-        <item name="colorDialogGroupBg">?attr/colorOnPrimary</item>
+        <item name="colorDialogGroupBg">?attr/colorOnSecondary</item>
         <item name="colorDialogGroupStroke">?attr/colorPrimaryVariant</item>
-        <item name="colorDialogContentBg">?attr/colorOnPrimary</item>
-        <item name="colorDialogItem">?attr/colorOnPrimaryVariant</item>
+        <item name="colorDialogContentBg">@drawable/bg_dialog_fragment</item>
+        <item name="colorDialogItem">?attr/colorOnSecondaryVariant</item>
         <item name="colorDialogUneditableItem">?attr/colorPrimary</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryDark</item>
         <item name="colorDialogButtonIcon">?attr/colorPrimaryFaded</item>
