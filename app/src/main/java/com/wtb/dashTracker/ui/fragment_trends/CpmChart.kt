@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.fragment_trends
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -117,13 +118,9 @@ class CpmChart(
         }
 
         isWeekly = true
-        setBackgroundColor(
-            ResourcesCompat.getColor(
-                resources,
-                android.R.color.transparent,
-                null
-            )
-        )
+
+        setBackgroundColor(Color.TRANSPARENT)
+
         setDrawGridBackground(true)
         setGridBackgroundColor(getAttrColor(context, R.attr.colorChartBackground))
         description.isEnabled = false

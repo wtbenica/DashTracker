@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyOswald
+import com.wtb.dashTracker.ui.theme.onPrimary
+import com.wtb.dashTracker.ui.theme.onPrimaryVariant
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -45,6 +47,7 @@ fun RowScope.HeaderText(
         modifier = modifier
             .padding(16.dp)
             .weight(weight = 1f, fill = true),
+        color = onPrimaryVariant(),
         fontSize = 14.sp,
         fontFamily = FontFamilyOswald,
         textAlign = textAlign
@@ -63,6 +66,7 @@ fun RowScope.ValueText(
         modifier = modifier
             .padding(all = 16.dp)
             .weight(weight = 1f, fill = true),
+        color = onPrimary(),
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
         fontFamily = FontFamilyOswald,
@@ -73,9 +77,11 @@ fun RowScope.ValueText(
 @Preview
 @Composable
 fun TextViews() {
-    Row {
-        HeaderText(text = "Header")
-        ValueText(text = "Value")
+    Card {
+        Row {
+            HeaderText(text = "Header")
+            ValueText(text = "Value")
+        }
     }
 }
 
@@ -84,7 +90,7 @@ fun TextViews() {
 @Composable
 fun TextViewsNight() {
     DashTrackerTheme() {
-        Card() {
+        Card {
             Row {
                 HeaderText(text = "Header")
                 ValueText(text = "Value")
