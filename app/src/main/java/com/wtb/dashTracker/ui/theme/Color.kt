@@ -43,6 +43,9 @@ fun primaryDark(): Color = colorResource(id = R.color.dark)
 fun primaryFaded(): Color = colorResource(id = R.color.faded)
 
 @Composable
+fun onPrimary(): Color = colorResource(id = R.color.on_regular)
+
+@Composable
 fun onPrimaryVariant(): Color = colorResource(id = R.color.on_regular_light)
 
 

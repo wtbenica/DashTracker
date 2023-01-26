@@ -76,13 +76,13 @@
 <!--    </style>-->
     <style name="MyDatePickerStyle" parent="Theme.AppCompat.Light.Dialog">
         <!-- Calender Number color arrow color (< >) -->
-        <item name="android:textColorPrimary">@color/on_brick</item>
+        <item name="android:textColorPrimary">@color/on_regular</item>
 
         <!-- calendar days of week -->
         <item name="android:textColorSecondary">@color/faded</item>
 
         <!--title bar day , month / selected day-->
-        <item name="android:textColorPrimaryInverse">@color/on_brick</item>
+        <item name="android:textColorPrimaryInverse">@color/on_regular</item>
 
         <!-- Title bar year -->
         <item name="android:textColorSecondaryInverse">@color/faded</item>
@@ -97,7 +97,7 @@
         <item name="colorControlHighlight">@color/faded</item>
 
         <!-- background -->
-        <item name="android:windowBackground">@color/on_regular</item>
+        <item name="android:windowBackground">@color/on_brick</item>
 
         <!-- arrow background -->
         <item name="android:selectableItemBackgroundBorderless">@android:color/transparent</item>
@@ -121,16 +121,16 @@
     <!-- This isn't needed for the date picker, but is required for time picker.
     you might think you want to delete it, but you don't -->
     <style name="PickerTitleTextAppearance" parent="TextAppearance.AppCompat.Display1">
-        <item name="android:textColor">@color/on_brick</item>
+        <item name="android:textColor">@color/on_regular</item>
     </style>
 
     <style name="MyTimePicker" parent="Widget.MaterialComponents.TimePicker">
         <item name="android:headerBackground">@color/dark</item>
         <item name="android:headerTimeTextAppearance">@style/PickerTitleTextAppearance</item>
         <item name="android:headerAmPmTextAppearance">@style/PickerTitleTextAppearance</item>
-        <item name="android:numbersBackgroundColor">@color/on_regular_light</item>
+        <item name="android:numbersBackgroundColor">@color/on_brick_light</item>
         <item name="android:numbersSelectorColor">@color/brick_light</item>
-        <item name="android:numbersTextColor">@color/on_brick</item>
+        <item name="android:numbersTextColor">@color/on_regular</item>
         <item name="android:timePickerMode">clock</item>
     </style>
 </resources>
