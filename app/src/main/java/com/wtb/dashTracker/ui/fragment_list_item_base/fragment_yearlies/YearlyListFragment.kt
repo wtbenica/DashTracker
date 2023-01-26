@@ -47,6 +47,8 @@ import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExpenseBreakdown
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogMileageBreakdown
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemListAdapter
@@ -128,28 +130,45 @@ class YearlyListFragment : ListItemFragment() {
                 .inflate(R.layout.list_item_yearly, parent, false)
         ) {
             private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
+
             private val detailsBinding: ListItemYearlyDetailsTableBinding =
-                ListItemYearlyDetailsTableBinding.bind(itemView)
+                ListItemYearlyDetailsTableBinding.bind(itemView).apply {
+                    listItemYearlyExpenseDetailsButton.setOnClickListener { v ->
+                        ConfirmationDialogExpenseBreakdown(item).show(parentFragmentManager, null)
+                    }
+                    mileageDetailsButton.setOnClickListener { v ->
+                        ConfirmationDialogMileageBreakdown(item).show(parentFragmentManager, null)
+                    }
+                }
+
             private val mileageGridBinding: YearlyMileageGridBinding =
                 YearlyMileageGridBinding.bind(itemView)
 
             override val collapseArea: ConstraintLayout
                 get() = binding.listItemDetails
+
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
+
 
             override fun bind(item: Yearly, payloads: List<Any>?) {
                 fun updateExpenseFields(item: Yearly) {
                     fun showExpenseFields(hasMultipleStdDeductions: Boolean = false) {
                         binding.listItemSubtitle2Label.visibility = VISIBLE
                         binding.listItemSubtitle2.visibility = VISIBLE
-                        detailsBinding.listItemYearlyExpensesRow.visibility = VISIBLE
+                        detailsBinding.listItemYearlyExpensesHeader.visibility = VISIBLE
+                        detailsBinding.listItemYearlyExpenseDetailsButton.visibility = VISIBLE
+                        detailsBinding.listItemYearlyExpenses.visibility = VISIBLE
                         if (hasMultipleStdDeductions) {
                             detailsBinding.mileageBreakdownCard.visibility = VISIBLE
-                            detailsBinding.listItemYearlyCpmRow.visibility = GONE
+                            detailsBinding.listItemYearlyCpmHeader.visibility = GONE
+                            detailsBinding.listItemYearlyCpmDeductionType.visibility = GONE
+                            detailsBinding.listItemYearlyCpm.visibility = GONE
                         } else {
                             detailsBinding.mileageBreakdownCard.visibility = GONE
-                            detailsBinding.listItemYearlyCpmRow.visibility = VISIBLE
+                            detailsBinding.listItemYearlyCpmHeader.visibility = VISIBLE
+                            detailsBinding.listItemYearlyCpmDeductionType.visibility = VISIBLE
+                            detailsBinding.listItemYearlyCpm.visibility = VISIBLE
                         }
                     }
 
@@ -157,8 +176,12 @@ class YearlyListFragment : ListItemFragment() {
                         binding.listItemSubtitle2Label.visibility = GONE
                         binding.listItemSubtitle2.visibility = GONE
                         detailsBinding.mileageBreakdownCard.visibility = GONE
-                        detailsBinding.listItemYearlyCpmRow.visibility = GONE
-                        detailsBinding.listItemYearlyExpensesRow.visibility = GONE
+                        detailsBinding.listItemYearlyCpmHeader.visibility = GONE
+                        detailsBinding.listItemYearlyCpmDeductionType.visibility = GONE
+                        detailsBinding.listItemYearlyCpm.visibility = GONE
+                        detailsBinding.listItemYearlyExpensesHeader.visibility = GONE
+                        detailsBinding.listItemYearlyExpenseDetailsButton.visibility = GONE
+                        detailsBinding.listItemYearlyExpenses.visibility = GONE
                     }
 
                     fun getCalculatedExpenses(costPerMile: Float): Float =
@@ -196,7 +219,10 @@ class YearlyListFragment : ListItemFragment() {
                                     .fold(0f) { acc, value ->
                                         acc + value.second.mileage
                                     }
-                            res[endMonth] = mapOf(MileageBreakdownKey.CPM to cpm[endMonth], MileageBreakdownKey.MILES to miles)
+                            res[endMonth] = mapOf(
+                                MileageBreakdownKey.CPM to cpm[endMonth],
+                                MileageBreakdownKey.MILES to miles
+                            )
                             startMonth = endMonth + 1
                         }
 
@@ -269,7 +295,7 @@ class YearlyListFragment : ListItemFragment() {
                                                 )
                                             }
                                         } else {
-                                            detailsBinding.listItemDeductionType.text =
+                                            detailsBinding.listItemYearlyCpmDeductionType.text =
                                                 deductionType.fullDesc
 
                                             detailsBinding.listItemYearlyCpm.text =
@@ -291,7 +317,7 @@ class YearlyListFragment : ListItemFragment() {
 
                                         val costPerMile: Float = cpm?.get(12) ?: 0f
 
-                                        detailsBinding.listItemDeductionType.text =
+                                        detailsBinding.listItemYearlyCpmDeductionType.text =
                                             deductionType.fullDesc
 
                                         detailsBinding.listItemYearlyCpm.text =
@@ -382,6 +408,7 @@ fun yearlyMileageRow(
         root.addView(HeaderTextView(context, pos = 1).apply {
             layoutParams = lp
             text = context.getString(R.string.cpm_unit, it)
+            textAlignment = TEXT_ALIGNMENT_TEXT_END
         })
     }
 

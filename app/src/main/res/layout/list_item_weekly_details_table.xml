@@ -86,115 +86,109 @@
             </TableLayout>
         </androidx.cardview.widget.CardView>
 
-        <TableLayout
+        <GridLayout
             style="@style/DetailsTable"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:columnCount="3">
 
-            <TableRow style="@style/DetailsRow">
+            <!-- Row 0 -->
+            <TextView
+                style="@style/HeaderStyle"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:text="@string/header_hours" />
 
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:layout_span="2"
-                    android:layout_weight="1"
-                    android:text="@string/header_hours" />
+            <TextView
+                android:id="@+id/list_item_weekly_hours"
+                style="@style/ValueStyle"
+                android:layout_row="0"
+                android:layout_column="2"
+                tools:text="2.93h" />
 
-                <TextView
-                    android:id="@+id/list_item_weekly_hours"
-                    style="@style/ValueStyle"
-                    tools:text="2.93h" />
-            </TableRow>
+            <!-- Row 1 -->
+            <TextView
+                style="@style/HeaderStyle"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:text="@string/header_mileage" />
 
-            <TableRow style="@style/DetailsRow">
+            <TextView
+                android:id="@+id/list_item_weekly_miles"
+                style="@style/ValueStyle"
+                android:layout_row="1"
+                android:layout_column="2"
+                tools:text="380" />
 
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:layout_span="2"
-                    android:layout_weight="1"
-                    android:text="@string/header_mileage" />
+            <!-- Row 2 -->
+            <TextView
+                android:id="@+id/list_item_weekly_cpm_header"
+                style="@style/HeaderStyle"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:text="@string/lbl_cost_per_mile" />
 
-                <TextView
-                    android:id="@+id/list_item_weekly_miles"
-                    style="@style/ValueStyle"
-                    tools:text="380" />
-            </TableRow>
+            <TextView
+                android:id="@+id/list_item_weekly_cpm_deduction_type"
+                style="@style/SecondaryValueStyle"
+                android:layout_row="2"
+                android:layout_column="1"
+                android:layout_columnWeight="1"
+                tools:text="Gas Only" />
 
-            <TableRow
-                android:id="@+id/list_item_weekly_cpm_row"
-                style="@style/DetailsRow">
+            <TextView
+                android:id="@+id/list_item_weekly_cpm"
+                style="@style/ValueStyle"
+                android:layout_row="2"
+                android:layout_column="2"
+                tools:text="$0.18" />
 
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:text="@string/lbl_cost_per_mile" />
+            <!-- Row 3 -->
+            <TextView
+                android:id="@+id/list_item_weekly_expenses_header"
+                style="@style/HeaderStyle"
+                android:layout_row="3"
+                android:layout_column="0"
+                android:text="@string/lbl_net_expenses" />
 
-                <TextView
-                    android:id="@+id/list_item_deduction_type"
-                    style="@style/SecondaryValueStyle"
-                    tools:text="Gas Only" />
+            <TextView
+                android:id="@+id/list_item_weekly_expenses"
+                style="@style/ValueStyle"
+                android:layout_row="3"
+                android:layout_column="2"
+                tools:text="$56.18" />
 
-                <TextView
-                    android:id="@+id/list_item_weekly_cpm"
-                    style="@style/ValueStyle"
-                    tools:text="$0.18" />
-            </TableRow>
+            <!-- Row 4 -->
+            <TextView
+                style="@style/HeaderStyle"
+                android:layout_column="0"
+                android:text="@string/units_pay_rate" />
 
-            <TableRow
-                android:id="@+id/list_item_weekly_expenses_row"
-                style="@style/DetailsRow">
+            <TextView
+                android:id="@+id/list_item_weekly_hourly"
+                style="@style/ValueStyle"
+                android:layout_column="2"
+                tools:text="$22.41/hr" />
 
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:text="@string/lbl_net_expenses" />
+            <TextView
+                style="@style/HeaderStyle"
+                android:text="@string/units_avg_delivery" />
 
-                <TextView
-                    android:id="@+id/list_item_weekly_expenses"
-                    style="@style/ValueStyle"
-                    android:layout_weight="1"
-                    tools:text="$56.18" />
-            </TableRow>
+            <TextView
+                android:id="@+id/list_item_weekly_avg_del"
+                style="@style/ValueStyle"
+                android:layout_column="2"
+                tools:text="$9.25/del" />
 
-            <TableRow style="@style/DetailsRow">
+            <TextView
+                style="@style/HeaderStyle"
+                android:text="@string/units_del_per_hr" />
 
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:layout_column="0"
-                    android:layout_span="2"
-                    android:layout_weight="1"
-                    android:text="@string/units_pay_rate" />
-
-                <TextView
-                    android:id="@+id/list_item_weekly_hourly"
-                    style="@style/ValueStyle"
-                    tools:text="$22.41/hr" />
-            </TableRow>
-
-            <TableRow style="@style/DetailsRow">
-
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:layout_span="2"
-                    android:layout_weight="1"
-                    android:text="@string/units_avg_delivery" />
-
-                <TextView
-                    android:id="@+id/list_item_weekly_avg_del"
-                    style="@style/ValueStyle"
-                    tools:text="$9.25/del" />
-            </TableRow>
-
-            <TableRow style="@style/DetailsRow">
-
-                <TextView
-                    style="@style/HeaderStyle"
-                    android:layout_span="2"
-                    android:layout_weight="1"
-                    android:text="@string/units_del_per_hr" />
-
-                <TextView
-                    android:id="@+id/list_item_weekly_hourly_dels"
-                    style="@style/ValueStyle"
-                    tools:text="2.38" />
-            </TableRow>
-        </TableLayout>
+            <TextView
+                android:id="@+id/list_item_weekly_hourly_dels"
+                style="@style/ValueStyle"
+                android:layout_column="2"
+                tools:text="2.38" />
+        </GridLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

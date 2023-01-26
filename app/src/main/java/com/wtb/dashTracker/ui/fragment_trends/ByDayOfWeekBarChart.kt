@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.fragment_trends
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -118,13 +119,8 @@ class ByDayOfWeekBarChart(
         }
 
         setTouchEnabled(false)
-        setBackgroundColor(
-            ResourcesCompat.getColor(
-                resources,
-                android.R.color.transparent,
-                null
-            )
-        )
+        setBackgroundColor(Color.TRANSPARENT)
+
         description.isEnabled = false
 
         legend.isEnabled = true

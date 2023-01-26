@@ -20,10 +20,6 @@ val darkPrimaryFaded: Color = Color(0xFFa0a080)
 val darkOnPrimary: Color = Color(0xFFE8E8E8)
 val darkOnSecondary: Color = Color(0xFF17171a)
 
-//val up: Color = Color(0xFF80F090)
-//val down: Color = Color(0xFFF0A0B0)
-//val car: Color = Color(0xFF60E0FF)
-//
 val up: Color = Color(0xFF90C860)
 val down: Color = Color(0xFFF0A0B0)
 val car: Color = Color(0xFF80D0E0)
@@ -45,6 +41,13 @@ fun primaryDark(): Color = colorResource(id = R.color.dark)
 
 @Composable
 fun primaryFaded(): Color = colorResource(id = R.color.faded)
+
+@Composable
+fun onPrimary(): Color = colorResource(id = R.color.on_regular)
+
+@Composable
+fun onPrimaryVariant(): Color = colorResource(id = R.color.on_regular_light)
+
 
 @Composable
 fun accent(): Color = colorResource(id = R.color.accent)

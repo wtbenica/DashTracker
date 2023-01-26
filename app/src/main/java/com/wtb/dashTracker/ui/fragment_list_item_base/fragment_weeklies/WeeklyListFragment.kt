@@ -183,15 +183,21 @@ class WeeklyListFragment : ListItemFragment() {
                 fun showExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyCpmRow.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyExpensesRow.visibility = VISIBLE
+                    detailsBinding.listItemWeeklyCpmHeader.visibility = VISIBLE
+                    detailsBinding.listItemWeeklyCpmDeductionType.visibility = VISIBLE
+                    detailsBinding.listItemWeeklyCpm.visibility = VISIBLE
+                    detailsBinding.listItemWeeklyExpensesHeader.visibility = VISIBLE
+                    detailsBinding.listItemWeeklyExpenses.visibility = VISIBLE
                 }
 
                 fun hideExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = GONE
                     binding.listItemSubtitle2.visibility = GONE
-                    detailsBinding.listItemWeeklyCpmRow.visibility = GONE
-                    detailsBinding.listItemWeeklyExpensesRow.visibility = GONE
+                    detailsBinding.listItemWeeklyCpmHeader.visibility = GONE
+                    detailsBinding.listItemWeeklyCpmDeductionType.visibility = GONE
+                    detailsBinding.listItemWeeklyCpm.visibility = GONE
+                    detailsBinding.listItemWeeklyExpensesHeader.visibility = GONE
+                    detailsBinding.listItemWeeklyExpenses.visibility = GONE
                 }
 
                 this.item = item
@@ -213,7 +219,7 @@ class WeeklyListFragment : ListItemFragment() {
                                 else -> {
                                     showExpenseFields()
 
-                                    detailsBinding.listItemDeductionType.text =
+                                    detailsBinding.listItemWeeklyCpmDeductionType.text =
                                         deductionType.fullDesc
 
                                     detailsBinding.listItemWeeklyExpenses.text =

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,28 +17,36 @@
 <resources>
 
     <style name="HeaderStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_marginEnd">@dimen/margin_narrow</item>
         <item name="android:textSize">?attr/textSizeItemHeader</item>
         <item name="android:textColor">?attr/colorRowHeaderText</item>
+        <item name="android:gravity">bottom</item>
     </style>
 
     <style name="ValueStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:minHeight">48dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:textSize">?attr/textSizeItemValue</item>
         <item name="android:textColor">?attr/colorRowValueText</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment">textEnd</item>
+        <item name="android:gravity">bottom|end</item>
+        <item name="android:layout_gravity">end</item>
     </style>
 
     <style name="SecondaryValueStyle">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">?attr/textSizeItemSecondaryValue</item>
         <item name="android:textColor">?attr/colorRowValueSecondaryText</item>
         <item name="android:textAlignment">center</item>
+        <item name="android:gravity">bottom</item>
     </style>
 
     <style name="PayTable">
@@ -78,8 +85,18 @@
     </style>
 
     <style name="DetailsRow">
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:paddingVertical">@dimen/margin_narrow</item>
+    </style>
+
+    <style name="ExpandDetailsButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:minWidth">@dimen/min_touch_target</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="tint">?attr/colorTextPrimary</item>
+        <item name="android:src">@drawable/baseline_open_in_new_24</item>
     </style>
 </resources>
