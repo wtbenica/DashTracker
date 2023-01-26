@@ -18,6 +18,8 @@ package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies
 
 import androidx.lifecycle.ViewModel
 import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.ExpensePurpose
+import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
@@ -50,17 +52,16 @@ class YearlyListViewModel : ViewModel() {
 
     private val allEntries: Flow<List<DashEntry>> = repository.allEntries
 
+    internal val allExpenses: Flow<List<FullExpense>> = repository.allExpenses
+
     internal val yearlies: Flow<List<Yearly>> =
         combine(
             yearlyBasePayAdjustments,
-            allEntries
-        ) { bpas: MutableMap<Int, Float>, entries: List<DashEntry> ->
+            allEntries,
+            allExpenses
+        ) { bpas: MutableMap<Int, Float>, entries: List<DashEntry>, expenses: List<FullExpense> ->
 
             val yearlies = mutableListOf<Yearly>()
-
-            yearlies.forEach {
-                it.basePayAdjustment = bpas[it.year] ?: 0f
-            }
 
             var numChecked = 0
 
@@ -68,16 +69,27 @@ class YearlyListViewModel : ViewModel() {
                 entries.maxOfOrNull { it.date.year } ?: LocalDate.now().year
 
             while (numChecked < entries.size) {
-                val thisYears: List<DashEntry> = entries.mapNotNull { entry: DashEntry ->
+                val thisYearsEntries: List<DashEntry> = entries.mapNotNull { entry: DashEntry ->
                     if (entry.date.year == year) entry else null
                 }
-                numChecked += thisYears.size
+                numChecked += thisYearsEntries.size
+
+                val thisYearsExpenses: Map<ExpensePurpose, Float> =
+                    expenses.mapNotNull { entry: FullExpense ->
+                        if (entry.expense.date.year == year) entry else null
+                    }.fold(mutableMapOf<ExpensePurpose, Float>()) { res, fe ->
+                        res[fe.purpose] =
+                            res.getOrDefault(fe.purpose, 0f) + (fe.expense.amount ?: 0f)
+                        res
+                    }
+
                 val res = Yearly(year).apply {
                     basePayAdjustment = bpas[year] ?: 0f
+                    this.expenses = thisYearsExpenses
                 }
 
-                if (thisYears.isNotEmpty()) {
-                    thisYears.forEach { entry: DashEntry ->
+                if (thisYearsEntries.isNotEmpty()) {
+                    thisYearsEntries.forEach { entry: DashEntry ->
                         res.addEntry(entry)
                     }
                     yearlies.add(res)
@@ -104,6 +116,12 @@ class Yearly(val year: Int) : ListItemType {
 
     var basePayAdjustment: Float = 0f
 
+    var startOdometer: Float? = null
+
+    var endOdometer: Float? = null
+
+    var expenses: Map<ExpensePurpose, Float>? = null
+
     val reportedPay: Float
         get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.reportedPay } + basePayAdjustment
 
@@ -122,10 +140,40 @@ class Yearly(val year: Int) : ListItemType {
     val mileage: Float
         get() = monthlies.values.fold(0f) { acc, monthly -> acc + monthly.mileage }
 
+    val totalMiles: Float
+        get() {
+            val e = endOdometer
+            val s = startOdometer
+            return if (e != null && s != null) {
+                e - s
+            } else {
+                0f
+            }
+        }
+
+    val nonBusinessMiles: Float
+        get() = totalMiles - mileage
+
+    val businessMileagePercent: Float
+        get() = mileage / totalMiles
+
     fun addEntry(entry: DashEntry) {
         monthlies[entry.date.month]?.addEntry(entry)
+        val entrySo = entry.startOdometer
+        val entryEo = entry.endOdometer
+        val so = startOdometer
+        val eo = endOdometer
+        if (entrySo != 0f && entryEo != 0f) {
+            if (entry.startOdometer != null && (so == null || so > entry.startOdometer)
+            ) {
+                startOdometer = entry.startOdometer
+            }
+            if (entry.endOdometer != null && (eo == null || eo < entry.endOdometer)
+            ) {
+                endOdometer = entry.endOdometer
+            }
+        }
     }
-
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

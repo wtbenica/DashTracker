@@ -170,6 +170,8 @@ class Repository private constructor(private val context: Context) {
      */
     private suspend fun allExpenses(): List<Expense> = expenseDao.getAllSuspend()
 
+    val allExpenses: Flow<List<FullExpense>> = expenseDao.getAllFullExpenses()
+
     private suspend fun allExpensePurposes(): List<ExpensePurpose> =
         expensePurposeDao.getAllSuspend()
 

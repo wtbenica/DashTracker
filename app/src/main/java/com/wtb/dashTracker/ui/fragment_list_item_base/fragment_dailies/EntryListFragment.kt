@@ -172,15 +172,30 @@ class EntryListFragment : ListItemFragment() {
                 fun showExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = VISIBLE
                     binding.listItemSubtitle2.visibility = VISIBLE
-                    detailsBinding.listItemEntryCpmRow.visibility = VISIBLE
-                    detailsBinding.listItemEntryExpensesRow.visibility = VISIBLE
+                    detailsBinding.listItemEntryCpmHeader.visibility = VISIBLE
+                    detailsBinding.listItemEntryCpmDeductionType.visibility = VISIBLE
+                    detailsBinding.listItemEntryCpm.visibility = VISIBLE
+                    detailsBinding.listItemEntryExpensesHeader.visibility = VISIBLE
+                    detailsBinding.listItemEntryExpenses.visibility = VISIBLE
                 }
 
                 fun hideExpenseFields() {
                     binding.listItemSubtitle2Label.visibility = GONE
                     binding.listItemSubtitle2.visibility = GONE
-                    detailsBinding.listItemEntryCpmRow.visibility = GONE
-                    detailsBinding.listItemEntryExpensesRow.visibility = GONE
+                    detailsBinding.listItemEntryCpmHeader.visibility = GONE
+                    detailsBinding.listItemEntryCpmDeductionType.visibility = GONE
+                    detailsBinding.listItemEntryCpm.visibility = GONE
+                    detailsBinding.listItemEntryExpensesHeader.visibility = GONE
+                    detailsBinding.listItemEntryExpenses.visibility = GONE
+                }
+
+                fun updateMissingAlerts() {
+                    binding.listItemAlert.setVisibleIfTrue(this.item.entry.isIncomplete)
+                    detailsBinding.listItemAlertHours.setVisibleIfTrue(
+                        this.item.entry.startTime == null || this.item.entry.endTime == null
+                    )
+                    detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.entry.mileage == null)
+                    detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.item.entry.numDeliveries == null)
                 }
 
                 this.item = item
@@ -196,7 +211,7 @@ class EntryListFragment : ListItemFragment() {
                                 else -> {
                                     showExpenseFields()
 
-                                    detailsBinding.listItemDeductionType.text =
+                                    detailsBinding.listItemEntryCpmDeductionType.text =
                                         deductionType.fullDesc
 
                                     detailsBinding.listItemEntryExpenses.text = getCurrencyString(
@@ -230,16 +245,45 @@ class EntryListFragment : ListItemFragment() {
                 binding.listItemTitle2.text = getCurrencyString(this.item.entry.totalEarned)
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)
-                binding.listItemAlert.setVisibleIfTrue(this.item.entry.isIncomplete)
 
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.entry.pay)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.item.entry.cashTips)
                 detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.entry.otherPay)
-                detailsBinding.listItemAlertHours.setVisibleIfTrue(
-                    this.item.entry.startTime == null || this.item.entry.endTime == null
-                )
-                detailsBinding.listItemEntryHours.text =
-                    getStringOrElse(R.string.float_fmt, "-", this.item.entry.totalHours)
+
+                detailsBinding.listItemEntryHours.apply {
+                    setTextColor(
+                        context.getAttributeColor(
+                            if (this@EntryHolder.item.entry.startTime == null ||
+                                this@EntryHolder.item.entry.endTime == null
+                            ) {
+                                R.attr.colorAlert
+                            } else {
+                                R.attr.colorTextPrimary
+                            }
+                        )
+                    )
+                }
+
+                detailsBinding.listItemEntryHours.apply {
+                    text =
+                        getStringOrElse(
+                            R.string.float_fmt,
+                            "-",
+                            this@EntryHolder.item.entry.totalHours
+                        )
+                    setTextColor(
+                        context.getAttributeColor(
+                            if (this@EntryHolder.item.entry.startTime == null ||
+                                this@EntryHolder.item.entry.endTime == null
+                            ) {
+                                R.attr.colorAlert
+                            } else {
+                                R.attr.colorTextPrimary
+                            }
+                        )
+                    )
+                }
+
                 detailsBinding.listItemEntryMileageRange.text =
                     getOdometerRangeString(
                         this.item.entry.startOdometer,
@@ -247,16 +291,17 @@ class EntryListFragment : ListItemFragment() {
                     )
                 detailsBinding.listItemEntryMileage.text =
                     getStringOrElse(R.string.odometer_fmt, "-", this.item.entry.mileage)
-                detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.entry.mileage == null)
+
                 detailsBinding.listItemEntryNumDeliveries.text =
                     "${this.item.entry.numDeliveries ?: "-"}"
-                detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.item.entry.numDeliveries == null)
                 detailsBinding.listItemEntryHourly.text =
                     getCurrencyString(this.item.entry.hourly)
                 detailsBinding.listItemEntryAvgDel.text =
                     getCurrencyString(this.item.entry.avgDelivery)
                 detailsBinding.listItemEntryHourlyDels.text =
                     getFloatString(this.item.entry.hourlyDeliveries)
+
+                updateMissingAlerts()
 
                 setVisibilityFromPayloads(payloads)
             }

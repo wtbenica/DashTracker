@@ -153,7 +153,7 @@
     <string name="expense_purpose_all">All</string>
     <string name="expense_purpose_standard">IRS Rate</string>
     <string name="dummy_text_label">Lorem ipso</string>
-    <string name="lbl_net_expenses">Expenses</string>
+    <string name="lbl_net_expenses">Est. mileage cost</string>
     <string name="lbl_hourly_gross_net">Hourly gross/net</string>
     <string name="lbl_hourly_by_day_of_week">Stats by Day of Week</string>
     <string name="lbl_num_days">Num Days</string>
@@ -304,4 +304,7 @@
     <string name="lbl_daily_stats">Daily stats</string>
     <string name="lbl_gross">Gross</string>
     <string name="lbl_net">Net</string>
+    <string name="content_desc_open_expense_breakdown">Open expense breakdown</string>
+    <string name="content_desc_open_mileage_breakdown">Open mileage breakdown</string>
+    <string name="business_expense_explanation">Business costs are estimates based on business mileage. This is not accurate for all expenses, e.g. supplies that are only used for business.</string>
 </resources>

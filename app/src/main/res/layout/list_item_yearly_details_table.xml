@@ -81,88 +81,104 @@
                     </TableLayout>
                 </androidx.cardview.widget.CardView>
 
-                <TableLayout
+                <GridLayout
                     style="@style/DetailsTable"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TableRow style="@style/DetailsRow">
+                    <!-- Row 0 -->
+                    <TextView
+                        style="@style/HeaderStyle"
+                        android:layout_row="0"
+                        android:layout_column="0"
+                        android:text="@string/header_mileage" />
 
-                        <TextView
-                            style="@style/HeaderStyle"
-                            android:layout_span="2"
-                            android:layout_weight="1"
-                            android:text="@string/header_mileage" />
+                    <ImageView
+                        android:id="@+id/mileage_details_button"
+                        style="@style/ExpandDetailsButton"
+                        android:layout_row="0"
+                        android:layout_column="1"
+                        android:contentDescription="@string/content_desc_open_mileage_breakdown" />
 
-                        <TextView
-                            android:id="@+id/list_item_yearly_mileage"
-                            style="@style/ValueStyle"
-                            tools:text="3,201" />
-                    </TableRow>
+                    <TextView
+                        android:id="@+id/list_item_yearly_mileage"
+                        style="@style/ValueStyle"
+                        android:layout_row="0"
+                        android:layout_column="3"
+                        tools:text="3,201" />
 
-                    <TableRow
-                        android:id="@+id/list_item_yearly_cpm_row"
-                        style="@style/DetailsRow">
+                    <!-- Row 1 -->
+                    <TextView
+                        android:id="@+id/list_item_yearly_expenses_header"
+                        style="@style/HeaderStyle"
+                        android:layout_row="1"
+                        android:layout_column="0"
+                        android:text="@string/lbl_net_expenses" />
 
-                        <TextView
-                            style="@style/HeaderStyle"
-                            android:text="@string/lbl_cost_per_mile" />
+                    <ImageView
+                        android:id="@+id/list_item_yearly_expense_details_button"
+                        style="@style/ExpandDetailsButton"
+                        android:layout_row="1"
+                        android:layout_column="1"
+                        android:contentDescription="@string/content_desc_open_mileage_breakdown" />
 
-                        <TextView
-                            android:id="@+id/list_item_deduction_type"
-                            style="@style/SecondaryValueStyle"
-                            tools:text="Gas Only" />
+                    <TextView
+                        android:id="@+id/list_item_yearly_expenses"
+                        style="@style/ValueStyle"
+                        android:layout_row="1"
+                        android:layout_column="3"
+                        tools:text="$56.18" />
 
-                        <TextView
-                            android:id="@+id/list_item_yearly_cpm"
-                            style="@style/ValueStyle"
-                            tools:text="$0.18" />
-                    </TableRow>
+                    <!-- Row 2 -->
+                    <TextView
+                        android:id="@+id/list_item_yearly_cpm_header"
+                        style="@style/HeaderStyle"
+                        android:layout_row="2"
+                        android:layout_column="0"
+                        android:text="@string/lbl_cost_per_mile" />
 
-                    <TableRow
-                        android:id="@+id/list_item_yearly_expenses_row"
-                        style="@style/DetailsRow">
+                    <TextView
+                        android:id="@+id/list_item_yearly_cpm_deduction_type"
+                        style="@style/SecondaryValueStyle"
+                        android:layout_row="2"
+                        android:layout_column="2"
+                        tools:text="Gas Only" />
 
-                        <TextView
-                            style="@style/HeaderStyle"
-                            android:text="@string/lbl_net_expenses" />
+                    <TextView
+                        android:id="@+id/list_item_yearly_cpm"
+                        style="@style/ValueStyle"
+                        android:layout_row="2"
+                        android:layout_column="3"
+                        tools:text="$0.18" />
 
-                        <TextView
-                            android:id="@+id/list_item_yearly_expenses"
-                            style="@style/ValueStyle"
-                            android:layout_weight="1"
-                            tools:text="$56.18" />
-                    </TableRow>
+                    <!-- Row 3 -->
+                    <TextView
+                        style="@style/HeaderStyle"
+                        android:layout_row="3"
+                        android:layout_column="0"
+                        android:text="@string/header_hours" />
 
-                    <TableRow style="@style/DetailsRow">
+                    <TextView
+                        android:id="@+id/list_item_yearly_hours"
+                        style="@style/ValueStyle"
+                        android:layout_row="3"
+                        android:layout_column="3"
+                        tools:text="2.93h" />
 
-                        <TextView
-                            style="@style/HeaderStyle"
-                            android:layout_span="2"
-                            android:layout_weight="1"
-                            android:text="@string/header_hours" />
 
-                        <TextView
-                            android:id="@+id/list_item_yearly_hours"
-                            style="@style/ValueStyle"
-                            tools:text="2.93h" />
-                    </TableRow>
+                    <TextView
+                        style="@style/HeaderStyle"
+                        android:layout_row="4"
+                        android:layout_column="0"
+                        android:text="@string/units_pay_rate" />
 
-                    <TableRow style="@style/DetailsRow">
-
-                        <TextView
-                            style="@style/HeaderStyle"
-                            android:layout_column="0"
-                            android:layout_span="2"
-                            android:layout_weight="1"
-                            android:text="@string/units_pay_rate" />
-
-                        <TextView
-                            android:id="@+id/list_item_yearly_hourly"
-                            style="@style/ValueStyle"
-                            tools:text="$22.41" />
-                    </TableRow>
-                </TableLayout>
+                    <TextView
+                        android:id="@+id/list_item_yearly_hourly"
+                        style="@style/ValueStyle"
+                        android:layout_row="4"
+                        android:layout_column="3"
+                        tools:text="$22.41" />
+                </GridLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
