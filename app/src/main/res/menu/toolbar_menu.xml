@@ -56,4 +56,9 @@
         android:id="@+id/action_settings"
         android:title="@string/title_activity_settings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_contact"
+        android:title="@string/title_action_contact"
+        app:showAsAction="never" />
 </menu>
