@@ -307,4 +307,5 @@
     <string name="content_desc_open_expense_breakdown">Open expense breakdown</string>
     <string name="content_desc_open_mileage_breakdown">Open mileage breakdown</string>
     <string name="business_expense_explanation">Business costs are estimates based on business mileage. This is not accurate for all expenses, e.g. supplies that are only used for business.</string>
+    <string name="title_action_contact">Contact us</string>
 </resources>

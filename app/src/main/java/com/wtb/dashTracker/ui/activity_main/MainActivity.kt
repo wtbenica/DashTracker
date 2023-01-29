@@ -25,9 +25,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.location.Location
-import android.os.Bundle
-import android.os.IBinder
-import android.os.PersistableBundle
+import android.net.Uri
+import android.os.*
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -531,6 +530,13 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 settingsActivityLauncher.launch(intent)
                 true
             }
+            R.id.action_contact -> {
+                expectedExit = true
+                val intent =
+                    Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:dashtracker@benica.dev"))
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -741,10 +747,10 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         private var locationServiceConnection: ServiceConnection? = null
 
         internal var locationServiceBound: Boolean = false
-         set(value) {
-             field = value
-             Log.d(TAG, "LSB -> $field")
-         }
+            set(value) {
+                field = value
+                Log.d(TAG, "LSB -> $field")
+            }
 
         /**
          * lock to prevent location service from being started multiple times
