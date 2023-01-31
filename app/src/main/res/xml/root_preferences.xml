@@ -14,9 +14,10 @@
   ~ limitations under the License.
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="Income">
+    <PreferenceCategory app:title="@string/prefs_category_income">
 
         <SwitchPreference
             app:defaultValue="true"
@@ -26,7 +27,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="Automatic Mileage Tracking">
+    <PreferenceCategory app:title="@string/prefs_category_auto_mileage">
 
         <SwitchPreference
             app:defaultValue="false"
@@ -46,11 +47,22 @@
             app:title="Allow background battery usage" />
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="Security">
+    <PreferenceCategory app:title="@string/prefs_category_security">
 
         <SwitchPreference
             app:defaultValue="true"
             app:key="@string/prefs_authentication_enabled"
             app:title="@string/pref_title_require_authentication" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/prefs_category_appearance">
+
+        <ListPreference
+            android:title="@string/pref_title_light_dark_theme"
+            app:defaultValue="@string/pref_theme_option_use_device_theme"
+            app:entries="@array/theme_options"
+            app:entryValues="@array/theme_options"
+            app:key="@string/prefs_ui_mode"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 </PreferenceScreen>

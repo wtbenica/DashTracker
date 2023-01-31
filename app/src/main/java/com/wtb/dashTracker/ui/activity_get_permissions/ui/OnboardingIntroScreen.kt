@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -26,7 +27,6 @@ import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -39,9 +39,10 @@ import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.welcomeIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
@@ -65,7 +66,7 @@ fun OnboardingIntroScreen(
                 imageVector = Icons.TwoTone.LocationOn,
                 contentDescription = "",
                 modifier = Modifier.size(96.dp),
-                tint = welcomeIconColor()
+                tint = headerIconColor()
             )
         },
         mainContent = {
@@ -83,7 +84,7 @@ fun OnboardingIntroScreen(
                     ContentCard(
                         titleText = it,
                         icon = icons[i],
-                        iconTint = MaterialTheme.colorScheme.secondary,
+                        iconTint = welcomeIconColor(),
                         iconDescription = "Punch Clock",
                     )
                 }
@@ -177,6 +178,20 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewWhatsNew() {
+    DashTrackerTheme {
+        Column(modifier = Modifier.fillMaxSize()) {
+            OnboardingIntroScreen(modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewWhatsNewNight() {
     DashTrackerTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             OnboardingIntroScreen(modifier = Modifier.weight(1f))

@@ -70,6 +70,11 @@ fun customCardColors(): CardColors {
     )
 }
 
+val borderStrokeColor: Color
+    @Composable get() = MaterialTheme.colorScheme.primary
+
+val borderStrokeWidth = 2.dp
+
 @ExperimentalTextApi
 @Composable
 fun SingleExpandableCard(
@@ -81,92 +86,89 @@ fun SingleExpandableCard(
     callback: () -> Unit,
     content: @Composable (() -> Unit)? = null
 ) {
-    DashTrackerTheme {
-        val outlineColor = MaterialTheme.colorScheme.primary
-        val interactionSource = remember { MutableInteractionSource() }
-        OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(cardShape)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = rememberRipple(
-                        bounded = true,
-                        radius = Dp.Unspecified,
-                        color = MaterialTheme.colorScheme.tertiary
-                    ),
-                    enabled = content != null
-                ) { callback() },
-            shape = cardShape,
-            colors = customCardColors(),
-            border = BorderStroke(width = 2.dp, color = outlineColor)
-        ) {
-            Column {
-                Row(
-                    modifier = if (content == null) {
-                        Modifier
-                            .padding(all = 16.dp)
-                    } else {
-                        Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                    }
-                ) {
-                    Text(
-                        text = text,
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .weight(1f),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Start,
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Icon(
-                        icon,
-                        contentDescription = iconDescription,
-                        modifier = Modifier
-                            .width(48.dp)
-                            .height(48.dp),
-                        tint = iconTint
-                    )
+    val interactionSource = remember { MutableInteractionSource() }
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(cardShape)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    radius = Dp.Unspecified,
+                    color = MaterialTheme.colorScheme.tertiary
+                ),
+                enabled = content != null
+            ) { callback() },
+        shape = cardShape,
+        colors = customCardColors(),
+        border = BorderStroke(width = borderStrokeWidth, color = borderStrokeColor)
+    ) {
+        Column {
+            Row(
+                modifier = if (content == null) {
+                    Modifier
+                        .padding(all = 16.dp)
+                } else {
+                    Modifier
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                 }
+            ) {
+                Text(
+                    text = text,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Start,
+                )
 
-                if (content != null) {
-                    AnimatedVisibility(visible = isExpanded) {
-                        Row(
-                            modifier = Modifier
-                                .padding(16.dp)
-                        ) {
-                            content()
-                        }
-                    }
-                }
+                Spacer(modifier = Modifier.weight(1f))
+
+                Icon(
+                    icon,
+                    contentDescription = iconDescription,
+                    modifier = Modifier
+                        .width(48.dp)
+                        .height(48.dp),
+                    tint = iconTint
+                )
             }
 
             if (content != null) {
-                Crossfade(
-                    targetState = isExpanded,
-                ) {
-                    when (it) {
-                        true -> Icon(
-                            Icons.Filled.KeyboardArrowUp,
-                            contentDescription = "Show less",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(16.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                        false -> Icon(
-                            Icons.Filled.KeyboardArrowDown,
-                            contentDescription = "Show more",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(16.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
+                AnimatedVisibility(visible = isExpanded) {
+                    Row(
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        content()
                     }
+                }
+            }
+        }
+
+        if (content != null) {
+            Crossfade(
+                targetState = isExpanded,
+            ) {
+                when (it) {
+                    true -> Icon(
+                        Icons.Filled.KeyboardArrowUp,
+                        contentDescription = "Show less",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                    false -> Icon(
+                        Icons.Filled.KeyboardArrowDown,
+                        contentDescription = "Show more",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
                 }
             }
         }
@@ -179,24 +181,23 @@ fun CustomOutlinedCard(
     modifier: Modifier = Modifier,
     padding: Int? = null,
     content: @Composable (ColumnScope.() -> Unit)
-): Unit = DashTrackerTheme {
-    OutlinedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(cardShape),
-        shape = cardShape,
-        colors = customCardColors(),
-        border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary),
+): Unit = OutlinedCard(
+    modifier = modifier
+        .fillMaxWidth()
+        .clip(cardShape),
+    shape = cardShape,
+    colors = customCardColors(),
+    border = BorderStroke(width = borderStrokeWidth, color = borderStrokeColor),
+) {
+    Column(
+        modifier = Modifier.padding(
+            padding?.dp ?: dimensionResource(id = R.dimen.margin_wide)
+        )
     ) {
-        Column(
-            modifier = Modifier.padding(
-                padding?.dp ?: dimensionResource(id = R.dimen.margin_wide)
-            )
-        ) {
-            content()
-        }
+        content()
     }
 }
+
 
 /**
  * Outlined card with title, icon, and content areas
@@ -216,49 +217,47 @@ fun ContentCard(
     iconDescription: String,
     content: @Composable (() -> Unit)? = null
 ) {
-    DashTrackerTheme {
-        OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(cardShape),
-            shape = cardShape,
-            colors = customCardColors(),
-            border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary)
-        ) {
-            Row(
-                modifier = if (content == null) {
-                    Modifier.padding(all = 16.dp)
-                } else {
-                    Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                }
-            ) {
-                Text(
-                    text = titleText,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .weight(1f),
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Start,
-                )
-
-                HalfSpacer()
-
-                Icon(
-                    icon,
-                    contentDescription = iconDescription,
-                    modifier = Modifier
-                        .size(48.dp),
-                    tint = iconTint
-                )
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(cardShape),
+        shape = cardShape,
+        colors = customCardColors(),
+        border = BorderStroke(width = borderStrokeWidth, color = borderStrokeColor)
+    ) {
+        Row(
+            modifier = if (content == null) {
+                Modifier.padding(all = 16.dp)
+            } else {
+                Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
             }
+        ) {
+            Text(
+                text = titleText,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .weight(1f),
+                fontSize = 18.sp,
+                textAlign = TextAlign.Start,
+            )
 
-            if (content != null) {
-                Row(
-                    modifier = Modifier
-                        .padding(16.dp)
-                ) {
-                    content()
-                }
+            HalfSpacer()
+
+            Icon(
+                icon,
+                contentDescription = iconDescription,
+                modifier = Modifier
+                    .size(48.dp),
+                tint = iconTint
+            )
+        }
+
+        if (content != null) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                content()
             }
         }
     }
@@ -269,7 +268,7 @@ fun ContentCard(
 fun SecondaryOutlinedCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
-): Unit = DashTrackerTheme {
+): Unit {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = cardShape,
@@ -277,11 +276,12 @@ fun SecondaryOutlinedCard(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+        border = BorderStroke(borderStrokeWidth, borderStrokeColor)
     ) {
         content()
     }
 }
+
 
 @ExperimentalTextApi
 @Composable
@@ -333,36 +333,40 @@ fun HeaderRow(text: String, modifier: Modifier = Modifier, icon: ImageVector): U
 @Composable
 @Preview
 fun PreviewSingleExpandableCard() {
-    SingleExpandableCard(
-        text = "Track Your Income",
-        icon = Icons.TwoTone.SquareFoot,
-        iconTint = down,
-        iconDescription = "Stinky Fish",
-        isExpanded = true,
-        callback = { },
-        content = {
-            ListRow("Eat your potato salad, dearie")
-        }
-    )
+    DashTrackerTheme {
+        SingleExpandableCard(
+            text = "Track Your Income",
+            icon = Icons.TwoTone.SquareFoot,
+            iconTint = down,
+            iconDescription = "Stinky Fish",
+            isExpanded = true,
+            callback = { },
+            content = {
+                ListRow("Eat your potato salad, dearie")
+            }
+        )
+    }
 }
 
 @ExperimentalTextApi
 @Composable
 @Preview
 fun PreviewContentCard() {
-    ContentCard(
-        titleText = "Track your income as if your life depended on it i'm trying to see what " +
-                "happens when the text is long and I want to see if it is limited to nope",
-        icon = Icons.TwoTone.AttachMoney,
-        iconTint = up,
-        iconDescription = "Drawing of a car",
-    ) {
-        Column {
-            ListRow("Is today Monday?")
-            ListRow(
-                "\"Eat your potato salad, dearie,\" said the wolf to the crow, as the night " +
-                        "melody played of whistles and skeetleburrs."
-            )
+    DashTrackerTheme {
+        ContentCard(
+            titleText = "Track your income as if your life depended on it i'm trying to see what " +
+                    "happens when the text is long and I want to see if it is limited to nope",
+            icon = Icons.TwoTone.AttachMoney,
+            iconTint = up,
+            iconDescription = "Drawing of a car",
+        ) {
+            Column {
+                ListRow("Is today Monday?")
+                ListRow(
+                    "\"Eat your potato salad, dearie,\" said the wolf to the crow, as the night " +
+                            "melody played of whistles and skeetleburrs."
+                )
+            }
         }
     }
 }
@@ -371,8 +375,10 @@ fun PreviewContentCard() {
 @Composable
 @Preview
 fun PreviewCustomOutlined() {
-    CustomOutlinedCard {
-        Text("This is just an outlined card")
+    DashTrackerTheme {
+        CustomOutlinedCard {
+            Text("This is just an outlined card")
+        }
     }
 }
 
@@ -380,28 +386,30 @@ fun PreviewCustomOutlined() {
 @Composable
 @Preview
 fun PreviewSecondaryCustomOutlined() {
-    SecondaryOutlinedCard {
-        val str = buildAnnotatedString {
-            append("To grant location permissions, select ")
+    DashTrackerTheme {
+        SecondaryOutlinedCard {
+            val str = buildAnnotatedString {
+                append("To grant location permissions, select ")
 
-            withStyle(style = styleBold) {
-                append("OK")
+                withStyle(style = styleBold) {
+                    append("OK")
+                }
+
+                append(" then allow location access ")
+
+                withStyle(style = styleBold) {
+                    append("While using the app")
+                }
+
+                append(", then ")
+
+                withStyle(style = styleBold) {
+                    append("Allow")
+                }
+
+                append(" physical activity access.")
             }
-
-            append(" then allow location access ")
-
-            withStyle(style = styleBold) {
-                append("While using the app")
-            }
-
-            append(", then ")
-
-            withStyle(style = styleBold) {
-                append("Allow")
-            }
-
-            append(" physical activity access.")
+            Text(str, modifier = Modifier.padding(24.dp))
         }
-        Text(str, modifier = Modifier.padding(24.dp))
     }
 }

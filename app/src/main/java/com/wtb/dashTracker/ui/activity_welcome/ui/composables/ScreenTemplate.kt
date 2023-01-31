@@ -37,10 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.OnboardingIntroNav
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.cardShape
-import com.wtb.dashTracker.ui.theme.secondary
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalTextApi
@@ -53,93 +52,92 @@ fun ScreenTemplate(
     mainContent: @Composable (ColumnScope.() -> Unit),
     navContent: @Composable (ColumnScope.() -> Unit)? = null
 ) {
-    DashTrackerTheme {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
+    ) {
+        DefaultSpacer()
+
+        val borderWidth = 3.dp
+        OutlinedCard(
+            shape = cardShape,
+            colors = cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
+            border = BorderStroke(borderWidth, MaterialTheme.colorScheme.inversePrimary)
         ) {
-            DefaultSpacer()
+            WideSpacer()
 
-            OutlinedCard(
-                shape = cardShape,
-                colors = cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
-            ) {
-                WideSpacer()
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                FillSpacer()
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    FillSpacer()
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = headerText,
+                        modifier = Modifier.padding(0.dp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = subtitleText?.let { 18.sp } ?: 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    subtitleText?.let {
                         Text(
-                            text = headerText,
+                            text = it,
                             modifier = Modifier.padding(0.dp),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = subtitleText?.let { 18.sp } ?: 20.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
                         )
-
-                        subtitleText?.let {
-                            Text(
-                                text = it,
-                                modifier = Modifier.padding(0.dp),
-                                fontSize = 14.sp,
-                            )
-                        }
-                    }
-
-                    FillSpacer()
-
-                    OutlinedCard(
-                        modifier = Modifier
-                            .width(128.dp)
-                            .height(96.dp)
-                            .align(Alignment.CenterVertically)
-                            .padding(end = dimensionResource(R.dimen.margin_half)),
-                        shape = cardShape,
-                        colors = cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            contentColor = secondary()
-                        ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
-                    ) {
-                        Column(
-                            modifier = Modifier.align(
-                                Alignment.CenterHorizontally
-                            ),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            iconImage()
-                        }
                     }
                 }
 
-                WideSpacer()
+                FillSpacer()
+
+                OutlinedCard(
+                    modifier = Modifier
+                        .width(128.dp)
+                        .height(96.dp)
+                        .align(Alignment.CenterVertically)
+                        .padding(end = dimensionResource(R.dimen.margin_half)),
+                    shape = cardShape,
+                    colors = cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.tertiary
+                    ),
+                    border = BorderStroke(borderWidth, MaterialTheme.colorScheme.tertiaryContainer)
+                ) {
+                    Column(
+                        modifier = Modifier.align(
+                            Alignment.CenterHorizontally
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        iconImage()
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.size(64.dp))
+            WideSpacer()
+        }
 
+        Spacer(modifier = Modifier.size(64.dp))
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+        ) {
+            mainContent()
+        }
+
+        navContent?.let {
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(top = 16.dp)
             ) {
-                mainContent()
-            }
-
-            navContent?.let {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(top = 16.dp)
-                ) {
-                    it()
-                }
+                it()
             }
         }
     }
@@ -162,7 +160,7 @@ fun PreviewScreenTemplate() {
                         imageVector = Icons.TwoTone.Dangerous,
                         contentDescription = "Dangerous",
                         modifier = Modifier.size(96.dp),
-                        tint = welcomeIconColor()
+                        tint = headerIconColor()
                     )
                 },
                 mainContent = {
@@ -199,7 +197,7 @@ fun PreviewScreenTemplateNight() {
                         imageVector = Icons.TwoTone.Dangerous,
                         contentDescription = "Dangerous",
                         modifier = Modifier.size(96.dp),
-                        tint = welcomeIconColor()
+                        tint = headerIconColor()
                     )
                 },
                 mainContent = {

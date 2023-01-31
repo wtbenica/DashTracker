@@ -16,9 +16,12 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FirstPage
 import androidx.compose.material.icons.filled.TextSnippet
@@ -40,17 +43,15 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    DashTrackerTheme {
-        Button(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onSecondary,
-            ),
-            onClick = onClick,
-            modifier = modifier,
-            content = content
-        )
-    }
+    Button(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+        onClick = onClick,
+        modifier = modifier,
+        content = content
+    )
 }
 
 @ExperimentalTextApi
@@ -60,17 +61,15 @@ fun CustomTextButton(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    DashTrackerTheme {
-        TextButton(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.secondary,
-            ),
-            onClick = onClick,
-            modifier = modifier,
-            content = content,
-        )
-    }
+    TextButton(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        ),
+        onClick = onClick,
+        modifier = modifier,
+        content = content,
+    )
 }
 
 
@@ -81,20 +80,18 @@ fun CustomOutlinedButton(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    DashTrackerTheme {
-        val interactionSource = remember { MutableInteractionSource() }
+    val interactionSource = remember { MutableInteractionSource() }
 
-        OutlinedButton(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
-            onClick = onClick,
-            modifier = modifier,
-            content = content
-        )
-    }
+    OutlinedButton(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
+        onClick = onClick,
+        modifier = modifier,
+        content = content
+    )
 }
 
 @ExperimentalTextApi
@@ -103,22 +100,52 @@ fun CustomOutlinedButton(
 fun PreviewButtons() {
     DashTrackerTheme {
         Surface {
-            Row(modifier = Modifier.padding(4.dp)) {
-                CustomButton(onClick = { }, modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.padding(4.dp)) {
+                CustomButton(onClick = { }) {
                     Text(text = "Button")
                     Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
                 }
 
-                Spacer(Modifier.width(8.dp))
+                HalfSpacer()
 
-                CustomTextButton(onClick = {}, modifier = Modifier.weight(1f)) {
+                CustomTextButton(onClick = {}) {
                     Text(text = "Text")
                     Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
                 }
 
-                Spacer(Modifier.width(8.dp))
+                HalfSpacer()
 
-                CustomOutlinedButton(onClick = {}, modifier = Modifier.weight(1f)) {
+                CustomOutlinedButton(onClick = {}) {
+                    Text(text = "Outlined")
+                    Icon(Icons.Outlined.Circle, contentDescription = "Circle")
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalTextApi
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewButtonsNight() {
+    DashTrackerTheme {
+        Surface {
+            Column(modifier = Modifier.padding(4.dp)) {
+                CustomButton(onClick = { }) {
+                    Text(text = "Button")
+                    Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
+                }
+
+                HalfSpacer()
+
+                CustomTextButton(onClick = {}) {
+                    Text(text = "Text")
+                    Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
+                }
+
+                HalfSpacer()
+
+                CustomOutlinedButton(onClick = {}) {
                     Text(text = "Outlined")
                     Icon(Icons.Outlined.Circle, contentDescription = "Circle")
                 }
