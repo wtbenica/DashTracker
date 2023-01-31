@@ -226,21 +226,7 @@
     <string name="route_battery_permission">route_batter_permission</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-
+    <!-- Preferences -->
     <string name="prefs_enable_location">prefs_enable_location</string>
     <string name="prefs_enable_notification">prefs_enable_notification</string>
     <string name="prefs_enable_bg_battery">prefs_enable_bg_battery</string>
@@ -270,6 +256,14 @@
     <string name="require_pin_desc">To protect your data, DashTracker can require a fingerprint or PIN to open.</string>
     <string name="pref_title_show_weekly_adjustment_field">Show weekly adjustment field</string>
     <string name="pref_title_require_authentication">Require authentication to open</string>
+
+    <string name="prefs_ui_mode">prefs_ui_mode</string>
+    <string name="pref_title_light_dark_theme">Light/Dark theme</string>
+    <string name="pref_theme_option_use_device_theme">Use device theme</string>
+    <string name="pref_theme_option_light">Light</string>
+    <string name="pref_theme_option_dark">Dark</string>
+
+
     <string name="dialog_title_dash_entry">Dash Entry</string>
     <string name="content_desc_show_chart_filtering_options">Show chart filtering options</string>
     <string name="adb_current_dash">Current Dash</string>

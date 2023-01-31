@@ -292,9 +292,9 @@ class Repository private constructor(private val context: Context) {
         csvUtil.import(activityResultLauncher)
 
     /**
-     * For only the parameters that are passed arguments, the corresponding database table's 
-     * records will be deleted and replaced with the items in the passed list. The default 
-     * argument, null, will not make any changes to the corresponding table. An empty list will 
+     * For only the parameters that are passed arguments, the corresponding database table's
+     * records will be deleted and replaced with the items in the passed list. The default
+     * argument, null, will not make any changes to the corresponding table. An empty list will
      * delete all records from the table.
      */
     fun insertOrReplace(
@@ -305,32 +305,41 @@ class Repository private constructor(private val context: Context) {
         locationData: List<LocationData>? = null
     ) {
         CoroutineScope(Dispatchers.Default).launch {
-            weeklies?.let {
-                weeklyDao.clear()
-                weeklyDao.upsertAll(it)
+            withContext(Dispatchers.Default) {
+                weeklies?.let {
+                    weeklyDao.clear()
+                    weeklyDao.upsertAllSus(it)
+                }
+            }.let {
+                withContext(Dispatchers.Default) {
+                    entries?.let {
+                        entryDao.clear()
+                        entryDao.upsertAllSus(it)
+                    }
+                }.let {
+                    locationData?.let {
+                        locationDao.clear()
+                        locationDao.upsertAllSus(it)
+                    }
+                }
             }
+        }
 
-            entries?.let {
-                entryDao.clear()
-                entryDao.upsertAll(it)
-            }
-
-            locationData?.let {
-                locationDao.clear()
-                locationDao.upsertAll(it)
-            }
-
+        CoroutineScope(Dispatchers.Default).launch {
             if (expenses != null && purposes != null) {
                 expenseDao.clear()
                 expensePurposeDao.clear()
-                expensePurposeDao.upsertAll(purposes)
-                expenseDao.upsertAll(expenses)
+                withContext(Dispatchers.Default) {
+                    expensePurposeDao.upsertAllSus(purposes)
+                }.let {
+                    expenseDao.upsertAllSus(expenses)
+                }
             } else if (expenses != null) {
                 expenseDao.clear()
-                expenseDao.upsertAll(expenses)
+                expenseDao.upsertAllSus(expenses)
             } else if (purposes != null) {
                 expensePurposeDao.clear()
-                expensePurposeDao.upsertAll(purposes)
+                expensePurposeDao.upsertAllSus(purposes)
             }
         }
     }

@@ -19,6 +19,9 @@ package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 import android.os.Bundle
 import android.provider.ContactsContract.Directory.PACKAGE_NAME
 import android.view.LayoutInflater
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -32,14 +35,26 @@ import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.toDateOrNull
 import com.wtb.dashTracker.extensions.toFloatOrNull
-import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
-import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_DAY
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_MONTH
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_YEAR
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_TEXTVIEW
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.REQUEST_KEY_DATE
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.ARG_TIME_NEW_HOUR
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.ARG_TIME_NEW_MINUTE
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.ARG_TIME_TEXTVIEW
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.REQUEST_KEY_TIME
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@OptIn(ExperimentalAnimationApi::class)
 @ExperimentalCoroutinesApi
 class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBinding>() {
     override var item: DashEntry? = null
@@ -53,20 +68,20 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
 
             fragStartDashDate.apply {
                 setOnClickListener {
-                    DatePickerFragment.newInstance(
+                    ConfirmationDialogDatePicker.newInstance(
                         R.id.frag_entry_date,
                         this.text.toString(),
-                        DatePickerFragment.REQUEST_KEY_DATE
+                        getString(R.string.lbl_date)
                     ).show(parentFragmentManager, "entry_date_picker")
                 }
             }
 
             fragStartDashStartTime.apply {
                 setOnClickListener {
-                    TimePickerFragment.newInstance(
-                        R.id.frag_entry_start_time,
-                        this.text.toString(),
-                        TimePickerFragment.REQUEST_KEY_TIME
+                    ConfirmationDialogTimePicker.newInstance(
+                        textViewId = R.id.frag_entry_start_time,
+                        currentText = this.text.toString(),
+                        headerText = getString(R.string.lbl_start_time)
                     ).show(childFragmentManager, "time_picker_start")
                     startTimeChanged = true
                 }
@@ -91,12 +106,6 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
                         )
                     )
                     dismiss()
-//                    when {
-//                        hasPermissions(activity as Context, *REQUIRED_PERMISSIONS) -> loadNewTrip()
-//                        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ->
-//                            showRationaleLocation { locationPermLauncher.launch(LOCATION_PERMISSIONS) }
-//                        else -> locationPermLauncher.launch(LOCATION_PERMISSIONS)
-//                    }
                 }
             }
         }
@@ -146,13 +155,11 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     override fun setDialogListeners() {
         super.setDialogListeners()
 
-        setFragmentResultListener(
-            DatePickerFragment.REQUEST_KEY_DATE
-        ) { _, bundle ->
-            val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
-            val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
-            val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
-            when (bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)) {
+        setFragmentResultListener(REQUEST_KEY_DATE) { _, bundle ->
+            val year = bundle.getInt(ARG_DATE_PICKER_NEW_YEAR)
+            val month = bundle.getInt(ARG_DATE_PICKER_NEW_MONTH)
+            val dayOfMonth = bundle.getInt(ARG_DATE_PICKER_NEW_DAY)
+            when (bundle.getInt(ARG_DATE_TEXTVIEW)) {
                 R.id.frag_entry_date -> {
                     binding.fragStartDashDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
@@ -161,14 +168,14 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
         }
 
         childFragmentManager.setFragmentResultListener(
-            TimePickerFragment.REQUEST_KEY_TIME,
+            REQUEST_KEY_TIME,
             this
         ) { _, bundle ->
-            val hour = bundle.getInt(TimePickerFragment.ARG_NEW_HOUR)
-            val minute = bundle.getInt(TimePickerFragment.ARG_NEW_MINUTE)
+            val hour = bundle.getInt(ARG_TIME_NEW_HOUR)
+            val minute = bundle.getInt(ARG_TIME_NEW_MINUTE)
             val dialogTime = LocalTime.of(hour, minute)
 
-            when (bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)) {
+            when (bundle.getInt(ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
                     binding.fragStartDashStartTime.text =
                         dialogTime.format(dtfTime).toString()

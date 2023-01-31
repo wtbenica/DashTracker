@@ -18,7 +18,6 @@
     <!-- Splash screen theme -->
     <style name="SplashScreenBase" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@mipmap/icon_c_foreground</item>
-        <item name="windowSplashScreenBackground">?attr/colorOnSecondary</item>
         <item name="postSplashScreenTheme">@style/Base.DasherCompanion</item>
     </style>
 
@@ -39,6 +38,10 @@
     <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
         <item name="android:windowLightStatusBar">true</item>
         <item name="colorActionBarText">@color/on_regular</item>
+    </style>
+    
+    <style name="SettingsActivityTheme" parent="Base.DasherCompanion">
+        <item name="android:textColorSecondary">?attr/colorTextPrimaryDisabled</item>
     </style>
 
     <!-- Base application theme. -->

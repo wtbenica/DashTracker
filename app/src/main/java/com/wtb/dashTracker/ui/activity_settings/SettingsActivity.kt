@@ -28,12 +28,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
@@ -60,6 +62,7 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTI
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.UI_MODE_PREF
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasBatteryPermission
 import com.wtb.dashTracker.util.hasPermissions
@@ -78,6 +81,7 @@ class SettingsActivity : AuthenticatedActivity() {
     var notificationEnabledPref: SwitchPreference? = null
     var bgBatteryEnabledPref: SwitchPreference? = null
     var authenticationEnabledPref: SwitchPreference? = null
+    var uiModePref: ListPreference? = null
 
     private val activityResult = Intent()
 
@@ -219,6 +223,10 @@ class SettingsActivity : AuthenticatedActivity() {
 
             (activity as SettingsActivity).authenticationEnabledPref?.apply {
                 isChecked = sharedPrefs.getBoolean(requireContext().AUTHENTICATION_ENABLED, true)
+            }
+
+            (activity as SettingsActivity).uiModePref?.apply {
+                value = sharedPrefs.getString(requireContext().UI_MODE_PREF, "System default")
             }
         }
     }
@@ -381,6 +389,17 @@ class SettingsActivity : AuthenticatedActivity() {
                         sharedPrefs.edit().putBoolean(AUTHENTICATION_ENABLED_REVERTED, false)
                             .apply()
                     }
+                }
+                UI_MODE_PREF -> {
+                    val mode = when (sharedPrefs.getString(
+                        UI_MODE_PREF,
+                        getString(R.string.pref_theme_option_use_device_theme)
+                    )) {
+                        getString(R.string.pref_theme_option_dark) -> AppCompatDelegate.MODE_NIGHT_YES
+                        getString(R.string.pref_theme_option_light) -> AppCompatDelegate.MODE_NIGHT_NO
+                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    }
+                    AppCompatDelegate.setDefaultNightMode(mode)
                 }
             }
         }

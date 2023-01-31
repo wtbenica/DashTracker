@@ -162,7 +162,9 @@
     <attr name="colorDialogButtonBg" format="reference|color" />
     <attr name="dialogFragCornerRadius" format="reference" />
     <attr name="colorDialogFragSpinnerPopupBg" format="reference" />
+
     <!-- datetime picker -->
+    <attr name="colorPickerHeader" format="reference|color" />
     <attr name="colorDatePickerSelected" format="reference" />
     <attr name="colorDatePickerNavButton" format="reference" />
     <attr name="colorDatePickerBackground" format="reference" />

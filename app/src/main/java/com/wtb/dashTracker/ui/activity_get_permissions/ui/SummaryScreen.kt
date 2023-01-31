@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -35,8 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.welcomeIconColor
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
@@ -61,7 +64,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
                 imageVector = Icons.Outlined.LocationOff,
                 contentDescription = "Location Off",
                 modifier = Modifier.size(96.dp),
-                tint = welcomeIconColor()
+                tint = headerIconColor()
             )
         }
 
@@ -70,7 +73,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
                 imageVector = Icons.Outlined.LocationOn,
                 contentDescription = "Location On",
                 modifier = Modifier.size(96.dp),
-                tint = welcomeIconColor()
+                tint = headerIconColor()
             )
         }
 
@@ -191,7 +194,7 @@ fun PermRow(
     isRequired: Boolean = true
 ) {
     Row {
-        Icon(permIcon, permIconDescription, tint = MaterialTheme.colorScheme.secondary)
+        Icon(permIcon, permIconDescription, tint = welcomeIconColor())
 
         HalfSpacer()
 
@@ -239,34 +242,79 @@ fun PermRow(
 @Preview(showBackground = true)
 @Composable
 fun SummaryScreenPreview() {
-    ScreenTemplate(
-        headerText = "Mileage Tracking",
-        iconImage = {
-            Icon(
-                imageVector = Icons.Outlined.LocationOff,
-                contentDescription = "Location Off",
-                modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.secondary
-            )
-        },
-        mainContent = {
-            CustomOutlinedCard {
-                Text(text = "Automatic mileage tracking is enabled")
-            }
+    DashTrackerTheme {
+        Surface {
+            ScreenTemplate(
+                headerText = "Mileage Tracking",
+                iconImage = {
+                    Icon(
+                        imageVector = Icons.Outlined.LocationOff,
+                        contentDescription = "Location Off",
+                        modifier = Modifier.size(96.dp),
+                        tint = headerIconColor()
+                    )
+                },
+                mainContent = {
+                    CustomOutlinedCard {
+                        Text(text = "Automatic mileage tracking is enabled")
+                    }
 
-            HalfSpacer()
+                    HalfSpacer()
 
-            PermissionsSummaryCard(
-                locationEnabled = true,
-                bgLocationEnabled = true,
-                notificationsEnabled = true,
-                batteryOptimizationDisabled = false
+                    PermissionsSummaryCard(
+                        locationEnabled = true,
+                        bgLocationEnabled = true,
+                        notificationsEnabled = true,
+                        batteryOptimizationDisabled = false
+                    )
+                },
+                navContent = {
+                    SummaryScreenNav()
+                }
             )
-        },
-        navContent = {
-            SummaryScreenNav()
         }
-    )
+    }
+}
+
+@ExperimentalCoroutinesApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun SummaryScreenPreviewNight() {
+    DashTrackerTheme {
+        Surface {
+            ScreenTemplate(
+                headerText = "Mileage Tracking",
+                iconImage = {
+                    Icon(
+                        imageVector = Icons.Outlined.LocationOff,
+                        contentDescription = "Location Off",
+                        modifier = Modifier.size(96.dp),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                },
+                mainContent = {
+                    CustomOutlinedCard {
+                        Text(text = "Automatic mileage tracking is enabled")
+                    }
+
+                    HalfSpacer()
+
+                    PermissionsSummaryCard(
+                        locationEnabled = true,
+                        bgLocationEnabled = true,
+                        notificationsEnabled = true,
+                        batteryOptimizationDisabled = false
+                    )
+                },
+                navContent = {
+                    SummaryScreenNav()
+                }
+            )
+        }
+    }
 }
 
 @ExperimentalTextApi

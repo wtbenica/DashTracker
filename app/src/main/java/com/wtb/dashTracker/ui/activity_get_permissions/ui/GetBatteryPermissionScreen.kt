@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -37,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
@@ -65,7 +66,7 @@ fun GetBatteryPermissionScreen(
                 imageVector = Icons.TwoTone.BatterySaver,
                 contentDescription = "Battery Saver Icon",
                 modifier = Modifier.size(96.dp),
-                tint = welcomeIconColor()
+                tint = headerIconColor()
             )
         },
         mainContent = {
@@ -185,6 +186,29 @@ fun GetBatteryPermissionNav(
 @Preview(showBackground = true)
 @Composable
 fun GetBatteryPermissionPreview() {
+    DashTrackerTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Column {
+                GetBatteryPermissionScreen()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 4
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun GetBatteryPermissionPreviewNight() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

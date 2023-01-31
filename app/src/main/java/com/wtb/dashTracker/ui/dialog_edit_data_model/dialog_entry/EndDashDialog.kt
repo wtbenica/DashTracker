@@ -35,9 +35,17 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
-import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment
-import com.wtb.dashTracker.ui.date_time_pickers.TimePickerFragment.Companion.REQUEST_KEY_TIME
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_DAY
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_MONTH
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_YEAR
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_TEXTVIEW
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.REQUEST_KEY_DATE
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.ARG_TIME_NEW_HOUR
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.ARG_TIME_NEW_MINUTE
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.ARG_TIME_TEXTVIEW
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.REQUEST_KEY_TIME
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -76,20 +84,20 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
         DialogFragEntryBinding.inflate(layoutInflater).apply {
             fragEntryDate.apply {
                 setOnClickListener {
-                    DatePickerFragment.newInstance(
+                    ConfirmationDialogDatePicker.newInstance(
                         R.id.frag_entry_date,
                         this.text.toString(),
-                        DatePickerFragment.REQUEST_KEY_DATE
+                        getString(R.string.lbl_date)
                     ).show(parentFragmentManager, "entry_date_picker")
                 }
             }
 
             fragEntryStartTime.apply {
                 setOnClickListener {
-                    TimePickerFragment.newInstance(
-                        R.id.frag_entry_start_time,
-                        this.text.toString(),
-                        REQUEST_KEY_TIME
+                    ConfirmationDialogTimePicker.newInstance(
+                        textViewId = R.id.frag_entry_start_time,
+                        currentText = this.text.toString(),
+                        headerText = getString(R.string.lbl_start_time)
                     ).show(childFragmentManager, "time_picker_start")
                     startTimeChanged = true
                 }
@@ -108,10 +116,10 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
             fragEntryEndTime.apply {
                 setOnClickListener {
-                    TimePickerFragment.newInstance(
-                        R.id.frag_entry_end_time,
-                        this.text.toString(),
-                        REQUEST_KEY_TIME
+                    ConfirmationDialogTimePicker.newInstance(
+                        textViewId = R.id.frag_entry_end_time,
+                        currentText = this.text.toString(),
+                        headerText = getString(R.string.lbl_end_time)
                     ).show(childFragmentManager, "time_picker_end")
                 }
             }
@@ -266,13 +274,11 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
     override fun setDialogListeners() {
         super.setDialogListeners()
 
-        setFragmentResultListener(
-            DatePickerFragment.REQUEST_KEY_DATE
-        ) { _, bundle ->
-            val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
-            val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
-            val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
-            when (bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)) {
+        setFragmentResultListener(REQUEST_KEY_DATE) { _, bundle ->
+            val year = bundle.getInt(ARG_DATE_PICKER_NEW_YEAR)
+            val month = bundle.getInt(ARG_DATE_PICKER_NEW_MONTH)
+            val dayOfMonth = bundle.getInt(ARG_DATE_PICKER_NEW_DAY)
+            when (bundle.getInt(ARG_DATE_TEXTVIEW)) {
                 R.id.frag_entry_date -> {
                     binding.fragEntryDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
@@ -284,11 +290,11 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             REQUEST_KEY_TIME,
             this
         ) { _, bundle ->
-            val hour = bundle.getInt(TimePickerFragment.ARG_NEW_HOUR)
-            val minute = bundle.getInt(TimePickerFragment.ARG_NEW_MINUTE)
+            val hour = bundle.getInt(ARG_TIME_NEW_HOUR)
+            val minute = bundle.getInt(ARG_TIME_NEW_MINUTE)
             val dialogTime = LocalTime.of(hour, minute)
 
-            when (bundle.getInt(TimePickerFragment.ARG_TIME_TEXTVIEW)) {
+            when (bundle.getInt(ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
                     binding.fragEntryStartTime.text =
                         dialogTime.format(dtfTime).toString()

@@ -40,8 +40,12 @@ import com.wtb.dashTracker.databinding.DialogFragExpenseBinding
 import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownFooterBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment
-import com.wtb.dashTracker.ui.date_time_pickers.DatePickerFragment.Companion.REQUEST_KEY_DATE
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_DAY
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_MONTH
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_YEAR
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_TEXTVIEW
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogEditPurposes
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE
@@ -90,10 +94,10 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
             fragExpenseDate.apply {
                 setOnClickListener {
-                    DatePickerFragment.newInstance(
+                    ConfirmationDialogDatePicker.newInstance(
                         R.id.frag_expense_date,
                         this.text.toString(),
-                        REQUEST_KEY_DATE
+                        getString(R.string.lbl_date)
                     ).show(parentFragmentManager, "expense_date_picker")
                 }
             }
@@ -214,10 +218,11 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
         }
 
         setFragmentResultListener(REQUEST_KEY_DATE) { _, bundle ->
-            val year = bundle.getInt(DatePickerFragment.ARG_NEW_YEAR)
-            val month = bundle.getInt(DatePickerFragment.ARG_NEW_MONTH)
-            val dayOfMonth = bundle.getInt(DatePickerFragment.ARG_NEW_DAY)
-            when (bundle.getInt(DatePickerFragment.ARG_DATE_TEXTVIEW)) {
+            val year = bundle.getInt(ARG_DATE_PICKER_NEW_YEAR)
+            val month = bundle.getInt(ARG_DATE_PICKER_NEW_MONTH)
+            val dayOfMonth = bundle.getInt(ARG_DATE_PICKER_NEW_DAY)
+
+            when (bundle.getInt(ARG_DATE_TEXTVIEW)) {
                 R.id.frag_expense_date -> {
                     binding.fragExpenseDate.text =
                         LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()

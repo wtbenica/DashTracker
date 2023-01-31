@@ -129,7 +129,7 @@ class OnboardingMileageActivity : ComponentActivity() {
         initialScreen = getStartingScreen(showSummaryScreen, showIntroScreen)
 
         setContent {
-            DashTrackerTheme {
+            DashTrackerTheme(darkTheme = permissionsHelper.uiModeIsDarkMode) {
                 Surface(modifier = Modifier.fillMaxSize()) {
 
                     if (loadSingleScreen != null) {

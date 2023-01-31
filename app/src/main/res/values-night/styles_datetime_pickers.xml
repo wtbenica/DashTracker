@@ -88,7 +88,7 @@
         <item name="android:textColorSecondaryInverse">@color/faded</item>
 
         <!-- Title bar background -->
-        <item name="colorAccent">@color/dark</item>
+        <item name="colorAccent">?attr/colorPickerHeader</item>
 
         <!-- selector -->
         <item name="colorControlActivated">@color/brick_light</item>
@@ -111,6 +111,8 @@
         </item>
 
         <item name="android:timePickerStyle">@style/MyTimePicker</item>
+
+        <item name="colorPickerHeader">@color/regular</item>
     </style>
 
     <style name="MyDatePickerButtonStyle">
@@ -125,7 +127,7 @@
     </style>
 
     <style name="MyTimePicker" parent="Widget.MaterialComponents.TimePicker">
-        <item name="android:headerBackground">@color/dark</item>
+        <item name="android:headerBackground">?attr/colorPickerHeader</item>
         <item name="android:headerTimeTextAppearance">@style/PickerTitleTextAppearance</item>
         <item name="android:headerAmPmTextAppearance">@style/PickerTitleTextAppearance</item>
         <item name="android:numbersBackgroundColor">@color/on_brick_light</item>

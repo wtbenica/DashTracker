@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".DashTrackerApplication"
         android:allowBackup="true"
         android:enableOnBackInvokedCallback="true"
         android:fullBackupOnly="true"
@@ -51,7 +52,7 @@
             android:exported="false"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
-            android:theme="@style/Base.DasherCompanion" />
+            android:theme="@style/SettingsActivityTheme" />
 
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"

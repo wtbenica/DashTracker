@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="Income">
 
@@ -52,5 +53,16 @@
             app:defaultValue="true"
             app:key="@string/prefs_authentication_enabled"
             app:title="@string/pref_title_require_authentication" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Theme">
+
+        <ListPreference
+            android:title="@string/pref_title_light_dark_theme"
+            app:defaultValue="@string/pref_theme_option_use_device_theme"
+            app:entries="@array/theme_options"
+            app:entryValues="@array/theme_options"
+            app:key="@string/prefs_ui_mode"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 </PreferenceScreen>

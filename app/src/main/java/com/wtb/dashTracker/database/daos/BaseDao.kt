@@ -61,6 +61,9 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
     @Update
     abstract fun update(obj: T)
 
+    @Update
+    abstract suspend fun updateSus(obj: T)
+
     @Delete
     abstract fun delete(obj: T)
 
@@ -76,6 +79,21 @@ abstract class BaseDao<T : DataModel>(private val tableName: String, private val
     fun upsertAll(models: List<T>) {
         models.forEach {
             upsert(it)
+        }
+    }
+
+    @Transaction
+    open suspend fun upsertSus(obj: T): Long {
+        val id = insertSus(obj)
+        if (id == -1L) {
+            updateSus(obj)
+        }
+        return if (id != -1L) id else obj.id
+    }
+
+    suspend fun upsertAllSus(models: List<T>) {
+        models.forEach {
+            upsertSus(it)
         }
     }
 }
