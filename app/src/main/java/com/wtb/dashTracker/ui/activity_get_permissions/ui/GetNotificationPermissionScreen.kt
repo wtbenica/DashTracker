@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.os.Build.VERSION_CODES.TIRAMISU
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -70,7 +69,6 @@ fun GetNotificationPermissionScreen(
             )
         },
         mainContent = {
-            Log.d(TAG, "drawing notification")
             CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_notification_permission),

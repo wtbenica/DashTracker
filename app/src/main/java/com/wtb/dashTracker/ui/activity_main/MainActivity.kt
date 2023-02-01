@@ -28,7 +28,6 @@ import android.location.Location
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
-import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -160,7 +159,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         get() {
             val hasPermissions = this.hasPermissions(*REQUIRED_PERMISSIONS)
             val isEnabled = sharedPrefs.getBoolean(LOCATION_ENABLED, false)
-            Log.d(TAG, "trackingENabled | hasPermissions: $hasPermissions | isEnabled: $isEnabled")
+
             return hasPermissions && isEnabled
         }
 
@@ -312,7 +311,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             lifecycleScope.launch {
                 this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.activeEntry.collectLatest {
-                        Log.d(TAG, "new active entry: ${it?.entry?.entryId}")
                         activeDash.activeEntry = it
                     }
                 }
@@ -621,7 +619,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         val activeEntryId = sharedPrefs.getLong(ACTIVE_ENTRY_ID, -1L)
 
         if (activeEntryId != -1L && !activeDash.locationServiceBound) {
-            Log.d(TAG, "onUnlock $activeEntryId")
             viewModel.loadActiveEntry(activeEntryId)
         }
     }
@@ -749,7 +746,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         internal var locationServiceBound: Boolean = false
             set(value) {
                 field = value
-                Log.d(TAG, "LSB -> $field")
             }
 
         /**
@@ -765,7 +761,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
          * Launches [OnboardingMileageActivity] to check for permissions, and, if location is enabled, calls [resumeOrStartNewTrip]
          */
         private fun startTracking() {
-            Log.d(TAG, "startTracking")
             startOnBind = false
             stopOnBind = false
             expectedExit = true
@@ -950,7 +945,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         private fun getLocationServiceConnection(onBind: (() -> Unit)? = null): ServiceConnection =
             object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                    Log.d(TAG, "Service connected")
                     fun syncActiveEntryId() {
                         locationService?.tripId?.value?.let {
                             viewModel.loadActiveEntry(it)
@@ -980,7 +974,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
-                    Log.d(TAG, "Service disconnected")
                     locationServiceConnection = null
                     locationServiceBound = false
                     locationService = null

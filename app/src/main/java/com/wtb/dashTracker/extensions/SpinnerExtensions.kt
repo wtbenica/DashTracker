@@ -16,15 +16,12 @@
 
 package com.wtb.dashTracker.extensions
 
-import android.util.Log
 import android.widget.Spinner
-import com.wtb.dashTracker.ui.activity_main.TAG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 fun Spinner.hideDropdown() {
     try {
-        Log.d(TAG, "Go to bed, bitch!")
         val method = Spinner::class.java.getDeclaredMethod("onDetachedFromWindow")
         method.isAccessible = true
         method.invoke(this)
