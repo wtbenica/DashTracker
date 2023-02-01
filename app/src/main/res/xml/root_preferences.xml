@@ -57,7 +57,7 @@
 
     <PreferenceCategory app:title="@string/prefs_category_appearance">
 
-        <ListPreference
+        <com.wtb.dashTracker.ui.activity_settings.DTListPreference
             android:title="@string/pref_title_light_dark_theme"
             app:defaultValue="@string/pref_theme_option_use_device_theme"
             app:entries="@array/theme_options"

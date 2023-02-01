@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.activity_settings
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -24,6 +25,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,7 +69,6 @@ import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasBatteryPermission
 import com.wtb.dashTracker.util.hasPermissions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-
 
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
@@ -226,7 +227,10 @@ class SettingsActivity : AuthenticatedActivity() {
             }
 
             (activity as SettingsActivity).uiModePref?.apply {
-                value = sharedPrefs.getString(requireContext().UI_MODE_PREF, "System default")
+                value = sharedPrefs.getString(
+                    requireContext().UI_MODE_PREF,
+                    resources.getString(R.string.pref_theme_option_use_device_theme)
+                )
             }
         }
     }
@@ -421,5 +425,20 @@ class SettingsActivity : AuthenticatedActivity() {
             "${BuildConfig.APPLICATION_ID}.extra_settings_activity_is_authenticated"
 
         internal const val INTENT_EXTRA_PRE_AUTH = "${BuildConfig.APPLICATION_ID}.pre_auth_settings"
+    }
+}
+
+class DTListPreference @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+) : ListPreference(context, attrs) {
+    override fun onClick() {
+        AlertDialog.Builder(context, R.style.DTAlertDialogStyle)
+            .setCustomTitle(View.inflate(context, R.layout.prefs_dialog_title, null))
+            .setSingleChoiceItems(entries, entries.indexOf(value)) { dialog, pos ->
+                this.value = entries.get(pos).toString()
+                dialog.dismiss()
+            }
+            .show()
     }
 }

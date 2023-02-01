@@ -27,7 +27,7 @@
 
     <!-- Licenses Activities Theme -->
     <style name="LicensesActivitiesBase" parent="Theme.Material3.DayNight">
-        <item name="actionBarStyle">@style/ActionBarStyle</item>
+        <item name="actionBarStyle">@style/DTActionBarStyle</item>
         <item name="colorUi">@color/faded</item>
         <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
         <item name="android:fontFamily">@font/oswald</item>
@@ -69,14 +69,14 @@
 
         <!-- View Styles -->
         <item name="android:actionBarWidgetTheme">@style/WidgetTheme</item>
-        <item name="actionBarStyle">@style/ActionBarStyle</item>
+        <item name="actionBarStyle">@style/DTActionBarStyle</item>
         <item name="actionOverflowButtonStyle">@style/ActionBarOverflowButtonStyle</item>
-        <item name="cardViewStyle">@style/CardViewStyle</item>
+        <item name="cardViewStyle">@style/DTCardViewStyle</item>
         <item name="actionOverflowMenuStyle">@style/ActionBarOverflowMenuStyle</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListStyle</item>
 
         <!-- Chips -->
-        <item name="chipStyle">@style/ChipStyle</item>
+        <item name="chipStyle">@style/DTChipStyle</item>
         <item name="chipStrokeColorDefault">?attr/colorPrimary</item>
         <item name="chipStrokeColorDisabled">?attr/colorPrimaryVariant</item>
         <item name="chipBackgroundColorDefault">?attr/colorPrimaryDark</item>
