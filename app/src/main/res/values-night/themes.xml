@@ -73,9 +73,9 @@
 
         <!-- active_dash_bar -->
         <item name="colorActiveDashBarStroke">?attr/colorPrimary</item>
-        <item name="colorActiveDashBarBg">?attr/colorPrimaryDark</item>
+        <item name="colorActiveDashBarBg">?attr/colorPrimary</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorPrimary</item>
-        <item name="colorActiveDashBarDetailsBg">?attr/colorOnPrimary</item>
+        <item name="colorActiveDashBarDetailsBg">?attr/colorPrimaryVariant</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>

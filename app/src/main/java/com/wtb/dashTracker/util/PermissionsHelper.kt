@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.POWER_SERVICE
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.PowerManager
@@ -130,6 +131,20 @@ class PermissionsHelper(val context: Context) {
         get() = hasBatteryPermission && sharedPrefs.getBoolean(context.LOCATION_ENABLED, false)
                 && !sharedPrefs.getBoolean(context.OPT_OUT_LOCATION, true)
 
+    internal val uiModeIsDarkMode: Boolean
+        get() {
+            fun systemDarkMode(): Boolean =
+                (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+
+            val options: Array<String> = context.resources.getStringArray(R.array.theme_options)
+
+            return when (sharedPrefs.getString(context.UI_MODE_PREF, options.last())) {
+                "Dark" -> true
+                "Light" -> false
+                else -> systemDarkMode()
+            }
+        }
+
     @SuppressLint("ApplySharedPref")
     fun setBooleanPref(
         prefKey: String,
@@ -237,6 +252,9 @@ class PermissionsHelper(val context: Context) {
 
         internal val Context.AUTHENTICATION_ENABLED
             get() = getString(R.string.prefs_authentication_enabled)
+
+        internal val Context.UI_MODE_PREF
+            get() = getString(R.string.prefs_ui_mode)
 
         /**
          * If enabling/disabling authentication fails, this prevents re-authentication when the

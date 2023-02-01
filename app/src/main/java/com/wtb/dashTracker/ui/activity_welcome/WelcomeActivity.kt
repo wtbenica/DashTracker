@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.activity_welcome
 
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -62,8 +63,11 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
         actionBar?.hide()
 
         setContent {
-            DashTrackerTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+            DashTrackerTheme(darkTheme = permissionsHelper.uiModeIsDarkMode) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -107,8 +111,7 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
 
     companion object {
         @Composable
-        fun welcomeIconColor(): Color = MaterialTheme.colorScheme.secondary
-
+        fun headerIconColor(): Color = MaterialTheme.colorScheme.onTertiaryContainer
     }
 }
 
@@ -119,9 +122,30 @@ enum class WelcomeActivityScreen {
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun DefaultPreview() {
+    val callback = object : WelcomeScreenCallback {
+        override fun nextScreen() {
+
+        }
+    }
+
+    DashTrackerTheme {
+        Surface {
+            Column {
+                WelcomeScreen(modifier = Modifier.weight(1f), callback)
+            }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun DefaultPreviewNight() {
     val callback = object : WelcomeScreenCallback {
         override fun nextScreen() {
 

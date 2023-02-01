@@ -16,6 +16,8 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui
 
+import android.content.Context
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -36,26 +38,33 @@ import androidx.compose.ui.unit.dp
 import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.welcomeIconColor
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
-import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.ui.theme.secondary
-import com.wtb.dashTracker.ui.theme.secondaryDark
-import com.wtb.dashTracker.ui.theme.secondaryFaded
+import com.wtb.dashTracker.ui.theme.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Composable
-fun customSwitchColors(): SwitchColors {
-    return SwitchDefaults.colors(
-        checkedThumbColor = secondaryDark(),
-        checkedTrackColor = secondaryFaded(),
-        checkedBorderColor = MaterialTheme.colorScheme.primary,
-        uncheckedThumbColor = secondary(),
-        uncheckedTrackColor = secondaryFaded(),
-        uncheckedBorderColor = MaterialTheme.colorScheme.primary
-    )
+fun customSwitchColors(context: Context?): SwitchColors {
+    return if (context != null) {
+        SwitchDefaults.colors(
+            checkedThumbColor = accentDark(context),
+            checkedTrackColor = accentFaded(context),
+            checkedBorderColor = MaterialTheme.colorScheme.primary,
+            uncheckedThumbColor = accent(context),
+            uncheckedTrackColor = accentFaded(context),
+            uncheckedBorderColor = MaterialTheme.colorScheme.primary
+        )
+    } else {
+        SwitchDefaults.colors(
+            checkedThumbColor = secondaryDark(),
+            checkedTrackColor = secondaryFaded(),
+            checkedBorderColor = MaterialTheme.colorScheme.primary,
+            uncheckedThumbColor = secondary(),
+            uncheckedTrackColor = secondaryFaded(),
+            uncheckedBorderColor = MaterialTheme.colorScheme.primary
+        )
+    }
 }
 
 @ExperimentalCoroutinesApi
@@ -63,7 +72,7 @@ fun customSwitchColors(): SwitchColors {
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun InitialSettings(context: WelcomeActivity? = null) {
+fun InitialSettings(context: Context? = null) {
     ScreenTemplate(
         headerText = stringResource(R.string.welcome_header_initial_setup),
         iconImage = {
@@ -71,7 +80,7 @@ fun InitialSettings(context: WelcomeActivity? = null) {
                 imageVector = Icons.Outlined.Settings,
                 contentDescription = null,
                 modifier = Modifier.size(96.dp),
-                tint = welcomeIconColor()
+                tint = headerIconColor()
             )
         },
         mainContent = {
@@ -111,7 +120,7 @@ fun InitialSettings(context: WelcomeActivity? = null) {
                                             .apply()
                                     }
                                 },
-                                colors = customSwitchColors()
+                                colors = customSwitchColors(context)
                             )
                         }
                     }
@@ -156,11 +165,14 @@ fun InitialSettings(context: WelcomeActivity? = null) {
                                     context?.let {
                                         PreferenceManager.getDefaultSharedPreferences(context)
                                             .edit()
-                                            .putBoolean(context.AUTHENTICATION_ENABLED, newValue)
+                                            .putBoolean(
+                                                context.AUTHENTICATION_ENABLED,
+                                                newValue
+                                            )
                                             .apply()
                                     }
                                 },
-                                colors = customSwitchColors()
+                                colors = customSwitchColors(context)
                             )
                         }
                     }
@@ -218,5 +230,19 @@ fun InitialSettingsNav(callback: InitialScreenCallback? = null) {
 @Composable
 @Preview(showBackground = true)
 fun ThisPreview() {
-    InitialSettings()
+    DashTrackerTheme {
+        InitialSettings()
+    }
+}
+
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@Composable
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+fun ThisPreviewNight() {
+    DashTrackerTheme {
+        InitialSettings()
+    }
 }
