@@ -449,9 +449,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     }
 
     override fun onPause() {
-        activeDash.apply {
-            unbindLocationService()
-        }
+        activeDash.unbindLocationService()
 
         super.onPause()
     }
@@ -704,7 +702,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
          * false, [locationServiceConnection] to null, and [locationService] to null.
          */
         internal fun unbindLocationService() {
-            if (locationServiceBound) {
+            if (locationServiceBound && locationServiceConnection != null) {
                 unbindService(locationServiceConnection!!)
                 locationServiceBound = false
                 locationServiceConnection = null
@@ -743,9 +741,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         private var locationServiceConnection: ServiceConnection? = null
 
         internal var locationServiceBound: Boolean = false
-            set(value) {
-                field = value
-            }
 
         /**
          * lock to prevent location service from being started multiple times
@@ -816,7 +811,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         internal fun bindLocationService() {
-            if (!locationServiceBound && !startingService) {
+            if (!locationServiceBound && !startingService && locationServiceConnection == null) {
                 startingService = true
                 val locationServiceIntent =
                     Intent(applicationContext, LocationService::class.java)
@@ -973,8 +968,8 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
-                    locationServiceConnection = null
                     locationServiceBound = false
+                    locationServiceConnection = null
                     locationService = null
                 }
             }
