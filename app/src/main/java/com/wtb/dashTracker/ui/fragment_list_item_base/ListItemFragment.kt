@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -27,7 +26,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_main.TAG
 
 abstract class ListItemFragment : Fragment()
 
@@ -180,8 +178,6 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
                     it.mExpandedPositions.add(bindingAdapterPosition)
                 }
             }
-        } else {
-            Log.d(TAG, "A BaseItemHolder is meant to be used with an ExpandableAdapter.")
         }
 
         bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
