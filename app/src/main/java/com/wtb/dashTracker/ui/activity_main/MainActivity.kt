@@ -811,33 +811,29 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         internal fun bindLocationService() {
-            if (!locationServiceBound && !startingService && locationServiceConnection == null) {
+            fun onBind() {
+                activeEntryId?.let { id ->
+                    if (locationServiceState != TRACKING_ACTIVE) {
+                        startLocationService(id)
+                    }
+                }
+            }
+
+            if (!locationServiceBound && !startingService && trackingEnabled) {
                 startingService = true
                 val locationServiceIntent =
                     Intent(applicationContext, LocationService::class.java)
 
-                if (trackingEnabled) {
-                    fun onBind() {
-                        activeEntryId?.let { id ->
-                            if (locationServiceState != TRACKING_ACTIVE) {
-                                startLocationService(id)
-                            }
-                        }
-                    }
-
+                if (locationServiceConnection == null) {
                     val conn = getLocationServiceConnection(::onBind)
                     locationServiceConnection = conn
-
-                    bindService(
-                        locationServiceIntent,
-                        locationServiceConnection!!,
-                        BIND_AUTO_CREATE
-                    )
-                } else {
-                    startingService = false
                 }
-            } else {
-                startingService = false
+
+                bindService(
+                    locationServiceIntent,
+                    locationServiceConnection!!,
+                    BIND_AUTO_CREATE
+                )
             }
         }
 
