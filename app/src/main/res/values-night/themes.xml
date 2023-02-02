@@ -145,7 +145,7 @@
         <item name="colorDialogItem">?attr/colorOnSecondaryVariant</item>
         <item name="colorDialogUneditableItem">?attr/colorPrimary</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorDialogButtonIcon">?attr/colorPrimaryFaded</item>
+        <item name="colorDialogButtonIcon">?attr/colorAccent</item>
         <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
 
         <!-- datetime picker -->

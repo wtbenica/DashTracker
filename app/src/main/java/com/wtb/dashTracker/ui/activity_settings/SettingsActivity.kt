@@ -47,9 +47,9 @@ import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity.Companion.EXTRA_PERMISSIONS_ROUTE
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmRestartDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_CONFIRM
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
@@ -239,12 +239,7 @@ class SettingsActivity : AuthenticatedActivity() {
         OnSharedPreferenceChangeListener { sharedPreferences, key ->
             when (key) {
                 PREF_SHOW_BASE_PAY_ADJUSTS -> {
-                    ConfirmationDialog.newInstance(
-                        text = R.string.dialog_restart,
-                        requestKey = ConfirmType.RESTART.key,
-                        posButton = R.string.restart,
-                        negButton = R.string.later
-                    ).show(supportFragmentManager, null)
+                    ConfirmRestartDialog.newInstance().show(supportFragmentManager, null)
                 }
                 LOCATION_ENABLED -> {
                     val isChecked = sharedPrefs.getBoolean(key, false)
@@ -307,12 +302,7 @@ class SettingsActivity : AuthenticatedActivity() {
 
                             revokeSelfPermissionOnKill(POST_NOTIFICATIONS)
 
-                            ConfirmationDialog.newInstance(
-                                text = R.string.dialog_restart,
-                                requestKey = ConfirmType.RESTART.key,
-                                posButton = R.string.restart,
-                                negButton = R.string.later
-                            ).show(supportFragmentManager, null)
+                            ConfirmRestartDialog.newInstance().show(supportFragmentManager, null)
                         }
                     }
                 }

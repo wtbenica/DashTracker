@@ -41,8 +41,7 @@ import com.wtb.dashTracker.extensions.formatted
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
@@ -85,8 +84,8 @@ class ExpenseListFragment : ListItemFragment() {
         setFragmentResultListener(
             ConfirmType.DELETE.key
         ) { _, bundle ->
-            val result = bundle.getBoolean(ARG_CONFIRM)
-            val id = bundle.getLong(ARG_EXTRA)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
+            val id = bundle.getLong(SimpleConfirmationDialog.ARG_EXTRA)
             if (result) {
                 viewModel.deleteExpenseById(id)
             }

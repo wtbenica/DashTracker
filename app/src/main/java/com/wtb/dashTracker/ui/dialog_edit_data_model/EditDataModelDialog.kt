@@ -34,6 +34,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.ui.dialog_confirm.*
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
@@ -128,27 +129,16 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setFragmentResultListener(
             ConfirmType.DELETE.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
             if (result) {
-                saveOnExit = false
-
-                // TODO: Is this necessary? Doesn't appear to get used anywhere
-                // It might have to do with trying to be more specific with notify data set changed
-                setFragmentResult(
-                    REQUEST_KEY_ENTRY_DIALOG,
-                    bundleOf(
-                        ARG_MODIFICATION_STATE to ModificationState.DELETED.ordinal
-                    )
-                )
-                dismiss()
-                item?.let { e -> viewModel.delete(e) }
+                onDeleteItem()
             }
         }
 
         setFragmentResultListener(
             ConfirmType.RESET.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
             if (result) {
                 updateUI()
             }
@@ -157,7 +147,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setFragmentResultListener(
             ConfirmType.SAVE.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
             if (result) {
                 saveConfirmed = true
                 dismiss()
@@ -173,9 +163,10 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setOnClickListener {
             saveConfirmed = true
             setFragmentResult(
-                requestKey = REQUEST_KEY_ENTRY_DIALOG,
+                requestKey = REQUEST_KEY_DATA_MODEL_DIALOG,
                 result = bundleOf(
-                    ARG_MODIFICATION_STATE to ModificationState.MODIFIED.ordinal
+                    ARG_MODIFICATION_STATE to ModificationState.MODIFIED.name,
+                    ARG_MODIFIED_ID to item?.id
                 )
             )
             dismiss()
@@ -185,12 +176,32 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected fun ImageButton.setOnDeletePressed() {
         setOnClickListener {
             if (isNotEmpty()) {
-                ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
+                ConfirmDeleteDialog.newInstance(item?.id)
+                    .show(parentFragmentManager, "delete_entry")
             } else {
-                saveOnExit = false
-                dismiss()
-                item?.let { viewModel.delete(it) }
+                onDeleteItem()
             }
+        }
+    }
+
+    /**
+     * Sets fragment result. If item is not a [DashEntry], deletes item.
+     */
+    private fun onDeleteItem() {
+        saveOnExit = false
+
+        setFragmentResult(
+            requestKey = REQUEST_KEY_DATA_MODEL_DIALOG,
+            result = bundleOf(
+                ARG_MODIFICATION_STATE to ModificationState.DELETED.name,
+                ARG_MODIFIED_ID to item?.id
+            )
+        )
+
+        dismiss()
+
+        if (item !is DashEntry) {
+            item?.let { viewModel.delete(it) }
         }
     }
 
@@ -207,7 +218,20 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     companion object {
         const val ARG_ITEM_ID: String = "item_id"
-        const val REQUEST_KEY_ENTRY_DIALOG: String = "result: modification state"
+
+        /**
+         * Fragment result has [ARG_MODIFICATION_STATE] and [ARG_MODIFIED_ID] set
+         */
+        const val REQUEST_KEY_DATA_MODEL_DIALOG: String = "result: modification state"
+
+        /**
+         * Set to a [ModificationState] if item has been modified or deleted
+         */
         const val ARG_MODIFICATION_STATE: String = "arg modification state"
+
+        /**
+         * Set to th the item id if the item has been modified or deleted
+         */
+        const val ARG_MODIFIED_ID: String = "arg modified id"
     }
 }

@@ -42,7 +42,7 @@ import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -188,7 +188,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         setFragmentResultListener(
             ConfirmType.RESET.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
             if (result) {
                 updateUI()
             }

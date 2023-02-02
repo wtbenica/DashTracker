@@ -35,7 +35,7 @@ import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.parcelize.Parcelize
 
 
-open class ConfirmationDialog : FullWidthDialogFragment() {
+open class SimpleConfirmationDialog : FullWidthDialogFragment() {
     // TODO: Some of these need better names-- what is confirmId?
     @StringRes
     var text: Int? = null
@@ -272,7 +272,7 @@ open class ConfirmationDialog : FullWidthDialogFragment() {
             negAction: (LambdaWrapper)? = null,
             @StringRes posButton2: Int? = null,
             posAction2: (LambdaWrapper)? = null,
-        ): ConfirmationDialog = ConfirmationDialog().apply {
+        ): SimpleConfirmationDialog = SimpleConfirmationDialog().apply {
             arguments = Bundle().apply {
                 text?.let { putInt(ARG_TEXT, it) }
                 putString(ARG_REQ_KEY, requestKey)
@@ -304,7 +304,7 @@ class ConfirmDeleteDialog {
         fun newInstance(
             confirmId: Long? = null,
             @StringRes text: Int? = null,
-        ): ConfirmationDialog = ConfirmationDialog.newInstance(
+        ): SimpleConfirmationDialog = SimpleConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_delete,
             requestKey = ConfirmType.DELETE.key,
             confirmId = confirmId,
@@ -317,7 +317,7 @@ class ConfirmResetDialog {
     companion object {
         fun newInstance(
             @StringRes text: Int? = null,
-        ): ConfirmationDialog = ConfirmationDialog.newInstance(
+        ): SimpleConfirmationDialog = SimpleConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_reset,
             requestKey = ConfirmType.RESET.key,
             posButton = R.string.reset
@@ -327,12 +327,25 @@ class ConfirmResetDialog {
 
 class ConfirmSaveDialog {
     companion object {
-        fun newInstance(@StringRes text: Int? = null): ConfirmationDialog =
-            ConfirmationDialog.newInstance(
-                text = text,
-                requestKey = ConfirmType.SAVE.key,
-                posButton = R.string.save,
-                negButton = R.string.no
+        fun newInstance(@StringRes text: Int? = null): SimpleConfirmationDialog =
+            SimpleConfirmationDialog.newInstance(
+                text = text ?: R.string.dialog_restart,
+                requestKey = ConfirmType.RESTART.key,
+                posButton = R.string.restart,
+                negButton = R.string.later
             )
+    }
+}
+
+class ConfirmRestartDialog {
+    companion object {
+        fun newInstance(
+            @StringRes text: Int? = null,
+        ): SimpleConfirmationDialog = SimpleConfirmationDialog.newInstance(
+            text = text ?: R.string.dialog_restart,
+            requestKey = ConfirmType.RESTART.key,
+            posButton = R.string.restart,
+            negButton = R.string.later
+        )
     }
 }

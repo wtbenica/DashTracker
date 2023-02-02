@@ -49,8 +49,12 @@ import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFICATION_STATE
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFIED_ID
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.REQUEST_KEY_DATA_MODEL_DIALOG
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState.DELETED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
@@ -93,10 +97,25 @@ class EntryListFragment : ListItemFragment() {
         setFragmentResultListener(
             ConfirmType.DELETE.key
         ) { _, bundle ->
-            val result = bundle.getBoolean(ARG_CONFIRM)
-            val id = bundle.getLong(ARG_EXTRA)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
+            val id = bundle.getLong(SimpleConfirmationDialog.ARG_EXTRA)
             if (result) {
-                (activity as MainActivity).clearActiveEntry()
+                (activity as MainActivity).clearActiveEntry(id)
+                viewModel.deleteEntryById(id)
+            }
+        }
+
+        // Entry Dialog Result
+        setFragmentResultListener(
+            requestKey = REQUEST_KEY_DATA_MODEL_DIALOG
+        ) { _, bundle ->
+            val modifyState = bundle.getString(ARG_MODIFICATION_STATE)
+                ?.let { ModificationState.valueOf(it) }
+
+            val id = bundle.getLong(ARG_MODIFIED_ID, -1)
+
+            if (modifyState == DELETED && id != -1L) {
+                (activity as MainActivity).clearActiveEntry(id)
                 viewModel.deleteEntryById(id)
             }
         }
@@ -161,9 +180,8 @@ class EntryListFragment : ListItemFragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(
-                            confirmId = this@EntryHolder.item.entry.entryId
-                        ).show(parentFragmentManager, "delete_entry")
+                        ConfirmDeleteDialog.newInstance(this@EntryHolder.item.entry.entryId)
+                            .show(parentFragmentManager, "delete_entry")
                     }
                 }
             }

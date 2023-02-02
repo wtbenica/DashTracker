@@ -80,6 +80,8 @@ import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.REQUEST_KEY_DATA_MODEL_DIALOG
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -346,6 +348,21 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                     sharedPrefs.edit().putLong(ACTIVE_ENTRY_ID, entryId).apply()
                 }
             }
+
+            supportFragmentManager.setFragmentResultListener(
+                REQUEST_KEY_DATA_MODEL_DIALOG,
+                this
+            ) { _, bundle ->
+                val modifyState = bundle.getString(EditDataModelDialog.ARG_MODIFICATION_STATE)
+                    ?.let { EditDataModelDialog.ModificationState.valueOf(it) }
+
+                val id = bundle.getLong(EditDataModelDialog.ARG_MODIFIED_ID, -1L)
+
+                if (modifyState == EditDataModelDialog.ModificationState.DELETED && id != -1L) {
+                    clearActiveEntry(id)
+                    viewModel.deleteEntry(id)
+                }
+            }
         }
 
         /**
@@ -360,7 +377,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                     showStartDashDialog()
                 } else {
                     viewModel.loadActiveEntry(null)
-
                 }
             }
 
@@ -544,8 +560,13 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         activeDash.stopDash(entryId)
     }
 
-    fun clearActiveEntry() {
-        viewModel.loadActiveEntry(null)
+    var activeEntryDeleted: Boolean = false
+
+    fun clearActiveEntry(id: Long) {
+        if (activeDash.activeEntry?.entry?.entryId == id) {
+            activeEntryDeleted = true
+            viewModel.loadActiveEntry(null)
+        }
     }
 
     private fun insertOrReplace(models: ModelMap) {
@@ -631,7 +652,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             set(value) {
                 onNewActiveEntry(field, value)
                 field = value
-
                 binding.adb.updateEntry(field, activeCpm)
             }
 
@@ -679,8 +699,12 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             sharedPrefs.edit().putLong(ACTIVE_ENTRY_ID, -1L).apply()
 
             stopTracking()
-            EndDashDialog.newInstance(id)
-                .show(supportFragmentManager, "end_dash_dialog")
+            if (!activeEntryDeleted) {
+                EndDashDialog.newInstance(id)
+                    .show(supportFragmentManager, "end_dash_dialog")
+            } else {
+                activeEntryDeleted = false
+            }
         }
 
         /**

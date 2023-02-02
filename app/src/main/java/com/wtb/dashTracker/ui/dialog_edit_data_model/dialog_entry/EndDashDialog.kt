@@ -258,18 +258,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
         }
     }
 
-    override fun isEmpty(): Boolean {
-        val isTodaysDate = binding.fragEntryDate.text == LocalDate.now().format(dtfDate)
-        return isTodaysDate &&
-                !startTimeChanged &&
-                binding.fragEntryEndTime.text.isBlank() &&
-                binding.fragEntryStartMileage.text.isBlank() &&
-                binding.fragEntryEndMileage.text.isBlank() &&
-                binding.fragEntryPay.text.isBlank() &&
-                binding.fragEntryPayOther.text.isBlank() &&
-                binding.fragEntryCashTips.text.isBlank() &&
-                binding.fragEntryNumDeliveries.text.isBlank()
-    }
+    override fun isEmpty(): Boolean = false
 
     override fun setDialogListeners() {
         super.setDialogListeners()

@@ -19,7 +19,7 @@
     <style name="ShowNotesButton" parent="Widget.Material3.Button">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:paddingHorizontal">@dimen/margin_default</item>
-        <item name="iconTint">?attr/colorDialogItemOutline</item>
+        <item name="iconTint">?attr/colorAccent</item>
         <item name="iconGravity">end</item>
         <item name="iconSize">@dimen/margin_wide</item>
         <item name="icon">@drawable/ic_arrow_expand</item>
@@ -68,8 +68,7 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="ConfirmDialogButton" parent="Widget.AppCompat.Button">
-        <item name="android:background">@android:color/transparent</item>
+    <style name="ConfirmDialogButton" parent="Widget.Material3.Button.TextButton.Dialog.Flush">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">?attr/colorDialogText</item>
         <item name="android:textAllCaps">false</item>
