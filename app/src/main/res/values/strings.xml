@@ -138,7 +138,7 @@
     <string name="csv_generation_failed">CSV generation failed</string>
 
     <string name="confirm_dialog">Confirm %s</string>
-    <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>
+    <string name="confirm_save_entry_incomplete">This entry is incomplete. Would you like to save it?</string>
 
     <string name="confirm_import_show_modified_info_lbl">Notes</string>
     <string name="confirm_export_notes_lbl">Notes</string>

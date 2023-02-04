@@ -156,9 +156,12 @@ class YearlyListFragment : ListItemFragment() {
                     fun showExpenseFields(hasMultipleStdDeductions: Boolean = false) {
                         binding.listItemSubtitle2Label.visibility = VISIBLE
                         binding.listItemSubtitle2.visibility = VISIBLE
+
                         detailsBinding.listItemYearlyExpensesHeader.visibility = VISIBLE
                         detailsBinding.listItemYearlyExpenseDetailsButton.visibility = VISIBLE
+                        detailsBinding.listItemYearlyExpenseDetailsButtonFrame.visibility = VISIBLE
                         detailsBinding.listItemYearlyExpenses.visibility = VISIBLE
+
                         if (hasMultipleStdDeductions) {
                             detailsBinding.mileageBreakdownCard.visibility = VISIBLE
                             detailsBinding.listItemYearlyCpmHeader.visibility = GONE
@@ -175,13 +178,16 @@ class YearlyListFragment : ListItemFragment() {
                     fun hideExpenseFields() {
                         binding.listItemSubtitle2Label.visibility = GONE
                         binding.listItemSubtitle2.visibility = GONE
+
+                        detailsBinding.listItemYearlyExpensesHeader.visibility = GONE
+                        detailsBinding.listItemYearlyExpenseDetailsButton.visibility = GONE
+                        detailsBinding.listItemYearlyExpenseDetailsButtonFrame.visibility = GONE
+                        detailsBinding.listItemYearlyExpenses.visibility = GONE
+
                         detailsBinding.mileageBreakdownCard.visibility = GONE
                         detailsBinding.listItemYearlyCpmHeader.visibility = GONE
                         detailsBinding.listItemYearlyCpmDeductionType.visibility = GONE
                         detailsBinding.listItemYearlyCpm.visibility = GONE
-                        detailsBinding.listItemYearlyExpensesHeader.visibility = GONE
-                        detailsBinding.listItemYearlyExpenseDetailsButton.visibility = GONE
-                        detailsBinding.listItemYearlyExpenses.visibility = GONE
                     }
 
                     fun getCalculatedExpenses(costPerMile: Float): Float =

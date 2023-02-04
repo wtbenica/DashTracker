@@ -350,9 +350,9 @@ class ConfirmSaveDialog {
         fun newInstance(@StringRes text: Int? = null): SimpleConfirmationDialog =
             SimpleConfirmationDialog.newInstance(
                 text = text ?: R.string.dialog_restart,
-                requestKey = ConfirmType.RESTART.key,
-                posButton = R.string.restart,
-                negButton = R.string.later
+                requestKey = ConfirmType.SAVE.key,
+                posButton = R.string.save,
+                negButton = R.string.delete
             )
     }
 }
