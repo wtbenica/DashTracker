@@ -149,9 +149,6 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
             }
 
             val mPosAction = posAction ?: {
-                val bundlePairs = bundleOf()
-                bundlePairs.putBoolean(ARG_IS_CONFIRMED, true)
-                confirmId?.let { bundlePairs.putLong(ARG_EXTRA_ITEM_ID, it) }
                 if (confirmId == null) {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
