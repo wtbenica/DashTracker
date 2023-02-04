@@ -52,6 +52,7 @@ import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
+import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.getDateRange
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
 import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
@@ -247,12 +248,10 @@ class WeeklyListFragment : ListItemFragment() {
                 binding.listItemBtnEdit.isVisible = showBPAs
 
                 binding.listItemTitle.text =
-                    getStringOrElse(
-                        R.string.time_range,
-                        "",
-                        this.item.weekly.date.minusDays(6).shortFormat.uppercase(),
-                        this.item.weekly.date.shortFormat.uppercase()
-                    )
+                    getDateRange(
+                        start = this.item.weekly.date.minusDays(6),
+                        end = this.item.weekly.date
+                    ).uppercase()
 
                 binding.listItemAlert.setVisibleIfTrue(showBPAs && this.item.weekly.isIncomplete)
 

@@ -33,7 +33,6 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.DialogFragStartDashBinding
 import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.extensions.dtfTime
-import com.wtb.dashTracker.extensions.toDateOrNull
 import com.wtb.dashTracker.extensions.toFloatOrNull
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_DAY
@@ -110,22 +109,27 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             }
         }
 
-    override fun updateUI() {
+    override fun updateUI(firstRun: Boolean) {
         val tempEntry = item
         if (tempEntry != null) {
             binding.fragStartDashDate.text = tempEntry.date.format(dtfDate)
+            binding.fragStartDashDate.tag = tempEntry.date
+
             tempEntry.startTime?.let { st ->
                 binding.fragStartDashStartTime.text = st.format(dtfTime)
                 binding.fragStartDashStartTime.tag = st
             }
-            tempEntry.startOdometer?.let { so -> binding.fragStartDashStartMileage.setText(so.toString()) }
+
+            tempEntry.startOdometer.let { so ->
+                binding.fragStartDashStartMileage.setText(so?.toString() ?: "")
+            }
         } else {
             clearFields()
         }
     }
 
     override fun saveValues() {
-        val currDate = binding.fragStartDashDate.text.toDateOrNull()
+        val currDate = binding.fragStartDashDate.tag as LocalDate?
         val e = DashEntry(
             entryId = item?.entryId ?: AUTO_ID,
             date = currDate ?: LocalDate.now(),

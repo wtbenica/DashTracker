@@ -154,32 +154,53 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             fragEntryToolbar.title = getString(R.string.dialog_title_dash_entry)
         }
 
-    override fun updateUI() {
+    override fun updateUI(firstRun: Boolean) {
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = item
             if (tempEntry != null) {
                 binding.fragEntryDate.text = tempEntry.date.format(dtfDate)
-                tempEntry.startTime?.let { st ->
-                    binding.fragEntryStartTime.text = st.format(dtfTime)
+
+                tempEntry.startTime.let { st ->
+                    binding.fragEntryStartTime.text = st?.format(dtfTime) ?: ""
+                    binding.fragEntryStartTime.tag = st
                 }
-                tempEntry.endTime?.let { et ->
-                    binding.fragEntryEndTime.text = et.format(dtfTime)
+                tempEntry.endTime.let { et ->
+                    binding.fragEntryEndTime.text = et?.format(dtfTime) ?: ""
+                    binding.fragEntryEndTime.tag = et
                 }
+
                 binding.fragEntryCheckEndsNextDay.isChecked =
                     tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
-                tempEntry.startOdometer?.let { so ->
-                    binding.fragEntryStartMileage.setText(getString(R.string.odometer_fmt, so))
+
+                tempEntry.startOdometer.let { so ->
+                    binding.fragEntryStartMileage.setText(
+                        getStringOrElse(R.string.odometer_fmt, "", so)
+                    )
                 }
-                tempEntry.endOdometer?.let { eo ->
-                    binding.fragEntryEndMileage.setText(getString(R.string.odometer_fmt, eo))
+
+                tempEntry.endOdometer.let { eo ->
+                    binding.fragEntryEndMileage.setText(
+                        getStringOrElse(R.string.odometer_fmt, "", eo)
+                    )
                 }
-                tempEntry.mileage?.let { m ->
-                    binding.fragEntryTotalMileage.text = getString(R.string.odometer_fmt, m)
+
+                tempEntry.mileage.let { m ->
+                    binding.fragEntryTotalMileage.text =
+                        getStringOrElse(R.string.odometer_fmt, "", m)
                 }
-                tempEntry.pay?.let { p -> binding.fragEntryPay.setText(p.toCurrencyString()) }
-                tempEntry.otherPay?.let { op -> binding.fragEntryPayOther.setText(op.toCurrencyString()) }
-                tempEntry.cashTips?.let { ct -> binding.fragEntryCashTips.setText(ct.toCurrencyString()) }
-                tempEntry.numDeliveries?.let { nd -> binding.fragEntryNumDeliveries.setText(nd.toString()) }
+
+                tempEntry.pay.let { p ->
+                    binding.fragEntryPay.setText(p?.toCurrencyString() ?: "")
+                }
+                tempEntry.otherPay.let { op ->
+                    binding.fragEntryPayOther.setText(op?.toCurrencyString() ?: "")
+                }
+                tempEntry.cashTips.let { ct ->
+                    binding.fragEntryCashTips.setText(ct?.toCurrencyString() ?: "")
+                }
+                tempEntry.numDeliveries.let { nd ->
+                    binding.fragEntryNumDeliveries.setText(nd?.toString() ?: "")
+                }
             } else {
                 clearFields()
             }

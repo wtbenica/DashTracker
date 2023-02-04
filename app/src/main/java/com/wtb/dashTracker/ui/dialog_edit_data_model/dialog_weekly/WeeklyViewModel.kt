@@ -50,6 +50,8 @@ class WeeklyViewModel : ListItemViewModel<Weekly>() {
         _date.value = date
     }
 
+    val allWeeklies: Flow<List<FullWeekly>> = repository.allWeeklies
+
     val allWeekliesPaged: Flow<PagingData<FullWeekly>> = repository.allWeekliesPaged
 
     suspend fun getExpensesAndCostPerMile(

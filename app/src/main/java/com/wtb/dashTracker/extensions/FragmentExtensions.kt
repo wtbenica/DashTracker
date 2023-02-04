@@ -22,6 +22,10 @@ import androidx.fragment.app.Fragment
 import com.wtb.dashTracker.R
 import java.time.LocalTime
 
+/**
+ * @return If any of the args in [args] is null, [ifNull], else the result of [Fragment.getString]
+ * with [resId] and [args]
+ */
 fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?): String =
     if (args.map { it != null }.reduce { acc, b -> acc && b })
         getString(resId, *args)

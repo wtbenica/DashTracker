@@ -152,7 +152,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             }
         }
 
-    override fun updateUI() {
+    override fun updateUI(firstRun: Boolean) {
         (context as MainActivity?)?.runOnUiThread {
             val tempExpense = item
             if (tempExpense != null) {
@@ -166,6 +166,9 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                     (adapter as PurposeAdapter?)?.getPositionById(tempExpense.purpose)?.let { pos ->
                         if (pos != -1) {
                             setSelection(pos)
+                        } else {
+                            val newPos = (adapter as PurposeAdapter?)?.getPositionById(GAS.id) ?: 0
+                            setSelection(newPos)
                         }
                     }
                 }
@@ -343,25 +346,18 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             return tempConvertView
         }
 
-        fun getPositionById(id: Long): Int {
-            var pos = -1
-            itemList.forEachIndexed { index, purpose ->
-                if (id == purpose.purposeId) {
-                    pos = index
-                }
-            }
-            return pos
-        }
+        /**
+         * @return [indexOfFirst] [ExpensePurpose] in itemList with [ExpensePurpose.purposeId] [id]
+         */
+        fun getPositionById(id: Long): Int =
+            itemList.indexOfFirst { purpose -> id == purpose.purposeId }
 
-        fun getPositionByName(expenseName: String): Int {
-            var pos = -1
-            itemList.forEachIndexed { index, purpose ->
-                if (expenseName == purpose.name) {
-                    pos = index
-                }
-            }
-            return pos
-        }
+        /**
+         * @return [indexOfFirst] [ExpensePurpose] in itemList with [ExpensePurpose.name]
+         * [expenseName]
+         */
+        fun getPositionByName(expenseName: String): Int =
+            itemList.indexOfFirst { purpose -> expenseName == purpose.name }
 
         override fun getCount(): Int = super.getCount() + 1
 

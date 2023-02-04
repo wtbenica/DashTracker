@@ -56,7 +56,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     private var saveOnExit = true
 
     protected abstract fun getViewBinding(inflater: LayoutInflater): B
-    protected abstract fun updateUI()
+    protected abstract fun updateUI(firstRun: Boolean = false)
     protected abstract fun saveValues()
     protected abstract fun clearFields()
     protected abstract fun isEmpty(): Boolean
