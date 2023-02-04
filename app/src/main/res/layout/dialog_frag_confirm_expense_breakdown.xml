@@ -68,14 +68,14 @@
 
                     <TextView
                         android:id="@+id/explanation"
-                        app:layout_constraintTop_toBottomOf="@id/expense_breakdown_table"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:paddingHorizontal="@dimen/margin_default"
                         android:paddingVertical="@dimen/margin_half"
-                        android:layout_height="wrap_content"
-                        android:text="@string/business_expense_explanation" />
+                        android:text="@string/business_expense_explanation"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/expense_breakdown_table" />
 
                     <View
                         android:id="@+id/divider_hor"
@@ -89,6 +89,7 @@
                     <ImageButton
                         android:id="@+id/no_button"
                         style="@style/ConfirmDialogButton.Default"
+                        android:contentDescription="@string/content_desc_close_dialog_window"
                         android:src="@drawable/round_close_24"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

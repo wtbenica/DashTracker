@@ -89,7 +89,7 @@ fun TextViews() {
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun TextViewsNight() {
-    DashTrackerTheme() {
+    DashTrackerTheme {
         Card {
             Row {
                 HeaderText(text = "Header")

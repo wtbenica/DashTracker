@@ -15,9 +15,9 @@
   ~ limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="DailyStatsRowHeader" parent="Widget.MaterialComponents.TextView">
+    <style name="DailyStatsRowHeader" parent="Widget.MaterialComponents.TextView" tools:keep="@style/DailyStatsRowHeader">
         <item name="android:textAlignment">textEnd</item>
         <item name="android:layout_columnWeight">1</item>
         <item name="android:paddingVertical">@dimen/margin_half</item>
@@ -26,7 +26,7 @@
         <item name="android:textColor">?attr/colorDailyStatsRowHeaderText</item>
     </style>
 
-    <style name="DailyStatsRowValue" parent="Widget.MaterialComponents.TextView">
+    <style name="DailyStatsRowValue" parent="Widget.MaterialComponents.TextView" tools:keep="@style/DailyStatsRowValue">
         <item name="android:layout_columnWeight">1</item>
         <item name="android:gravity">top</item>
         <item name="android:paddingVertical">@dimen/margin_half</item>
@@ -36,7 +36,7 @@
         <item name="android:textColor">?attr/colorDailyStatsRowValueText</item>
     </style>
 
-    <style name="DailyStatsRowDay">
+    <style name="DailyStatsRowDay" tools:keep="@style/DailyStatsRowDay">
         <item name="android:textAlignment">center</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:textSize">@dimen/text_size_large</item>
@@ -45,20 +45,20 @@
         <item name="android:layout_marginBottom">?attr/insightsRowBottomMargin</item>
     </style>
 
-    <style name="DailyStatsRowHeader.AM">
+    <style name="DailyStatsRowHeader.AM" tools:keep="@style/DailyStatsRowHeader_AM">
         <item name="android:background">?attr/colorDayHeader</item>
     </style>
 
-    <style name="DailyStatsRowHeader.PM">
+    <style name="DailyStatsRowHeader.PM" tools:keep="@style/DailyStatsRowHeader_PM">
         <item name="android:background">?attr/colorNightHeader</item>
         <item name="android:layout_marginBottom">?attr/insightsRowBottomMargin</item>
     </style>
 
-    <style name="DailyStatsRowValue.AM">
+    <style name="DailyStatsRowValue.AM" tools:keep="@style/DailyStatsRowValue_AM">
         <item name="android:background">?attr/colorDayValue</item>
     </style>
 
-    <style name="DailyStatsRowValue.PM">
+    <style name="DailyStatsRowValue.PM" tools:keep="@style/DailyStatsRowValue_PM">
         <item name="android:background">?attr/colorNightValue</item>
         <item name="android:layout_marginBottom">?attr/insightsRowBottomMargin</item>
     </style>

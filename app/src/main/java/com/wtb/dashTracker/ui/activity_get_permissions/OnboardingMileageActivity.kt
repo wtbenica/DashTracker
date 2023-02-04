@@ -270,6 +270,7 @@ class OnboardingMileageActivity : ComponentActivity() {
      * @param noPermissions also the default return value
      * @return the matching parameter
      */
+    @Suppress("SameParameterValue")
     private fun <T : Any> whenHasDecided(
         optOutLocation: T? = null,
         hasAllPermissions: T? = null,

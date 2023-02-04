@@ -111,7 +111,7 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
         const val ARG_DATE_PICKER_NEW_YEAR: String = "year"
         const val ARG_DATE_PICKER_NEW_MONTH: String = "month"
         const val ARG_DATE_PICKER_NEW_DAY: String = "dayOfMonth"
-        const val ARG_DATE_PICKER_HEADER_TEXT = "arg_time_picker_header_text"
+        const val ARG_DATE_PICKER_HEADER_TEXT: String = "arg_time_picker_header_text"
 
         @JvmStatic
         fun newInstance(

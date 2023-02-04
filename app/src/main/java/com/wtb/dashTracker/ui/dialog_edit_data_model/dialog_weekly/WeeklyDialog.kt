@@ -230,7 +230,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
     }
 
     private fun getSpinnerIndex(date: LocalDate): Int? {
-        (0..(binding.fragAdjustDate.count - 1)).forEach { i ->
+        (0 until binding.fragAdjustDate.count).forEach { i ->
             if (binding.fragAdjustDate.adapter.getItem(i) == date) {
                 return i
             }

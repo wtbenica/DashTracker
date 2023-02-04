@@ -47,13 +47,6 @@
         <item name="closeIconTint">?attr/colorChipCloseIcon</item>
     </style>
 
-    <style name="ShapeAppearanceBottomSheet" parent="ShapeAppearance.Material3.LargeComponent">
-        <item name="cornerSizeTopLeft">@dimen/margin_wide</item>
-        <item name="cornerSizeTopRight">@dimen/margin_wide</item>
-        <item name="cornerSizeBottomLeft">0dp</item>
-        <item name="cornerSizeBottomRight">0dp</item>
-    </style>
-
     <style name="DTAlertDialogStyle" parent="ThemeOverlay.Material3.Dialog.Alert">
         <item name="android:dialogCornerRadius">?attr/dialogCornerRadius</item>
         <item name="android:windowBackground">@drawable/bg_alert_dialog</item>

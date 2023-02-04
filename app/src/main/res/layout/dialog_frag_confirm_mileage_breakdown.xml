@@ -78,6 +78,7 @@
                     <ImageButton
                         android:id="@+id/no_button"
                         style="@style/ConfirmDialogButton.Default"
+                        android:contentDescription="@string/content_desc_close_dialog_window"
                         android:src="@drawable/round_close_24"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

@@ -426,7 +426,7 @@ class DTListPreference @JvmOverloads constructor(
         AlertDialog.Builder(context, R.style.DTAlertDialogStyle)
             .setCustomTitle(View.inflate(context, R.layout.prefs_dialog_title, null))
             .setSingleChoiceItems(entries, entries.indexOf(value)) { dialog, pos ->
-                this.value = entries.get(pos).toString()
+                this.value = entries[pos].toString()
                 dialog.dismiss()
             }
             .show()

@@ -73,7 +73,7 @@ fun customCardColors(): CardColors {
 val borderStrokeColor: Color
     @Composable get() = MaterialTheme.colorScheme.primary
 
-val borderStrokeWidth = 2.dp
+val borderStrokeWidth: Dp = 2.dp
 
 @ExperimentalTextApi
 @Composable
@@ -268,7 +268,7 @@ fun ContentCard(
 fun SecondaryOutlinedCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
-): Unit {
+) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = cardShape,

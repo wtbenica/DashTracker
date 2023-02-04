@@ -84,11 +84,6 @@
         <item name="android:paddingHorizontal">@dimen/margin_wide</item>
     </style>
 
-    <style name="DetailsRow">
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_width">match_parent</item>
-    </style>
-
     <style name="ExpandDetailsButton">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:layout_width">wrap_content</item>

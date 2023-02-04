@@ -116,7 +116,7 @@ class ConfirmationDialogTimePicker : FullWidthDialogFragment() {
         const val REQUEST_KEY_TIME: String = "requestTimePicker"
         const val ARG_TIME_NEW_HOUR: String = "arg_time_hour"
         const val ARG_TIME_NEW_MINUTE: String = "arg_time_minute"
-        const val ARG_TIME_PICKER_HEADER_TEXT = "arg_time_picker_header_text"
+        const val ARG_TIME_PICKER_HEADER_TEXT: String = "arg_time_picker_header_text"
 
         @JvmStatic
         fun newInstance(
