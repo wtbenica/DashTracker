@@ -23,7 +23,7 @@ import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.UI_MODE_PREF
 
 class DashTrackerApplication : Application() {
-    protected val sharedPrefs: SharedPreferences
+    private val sharedPrefs: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(this)
 
     override fun onCreate() {

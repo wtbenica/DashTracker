@@ -28,6 +28,7 @@ import android.location.Location
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -92,7 +93,6 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialo
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
@@ -115,9 +115,18 @@ import java.time.format.DateTimeParseException
 import kotlin.system.exitProcess
 
 private const val APP = "GT_"
-private var IS_TESTING = false
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
+
+private var IS_TESTING = false
+
+private const val DEBUGGING = false
+internal fun Any.debugLog(message: String) {
+    if (DEBUGGING) Log.d(TAG, message)
+}
+internal fun Any.errorLog(message: String) {
+    if (DEBUGGING) Log.e(TAG, message)
+}
 
 /**
  * Primary [AppCompatActivity] for DashTracker. Contains [BottomNavigationView] for switching
@@ -135,8 +144,6 @@ internal val Any.TAG: String
 class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
     private var isTesting: Boolean = false
-
-    internal val permissionsHelper = PermissionsHelper(this)
 
     private val viewModel: MainActivityViewModel by viewModels()
 

@@ -17,13 +17,12 @@
 package com.wtb.dashTracker.database.daos
 
 import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.wtb.dashTracker.database.models.LocationData
-import com.wtb.dashTracker.ui.activity_main.TAG
+import com.wtb.dashTracker.ui.activity_main.errorLog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
@@ -53,7 +52,7 @@ abstract class LocationDao : BaseDao<LocationData>("LocationData", "locationId")
         try {
             insert(loc)
         } catch (e: SQLiteConstraintException) {
-            Log.d(TAG, "$e")
+            errorLog( "$e")
         }
     }
 
@@ -61,7 +60,7 @@ abstract class LocationDao : BaseDao<LocationData>("LocationData", "locationId")
         return try {
             insertSus(loc)
         } catch (e: SQLiteConstraintException) {
-            Log.d(TAG, "$e")
+            errorLog("$e")
             -1L
         }
     }
