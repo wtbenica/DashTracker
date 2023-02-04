@@ -67,6 +67,11 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
                 }
             }
 
+            /**
+             * Get long not zero - gets the value from bundle for [key]
+             *
+             * @return the value from bundle for [key] or null if value is 0
+             */
             fun getLongNotZero(key: String): Long? = getLong(key).let {
                 if (it != 0L) {
                     it
@@ -127,7 +132,7 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
                 val mNegAction = negAction ?: {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
-                        bundleOf(ARG_CONFIRM to false)
+                        bundleOf(ARG_IS_CONFIRMED to false)
                     )
                 }
 
@@ -145,17 +150,17 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
 
             val mPosAction = posAction ?: {
                 val bundlePairs = bundleOf()
-                bundlePairs.putBoolean(ARG_CONFIRM, true)
-                confirmId?.let { bundlePairs.putLong(ARG_EXTRA, it) }
+                bundlePairs.putBoolean(ARG_IS_CONFIRMED, true)
+                confirmId?.let { bundlePairs.putLong(ARG_EXTRA_ITEM_ID, it) }
                 if (confirmId == null) {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
-                        bundleOf(ARG_CONFIRM to true)
+                        bundleOf(ARG_IS_CONFIRMED to true)
                     )
                 } else {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
-                        bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId)
+                        bundleOf(ARG_IS_CONFIRMED to true, ARG_EXTRA_ITEM_ID to confirmId)
                     )
                 }
             }
@@ -181,7 +186,7 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
                 val mNegAction = negAction ?: {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
-                        bundleOf(ARG_CONFIRM to false)
+                        bundleOf(ARG_IS_CONFIRMED to false)
                     )
                 }
 
@@ -201,12 +206,12 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
                 if (confirmId == null) {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
-                        bundleOf(ARG_CONFIRM to true)
+                        bundleOf(ARG_IS_CONFIRMED to true)
                     )
                 } else {
                     parentFragmentManager.setFragmentResult(
                         requestKey,
-                        bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId)
+                        bundleOf(ARG_IS_CONFIRMED to true, ARG_EXTRA_ITEM_ID to confirmId)
                     )
                 }
             }
@@ -231,12 +236,12 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
                         if (confirmId == null) {
                             parentFragmentManager.setFragmentResult(
                                 requestKey,
-                                bundleOf(ARG_CONFIRM to true)
+                                bundleOf(ARG_IS_CONFIRMED to true)
                             )
                         } else {
                             parentFragmentManager.setFragmentResult(
                                 requestKey,
-                                bundleOf(ARG_CONFIRM to true, ARG_EXTRA to confirmId)
+                                bundleOf(ARG_IS_CONFIRMED to true, ARG_EXTRA_ITEM_ID to confirmId)
                             )
                         }
                     }
@@ -248,8 +253,8 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
     }
 
     companion object {
-        const val ARG_CONFIRM: String = "confirm"
-        const val ARG_EXTRA: String = "extra"
+        const val ARG_IS_CONFIRMED: String = "confirm"
+        const val ARG_EXTRA_ITEM_ID: String = "extra"
         private const val ARG_TEXT = "dialog_text"
         private const val ARG_REQ_KEY = "request_key"
         private const val ARG_CONFIRM_ID = "confirm_id"
@@ -261,6 +266,21 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
         private const val ARG_POS_TEXT_2 = "pos_btn_text_2"
         private const val ARG_POS_ACTION_2 = "pos_action_2"
 
+        /**
+         * New instance
+         *
+         * @param text
+         * @param requestKey
+         * @param confirmId
+         * @param title
+         * @param posButton
+         * @param posAction
+         * @param negButton
+         * @param negAction
+         * @param posButton2
+         * @param posAction2
+         * @return
+         */
         fun newInstance(
             @StringRes text: Int?,
             requestKey: String,

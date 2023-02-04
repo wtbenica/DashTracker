@@ -205,7 +205,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         setFragmentResultListener(
             ConfirmType.RESET.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
             if (result) {
                 updateUI()
             }
@@ -247,16 +247,6 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             arguments = Bundle().apply {
                 putSerializable(ARG_DATE_ID, date)
             }
-        }
-
-        fun getListOfWeeks(): Array<LocalDate> {
-            val res = arrayListOf<LocalDate>()
-            var endOfWeek = LocalDate.now().endOfWeek
-            while (endOfWeek > LocalDate.now().minusYears(1)) {
-                res.add(endOfWeek)
-                endOfWeek = endOfWeek.minusDays(7)
-            }
-            return res.toTypedArray()
         }
     }
 

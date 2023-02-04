@@ -69,6 +69,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                 viewModel.loadDataModel(it)
             }
         }
+
+        setDialogListeners()
     }
 
     override fun onCreateView(
@@ -76,7 +78,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setDialogListeners()
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
@@ -129,7 +130,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setFragmentResultListener(
             ConfirmType.DELETE.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
             if (result) {
                 onDeleteItem()
             }
@@ -138,7 +139,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setFragmentResultListener(
             ConfirmType.RESET.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
             if (result) {
                 updateUI()
             }
@@ -147,7 +148,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setFragmentResultListener(
             ConfirmType.SAVE.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
             if (result) {
                 saveConfirmed = true
                 dismiss()

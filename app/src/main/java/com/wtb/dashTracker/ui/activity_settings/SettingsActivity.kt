@@ -49,7 +49,7 @@ import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmRestartDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
@@ -164,7 +164,7 @@ class SettingsActivity : AuthenticatedActivity() {
             setFragmentResultListener(
                 ConfirmType.RESTART.key,
             ) { _, bundle ->
-                val result = bundle.getBoolean(ARG_CONFIRM)
+                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
 
                 if (result) {
                     setFragmentResult(

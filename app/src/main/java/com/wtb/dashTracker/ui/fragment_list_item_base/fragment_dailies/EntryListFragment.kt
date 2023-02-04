@@ -49,7 +49,8 @@ import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFICATION_STATE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFIED_ID
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.REQUEST_KEY_DATA_MODEL_DIALOG
@@ -81,14 +82,18 @@ class EntryListFragment : ListItemFragment() {
         callback = context as IncomeFragment.IncomeFragmentCallback
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setDialogListeners()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragItemListBinding.inflate(inflater)
         binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        setDialogListeners()
 
         return binding.root
     }
@@ -97,8 +102,9 @@ class EntryListFragment : ListItemFragment() {
         setFragmentResultListener(
             ConfirmType.DELETE.key
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
-            val id = bundle.getLong(SimpleConfirmationDialog.ARG_EXTRA)
+            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+            val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
+
             if (result) {
                 (activity as MainActivity).clearActiveEntry(id)
                 viewModel.deleteEntryById(id)

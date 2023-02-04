@@ -66,6 +66,12 @@ class ExpenseListFragment : ListItemFragment() {
         callback = context as ExpenseListFragmentCallback
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setDialogListeners()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -75,8 +81,6 @@ class ExpenseListFragment : ListItemFragment() {
         recyclerView = view.findViewById(R.id.item_list_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        setDialogListeners()
-
         return view
     }
 
@@ -84,8 +88,8 @@ class ExpenseListFragment : ListItemFragment() {
         setFragmentResultListener(
             ConfirmType.DELETE.key
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_CONFIRM)
-            val id = bundle.getLong(SimpleConfirmationDialog.ARG_EXTRA)
+            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
+            val id = bundle.getLong(SimpleConfirmationDialog.ARG_EXTRA_ITEM_ID)
             if (result) {
                 viewModel.deleteExpenseById(id)
             }
