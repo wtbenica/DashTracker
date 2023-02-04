@@ -138,6 +138,12 @@
                 app:layout_constraintTop_toBottomOf="@id/frag_adjust_table_card">
 
                 <ImageButton
+                    android:id="@+id/frag_adjust_btn_dismiss"
+                    style="@style/FragmentEntryImageButton"
+                    android:contentDescription="@string/content_desc_reset"
+                    android:src="@drawable/round_close_24" />
+
+                <ImageButton
                     android:id="@+id/frag_adjust_btn_cancel"
                     style="@style/FragmentEntryImageButton"
                     android:contentDescription="@string/content_desc_reset"
