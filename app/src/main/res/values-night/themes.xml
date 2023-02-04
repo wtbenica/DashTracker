@@ -65,9 +65,9 @@
         <item name="colorBottomNavTextEnabled">?attr/colorAccent</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorSecondaryDark</item>
-        <item name="colorBottomNavRipple">?attr/colorSecondaryVariant</item>
-        <item name="colorPopupBackground">?attr/colorSecondaryVariant</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorSecondary</item>
+        <item name="colorBottomNavRipple">?attr/colorSecondary</item>
+        <item name="colorPopupBackground">?attr/colorSecondaryDark</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
@@ -75,31 +75,34 @@
         <item name="colorActiveDashBarStroke">?attr/colorPrimary</item>
         <item name="colorActiveDashBarBg">?attr/colorPrimary</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorPrimary</item>
-        <item name="colorActiveDashBarDetailsBg">?attr/colorPrimaryVariant</item>
+        <item name="colorActiveDashBarDetailsBg">?attr/colorOnSecondaryVariant</item>
 
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>
+        <item name="colorTabIndicator">?attr/colorSecondaryVariant</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
-        <item name="colorGroupButton">?attr/colorSecondary</item>
+        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
+
+        <item name="colorOptionsMenu">?attr/colorSecondary</item>
+        <item name="colorOptionsMenuStroke">?attr/colorTabIndicator</item>
+        <item name="colorOptionsButton">?attr/colorAccent</item>
+
+        <item name="colorGroupButton">?attr/colorSecondaryDark</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
+        <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
+
         <item name="colorGroupButtonText">@color/button_group_button_text</item>
         <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>
         <item name="colorGroupButtonTextChecked">?attr/colorTextPrimary</item>
-        <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
-        <item name="colorOptionsMenu">?attr/colorSecondaryDark</item>
-        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
-        <item name="colorOptionsButton">?attr/colorTabIndicator</item>
-        <item name="colorOptionsMenuStroke">?attr/colorSecondaryVariant</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
-        <item name="colorListItemExpanded">?attr/colorPrimaryDark</item>
-        <item name="colorListItemExpandedBorder">?attr/colorPrimary</item>
-        <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemExpanded">?attr/colorPrimary</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemAccent">?attr/colorOnSecondaryVariant</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">@android:color/transparent</item>
-        <item name="colorListItemButtonIcon">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemButtonIcon">?attr/colorSecondaryFaded</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
@@ -130,7 +133,7 @@
         <item name="colorNightHeader">@color/nighttime_solid</item>
         <item name="colorNightValue">@color/nighttime_light</item>
         <item name="colorShowFiltersButton">?attr/colorAccent</item>
-        <item name="colorShowFiltersButtonBg">?attr/colorSecondaryVariant</item>
+        <item name="colorShowFiltersButtonBg">?attr/colorSecondary</item>
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimary</item>
@@ -143,10 +146,9 @@
         <item name="colorDialogGroupStroke">?attr/colorPrimaryVariant</item>
         <item name="colorDialogContentBg">@drawable/bg_dialog_fragment</item>
         <item name="colorDialogItem">?attr/colorOnSecondaryVariant</item>
-        <item name="colorDialogUneditableItem">?attr/colorPrimary</item>
+        <item name="colorDialogUneditableItem">?attr/colorPrimaryDark</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorDialogButtonIcon">?attr/colorAccent</item>
-        <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogButtonIcon">?attr/colorSecondaryFaded</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>

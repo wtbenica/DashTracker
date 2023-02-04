@@ -179,16 +179,19 @@
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorAccent</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
+        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
+
+        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
+        <item name="colorOptionsMenuStroke">?attr/colorTabIndicator</item>
+        <item name="colorOptionsButton">?attr/colorTabIndicator</item>
+
         <item name="colorGroupButton">?attr/colorSecondaryDark</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondary</item>
+        <item name="colorGroupStroke">?attr/colorAccent</item>
+
         <item name="colorGroupButtonText">@color/button_group_button_text</item>
         <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>
         <item name="colorGroupButtonTextChecked">?attr/colorTextPrimary</item>
-        <item name="colorGroupStroke">?attr/colorAccent</item>
-        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
-        <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
-        <item name="colorOptionsButton">?attr/colorTabIndicator</item>
-        <item name="colorOptionsMenuStroke">?attr/colorTabIndicator</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
@@ -245,7 +248,6 @@
         <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryVariant</item>
         <item name="colorDialogButtonIcon">?attr/colorAccent</item>
-        <item name="colorDialogButtonBg">?attr/colorPrimaryDark</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>

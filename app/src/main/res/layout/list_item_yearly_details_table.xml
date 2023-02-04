@@ -93,12 +93,18 @@
                         android:layout_column="0"
                         android:text="@string/header_mileage" />
 
-                    <ImageView
-                        android:id="@+id/mileage_details_button"
-                        style="@style/ExpandDetailsButton"
+                    <FrameLayout
+                        style="@style/ExpandDetailsButtonFrame"
                         android:layout_row="0"
-                        android:layout_column="1"
-                        android:contentDescription="@string/content_desc_open_mileage_breakdown" />
+                        android:layout_column="1">
+
+                        <ImageButton
+                            android:id="@+id/mileage_details_button"
+                            style="@style/ExpandDetailsButton"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/content_desc_open_mileage_breakdown" />
+                    </FrameLayout>
+
 
                     <TextView
                         android:id="@+id/list_item_yearly_mileage"
@@ -115,12 +121,16 @@
                         android:layout_column="0"
                         android:text="@string/lbl_net_expenses" />
 
-                    <ImageView
-                        android:id="@+id/list_item_yearly_expense_details_button"
-                        style="@style/ExpandDetailsButton"
+                    <FrameLayout
+                        style="@style/ExpandDetailsButtonFrame"
                         android:layout_row="1"
-                        android:layout_column="1"
-                        android:contentDescription="@string/content_desc_open_mileage_breakdown" />
+                        android:layout_column="1">
+
+                        <ImageView
+                            android:id="@+id/list_item_yearly_expense_details_button"
+                            style="@style/ExpandDetailsButton"
+                            android:contentDescription="@string/content_desc_open_mileage_breakdown" />
+                    </FrameLayout>
 
                     <TextView
                         android:id="@+id/list_item_yearly_expenses"

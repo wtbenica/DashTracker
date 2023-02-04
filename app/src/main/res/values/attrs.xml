@@ -159,7 +159,6 @@
     <attr name="colorDialogUneditableItem" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
     <attr name="colorDialogButtonIcon" format="reference|color" />
-    <attr name="colorDialogButtonBg" format="reference|color" />
     <attr name="dialogFragCornerRadius" format="reference" />
     <attr name="colorDialogFragSpinnerPopupBg" format="reference" />
 
