@@ -108,8 +108,8 @@
         <item name="textSizeItemSecondaryValue">@dimen/text_size_med</item>
         <item name="listItemCornerRadius">?attr/defaultCornerRadius</item>
         <item name="listItemThinBorder">@dimen/margin_half</item>
-        <item name="dimenListItemMarginHorizontal">@dimen/margin_narrow</item>
-        <item name="dimenListItemMarginVertical">2dp</item>
+        <item name="dimenListItemMarginHorizontal">@dimen/margin_default</item>
+        <item name="dimenListItemMarginVertical">@dimen/margin_half</item>
         <item name="dimenListItemButtonRadius">@dimen/margin_half</item>
 
         <!-- insights row -->

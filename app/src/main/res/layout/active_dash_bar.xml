@@ -21,7 +21,7 @@
     android:layout_marginTop="@dimen/margin_default"
     android:background="@drawable/bg_active_dash_bar"
     android:columnCount="2"
-    android:padding="@dimen/margin_default"
+    android:padding="@dimen/margin_half"
     android:rowCount="4">
 
     <!--    Row 0        -->
