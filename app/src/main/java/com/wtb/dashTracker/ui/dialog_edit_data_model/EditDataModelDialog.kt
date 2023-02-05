@@ -50,15 +50,21 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected abstract var binding: B
     protected abstract val viewModel: ListItemViewModel<M>
 
-    // if save button is pressed or is confirmed by save dialog, gets assigned true
+    /**
+     * if save button is pressed or is confirmed by save dialog, gets assigned true
+     */
     protected var saveConfirmed: Boolean = false
 
-    // if delete button is pressed, gets assigned false
+    /**
+     * if delete button is pressed, gets assigned false
+     */
     protected var saveOnExit = true
 
     protected abstract fun getViewBinding(inflater: LayoutInflater): B
     protected abstract fun updateUI(firstRun: Boolean = false)
     protected abstract fun saveValues()
+
+    // TODO: should the name here be changed?
     protected abstract fun clearFields()
     protected abstract fun isEmpty(): Boolean
     private fun isNotEmpty(): Boolean = !isEmpty()

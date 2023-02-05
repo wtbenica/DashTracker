@@ -21,20 +21,29 @@ import android.widget.ImageButton
 import androidx.annotation.DrawableRes
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
+/**
+ * Toggle button animated vector drawable - plays animation then switches animation drawables,
+ * alternating on each call. Sets [View.tag] to keep track of current drawable.
+ *
+ * @param initialDrawable - the first animation to play
+ * @param otherDrawable - the second animation to play
+ */
 fun ImageButton.toggleButtonAnimatedVectorDrawable(
     @DrawableRes initialDrawable: Int,
     @DrawableRes otherDrawable: Int
 ) {
     // TODO: Need to add content description as well
     run {
+        // If tag is already set to [initialDrawable], switches image resource to [otherDrawable]
+        // Otherwise, image resource is set to [initialDrawable]
         when (tag ?: otherDrawable) {
-            otherDrawable -> {
-                setImageResource(initialDrawable)
-                tag = initialDrawable
-            }
             initialDrawable -> {
                 setImageResource(otherDrawable)
                 tag = otherDrawable
+            }
+            else -> {
+                setImageResource(initialDrawable)
+                tag = initialDrawable
             }
         }
         when (val d = drawable) {

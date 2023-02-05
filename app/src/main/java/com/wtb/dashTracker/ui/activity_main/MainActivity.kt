@@ -120,7 +120,7 @@ internal val Any.TAG: String
 
 private var IS_TESTING = false
 
-private const val DEBUGGING = false
+private const val DEBUGGING = true
 internal fun Any.debugLog(message: String) {
     if (DEBUGGING) Log.d(TAG, message)
 }

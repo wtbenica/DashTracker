@@ -177,7 +177,7 @@
         <item name="colorActiveDashBarDetailsBg">?attr/colorOnSecondary</item>
 
         <!-- fragment_income -->
-        <item name="colorTabIndicator">?attr/colorAccent</item>
+        <item name="colorTabIndicator">?attr/colorSecondaryDark</item>
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
 
@@ -187,7 +187,7 @@
 
         <item name="colorGroupButton">?attr/colorSecondaryDark</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondary</item>
-        <item name="colorGroupStroke">?attr/colorAccent</item>
+        <item name="colorGroupStroke">?attr/colorTabIndicator</item>
 
         <item name="colorGroupButtonText">@color/button_group_button_text</item>
         <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>
