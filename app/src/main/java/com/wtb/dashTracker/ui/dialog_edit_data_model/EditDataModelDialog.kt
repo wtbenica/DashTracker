@@ -24,6 +24,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.ComponentDialog
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
@@ -49,15 +50,21 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected abstract var binding: B
     protected abstract val viewModel: ListItemViewModel<M>
 
-    // if save button is pressed or is confirmed by save dialog, gets assigned true
+    /**
+     * if save button is pressed or is confirmed by save dialog, gets assigned true
+     */
     protected var saveConfirmed: Boolean = false
 
-    // if delete button is pressed, gets assigned false
-    private var saveOnExit = true
+    /**
+     * if delete button is pressed, gets assigned false
+     */
+    protected var saveOnExit = true
 
     protected abstract fun getViewBinding(inflater: LayoutInflater): B
     protected abstract fun updateUI(firstRun: Boolean = false)
     protected abstract fun saveValues()
+
+    // TODO: should the name here be changed?
     protected abstract fun clearFields()
     protected abstract fun isEmpty(): Boolean
     private fun isNotEmpty(): Boolean = !isEmpty()
@@ -149,6 +156,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
             ConfirmType.SAVE.key,
         ) { _, bundle ->
             val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
+            Toast.makeText(context, "Save? $result", Toast.LENGTH_LONG).show()
             if (result) {
                 saveConfirmed = true
                 dismiss()

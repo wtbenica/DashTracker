@@ -135,16 +135,20 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
             fragAdjustAmount.apply {
                 doOnTextChanged { text: CharSequence?, start, before, count ->
-                    updateSaveButtonIsEnabled(text)
                     this.onTextChangeUpdateTotal(fragAdjustTotal, fullWeekly?.totalPay)
                     val adjustAmount: Float = text?.toFloatOrNull() ?: 0f
                     val newTotal = (fullWeekly?.totalPay ?: 0f) + adjustAmount
                     fragAdjustTotal.text = if (newTotal == 0f) {
-                        null
+                        "-"
                     } else {
                         getCurrencyString(newTotal)
                     }
                 }
+            }
+
+            fragAdjustBtnDismiss.setOnClickListener {
+                saveOnExit = false
+                dismiss()
             }
 
             fragAdjustBtnCancel.apply {
@@ -194,11 +198,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         viewModel.upsert(tempWeekly)
     }
 
-    override fun isEmpty(): Boolean {
-        return binding.fragAdjustDate.selectedItemPosition == 0 &&
-                binding.fragAdjustAmount.text.isNullOrBlank()
-                && fullWeekly?.weekly?.isNew == false
-    }
+    override fun isEmpty(): Boolean = false
 
     // Weeklies don't have delete
     override fun setDialogListeners() {
@@ -216,16 +216,6 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         binding.apply {
             fragAdjustAmount.text.clear()
             fragAdjustDate.setSelection(0)
-        }
-    }
-
-    private fun updateSaveButtonIsEnabled(text: CharSequence?) {
-        if (text == null || text.isEmpty()) {
-            binding.fragAdjustBtnSave.alpha = 0.7f
-            binding.fragAdjustBtnSave.isClickable = false
-        } else {
-            binding.fragAdjustBtnSave.alpha = 1.0f
-            binding.fragAdjustBtnSave.isClickable = true
         }
     }
 
