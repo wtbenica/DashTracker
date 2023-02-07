@@ -52,7 +52,6 @@ import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDial
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RESULT_PURPOSE_ID
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RESULT_UPDATE_PURPOSE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
-import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.toCurrencyString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -179,7 +178,6 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             updateSaveButtonIsEnabled()
         }
     }
-
 
     override fun saveValues() {
         item?.apply {

@@ -39,7 +39,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:title="End Dash" />
+                app:title="@string/dialog_title_end_dash" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_entry_table_card"

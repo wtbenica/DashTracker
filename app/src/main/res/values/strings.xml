@@ -309,4 +309,5 @@
     <string name="title_action_contact">Contact us</string>
     <string name="content_desc_close_dialog_window">Close dialog window</string>
     <string name="lbl_use_tracked_mileage">Use tracked mileage</string>
+    <string name="dialog_title_end_dash">End Dash</string>
 </resources>
