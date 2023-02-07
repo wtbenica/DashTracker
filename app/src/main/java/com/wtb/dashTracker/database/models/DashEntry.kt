@@ -28,6 +28,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
+import kotlin.DeprecationLevel.WARNING
 import kotlin.reflect.KProperty1
 
 const val AUTO_ID: Long = 0L
@@ -54,6 +55,7 @@ data class DashEntry(
     val endTime: LocalTime? = null,
     val startOdometer: Float? = null,
     val endOdometer: Float? = null,
+    @Deprecated(message = "Use mileage property instead",level = WARNING)
     var totalMileage: Float? = null,
     val pay: Float? = null,
     val otherPay: Float? = null,
@@ -161,6 +163,7 @@ data class DashEntry(
             numDeliveries?.let { nd -> if (th != 0f) nd / th else 0f }
         }
 
+    @Suppress("DEPRECATION")
     val mileage: Float?
         get() = totalMileage ?: startOdometer?.let { so -> endOdometer?.let { eo -> eo - so } }
 
@@ -176,6 +179,7 @@ data class DashEntry(
         if (endTime != other.endTime) return false
         if (startOdometer != other.startOdometer) return false
         if (endOdometer != other.endOdometer) return false
+        @Suppress("DEPRECATION")
         if (totalMileage != other.totalMileage) return false
         if (pay != other.pay) return false
         if (cashTips != other.cashTips) return false
@@ -191,6 +195,7 @@ data class DashEntry(
         result = 31 * result + endTime.hashCode()
         result = 31 * result + startOdometer.hashCode()
         result = 31 * result + endOdometer.hashCode()
+        @Suppress("DEPRECATION")
         result = 31 * result + totalMileage.hashCode()
         result = 31 * result + pay.hashCode()
         result = 31 * result + cashTips.hashCode()
@@ -240,6 +245,7 @@ data class DashEntry(
             END_TIME("End Time", DashEntry::endTime),
             START_ODO("Start Odometer", DashEntry::startOdometer),
             END_ODO("End Odometer", DashEntry::endOdometer),
+            @Suppress("DEPRECATION")
             MILEAGE("Total Mileage", DashEntry::totalMileage),
             BASE_PAY("Base Pay", DashEntry::pay),
             CASH_TIPS("Cash Tips", DashEntry::cashTips),
@@ -293,7 +299,7 @@ data class FullEntry(
 
 
     /**
-     * Total distance from beginning to end of dash.
+     * Total tracked distance from beginning to end of dash.
      */
     val distance: Double
         get() = locations.distance

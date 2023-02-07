@@ -154,21 +154,6 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = item
             if (tempEntry != null) {
-                if (firstRun) {
-                    binding.apply {
-                        fragEntryCheckEndsNextDay.isChecked =
-                            LocalDate.now().minusDays(1L).equals(tempEntry.date)
-
-                        tempEntry.endTime.let { et: LocalTime? ->
-                            val time = et ?: LocalTime.now()
-                            fragEntryEndTime.text = time.format(dtfTime)
-                            fragEntryEndTime.tag = time
-                        }
-                    }
-
-                    saveValues()
-                }
-
                 binding.apply {
                     fragEntryDate.text = tempEntry.date.format(dtfDate)
                     fragEntryDate.tag = tempEntry.date
@@ -177,15 +162,6 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                         fragEntryStartTime.text = st?.format(dtfTime) ?: ""
                         fragEntryStartTime.tag = st
                     }
-
-                    tempEntry.endTime.let { et: LocalTime? ->
-                        val time = et ?: LocalTime.now()
-                        fragEntryEndTime.text = time.format(dtfTime)
-                        fragEntryEndTime.tag = time
-                    }
-
-                    fragEntryCheckEndsNextDay.isChecked =
-                        tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
 
                     tempEntry.startOdometer.let { so: Float? ->
                         fragEntryStartMileage.setText(
@@ -207,6 +183,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
                     tempEntry.otherPay.let { op ->
                         fragEntryPayOther.setText(op?.toCurrencyString() ?: "")
+
                     }
 
                     tempEntry.cashTips.let { ct ->
@@ -215,6 +192,28 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
                     tempEntry.numDeliveries.let { nd ->
                         fragEntryNumDeliveries.setText(nd?.toString() ?: "")
+                    }
+
+                    if (firstRun) {
+                        fragEntryCheckEndsNextDay.isChecked =
+                            LocalDate.now().minusDays(1L).equals(tempEntry.date)
+
+                        tempEntry.endTime.let { et: LocalTime? ->
+                            val time = et ?: LocalTime.now()
+                            fragEntryEndTime.text = time.format(dtfTime)
+                            fragEntryEndTime.tag = time
+                        }
+
+                        saveValues()
+                    } else {
+                        fragEntryCheckEndsNextDay.isChecked =
+                            tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
+
+                        tempEntry.endTime.let { et: LocalTime? ->
+                            val time = et ?: LocalTime.now()
+                            fragEntryEndTime.text = time.format(dtfTime)
+                            fragEntryEndTime.tag = time
+                        }
                     }
                 }
             } else {
