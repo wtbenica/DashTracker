@@ -161,6 +161,10 @@
     <attr name="colorDialogButtonIcon" format="reference|color" />
     <attr name="dialogFragCornerRadius" format="reference" />
     <attr name="colorDialogFragSpinnerPopupBg" format="reference" />
+    <attr name="colorDialogButton" format="reference" />
+    <attr name="colorDialogButtonStroke" format="reference" />
+    <attr name="dimenDialogButtonStrokeWidth" format="reference|dimension" />
+    <attr name="colorDialogButtonBg" format="reference" />
 
     <!-- datetime picker -->
     <attr name="colorPickerHeader" format="reference|color" />

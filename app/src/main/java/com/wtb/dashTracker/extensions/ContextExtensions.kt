@@ -54,12 +54,18 @@ fun getElapsedHours(seconds: Long?): String =
     }
 
 
+/**
+ * @return '$ -' if [value] is null, 0, NaN, or Infinite, else [value] formatted as '$%.2f'
+ */
 fun Context.getCurrencyString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())
         getString(R.string.blank_currency)
     else
         getStringOrElse(R.string.currency_unit, "-", value)
 
+/**
+ * @return '-' if [value] is null, 0, NaN, or Infinite, else [value] formatted as '$%.2f'
+ */
 fun Context.getFloatString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())
         getString(R.string.blank_float)
@@ -69,6 +75,10 @@ fun Context.getFloatString(value: Float?): String =
 fun Context.getDimen(@DimenRes res: Int): Float =
     resources.getDimension(res) / resources.displayMetrics.density
 
+/**
+ * @return if [start] and [end] are null, '', else formats them with [dtfTime], or '' for either if
+ * it is null. E.g. '2:13 PM - 4:15 PM', '10:11 AM - ', ' - 3:15 PM'
+ */
 fun Context.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
     if (start == null && end == null)
         ""

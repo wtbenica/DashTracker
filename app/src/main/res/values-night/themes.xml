@@ -149,6 +149,10 @@
         <item name="colorDialogUneditableItem">?attr/colorPrimaryDark</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryDark</item>
         <item name="colorDialogButtonIcon">?attr/colorSecondaryFaded</item>
+        <item name="colorDialogButton">?attr/colorTextPrimary</item>
+        <item name="colorDialogButtonStroke">?attr/colorPrimaryVariant</item>
+        <item name="colorDialogButtonBg">?attr/colorPrimary</item>
+        <item name="dimenDialogButtonStrokeWidth">0dp</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>

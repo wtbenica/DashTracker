@@ -134,7 +134,7 @@
     <string name="dont_ask">Don\'t ask again</string>
 
     <string name="confirm_delete">The information you\'ve entered will not be recoverable</string>
-    <string name="confirm_reset">Any changes will be permanently lost</string>
+    <string name="confirm_reset">Recent changes may be lost</string>
     <string name="csv_generation_failed">CSV generation failed</string>
 
     <string name="confirm_dialog">Confirm %s</string>
@@ -281,7 +281,7 @@
     <string name="header_mileage_breakdown">Mileage breakdown</string>
     <string name="lbl_dates">Dates</string>
     <string name="bioprompt_title_default">Unlock DashTracker</string>
-    <string name="content_desc_page_indicator">Page %d of %d</string>
+    <string name="content_desc_page_indicator">Page %1$d of %2$d</string>
     <string name="notification_button_open_app">Open</string>
     <string name="notification_button_stop">Stop</string>
     <string name="notification_text_tracking_on">Mileage tracking is on. Background location is in use.</string>
@@ -308,4 +308,5 @@
     <string name="business_expense_explanation">Business costs are estimates based on business mileage. This is not accurate for all expenses, e.g. supplies that are only used for business.</string>
     <string name="title_action_contact">Contact us</string>
     <string name="content_desc_close_dialog_window">Close dialog window</string>
+    <string name="lbl_use_tracked_mileage">Use tracked mileage</string>
 </resources>

@@ -343,7 +343,7 @@ class EntryListFragment : ListItemFragment() {
                 newItem: FullEntry
             ): Boolean =
                 oldItem.entry.equals(newItem.entry) &&
-                        oldItem.distance == newItem.distance
+                        oldItem.trackedDistance == newItem.trackedDistance
         }
     }
 }

@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
@@ -38,6 +39,7 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_DAY
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_MONTH
@@ -58,6 +60,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.math.floor
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
@@ -136,6 +139,71 @@ class EntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                         otherValue = startMileage,
                         stringFormat = R.string.odometer_fmt
                     ) { other, self -> max(self - other, 0f) }
+                }
+            }
+
+            fragEntryCheckboxUseTrackedMileage.apply {
+                setOnClickListener { _ ->
+                    val distance: Float =
+                        fullEntry?.trackedDistance?.toFloat() ?: fullEntry?.entry?.mileage ?: 0f
+
+                    val currStart = fragEntryStartMileage.text.toString()
+                    val itemStart = getStringOrElse(R.string.odometer_fmt, "", item?.startOdometer)
+                    val startOdometerChanged = currStart != itemStart
+                    val currentEnd = fragEntryEndMileage.text.toString()
+                    val itemEnd = getStringOrElse(R.string.odometer_fmt, "", item?.endOdometer)
+                    val endOdometerChanged = currentEnd != itemEnd
+                    Log.d(
+                        TAG,
+                        "START | curr: $currStart | item: $itemStart | $startOdometerChanged | END | curr: $currentEnd | item: $itemEnd | $endOdometerChanged\n" +
+                                "dist: $distance | tracked: ${
+                                    getString(
+                                        R.string.float_fmt,
+                                        fullEntry?.trackedDistance
+                                    )
+                                }"
+                    )
+                    when {
+                        startOdometerChanged && endOdometerChanged -> {
+                            // show dialog
+                        }
+                        startOdometerChanged -> {
+                            val endOdo: Int =
+                                currStart.toIntOrNull()
+                                    ?.let { it + distance.roundToInt() }
+                                    ?: 0
+
+                            fragEntryEndMileage.setText(endOdo.toString())
+
+                            item?.let {
+                                viewModel.updateEntry(
+                                    entry = it,
+                                    startOdometer = fragEntryStartMileage.text.toIntOrNull()
+                                        ?.toFloat(),
+                                    endOdometer = endOdo.toFloat()
+                                )
+                            }
+                        }
+                        endOdometerChanged -> {
+                            val startOdo: Int =
+                                currentEnd.toFloatOrNull()
+                                    ?.let { (it - distance).roundToInt() }
+                                    ?: 0
+
+                            fragEntryStartMileage.setText(startOdo.toString())
+
+                            item?.let {
+                                viewModel.updateEntry(
+                                    entry = it,
+                                    startOdometer = startOdo.toFloat(),
+                                    endOdometer = fragEntryEndMileage.text.toIntOrNull()?.toFloat()
+                                )
+                            }
+                        }
+                        else -> {
+                            // show dialog
+                        }
+                    }
                 }
             }
 

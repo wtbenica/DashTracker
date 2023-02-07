@@ -169,7 +169,7 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
                         )
                     }
 
-                    val distance: Float = tempEntry.mileage ?: fullEntry?.distance?.toFloat() ?: 0f
+                    val distance: Float = tempEntry.mileage ?: fullEntry?.trackedDistance?.toFloat() ?: 0f
                     val calculatedEnd: Float = (tempEntry.startOdometer ?: 0f) + distance
                     val endOdometer: Float = tempEntry.endOdometer ?: calculatedEnd
 
@@ -265,12 +265,12 @@ class EndDashDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
             fragEntryEndTime.tag = LocalTime.now()
             fragEntryEndMileage.setText(
                 item?.startOdometer?.let { so ->
-                    fullEntry?.distance?.let { dist ->
+                    fullEntry?.trackedDistance?.let { dist ->
                         getString(R.string.odometer_fmt, so + dist)
                     }
                 } ?: ""
             )
-            fragEntryTotalMileage.text = (fullEntry?.distance ?: 0).toString()
+            fragEntryTotalMileage.text = (fullEntry?.trackedDistance ?: 0).toString()
             fragEntryPay.text.clear()
             fragEntryPayOther.text.clear()
             fragEntryCashTips.text.clear()

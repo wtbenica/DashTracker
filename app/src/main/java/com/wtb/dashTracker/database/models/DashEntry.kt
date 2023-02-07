@@ -55,7 +55,7 @@ data class DashEntry(
     val endTime: LocalTime? = null,
     val startOdometer: Float? = null,
     val endOdometer: Float? = null,
-    @Deprecated(message = "Use mileage property instead",level = WARNING)
+    @Deprecated(message = "Use mileage property instead", level = WARNING)
     var totalMileage: Float? = null,
     val pay: Float? = null,
     val otherPay: Float? = null,
@@ -163,6 +163,10 @@ data class DashEntry(
             numDeliveries?.let { nd -> if (th != 0f) nd / th else 0f }
         }
 
+
+    /**
+     * [totalMileage] else [endOdometer]? - [startOdometer]? else null
+     */
     @Suppress("DEPRECATION")
     val mileage: Float?
         get() = totalMileage ?: startOdometer?.let { so -> endOdometer?.let { eo -> eo - so } }
@@ -245,6 +249,7 @@ data class DashEntry(
             END_TIME("End Time", DashEntry::endTime),
             START_ODO("Start Odometer", DashEntry::startOdometer),
             END_ODO("End Odometer", DashEntry::endOdometer),
+
             @Suppress("DEPRECATION")
             MILEAGE("Total Mileage", DashEntry::totalMileage),
             BASE_PAY("Base Pay", DashEntry::pay),
@@ -301,8 +306,12 @@ data class FullEntry(
     /**
      * Total tracked distance from beginning to end of dash.
      */
-    val distance: Double
-        get() = locations.distance
+    val trackedDistance: Double?
+        get() = if (locations.isNotEmpty()) {
+            locations.distance
+        } else {
+            null
+        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -39,7 +39,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="colorActionBarText">@color/on_regular</item>
     </style>
-    
+
     <style name="SettingsActivityTheme" parent="Base.DasherCompanion">
         <item name="android:textColorSecondary">?attr/colorTextPrimaryDisabled</item>
     </style>
@@ -133,7 +133,7 @@
 
         <!-- Status bar color. -->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor" >?attr/colorPrimary</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
 
         <!-- Text -->
         <item name="android:textColor">?attr/colorTextPrimary</item>
@@ -244,10 +244,14 @@
         <item name="colorDialogGroupStroke">?attr/colorPrimary</item>
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
         <item name="colorDialogItem">?attr/colorPrimaryFaded</item>
-        <item name="colorDialogUneditableItem">?attr/colorPrimaryFaded</item>
+        <item name="colorDialogUneditableItem">?attr/colorPrimaryVariant</item>
         <item name="colorDialogItemOutline">?attr/colorPrimary</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryVariant</item>
         <item name="colorDialogButtonIcon">?attr/colorAccent</item>
+        <item name="colorDialogButton">?attr/colorPrimaryDark</item>
+        <item name="colorDialogButtonStroke">?attr/colorPrimaryDark</item>
+        <item name="colorDialogButtonBg">@android:color/transparent</item>
+        <item name="dimenDialogButtonStrokeWidth">0dp</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>
