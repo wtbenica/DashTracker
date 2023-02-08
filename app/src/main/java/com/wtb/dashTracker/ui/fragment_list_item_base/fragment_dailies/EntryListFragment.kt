@@ -98,7 +98,7 @@ class EntryListFragment : ListItemFragment() {
         return binding.root
     }
 
-    private fun setDialogListeners() {
+    protected fun setDialogListeners() {
         setFragmentResultListener(
             ConfirmType.DELETE.key
         ) { _, bundle ->

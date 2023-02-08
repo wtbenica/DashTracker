@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Wesley T. Benica
+ * Copyright 2023 Wesley T. Benica
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,42 @@
 
 package com.wtb.dashTracker.ui.dialog_confirm
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
+import androidx.compose.runtime.Composable
 import androidx.core.os.bundleOf
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.databinding.DialogFragConfirm2ButtonBinding
-import com.wtb.dashTracker.databinding.DialogFragConfirm3ButtonBinding
+import com.wtb.dashTracker.extensions.getIntNotZero
+import com.wtb.dashTracker.extensions.getLongNotZero
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.parcelize.Parcelize
 
+@Parcelize
+data class LambdaWrapper(val action: () -> Unit) : Parcelable
 
-open class SimpleConfirmationDialog : FullWidthDialogFragment() {
-    // TODO: Some of these need better names-- what is confirmId?
-    @StringRes
-    var text: Int? = null
+@Parcelize
+data class ComposeWrapper(val action: @Composable () -> Unit) : Parcelable
+
+enum class ConfirmType(val key: String) {
+    DELETE("confirmDelete"),
+    RESET("confirmReset"),
+    SAVE("confirmSave"),
+    RESTART("confirmRestart")
+}
+
+abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, TwoButtonBinding : ViewBinding, ThreeButtonBinding : ViewBinding> :
+    FullWidthDialogFragment() {
+    private lateinit var binding: ViewBinding
+    
     private lateinit var requestKey: String
     private var confirmId: Long? = null
     private var message: String? = null
@@ -55,57 +68,69 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
     var posButton2: Int? = null
     private var posAction2: (() -> Unit)? = null
 
+    abstract val twoButtonBinding: (LayoutInflater) -> TwoButtonBinding
+    abstract val threeButtonBinding: (LayoutInflater) -> ThreeButtonBinding
+
+    abstract var content: () -> ContentType?
+
+    abstract var toolbarTwoButton: (TwoButtonBinding) -> Toolbar
+    abstract var contentAreaTwoButton: (TwoButtonBinding) -> ContentArea
+    abstract var noButtonTwoButton: (TwoButtonBinding) -> Button
+    abstract var noDividerTwoButton: (TwoButtonBinding) -> View
+    abstract var yesButton1TwoButton: (TwoButtonBinding) -> Button
+
+    abstract var toolbarThreeButton: (ThreeButtonBinding) -> Toolbar
+    abstract var contentAreaThreeButton: (ThreeButtonBinding) -> ContentArea
+    abstract var noButtonThreeButton: (ThreeButtonBinding) -> Button
+    abstract var noDividerThreeButton: (ThreeButtonBinding) -> View
+    abstract var yesButton1ThreeButton: (ThreeButtonBinding) -> Button
+    abstract var yesButton2ThreeButton: (ThreeButtonBinding) -> Button
+
+    abstract fun setContent(contentArea: ContentArea, contentValue: ContentType)
+
+    private lateinit var mTwoButtonBinding: TwoButtonBinding
+    private lateinit var mThreeButtonBinding: ThreeButtonBinding
+    private var mContent: ContentType? = null
+    private lateinit var mToolbar: Toolbar
+    private lateinit var mContentArea1: ContentArea
+    private lateinit var mNoButton: Button
+    private lateinit var mNoDivider: View
+    private lateinit var mYesButton1: Button
+    private lateinit var mYesButton2: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.apply {
-            fun getIntNotZero(key: String): Int? = getInt(key).let {
-                if (it != 0) {
-                    it
-                } else {
-                    null
-                }
-            }
-
-            /**
-             * Get long not zero - gets the value from bundle for [key]
-             *
-             * @return the value from bundle for [key] or null if value is 0
-             */
-            fun getLongNotZero(key: String): Long? = getLong(key).let {
-                if (it != 0L) {
-                    it
-                } else {
-                    null
-                }
-            }
-
-            text = getIntNotZero(ARG_TEXT)
             getString(ARG_REQ_KEY)?.let { requestKey = it }
+
             confirmId = getLongNotZero(ARG_CONFIRM_ID)
+
             getString(ARG_MESSAGE)?.let { message = it }
+
             posButton = getIntNotZero(ARG_POS_TEXT) ?: R.string.yes
             posAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                getParcelable(ARG_POS_ACTION, LambdaWrapper::class.java)?.action
+                getParcelable(ARG_POS_ACTION, LambdaWrapper::class.java)
             } else {
                 @Suppress("DEPRECATION")
-                getParcelable<LambdaWrapper?>(ARG_POS_ACTION)?.action
-            }
+                getParcelable(ARG_POS_ACTION)
+            }?.action
 
             negButton = getIntNotZero(ARG_NEG_TEXT) ?: R.string.cancel
             negAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                getParcelable(ARG_NEG_ACTION, LambdaWrapper::class.java)?.action
+                getParcelable(ARG_NEG_ACTION, LambdaWrapper::class.java)
             } else {
                 @Suppress("DEPRECATION")
-                getParcelable<LambdaWrapper?>(ARG_NEG_ACTION)?.action
-            }
+                getParcelable(ARG_NEG_ACTION)
+            }?.action
+
             posButton2 = getIntNotZero(ARG_POS_TEXT_2)
             posAction2 = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                getParcelable(ARG_POS_ACTION_2, LambdaWrapper::class.java)?.action
+                getParcelable(ARG_POS_ACTION_2, LambdaWrapper::class.java)
             } else {
                 @Suppress("DEPRECATION")
-                getParcelable<LambdaWrapper?>(ARG_POS_ACTION_2)?.action
-            }
+                getParcelable(ARG_POS_ACTION_2)
+            }?.action
         }
     }
 
@@ -114,255 +139,179 @@ open class SimpleConfirmationDialog : FullWidthDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: ViewBinding
+        super.onCreateView(inflater, container, savedInstanceState)
 
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        if (posButton2 == null) { // use 2 button dialog
+            mTwoButtonBinding = twoButtonBinding(inflater)
+            mToolbar = toolbarTwoButton(mTwoButtonBinding)
+            mContentArea1 = contentAreaTwoButton(mTwoButtonBinding)
+            mContent = content()
+            mNoButton = noButtonTwoButton(mTwoButtonBinding)
+            mNoDivider = noDividerTwoButton(mTwoButtonBinding)
+            mYesButton1 = yesButton1TwoButton(mTwoButtonBinding)
+            
+            setToolbarTitle(mToolbar)
 
-        if (posButton2 == null || posAction2 == null) {
-            binding = DialogFragConfirm2ButtonBinding.inflate(inflater)
-
-            binding.fragEntryToolbar.title =
-                message ?: getString(R.string.confirm_dialog, getString(posButton))
-
-            binding.theQuestion.setVisibleIfTrue(text != null)
-
-            text?.let { binding.theQuestion.setText(it) }
-
-            if (negButton != null) {
-                val mNegAction = negAction ?: {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED to false)
-                    )
+            setDialogContent(
+                contentArea = mContentArea1,
+                dialogContent = mContent,
+                setContent = { contentArea: ContentArea, contentValue: ContentType ->
+                    setContent(contentArea, contentValue)
                 }
+            )
 
-                binding.noButton.apply {
-                    negButton?.let { setText(it) }
-                    setOnClickListener {
-                        dismiss()
-                        mNegAction()
-                    }
-                }
-            } else {
-                binding.noButton.visibility = View.GONE
-                binding.dividerVert.visibility = View.GONE
-            }
+            updateNegButton(mNoButton, mNoDivider)
 
-            val mPosAction = posAction ?: {
-                if (confirmId == null) {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED to true)
-                    )
-                } else {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED to true, ARG_EXTRA_ITEM_ID to confirmId)
-                    )
-                }
-            }
-
-            binding.yesButton1.apply {
-                setText(posButton)
-                setOnClickListener {
-                    dismiss()
-                    mPosAction()
-                }
-            }
+            updateYesButton1(mYesButton1)
+            
+            binding = mTwoButtonBinding
         } else {
-            binding = DialogFragConfirm3ButtonBinding.inflate(inflater)
+            mThreeButtonBinding = threeButtonBinding(inflater)
+            mToolbar = toolbarThreeButton(mThreeButtonBinding)
+            mContentArea1 = contentAreaThreeButton(mThreeButtonBinding)
+            mContent = content()
+            mNoButton = noButtonThreeButton(mThreeButtonBinding)
+            mNoDivider = noDividerThreeButton(mThreeButtonBinding)
+            mYesButton1 = yesButton1ThreeButton(mThreeButtonBinding)
+            mYesButton2 = yesButton2ThreeButton(mThreeButtonBinding)
+            
+            setToolbarTitle(mToolbar)
 
-            binding.fragEntryToolbar.title =
-                message ?: getString(R.string.confirm_dialog, getString(posButton))
-
-            binding.theQuestion.setVisibleIfTrue(text != null)
-
-            text?.let { binding.theQuestion.setText(it) }
-
-            if (negButton != null) {
-                val mNegAction = negAction ?: {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED to false)
-                    )
+            setDialogContent(
+                contentArea = mContentArea1,
+                dialogContent = mContent,
+                setContent = { contentArea: ContentArea, content: ContentType ->
+                    setContent(contentArea, content)
                 }
+            )
 
-                binding.noButton.apply {
-                    negButton?.let { setText(it) }
-                    setOnClickListener {
-                        dismiss()
-                        mNegAction()
-                    }
-                }
-            } else {
-                binding.noButton.visibility = View.GONE
-                binding.dividerVert.visibility = View.GONE
-            }
+            updateNegButton(mNoButton, mNoDivider)
 
-            val mPosAction = posAction ?: {
-                if (confirmId == null) {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED to true)
-                    )
-                } else {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED to true, ARG_EXTRA_ITEM_ID to confirmId)
-                    )
-                }
-            }
+            updateYesButton1(mYesButton1)
 
-            binding.yesButton1.apply {
-                setText(posButton)
-                setOnClickListener {
-                    dismiss()
-                    mPosAction()
-                }
-            }
-
-            val mPosAction2: (() -> Unit)? = posAction2
-
-            binding.yesButton2.apply {
-                posButton2?.let { setText(it) }
-                mPosAction2?.let {
-                    setOnClickListener {
-                        dismiss()
-                        it()
-
-                        if (confirmId == null) {
-                            parentFragmentManager.setFragmentResult(
-                                requestKey,
-                                bundleOf(ARG_IS_CONFIRMED to true)
-                            )
-                        } else {
-                            parentFragmentManager.setFragmentResult(
-                                requestKey,
-                                bundleOf(ARG_IS_CONFIRMED to true, ARG_EXTRA_ITEM_ID to confirmId)
-                            )
-                        }
-                    }
-                }
-            }
+            updateYesButton2(mYesButton2)
+            
+            binding = mThreeButtonBinding
         }
 
         return binding.root
     }
 
-    companion object {
-        const val ARG_IS_CONFIRMED: String = "confirm"
-        const val ARG_EXTRA_ITEM_ID: String = "extra"
-        private const val ARG_TEXT = "dialog_text"
-        private const val ARG_REQ_KEY = "request_key"
-        private const val ARG_CONFIRM_ID = "confirm_id"
-        private const val ARG_MESSAGE = "message"
-        private const val ARG_POS_TEXT = "pos_btn_text"
-        private const val ARG_POS_ACTION = "pos_action"
-        private const val ARG_NEG_TEXT = "neg_btn_txt"
-        private const val ARG_NEG_ACTION = "neg_action"
-        private const val ARG_POS_TEXT_2 = "pos_btn_text_2"
-        private const val ARG_POS_ACTION_2 = "pos_action_2"
+    private fun setToolbarTitle(toolbar: Toolbar) {
+        toolbar.title =
+            message ?: getString(R.string.confirm_dialog, getString(posButton))
+    }
 
-        /**
-         * New instance
-         *
-         * @param text
-         * @param requestKey
-         * @param confirmId
-         * @param title
-         * @param posButton
-         * @param posAction
-         * @param negButton
-         * @param negAction
-         * @param posButton2
-         * @param posAction2
-         * @return
-         */
-        fun newInstance(
-            @StringRes text: Int?,
-            requestKey: String,
-            confirmId: Long? = null,
-            title: String? = null,
-            @StringRes posButton: Int = R.string.yes,
-            posAction: LambdaWrapper? = null,
-            @StringRes negButton: Int? = null,
-            negAction: (LambdaWrapper)? = null,
-            @StringRes posButton2: Int? = null,
-            posAction2: (LambdaWrapper)? = null,
-        ): SimpleConfirmationDialog = SimpleConfirmationDialog().apply {
-            arguments = Bundle().apply {
-                text?.let { putInt(ARG_TEXT, it) }
-                putString(ARG_REQ_KEY, requestKey)
-                confirmId?.let { putLong(ARG_CONFIRM_ID, it) }
-                putString(ARG_MESSAGE, title)
-                putInt(ARG_POS_TEXT, posButton)
-                putParcelable(ARG_POS_ACTION, posAction)
-                negButton?.let { putInt(ARG_NEG_TEXT, it) }
-                putParcelable(ARG_NEG_ACTION, negAction)
-                posButton2?.let { putInt(ARG_POS_TEXT_2, it) }
-                putParcelable(ARG_POS_ACTION_2, posAction2)
+    private fun <ContentArea : View, ContentType : Any> setDialogContent(
+        contentArea: ContentArea,
+        dialogContent: ContentType?,
+        setContent: (ContentArea, ContentType) -> Unit
+    ) {
+        contentArea.setVisibleIfTrue(dialogContent != null)
+
+        dialogContent?.let { setContent(contentArea, it) }
+    }
+
+    private fun updateNegButton(button: Button, divider: View) {
+        if (negButton != null) {
+            button.apply {
+                negButton?.let { setText(it) }
+                setOnClickListener {
+                    dismiss()
+                    negAction?.invoke()
+
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_IS_CONFIRMED to false)
+                    )
+                }
+            }
+        } else {
+            button.visibility = View.GONE
+            divider.visibility = View.GONE
+        }
+    }
+
+    private fun updateYesButton1(button: Button) {
+        button.apply {
+            setText(posButton)
+            setOnClickListener {
+                dismiss()
+                posAction?.invoke()
+
+                if (confirmId == null) {
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_IS_CONFIRMED to true)
+                    )
+                } else {
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(
+                            ARG_IS_CONFIRMED to true,
+                            ARG_EXTRA_ITEM_ID to confirmId
+                        )
+                    )
+                }
             }
         }
     }
-}
 
-@Parcelize
-data class LambdaWrapper(val action: () -> Unit) : Parcelable
+    private fun updateYesButton2(button: Button) {
+        button.apply {
+            posButton2?.let { setText(it) }
+            setOnClickListener {
+                dismiss()
+                posAction2?.invoke()
 
-enum class ConfirmType(val key: String) {
-    DELETE("confirmDelete"),
-    RESET("confirmReset"),
-    SAVE("confirmSave"),
-    RESTART("confirmRestart")
-}
-
-class ConfirmDeleteDialog {
-    companion object {
-        fun newInstance(
-            confirmId: Long? = null,
-            @StringRes text: Int? = null,
-        ): SimpleConfirmationDialog = SimpleConfirmationDialog.newInstance(
-            text = text ?: R.string.confirm_delete,
-            requestKey = ConfirmType.DELETE.key,
-            confirmId = confirmId,
-            posButton = R.string.delete
-        )
+                if (confirmId == null) {
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(ARG_IS_CONFIRMED_2 to true)
+                    )
+                } else {
+                    parentFragmentManager.setFragmentResult(
+                        requestKey,
+                        bundleOf(
+                            ARG_IS_CONFIRMED_2 to true,
+                            ARG_EXTRA_ITEM_ID to confirmId
+                        )
+                    )
+                }
+            }
+        }
     }
-}
 
-class ConfirmResetDialog {
     companion object {
-        fun newInstance(
-            @StringRes text: Int? = null,
-        ): SimpleConfirmationDialog = SimpleConfirmationDialog.newInstance(
-            text = text ?: R.string.confirm_reset,
-            requestKey = ConfirmType.RESET.key,
-            posButton = R.string.reset
-        )
-    }
-}
+        const val ARG_IS_CONFIRMED: String = "confirm"
+        const val ARG_IS_CONFIRMED_2: String = "confirm2"
+        const val ARG_EXTRA_ITEM_ID: String = "extra"
 
-class ConfirmSaveDialog {
-    companion object {
-        fun newInstance(@StringRes text: Int? = null): SimpleConfirmationDialog =
-            SimpleConfirmationDialog.newInstance(
-                text = text ?: R.string.dialog_restart,
-                requestKey = ConfirmType.SAVE.key,
-                posButton = R.string.save,
-                negButton = R.string.delete
-            )
-    }
-}
+        @JvmStatic
+        protected val ARG_REQ_KEY: String = "request_key"
 
-class ConfirmRestartDialog {
-    companion object {
-        fun newInstance(
-            @StringRes text: Int? = null,
-        ): SimpleConfirmationDialog = SimpleConfirmationDialog.newInstance(
-            text = text ?: R.string.dialog_restart,
-            requestKey = ConfirmType.RESTART.key,
-            posButton = R.string.restart,
-            negButton = R.string.later
-        )
+        @JvmStatic
+        protected val ARG_CONFIRM_ID: String = "confirm_id"
+
+        @JvmStatic
+        protected val ARG_MESSAGE: String = "message"
+
+        @JvmStatic
+        protected val ARG_POS_TEXT: String = "pos_btn_text"
+
+        @JvmStatic
+        protected val ARG_POS_ACTION: String = "pos_action"
+
+        @JvmStatic
+        protected val ARG_NEG_TEXT: String = "neg_btn_txt"
+
+        @JvmStatic
+        protected val ARG_NEG_ACTION: String = "neg_action"
+
+        @JvmStatic
+        protected val ARG_POS_TEXT_2: String = "pos_btn_text_2"
+
+        @JvmStatic
+        protected val ARG_POS_ACTION_2: String = "pos_action_2"
     }
 }

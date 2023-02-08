@@ -71,7 +71,10 @@ class ConfirmationDialogMileageBreakdown(private val yearly: Yearly) : FullWidth
                         modifier = Modifier,
                         verticalAlignment = Bottom
                     ) {
-                        HeaderText(text = "Business", modifier = Modifier.weight(.4f))
+                        HeaderText(
+                            text = "Business",
+                            modifier = Modifier.weight(.4f),
+                                                    )
                         ValueText(
                             text = "${
                                 getString(
@@ -79,12 +82,12 @@ class ConfirmationDialogMileageBreakdown(private val yearly: Yearly) : FullWidth
                                     yearly.businessMileagePercent * 100
                                 )
                             }%",
-                            modifier = Modifier.weight(.3f)
-                        )
+                            modifier = Modifier.weight(.3f),
+                                                    )
                         ValueText(
                             text = getString(R.string.odometer_fmt, yearly.mileage),
-                            modifier = Modifier.weight(.3f)
-                        )
+                            modifier = Modifier.weight(.3f),
+                                                    )
                     }
 
                     Row(
@@ -92,8 +95,7 @@ class ConfirmationDialogMileageBreakdown(private val yearly: Yearly) : FullWidth
                         verticalAlignment = Bottom
                     ) {
                         HeaderText(
-                            text = "Non-business", modifier = Modifier.weight(.4f)
-                        )
+                            text = "Non-business", modifier = Modifier.weight(.4f),                         )
                         ValueText(
                             text = "${
                                 getString(
@@ -101,12 +103,12 @@ class ConfirmationDialogMileageBreakdown(private val yearly: Yearly) : FullWidth
                                     100f - (yearly.businessMileagePercent * 100f)
                                 )
                             }%",
-                            modifier = Modifier.weight(.3f)
-                        )
+                            modifier = Modifier.weight(.3f),
+                                                    )
                         ValueText(
                             text = getString(R.string.odometer_fmt, yearly.nonBusinessMiles),
-                            modifier = Modifier.weight(.3f)
-                        )
+                            modifier = Modifier.weight(.3f),
+                                                    )
                     }
 
                     Row(
@@ -114,9 +116,7 @@ class ConfirmationDialogMileageBreakdown(private val yearly: Yearly) : FullWidth
                         verticalAlignment = Bottom
                     ) {
                         HeaderText(text = "Total miles")
-                        ValueText(
-                            text = getString(R.string.odometer_fmt, yearly.totalMiles),
-                        )
+                        ValueText(text = getString(R.string.odometer_fmt, yearly.totalMiles))
                     }
                 }
             }

@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -35,9 +34,9 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogUseTrackedMiles
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -142,20 +141,8 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                     val currentEnd = fragEntryEndMileage.text.toString()
                     val itemEnd = getStringOrElse(R.string.odometer_fmt, "", item?.endOdometer)
                     val endOdometerChanged = currentEnd != itemEnd
-                    Log.d(
-                        TAG,
-                        "START | curr: $currStart | item: $itemStart | $startOdometerChanged | END | curr: $currentEnd | item: $itemEnd | $endOdometerChanged\n" +
-                                "dist: $distance | tracked: ${
-                                    getString(
-                                        R.string.float_fmt,
-                                        fullEntry?.trackedDistance
-                                    )
-                                }"
-                    )
+
                     when {
-                        startOdometerChanged && endOdometerChanged -> {
-                            // show dialog
-                        }
                         startOdometerChanged -> {
                             val endOdo: Int =
                                 currStart.toIntOrNull()
@@ -190,7 +177,10 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                             }
                         }
                         else -> {
-                            // show dialog
+                            ConfirmationDialogUseTrackedMiles.newInstance(
+                                currStart.toIntOrNull(),
+                                currentEnd.toIntOrNull()
+                            ).show(childFragmentManager, "dialog_use_tracked_mileage")
                         }
                     }
                 }

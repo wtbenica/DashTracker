@@ -28,7 +28,6 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
@@ -424,14 +423,14 @@ class OnboardingMileageActivity : ComponentActivity() {
             }
         }
     }
-
-    @RequiresApi(TIRAMISU)
     fun getNotificationPermission() {
         when {
             !sharedPrefs.getBoolean(NOTIFICATION_ENABLED, true) -> {}
             this.hasPermissions(POST_NOTIFICATIONS) -> {}
             else -> {
-                singlePermissionLauncher.launch(POST_NOTIFICATIONS)
+                if (SDK_INT >= TIRAMISU) {
+                    singlePermissionLauncher.launch(POST_NOTIFICATIONS)
+                }
             }
         }
     }

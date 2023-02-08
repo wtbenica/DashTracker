@@ -37,7 +37,11 @@ import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.ui.dialog_confirm.*
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -137,7 +141,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setFragmentResultListener(
             ConfirmType.DELETE.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
+            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             if (result) {
                 onDeleteItem()
             }
@@ -146,7 +150,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setFragmentResultListener(
             ConfirmType.RESET.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
+            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             if (result) {
                 updateUI()
             }
@@ -155,7 +159,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setFragmentResultListener(
             ConfirmType.SAVE.key,
         ) { _, bundle ->
-            val result = bundle.getBoolean(SimpleConfirmationDialog.ARG_IS_CONFIRMED)
+            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             Toast.makeText(context, "Save? $result", Toast.LENGTH_LONG).show()
             if (result) {
                 saveConfirmed = true

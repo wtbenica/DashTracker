@@ -16,6 +16,11 @@
 
 package com.wtb.dashTracker.ui.fragment_trends
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
@@ -32,5 +37,15 @@ open class FullWidthDialogFragment: DialogFragment() {
     override fun onPause() {
         dismiss()
         super.onPause()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 }

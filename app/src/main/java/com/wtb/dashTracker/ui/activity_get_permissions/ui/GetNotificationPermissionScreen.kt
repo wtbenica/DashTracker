@@ -16,14 +16,15 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.os.Build.VERSION_CODES.TIRAMISU
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.Notifications
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -44,7 +45,6 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@RequiresApi(TIRAMISU)
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
@@ -107,7 +107,6 @@ fun GetNotificationPermissionScreen(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-@RequiresApi(TIRAMISU)
 fun GetNotificationsPermissionNav(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
@@ -165,7 +164,6 @@ fun GetNotificationsPermissionNav(
 }
 
 @ExperimentalCoroutinesApi
-@RequiresApi(TIRAMISU)
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi

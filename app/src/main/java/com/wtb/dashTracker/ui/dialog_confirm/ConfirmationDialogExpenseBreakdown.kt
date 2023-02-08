@@ -105,12 +105,8 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
                                 verticalAlignment = Bottom
                             ) {
                                 HeaderText(text = it.key.name ?: "")
-                                ValueText(
-                                    text = getCurrencyString(it.value * yearly.businessMileagePercent),
-                                )
-                                ValueText(
-                                    text = getCurrencyString(it.value),
-                                )
+                                ValueText(text = getCurrencyString(it.value * yearly.businessMileagePercent))
+                                ValueText(text = getCurrencyString(it.value))
                             }
                         }
                     }
