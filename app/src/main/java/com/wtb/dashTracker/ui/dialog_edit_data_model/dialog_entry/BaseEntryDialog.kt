@@ -24,7 +24,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +37,8 @@ import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogUseTrackedMiles
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED_2
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -61,6 +62,21 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
     override lateinit var binding: DialogFragEntryBinding
 
     protected var startTimeChanged = false
+
+    val distance: Int
+        get() = (fullEntry?.trackedDistance?.toFloat()
+            ?: fullEntry?.entry?.mileage)?.roundToInt() ?: 0
+
+    val currStartOdo
+        get() = binding.fragEntryStartMileage.text.toIntOrNull()
+    val savedStartOdo
+        get() = getStringOrElse(R.string.odometer_fmt, "", item?.startOdometer).toIntOrNull()
+
+    val currEndOdo
+        get() = binding.fragEntryEndMileage.text.toIntOrNull()
+    val savedEndOdo
+        get() = getStringOrElse(R.string.odometer_fmt, "", item?.endOdometer).toIntOrNull()
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -133,35 +149,21 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
             fragEntryCheckboxUseTrackedMileage.apply {
                 setOnClickListener { _ ->
-                    val distance: Int =
-                        (fullEntry?.trackedDistance?.toFloat()
-                            ?: fullEntry?.entry?.mileage)?.roundToInt() ?: 0
-
-                    val currStartOdo = fragEntryStartMileage.text.toString()
-                    val savedStartOdo =
-                        getStringOrElse(R.string.odometer_fmt, "", item?.startOdometer)
                     val startOdometerChanged = currStartOdo != savedStartOdo
-
-                    val currEndOdo = fragEntryEndMileage.text.toString()
-                    val savedEndOdo = getStringOrElse(R.string.odometer_fmt, "", item?.endOdometer)
                     val endOdometerChanged = currEndOdo != savedEndOdo
-
-                    val alreadySet = currStartOdo.toIntOrNull()
-                        ?.let { it + distance == currEndOdo.toIntOrNull() } ?: false
+                    val alreadySet =
+                        currStartOdo?.let { it + distance == currEndOdo } ?: false
 
                     when {
                         alreadySet -> {
                             Toast.makeText(
                                 context,
                                 context.getString(R.string.toast_base_entry_dialog_matches_tracked_mileage),
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_LONG
                             ).show()
                         }
-                        startOdometerChanged -> {
-                            val endOdo: Int =
-                                currStartOdo.toIntOrNull()
-                                    ?.let { it + distance }
-                                    ?: 0
+                        startOdometerChanged && !endOdometerChanged -> {
+                            val endOdo: Int = currStartOdo?.let { it + distance } ?: 0
 
                             fragEntryEndMileage.setText(endOdo.toString())
 
@@ -176,15 +178,16 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.toast_base_entry_dialog_end_mileage_set_to, endOdo),
-                                Toast.LENGTH_SHORT
+                                context.getString(
+                                    R.string.toast_base_entry_dialog_end_mileage_set_to,
+                                    endOdo
+                                ),
+                                Toast.LENGTH_LONG
                             ).show()
                         }
-                        endOdometerChanged -> {
+                        endOdometerChanged && !startOdometerChanged-> {
                             val startOdo: Int =
-                                currEndOdo.toFloatOrNull()
-                                    ?.let { (it - distance).roundToInt() }
-                                    ?: 0
+                                currEndOdo?.let { it - distance } ?: 0
 
                             fragEntryStartMileage.setText(startOdo.toString())
 
@@ -198,14 +201,17 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.toast_base_entry_dialog_start_mileage_set_to, startOdo),
-                                Toast.LENGTH_SHORT
+                                context.getString(
+                                    R.string.toast_base_entry_dialog_start_mileage_set_to,
+                                    startOdo
+                                ),
+                                Toast.LENGTH_LONG
                             ).show()
                         }
                         else -> {
                             ConfirmationDialogUseTrackedMiles.newInstance(
-                                currStartOdo.toIntOrNull(),
-                                currEndOdo.toIntOrNull(),
+                                currStartOdo,
+                                currEndOdo,
                                 distance
                             ).show(childFragmentManager, "dialog_use_tracked_mileage")
                         }
@@ -259,40 +265,71 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
     override fun setDialogListeners() {
         super.setDialogListeners()
 
-        setFragmentResultListener(ConfirmationDialogDatePicker.REQUEST_KEY_DATE) { _, bundle ->
-            val year = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_YEAR)
-            val month = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_MONTH)
-            val dayOfMonth = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_DAY)
-            when (bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_TEXTVIEW)) {
-                R.id.frag_entry_date -> {
-                    val date = LocalDate.of(year, month, dayOfMonth)
-                    binding.fragEntryDate.text =
-                        date.format(dtfDate).toString()
-                    binding.fragEntryDate.tag = date
+        childFragmentManager.apply {
+            setFragmentResultListener(
+                ConfirmationDialogDatePicker.REQUEST_KEY_DATE,
+                this@BaseEntryDialog
+            ) { _, bundle ->
+                val year = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_YEAR)
+                val month = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_MONTH)
+                val dayOfMonth = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_DAY)
+                when (bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_TEXTVIEW)) {
+                    R.id.frag_entry_date -> {
+                        val date = LocalDate.of(year, month, dayOfMonth)
+                        binding.fragEntryDate.text =
+                            date.format(dtfDate).toString()
+                        binding.fragEntryDate.tag = date
+                    }
+                }
+            }
+
+            setFragmentResultListener(
+                ConfirmationDialogTimePicker.REQUEST_KEY_TIME,
+                this@BaseEntryDialog
+            ) { _, bundle ->
+                val hour = bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_NEW_HOUR)
+                val minute = bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_NEW_MINUTE)
+                val dialogTime = LocalTime.of(hour, minute)
+
+                when (bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_TEXTVIEW)) {
+                    R.id.frag_entry_start_time -> {
+                        binding.fragEntryStartTime.text =
+                            dialogTime.format(dtfTime).toString()
+                        binding.fragEntryStartTime.tag = dialogTime
+                    }
+                    R.id.frag_entry_end_time -> {
+                        binding.fragEntryEndTime.text =
+                            dialogTime.format(dtfTime).toString()
+                        binding.fragEntryEndTime.tag = dialogTime
+                    }
+                }
+            }
+
+            setFragmentResultListener(
+                ConfirmationDialogUseTrackedMiles.REQ_KEY_DIALOG_USE_TRACKED_MILES,
+                this@BaseEntryDialog
+            ) { _, bundle ->
+                val keepStartMileage = bundle.getBoolean(ARG_IS_CONFIRMED)
+                val keepEndMileage = bundle.getBoolean(ARG_IS_CONFIRMED_2)
+
+                when {
+                    keepStartMileage -> {
+                        binding.fragEntryEndMileage.setText(
+                            @Suppress("SetTextI18n")
+                            ((currStartOdo ?: 0) + distance).toString()
+                        )
+                    }
+                    keepEndMileage -> {
+                        val newEnd = maxOf(currEndOdo ?: 0, distance)
+                        val newStart = newEnd - distance
+
+                        @Suppress("SetTextI18n")
+                        binding.fragEntryStartMileage.setText(newStart.toString())
+                        binding.fragEntryEndMileage.setText(newEnd.toString())
+                    }
                 }
             }
         }
 
-        childFragmentManager.setFragmentResultListener(
-            ConfirmationDialogTimePicker.REQUEST_KEY_TIME,
-            this
-        ) { _, bundle ->
-            val hour = bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_NEW_HOUR)
-            val minute = bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_NEW_MINUTE)
-            val dialogTime = LocalTime.of(hour, minute)
-
-            when (bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_TEXTVIEW)) {
-                R.id.frag_entry_start_time -> {
-                    binding.fragEntryStartTime.text =
-                        dialogTime.format(dtfTime).toString()
-                    binding.fragEntryStartTime.tag = dialogTime
-                }
-                R.id.frag_entry_end_time -> {
-                    binding.fragEntryEndTime.text =
-                        dialogTime.format(dtfTime).toString()
-                    binding.fragEntryEndTime.tag = dialogTime
-                }
-            }
-        }
     }
 }

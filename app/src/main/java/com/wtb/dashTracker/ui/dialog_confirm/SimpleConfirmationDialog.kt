@@ -218,26 +218,6 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
         dialogContent?.let { setContent(contentArea, it) }
     }
 
-    private fun updateNegButton(button: Button, divider: View) {
-        if (negButton != null) {
-            button.apply {
-                negButton?.let { setText(it) }
-                setOnClickListener {
-                    dismiss()
-                    negAction?.invoke()
-
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED to false)
-                    )
-                }
-            }
-        } else {
-            button.visibility = View.GONE
-            divider.visibility = View.GONE
-        }
-    }
-
     private fun updateYesButton1(button: Button) {
         button.apply {
             setText(posButton)
@@ -265,15 +245,6 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
         }
     }
 
-    fun Button.setAsDefault(isDefault: Boolean) {
-        setTypeface(typeface, if (isDefault) BOLD else NORMAL)
-        setTextColor(
-            context.getAttributeColor(
-                if (isDefault) R.attr.colorDialogButtonIcon else R.attr.colorDialogText
-            )
-        )
-    }
-
     private fun updateYesButton2(button: Button) {
         button.apply {
             posButton2?.let { setText(it) }
@@ -299,6 +270,35 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
 
             setAsDefault(pos2ButtonIsDefault)
         }
+    }
+
+    private fun updateNegButton(button: Button, divider: View) {
+        if (negButton != null) {
+            button.apply {
+                negButton?.let { setText(it) }
+                setOnClickListener {
+                    dismiss()
+                    negAction?.invoke()
+//
+//                    parentFragmentManager.setFragmentResult(
+//                        requestKey,
+//                        bundleOf(ARG_IS_CONFIRMED to false)
+//                    )
+                }
+            }
+        } else {
+            button.visibility = View.GONE
+            divider.visibility = View.GONE
+        }
+    }
+
+    fun Button.setAsDefault(isDefault: Boolean) {
+        setTypeface(typeface, if (isDefault) BOLD else NORMAL)
+        setTextColor(
+            context.getAttributeColor(
+                if (isDefault) R.attr.colorDialogButtonIcon else R.attr.colorDialogText
+            )
+        )
     }
 
     companion object {
