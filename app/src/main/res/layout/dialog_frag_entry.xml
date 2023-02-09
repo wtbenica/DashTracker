@@ -239,6 +239,14 @@
                             app:strokeColor="?attr/colorDialogButtonStroke"
                             app:strokeWidth="?attr/dimenDialogButtonStrokeWidth" />
 
+                        <android.widget.Space
+                            android:id="@+id/frag_entry_space"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/margin_default"
+                            android:layout_row="6"
+                            android:layout_columnSpan="3"
+                            android:layout_column="0"
+                            android:visibility="gone" />
                         <!--    Row 7   -->
                         <View
                             android:layout_height="0dp"

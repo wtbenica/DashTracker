@@ -304,8 +304,8 @@ data class FullEntry(
 
 
     /**
-     * Total tracked distance from beginning to end of dash.
-     */
+     * Total tracked distance from beginning to end of dash or null if [locations] is empty
+     * */
     val trackedDistance: Double?
         get() = if (locations.isNotEmpty()) {
             locations.distance

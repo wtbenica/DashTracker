@@ -61,22 +61,28 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
     override val viewModel: EntryViewModel by viewModels()
     override lateinit var binding: DialogFragEntryBinding
 
-    protected var startTimeChanged = false
+    protected var startTimeChanged: Boolean = false
 
-    val distance: Int
-        get() = (fullEntry?.trackedDistance?.toFloat()
-            ?: fullEntry?.entry?.mileage)?.roundToInt() ?: 0
+    private val distance: Int
+        get() = fullEntry?.trackedDistance?.roundToInt() ?: 0
 
-    val currStartOdo
+    private val currStartOdo: Int?
         get() = binding.fragEntryStartMileage.text.toIntOrNull()
-    val savedStartOdo
-        get() = getStringOrElse(R.string.odometer_fmt, "", item?.startOdometer).toIntOrNull()
 
-    val currEndOdo
+    private val currEndOdo: Int?
         get() = binding.fragEntryEndMileage.text.toIntOrNull()
-    val savedEndOdo
-        get() = getStringOrElse(R.string.odometer_fmt, "", item?.endOdometer).toIntOrNull()
 
+    protected val totalMileageMatchesTrackedMileage: Boolean
+        get() {
+            val end = currEndOdo
+            val start = currStartOdo
+            val tracked = fullEntry?.trackedDistance?.roundToInt()
+
+            return (tracked == null)
+                    || ((end != null)
+                    && (start != null)
+                    && (tracked == (end - start)))
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -143,14 +149,16 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                         updateView = fragEntryTotalMileage,
                         otherValue = startMileage,
                         stringFormat = R.string.odometer_fmt
-                    ) { other, self -> max(self - other, 0f) }
+                    ) { other, self ->
+                        setUpdateMileageButtonVisibility()
+
+                        max(self - other, 0f)
+                    }
                 }
             }
 
             fragEntryCheckboxUseTrackedMileage.apply {
                 setOnClickListener { _ ->
-                    val startOdometerChanged = currStartOdo != savedStartOdo
-                    val endOdometerChanged = currEndOdo != savedEndOdo
                     val alreadySet =
                         currStartOdo?.let { it + distance == currEndOdo } ?: false
 
@@ -159,52 +167,6 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                             Toast.makeText(
                                 context,
                                 context.getString(R.string.toast_base_entry_dialog_matches_tracked_mileage),
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        startOdometerChanged && !endOdometerChanged -> {
-                            val endOdo: Int = currStartOdo?.let { it + distance } ?: 0
-
-                            fragEntryEndMileage.setText(endOdo.toString())
-
-                            item?.let {
-                                viewModel.updateEntry(
-                                    entry = it,
-                                    startOdometer = fragEntryStartMileage.text.toIntOrNull()
-                                        ?.toFloat(),
-                                    endOdometer = endOdo.toFloat()
-                                )
-                            }
-
-                            Toast.makeText(
-                                context,
-                                context.getString(
-                                    R.string.toast_base_entry_dialog_end_mileage_set_to,
-                                    endOdo
-                                ),
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        endOdometerChanged && !startOdometerChanged-> {
-                            val startOdo: Int =
-                                currEndOdo?.let { it - distance } ?: 0
-
-                            fragEntryStartMileage.setText(startOdo.toString())
-
-                            item?.let {
-                                viewModel.updateEntry(
-                                    entry = it,
-                                    startOdometer = startOdo.toFloat(),
-                                    endOdometer = fragEntryEndMileage.text.toIntOrNull()?.toFloat()
-                                )
-                            }
-
-                            Toast.makeText(
-                                context,
-                                context.getString(
-                                    R.string.toast_base_entry_dialog_start_mileage_set_to,
-                                    startOdo
-                                ),
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -233,6 +195,16 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
             fragEntryToolbar.title = titleText
         }
+
+    protected fun setUpdateMileageButtonVisibility() {
+        binding.fragEntryCheckboxUseTrackedMileage.setVisibleIfTrue(
+            !totalMileageMatchesTrackedMileage
+        )
+
+        binding.fragEntrySpace.setVisibleIfTrue(
+            totalMileageMatchesTrackedMileage
+        )
+    }
 
     override fun saveValues() {
         val currDate = binding.fragEntryDate.tag as LocalDate?
@@ -330,6 +302,5 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                 }
             }
         }
-
     }
 }

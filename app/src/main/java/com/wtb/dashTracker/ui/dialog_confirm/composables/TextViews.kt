@@ -17,10 +17,7 @@
 package com.wtb.dashTracker.ui.dialog_confirm.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -91,7 +88,8 @@ fun ColumnScope.HeaderText(
     Text(
         text = text,
         modifier = modifier
-            .padding(padding),
+            .padding(padding)
+            .width(IntrinsicSize.Max),
         color = onPrimaryVariant(),
         fontSize = 14.sp,
         fontFamily = FontFamilyOswald,
@@ -114,6 +112,7 @@ fun ColumnScope.ValueText(
     Text(
         text = text,
         modifier = modifier.apply {
+            width(IntrinsicSize.Max)
             if (padding != null)
                 padding(all = padding)
             else

@@ -67,6 +67,8 @@ class EndDashDialog : BaseEntryDialog() {
 
                     fragEntryTotalMileage.text = getString(R.string.odometer_fmt, distance)
 
+                    setUpdateMileageButtonVisibility()
+
                     tempEntry.pay.let { p ->
                         fragEntryPay.setText(p?.toCurrencyString() ?: "")
                     }

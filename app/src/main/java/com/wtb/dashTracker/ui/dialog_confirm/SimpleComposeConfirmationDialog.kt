@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.dialog_confirm
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -25,8 +26,13 @@ import android.view.View
 import android.widget.Button
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.dimensionResource
@@ -42,6 +48,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogUseTrackedMiles.C
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.onSecondaryVariant
 
 open class SimpleComposeConfirmationDialog :
     SimpleConfirmationDialog<ComposeView, @Composable () -> Unit, DialogFragComposeConfirm2ButtonBinding, DialogFragComposeConfirm3ButtonBinding>() {
@@ -141,59 +148,104 @@ open class SimpleComposeConfirmationDialog :
     }
 }
 
-class ConfirmationDialogUseTrackedMiles() {
+class ConfirmationDialogUseTrackedMiles {
     companion object {
         internal const val REQ_KEY_DIALOG_USE_TRACKED_MILES =
             "${PACKAGE_NAME}.req_key_use_tracked_miles"
 
+        @OptIn(ExperimentalTextApi::class)
         @Composable
-        fun Content(startMileage: Int?, endMileage: Int?, distance: Int): Unit =
-            Column {
-                Row {
-                    HeaderText(
-                        stringResource(id = R.string.lbl_start_mileage_adjusted),
-                        textAlign = TextAlign.Center,
-                        padding = 0.dp
-                    )
-                    HeaderText(
-                        stringResource(id = R.string.lbl_end_mileage_adjusted),
-                        textAlign = TextAlign.Center,
-                        padding = 0.dp
-                    )
-                }
-
-                Row {
-                    ValueText(
-                        text = startMileage?.let {
-                            stringResource(
-                                id = R.string.odometer_range_int,
-                                it, it + distance
-                            )
-                        } ?: "-",
-                        textAlign = TextAlign.Center,
-                        padding = dimensionResource(id = R.dimen.margin_narrow)
-                    )
-                    ValueText(
-                        text = endMileage?.let {
-                            stringResource(
-                                id = R.string.odometer_range_int,
-                                maxOf(0, it - distance), maxOf(distance, it)
-                            )
-                        } ?: "-",
-                        textAlign = TextAlign.Center,
-                        padding = dimensionResource(id = R.dimen.margin_narrow)
-                    )
-                }
-
-                DefaultSpacer()
-                
-                ValueText(
-                    text = "Which values would you prefer to use?",
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    padding = 0.dp
+        fun Content(startMileage: Int?, endMileage: Int?, distance: Int) {
+            DashTrackerTheme {
+                val baba = cardColors(
+                    containerColor = if (isSystemInDarkTheme()) {
+                        onSecondaryVariant()
+                    } else {
+                        MaterialTheme.colorScheme.tertiary
+                    },
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary,
+                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
                 )
+
+                Column {
+                    Row {
+                        Card(
+                            modifier = Modifier
+                                .weight(1f),
+                            colors = baba,
+                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(vertical = dimensionResource(id = R.dimen.margin_default)),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                HeaderText(
+                                    stringResource(id = R.string.lbl_start_mileage_adjusted),
+                                    textAlign = TextAlign.Center,
+                                    padding = 0.dp
+                                )
+
+                                ValueText(
+                                    text = startMileage?.let {
+                                        stringResource(
+                                            id = R.string.odometer_range_int,
+                                            it, it + distance
+                                        )
+                                    } ?: "-",
+                                    textAlign = TextAlign.Center,
+                                    padding = dimensionResource(id = R.dimen.margin_narrow)
+                                )
+                            }
+                        }
+
+                        DefaultSpacer()
+
+                        Card(
+                            modifier = Modifier
+                                .weight(1f),
+                            colors = baba,
+                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(vertical = dimensionResource(id = R.dimen.margin_default)),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                HeaderText(
+                                    stringResource(id = R.string.lbl_end_mileage_adjusted),
+                                    textAlign = TextAlign.Center,
+                                    padding = 0.dp
+                                )
+
+                                ValueText(
+                                    text = endMileage?.let {
+                                        stringResource(
+                                            id = R.string.odometer_range_int,
+                                            maxOf(0, it - distance), maxOf(distance, it)
+                                        )
+                                    } ?: "-",
+                                    textAlign = TextAlign.Center,
+                                    padding = dimensionResource(id = R.dimen.margin_narrow)
+                                )
+                            }
+                        }
+                    }
+
+                    DefaultSpacer()
+
+                    ValueText(
+                        text = "Which values would you prefer to use?",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        padding = 0.dp
+                    )
+                }
             }
+        }
 
         fun newInstance(
             startMileage: Int?,
@@ -220,7 +272,16 @@ class ConfirmationDialogUseTrackedMiles() {
 @Composable
 @Preview(showBackground = true)
 fun ContentPreview() {
-    DashTrackerTheme() {
+    DashTrackerTheme {
+        Content(1, 30, 12)
+    }
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+fun ContentPreviewNight() {
+    DashTrackerTheme {
         Content(1, 30, 12)
     }
 }

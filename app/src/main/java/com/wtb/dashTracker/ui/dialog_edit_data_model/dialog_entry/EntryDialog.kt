@@ -42,6 +42,7 @@ class EntryDialog : BaseEntryDialog() {
     override fun updateUI(firstRun: Boolean) {
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = item
+
             if (tempEntry != null) {
                 binding.apply {
                     fragEntryDate.text = tempEntry.date.format(dtfDate)
@@ -75,6 +76,8 @@ class EntryDialog : BaseEntryDialog() {
                         fragEntryTotalMileage.text =
                             getStringOrElse(R.string.odometer_fmt, "", m)
                     }
+
+                    setUpdateMileageButtonVisibility()
 
                     tempEntry.pay.let { p ->
                         fragEntryPay.setText(p?.toCurrencyString() ?: "")
