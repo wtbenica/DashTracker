@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -133,19 +134,32 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
             fragEntryCheckboxUseTrackedMileage.apply {
                 setOnClickListener { _ ->
                     val distance: Int =
-                        (fullEntry?.trackedDistance?.toFloat() ?: fullEntry?.entry?.mileage)?.roundToInt() ?: 0
+                        (fullEntry?.trackedDistance?.toFloat()
+                            ?: fullEntry?.entry?.mileage)?.roundToInt() ?: 0
 
-                    val currStart = fragEntryStartMileage.text.toString()
-                    val itemStart = getStringOrElse(R.string.odometer_fmt, "", item?.startOdometer)
-                    val startOdometerChanged = currStart != itemStart
-                    val currentEnd = fragEntryEndMileage.text.toString()
-                    val itemEnd = getStringOrElse(R.string.odometer_fmt, "", item?.endOdometer)
-                    val endOdometerChanged = currentEnd != itemEnd
+                    val currStartOdo = fragEntryStartMileage.text.toString()
+                    val savedStartOdo =
+                        getStringOrElse(R.string.odometer_fmt, "", item?.startOdometer)
+                    val startOdometerChanged = currStartOdo != savedStartOdo
+
+                    val currEndOdo = fragEntryEndMileage.text.toString()
+                    val savedEndOdo = getStringOrElse(R.string.odometer_fmt, "", item?.endOdometer)
+                    val endOdometerChanged = currEndOdo != savedEndOdo
+
+                    val alreadySet = currStartOdo.toIntOrNull()
+                        ?.let { it + distance == currEndOdo.toIntOrNull() } ?: false
 
                     when {
+                        alreadySet -> {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_base_entry_dialog_matches_tracked_mileage),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                         startOdometerChanged -> {
                             val endOdo: Int =
-                                currStart.toIntOrNull()
+                                currStartOdo.toIntOrNull()
                                     ?.let { it + distance }
                                     ?: 0
 
@@ -159,10 +173,16 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                                     endOdometer = endOdo.toFloat()
                                 )
                             }
+
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_base_entry_dialog_end_mileage_set_to, endOdo),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         endOdometerChanged -> {
                             val startOdo: Int =
-                                currentEnd.toFloatOrNull()
+                                currEndOdo.toFloatOrNull()
                                     ?.let { (it - distance).roundToInt() }
                                     ?: 0
 
@@ -175,11 +195,17 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                                     endOdometer = fragEntryEndMileage.text.toIntOrNull()?.toFloat()
                                 )
                             }
+
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.toast_base_entry_dialog_start_mileage_set_to, startOdo),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         else -> {
                             ConfirmationDialogUseTrackedMiles.newInstance(
-                                currStart.toIntOrNull(),
-                                currentEnd.toIntOrNull(),
+                                currStartOdo.toIntOrNull(),
+                                currEndOdo.toIntOrNull(),
                                 distance
                             ).show(childFragmentManager, "dialog_use_tracked_mileage")
                         }

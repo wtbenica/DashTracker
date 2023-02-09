@@ -313,4 +313,7 @@
     <string name="content_desc_close_dialog_window">Close dialog window</string>
     <string name="lbl_use_tracked_mileage">Use tracked mileage</string>
     <string name="dialog_title_end_dash">End Dash</string>
+    <string name="toast_base_entry_dialog_matches_tracked_mileage">Total mileage already matches tracked mileage</string>
+    <string name="toast_base_entry_dialog_end_mileage_set_to">End mileage set to %d</string>
+    <string name="toast_base_entry_dialog_start_mileage_set_to">Start mileage set to %d</string>
 </resources>
