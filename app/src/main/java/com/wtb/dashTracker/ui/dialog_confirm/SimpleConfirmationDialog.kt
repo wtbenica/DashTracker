@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.dialog_confirm
 
+import android.graphics.Typeface.*
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.core.os.bundleOf
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.extensions.getAttributeColor
 import com.wtb.dashTracker.extensions.getIntNotZero
 import com.wtb.dashTracker.extensions.getLongNotZero
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
@@ -51,7 +53,7 @@ enum class ConfirmType(val key: String) {
 abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, TwoButtonBinding : ViewBinding, ThreeButtonBinding : ViewBinding> :
     FullWidthDialogFragment() {
     private lateinit var binding: ViewBinding
-    
+
     private lateinit var requestKey: String
     private var confirmId: Long? = null
     private var message: String? = null
@@ -59,6 +61,8 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
     @StringRes
     var posButton: Int = R.string.yes
     private var posAction: (() -> Unit)? = null
+    private var posButtonIsDefault = true
+    private var pos2ButtonIsDefault = false
 
     @StringRes
     var negButton: Int? = null
@@ -115,6 +119,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                 @Suppress("DEPRECATION")
                 getParcelable(ARG_POS_ACTION)
             }?.action
+            posButtonIsDefault = getBoolean(ARG_POS_IS_DEFAULT, true)
 
             negButton = getIntNotZero(ARG_NEG_TEXT) ?: R.string.cancel
             negAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -131,6 +136,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                 @Suppress("DEPRECATION")
                 getParcelable(ARG_POS_ACTION_2)
             }?.action
+            pos2ButtonIsDefault = getBoolean(ARG_POS_2_IS_DEFAULT, false)
         }
     }
 
@@ -149,7 +155,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
             mNoButton = noButtonTwoButton(mTwoButtonBinding)
             mNoDivider = noDividerTwoButton(mTwoButtonBinding)
             mYesButton1 = yesButton1TwoButton(mTwoButtonBinding)
-            
+
             setToolbarTitle(mToolbar)
 
             setDialogContent(
@@ -163,7 +169,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
             updateNegButton(mNoButton, mNoDivider)
 
             updateYesButton1(mYesButton1)
-            
+
             binding = mTwoButtonBinding
         } else {
             mThreeButtonBinding = threeButtonBinding(inflater)
@@ -174,7 +180,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
             mNoDivider = noDividerThreeButton(mThreeButtonBinding)
             mYesButton1 = yesButton1ThreeButton(mThreeButtonBinding)
             mYesButton2 = yesButton2ThreeButton(mThreeButtonBinding)
-            
+
             setToolbarTitle(mToolbar)
 
             setDialogContent(
@@ -190,7 +196,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
             updateYesButton1(mYesButton1)
 
             updateYesButton2(mYesButton2)
-            
+
             binding = mThreeButtonBinding
         }
 
@@ -254,7 +260,18 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                     )
                 }
             }
+
+            setAsDefault(posButtonIsDefault)
         }
+    }
+
+    fun Button.setAsDefault(isDefault: Boolean) {
+        setTypeface(typeface, if (isDefault) BOLD else NORMAL)
+        setTextColor(
+            context.getAttributeColor(
+                if (isDefault) R.attr.colorDialogButtonIcon else R.attr.colorDialogText
+            )
+        )
     }
 
     private fun updateYesButton2(button: Button) {
@@ -279,6 +296,8 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                     )
                 }
             }
+
+            setAsDefault(pos2ButtonIsDefault)
         }
     }
 
@@ -303,6 +322,9 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
         protected val ARG_POS_ACTION: String = "pos_action"
 
         @JvmStatic
+        protected val ARG_POS_IS_DEFAULT: String = "pos_is_default"
+
+        @JvmStatic
         protected val ARG_NEG_TEXT: String = "neg_btn_txt"
 
         @JvmStatic
@@ -313,5 +335,8 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
 
         @JvmStatic
         protected val ARG_POS_ACTION_2: String = "pos_action_2"
+
+        @JvmStatic
+        protected val ARG_POS_2_IS_DEFAULT: String = "pos_2_is_default"
     }
 }

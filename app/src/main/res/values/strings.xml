@@ -58,6 +58,8 @@
     <string name="lbl_set_cpm_method">Calculate cost per mile using:</string>
     <string name="lbl_cpm">CPM</string>
     <string name="lbl_none">None</string>
+    <string name="lbl_start_mileage_adjusted">Keep Start Mileage</string>
+    <string name="lbl_end_mileage_adjusted">Keep End Mileage</string>
 
     <string name="content_desc_delete">Delete</string>
     <string name="content_desc_reset">Reset</string>
@@ -103,6 +105,7 @@
     <string name="gas_price_display">$%.3f</string>
     <string name="blank_currency">$  -  </string>
     <string name="odometer_range" formatted="true">%1$.0f - %2$.0f</string>
+    <string name="odometer_range_int" formatted="true">%d - %d</string>
     <string name="time_range" formatted="true">%1$s - %2$s</string>
     <string name="format_hours">%.2fh</string>
     <string name="float_fmt">%.2f</string>

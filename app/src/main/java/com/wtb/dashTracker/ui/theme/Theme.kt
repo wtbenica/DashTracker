@@ -94,6 +94,7 @@ fun DashTrackerTheme(
         else -> LightColorScheme
     }
 
+    // sets status bar text to light/dark
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

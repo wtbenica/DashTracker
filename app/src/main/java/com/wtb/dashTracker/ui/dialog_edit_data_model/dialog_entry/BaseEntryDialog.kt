@@ -132,8 +132,8 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
             fragEntryCheckboxUseTrackedMileage.apply {
                 setOnClickListener { _ ->
-                    val distance: Float =
-                        fullEntry?.trackedDistance?.toFloat() ?: fullEntry?.entry?.mileage ?: 0f
+                    val distance: Int =
+                        (fullEntry?.trackedDistance?.toFloat() ?: fullEntry?.entry?.mileage)?.roundToInt() ?: 0
 
                     val currStart = fragEntryStartMileage.text.toString()
                     val itemStart = getStringOrElse(R.string.odometer_fmt, "", item?.startOdometer)
@@ -146,7 +146,7 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                         startOdometerChanged -> {
                             val endOdo: Int =
                                 currStart.toIntOrNull()
-                                    ?.let { it + distance.roundToInt() }
+                                    ?.let { it + distance }
                                     ?: 0
 
                             fragEntryEndMileage.setText(endOdo.toString())
@@ -179,7 +179,8 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                         else -> {
                             ConfirmationDialogUseTrackedMiles.newInstance(
                                 currStart.toIntOrNull(),
-                                currentEnd.toIntOrNull()
+                                currentEnd.toIntOrNull(),
+                                distance
                             ).show(childFragmentManager, "dialog_use_tracked_mileage")
                         }
                     }

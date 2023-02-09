@@ -25,18 +25,23 @@ import android.view.View
 import android.widget.Button
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.*
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.DefaultSpacer
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogUseTrackedMiles.Companion.Content
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 
 open class SimpleComposeConfirmationDialog :
     SimpleConfirmationDialog<ComposeView, @Composable () -> Unit, DialogFragComposeConfirm2ButtonBinding, DialogFragComposeConfirm3ButtonBinding>() {
@@ -97,9 +102,7 @@ open class SimpleComposeConfirmationDialog :
                     @Suppress("DEPRECATION")
                     getParcelable(ARG_COMPOSE_CONTENT) as ComposeWrapper?
                 }?.action
-            ) {
-                { this }
-            }
+            ) { { this } }
         }
     }
 
@@ -113,10 +116,12 @@ open class SimpleComposeConfirmationDialog :
             title: String? = null,
             @StringRes posButton: Int = R.string.yes,
             posAction: LambdaWrapper? = null,
+            posIsDefault: Boolean = true,
             @StringRes negButton: Int? = null,
-            negAction: (LambdaWrapper)? = null,
+            negAction: LambdaWrapper? = null,
             @StringRes posButton2: Int? = null,
-            posAction2: (LambdaWrapper)? = null,
+            posAction2: LambdaWrapper? = null,
+            pos2IsDefault: Boolean = false
         ): SimpleComposeConfirmationDialog = SimpleComposeConfirmationDialog().apply {
             arguments = Bundle().apply {
                 putParcelable(ARG_COMPOSE_CONTENT, ComposeWrapper(content))
@@ -125,10 +130,12 @@ open class SimpleComposeConfirmationDialog :
                 putString(ARG_MESSAGE, title)
                 putInt(ARG_POS_TEXT, posButton)
                 putParcelable(ARG_POS_ACTION, posAction)
+                putBoolean(ARG_POS_IS_DEFAULT, posIsDefault)
                 negButton?.let { putInt(ARG_NEG_TEXT, it) }
                 putParcelable(ARG_NEG_ACTION, negAction)
                 posButton2?.let { putInt(ARG_POS_TEXT_2, it) }
                 putParcelable(ARG_POS_ACTION_2, posAction2)
+                putBoolean(ARG_POS_2_IS_DEFAULT, pos2IsDefault)
             }
         }
     }
@@ -140,47 +147,80 @@ class ConfirmationDialogUseTrackedMiles() {
             "${PACKAGE_NAME}.req_key_use_tracked_miles"
 
         @Composable
-        fun Content(startMileage: Int?, endMileage: Int?): Unit = Column {
-            Row {
-                HeaderText(
-                    stringResource(id = R.string.lbl_start_mileage),
-                    textAlign = TextAlign.Center,
-                    padding = 0.dp
-                )
-                HeaderText(
-                    stringResource(id = R.string.lbl_end_mileage),
+        fun Content(startMileage: Int?, endMileage: Int?, distance: Int): Unit =
+            Column {
+                Row {
+                    HeaderText(
+                        stringResource(id = R.string.lbl_start_mileage_adjusted),
+                        textAlign = TextAlign.Center,
+                        padding = 0.dp
+                    )
+                    HeaderText(
+                        stringResource(id = R.string.lbl_end_mileage_adjusted),
+                        textAlign = TextAlign.Center,
+                        padding = 0.dp
+                    )
+                }
+
+                Row {
+                    ValueText(
+                        text = startMileage?.let {
+                            stringResource(
+                                id = R.string.odometer_range_int,
+                                it, it + distance
+                            )
+                        } ?: "-",
+                        textAlign = TextAlign.Center,
+                        padding = dimensionResource(id = R.dimen.margin_narrow)
+                    )
+                    ValueText(
+                        text = endMileage?.let {
+                            stringResource(
+                                id = R.string.odometer_range_int,
+                                maxOf(0, it - distance), maxOf(distance, it)
+                            )
+                        } ?: "-",
+                        textAlign = TextAlign.Center,
+                        padding = dimensionResource(id = R.dimen.margin_narrow)
+                    )
+                }
+
+                DefaultSpacer()
+                
+                ValueText(
+                    text = "Which values would you prefer to use?",
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     padding = 0.dp
                 )
             }
 
-            Row {
-                ValueText(
-                    startMileage?.toString() ?: "",
-                    textAlign = TextAlign.Center,
-                    padding = dimensionResource(id = R.dimen.margin_narrow)
-                )
-                ValueText(
-                    endMileage?.toString() ?: "",
-                    textAlign = TextAlign.Center,
-                    padding = dimensionResource(id = R.dimen.margin_narrow)
-                )
-            }
-
-            ValueText("Which value would you like to adjust?", textAlign = TextAlign.Start)
-        }
-
-        fun newInstance(startMileage: Int?, endMileage: Int?): SimpleComposeConfirmationDialog =
+        fun newInstance(
+            startMileage: Int?,
+            endMileage: Int?,
+            distance: Int
+        ): SimpleComposeConfirmationDialog =
             SimpleComposeConfirmationDialog.newInstance(
-                content = { Content(startMileage, endMileage) },
+                content = { Content(startMileage, endMileage, distance) },
                 requestKey = REQ_KEY_DIALOG_USE_TRACKED_MILES,
                 title = "Adjust mileage",
-                posButton = R.string.lbl_start_mileage,
+                posButton = R.string.lbl_start_mileage_adjusted,
                 posAction = null,
+                posIsDefault = true,
                 negButton = R.string.cancel,
                 negAction = null,
-                posButton2 = R.string.lbl_end_mileage,
+                posButton2 = R.string.lbl_end_mileage_adjusted,
                 posAction2 = null,
+                pos2IsDefault = true
             )
+    }
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+@Preview(showBackground = true)
+fun ContentPreview() {
+    DashTrackerTheme() {
+        Content(1, 30, 12)
     }
 }

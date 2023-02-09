@@ -105,12 +105,20 @@ fun ColumnScope.ValueText(
     text: String,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.End,
-    padding: Dp = 16.dp
+    padding: Dp? = null,
+    paddingTop: Dp = 16.dp,
+    paddingBottom: Dp = 16.dp,
+    paddingStart: Dp = 16.dp,
+    paddingEnd: Dp = 16.dp
 ) {
     Text(
         text = text,
-        modifier = modifier
-            .padding(all = padding),
+        modifier = modifier.apply {
+            if (padding != null)
+                padding(all = padding)
+            else
+                padding(start = paddingStart, top = paddingTop, end = paddingEnd, bottom = paddingBottom)
+        },
         color = onPrimary(),
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
