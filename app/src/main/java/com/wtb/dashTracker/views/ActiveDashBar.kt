@@ -96,7 +96,7 @@ class ActiveDashBar @JvmOverloads constructor(
             binding.lblStarted.text = context.getHoursRangeString(it.entry.startTime, null)
 
             binding.valMileage.text =
-                context.getString(R.string.mileage_fmt, it.trackedDistance)
+                context.getString(R.string.mileage_fmt, it.trackedDistance ?: 0.0)
 
             binding.valCost.text =
                 context.getCurrencyString(
