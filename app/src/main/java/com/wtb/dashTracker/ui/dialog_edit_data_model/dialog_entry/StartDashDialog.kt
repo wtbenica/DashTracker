@@ -23,8 +23,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
@@ -73,7 +71,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
                         R.id.frag_entry_date,
                         this.text.toString(),
                         getString(R.string.lbl_date)
-                    ).show(parentFragmentManager, "entry_date_picker")
+                    ).show(childFragmentManager, "entry_date_picker")
                 }
             }
 
@@ -99,9 +97,8 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             fragStartDashBtnStart.apply {
                 setOnClickListener {
                     saveConfirmed = true
-                    setFragmentResult(
-                        requestKey = REQ_KEY_START_DASH_DIALOG,
-                        result = bundleOf(
+                    parentFragmentManager.setFragmentResult(
+                        REQ_KEY_START_DASH_DIALOG, bundleOf(
                             RESULT_START_DASH_CONFIRM_START to true,
                             ARG_ENTRY_ID to (item?.entryId ?: AUTO_ID)
                         )
@@ -111,7 +108,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             }
         }
 
-    override fun updateUI(firstRun: Boolean) {
+    override fun updateUI() {
         val tempEntry = item
         if (tempEntry != null) {
             binding.fragStartDashDate.text = tempEntry.date.format(dtfDate)
@@ -163,7 +160,10 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     override fun setDialogListeners() {
         super.setDialogListeners()
 
-        setFragmentResultListener(REQUEST_KEY_DATE) { _, bundle ->
+        childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_DATE,
+            this
+        ) { _, bundle ->
             val year = bundle.getInt(ARG_DATE_PICKER_NEW_YEAR)
             val month = bundle.getInt(ARG_DATE_PICKER_NEW_MONTH)
             val dayOfMonth = bundle.getInt(ARG_DATE_PICKER_NEW_DAY)

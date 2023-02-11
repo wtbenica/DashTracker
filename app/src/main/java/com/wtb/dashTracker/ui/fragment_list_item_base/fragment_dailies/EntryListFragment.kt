@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -29,7 +30,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
@@ -47,6 +47,7 @@ import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
@@ -99,12 +100,13 @@ class EntryListFragment : ListItemFragment() {
     }
 
     protected fun setDialogListeners() {
-        setFragmentResultListener(
-            ConfirmType.DELETE.key
+        childFragmentManager.setFragmentResultListener(
+            ConfirmType.DELETE.key,
+            this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
-
+            Log.d(TAG, "Delete | $result | $id")
             if (result) {
                 (activity as MainActivity).clearActiveEntry(id)
                 viewModel.deleteEntryById(id)
@@ -112,8 +114,9 @@ class EntryListFragment : ListItemFragment() {
         }
 
         // Entry Dialog Result
-        setFragmentResultListener(
-            requestKey = REQUEST_KEY_DATA_MODEL_DIALOG
+        childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_DATA_MODEL_DIALOG,
+            this
         ) { _, bundle ->
             val modifyState = bundle.getString(ARG_MODIFICATION_STATE)
                 ?.let { ModificationState.valueOf(it) }
@@ -180,14 +183,15 @@ class EntryListFragment : ListItemFragment() {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
                         EntryDialog.newInstance(this@EntryHolder.item.entry.entryId)
-                            .show(parentFragmentManager, "edit_entry_details")
+                            .show(childFragmentManager, "edit_entry_details")
                     }
                 }
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
+                        Log.d(TAG, "Delete pressed")
                         ConfirmDeleteDialog.newInstance(this@EntryHolder.item.entry.entryId)
-                            .show(parentFragmentManager, "delete_entry")
+                            .show(childFragmentManager, "delete_entry")
                     }
                 }
             }
@@ -265,7 +269,7 @@ class EntryListFragment : ListItemFragment() {
                     }
                 }
 
-                binding.listItemTitle.text = this.item.entry.date.formatted.uppercase()
+                binding.listItemTitle.text = this.item.entry.date.formatted
                 binding.listItemTitle2.text = getCurrencyString(this.item.entry.totalEarned)
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)

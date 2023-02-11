@@ -21,6 +21,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.getStringOrElse
@@ -39,11 +40,28 @@ class EndDashDialog : BaseEntryDialog() {
     override val titleText: String
         get() = getString(R.string.dialog_title_end_dash)
 
-    override fun updateUI(firstRun: Boolean) {
+    private var firstRun = true
+
+    override fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = item
             if (tempEntry != null) {
                 binding.apply {
+                    fun onFirstRun(entry: DashEntry) {
+                        firstRun = false
+
+                        fragEntryCheckEndsNextDay.isChecked =
+                            LocalDate.now().minusDays(1L).equals(entry.date)
+
+                        entry.endTime.let { et: LocalTime? ->
+                            val time = et ?: LocalTime.now()
+                            fragEntryEndTime.text = time.format(dtfTime)
+                            fragEntryEndTime.tag = time
+                        }
+
+                        saveValues(false)
+                    }
+
                     fragEntryDate.text = tempEntry.date.format(dtfDate)
                     fragEntryDate.tag = tempEntry.date
 
@@ -85,26 +103,17 @@ class EndDashDialog : BaseEntryDialog() {
                         fragEntryNumDeliveries.setText(nd?.toString() ?: "")
                     }
 
+                    fragEntryCheckEndsNextDay.isChecked =
+                        tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
+
+                    tempEntry.endTime.let { et: LocalTime? ->
+                        val time = et ?: LocalTime.now()
+                        fragEntryEndTime.text = time.format(dtfTime)
+                        fragEntryEndTime.tag = time
+                    }
+
                     if (firstRun) {
-                        fragEntryCheckEndsNextDay.isChecked =
-                            LocalDate.now().minusDays(1L).equals(tempEntry.date)
-
-                        tempEntry.endTime.let { et: LocalTime? ->
-                            val time = et ?: LocalTime.now()
-                            fragEntryEndTime.text = time.format(dtfTime)
-                            fragEntryEndTime.tag = time
-                        }
-
-                        saveValues(false)
-                    } else {
-                        fragEntryCheckEndsNextDay.isChecked =
-                            tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
-
-                        tempEntry.endTime.let { et: LocalTime? ->
-                            val time = et ?: LocalTime.now()
-                            fragEntryEndTime.text = time.format(dtfTime)
-                            fragEntryEndTime.tag = time
-                        }
+                        onFirstRun(tempEntry)
                     }
                 }
             } else {

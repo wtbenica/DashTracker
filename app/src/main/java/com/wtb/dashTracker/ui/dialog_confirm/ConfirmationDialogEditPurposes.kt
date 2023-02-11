@@ -64,17 +64,6 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
             dismiss()
         }
 
-//        setFragmentResultListener(REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE) { _, bundle ->
-//            val updatePurpose = bundle.getBoolean(ARG_UPDATE_PURPOSE)
-//            if (updatePurpose) {
-//                bundle.getLong(ARG_PURPOSE_ID, -1L).let { id ->
-//                    bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
-//                        viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName))
-//                    }
-//                }
-//            }
-//        }
-
         return binding.root
     }
 

@@ -30,7 +30,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import com.wtb.dashTracker.databinding.DialogFragConfirmTimePickerBinding
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
@@ -95,7 +94,7 @@ class ConfirmationDialogTimePicker : FullWidthDialogFragment() {
 
         binding.yesButton1.setOnClickListener {
             val picker = binding.dialogTimePickerTimePicker
-            setFragmentResult(
+            parentFragmentManager.setFragmentResult(
                 REQUEST_KEY_TIME,
                 bundleOf(
                     ARG_TIME_NEW_HOUR to picker.hour,

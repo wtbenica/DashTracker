@@ -134,10 +134,10 @@ class YearlyListFragment : ListItemFragment() {
             private val detailsBinding: ListItemYearlyDetailsTableBinding =
                 ListItemYearlyDetailsTableBinding.bind(itemView).apply {
                     listItemYearlyExpenseDetailsButton.setOnClickListener { v ->
-                        ConfirmationDialogExpenseBreakdown(item).show(parentFragmentManager, null)
+                        ConfirmationDialogExpenseBreakdown(item).show(childFragmentManager, null)
                     }
                     mileageDetailsButton.setOnClickListener { v ->
-                        ConfirmationDialogMileageBreakdown(item).show(parentFragmentManager, null)
+                        ConfirmationDialogMileageBreakdown(item).show(childFragmentManager, null)
                     }
                 }
 

@@ -30,7 +30,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.Expense
@@ -99,7 +98,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                         R.id.frag_expense_date,
                         this.text.toString(),
                         getString(R.string.lbl_date)
-                    ).show(parentFragmentManager, "expense_date_picker")
+                    ).show(childFragmentManager, "expense_date_picker")
                 }
             }
 
@@ -153,7 +152,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             }
         }
 
-    override fun updateUI(firstRun: Boolean) {
+    override fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
             val tempExpense = item
             if (tempExpense != null) {
@@ -207,7 +206,10 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     override fun setDialogListeners() {
         super.setDialogListeners()
 
-        setFragmentResultListener(REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE) { _, bundle ->
+        childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE,
+            this
+        ) { _, bundle ->
             val updatePurpose = bundle.getBoolean(RESULT_UPDATE_PURPOSE)
             if (updatePurpose) {
                 bundle.getLong(RESULT_PURPOSE_ID, -1L).let { id ->
@@ -222,7 +224,10 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             binding.fragExpensePurpose.hideDropdown()
         }
 
-        setFragmentResultListener(REQUEST_KEY_DATE) { _, bundle ->
+        childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_DATE,
+            this
+        ) { _, bundle ->
             val year = bundle.getInt(ARG_DATE_PICKER_NEW_YEAR)
             val month = bundle.getInt(ARG_DATE_PICKER_NEW_MONTH)
             val dayOfMonth = bundle.getInt(ARG_DATE_PICKER_NEW_DAY)
@@ -318,12 +323,12 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                         ConfirmationDialogAddOrModifyPurpose.newInstance(
                             purposeId = purposeId,
                             prevPurpose = prevPurpose,
-                        ).show(parentFragmentManager, null)
+                        ).show(childFragmentManager, null)
                     }
                 }
 
                 binding.editPurposeBtn.setOnClickListener {
-                    ConfirmationDialogEditPurposes().show(parentFragmentManager, null)
+                    ConfirmationDialogEditPurposes().show(childFragmentManager, null)
                 }
             } else {
                 tempConvertView = convertView

@@ -37,7 +37,7 @@
                 style="@style/ListItemHeaderTextView.Title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="NOV 21, 2021" />
+                tools:text="Sun Nov 21, 2021" />
 
             <TextView
                 android:id="@+id/list_item_subtitle"

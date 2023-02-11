@@ -33,7 +33,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -171,7 +170,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         }
     }
 
-    override fun updateUI(firstRun: Boolean) {
+    override fun updateUI() {
         val tempWeekly = fullWeekly
         if (tempWeekly != null) {
             binding.fragAdjustDate.apply {
@@ -205,8 +204,9 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
     // Weeklies don't have delete
     override fun setDialogListeners() {
-        setFragmentResultListener(
+        childFragmentManager.setFragmentResultListener(
             ConfirmType.RESET.key,
+            this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             if (result) {
@@ -308,6 +308,11 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
     )
 }
 
+/**
+ * @return  curr year + curr year -> "Sep 27 - Oct 1",
+ * last year + curr year -> "Dec 27, 2022 - Jan 3, 2023",
+ * prev year + same year -> "Sep 27 - Oct 1, 2022"
+ */
 fun Fragment.getDateRange(start: LocalDate, end: LocalDate): String {
     fun asRange(start: LocalDate, end: LocalDate): Pair<String, String> {
         val mStart = if (start.year == end.year) {
@@ -316,9 +321,9 @@ fun Fragment.getDateRange(start: LocalDate, end: LocalDate): String {
             start.format(dtfShortDate)
         }
         val mEnd = if (end.year == LocalDate.now().year && start.year == end.year) {
-            end.format(dtfShortDateThisYear)
+            end.format(dtfDateThisYear)
         } else {
-            end.format(dtfShortDate)
+            end.format(dtfDate)
         }
         return Pair(mStart, mEnd)
     }

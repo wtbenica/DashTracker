@@ -35,8 +35,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
@@ -162,13 +160,14 @@ class SettingsActivity : AuthenticatedActivity() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View {
-            setFragmentResultListener(
+            childFragmentManager.setFragmentResultListener(
                 ConfirmType.RESTART.key,
+                this
             ) { _, bundle ->
                 val result = bundle.getBoolean(ARG_IS_CONFIRMED)
 
                 if (result) {
-                    setFragmentResult(
+                    parentFragmentManager.setFragmentResult(
                         REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
                         Bundle().apply { putBoolean(ACTIVITY_RESULT_NEEDS_RESTART, true) })
                 }

@@ -174,7 +174,7 @@ class WeeklyListFragment : ListItemFragment() {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
                         WeeklyDialog.newInstance(this@WeeklyHolder.item.weekly.date)
-                            .show(parentFragmentManager, "edit_weekly_details")
+                            .show(childFragmentManager, "edit_weekly_details")
                     }
                 }
             }
@@ -250,7 +250,7 @@ class WeeklyListFragment : ListItemFragment() {
                     getDateRange(
                         start = this.item.weekly.date.minusDays(6),
                         end = this.item.weekly.date
-                    ).uppercase()
+                    )
 
                 binding.listItemAlert.setVisibleIfTrue(showBPAs && this.item.weekly.isIncomplete)
 

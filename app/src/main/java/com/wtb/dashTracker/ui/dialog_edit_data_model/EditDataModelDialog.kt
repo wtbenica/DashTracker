@@ -20,7 +20,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,8 +28,6 @@ import android.widget.Toast
 import androidx.activity.ComponentDialog
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -38,7 +35,6 @@ import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
@@ -68,10 +64,10 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected var saveOnExit = true
 
     protected abstract fun getViewBinding(inflater: LayoutInflater): B
-    protected abstract fun updateUI(firstRun: Boolean = false)
+    protected abstract fun updateUI()
     open protected fun saveValues(showToast: Boolean = true) {
         if (showToast) {
-            Toast.makeText(context, "${itemType} saved", Toast.LENGTH_LONG)
+            Toast.makeText(context, "${itemType} saved", Toast.LENGTH_SHORT)
                 .show()
         }
     }
@@ -113,7 +109,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.item.collectLatest {
-                    Log.d(TAG, "New item ${it?.id}")
                     item = it
                     updateUI()
                 }
@@ -128,7 +123,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                     if (isEmpty() && !saveConfirmed) {
                         ConfirmSaveDialog.newInstance(
                             text = R.string.confirm_save_entry_incomplete
-                        ).show(parentFragmentManager, null)
+                        ).show(childFragmentManager, null)
                     } else {
                         isEnabled = false
                         it.onBackPressedDispatcher.onBackPressed()
@@ -147,8 +142,9 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     }
 
     open fun setDialogListeners() {
-        setFragmentResultListener(
+        childFragmentManager.setFragmentResultListener(
             ConfirmType.DELETE.key,
+            this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             if (result) {
@@ -156,20 +152,20 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
             }
         }
 
-        setFragmentResultListener(
+        childFragmentManager.setFragmentResultListener(
             ConfirmType.RESET.key,
-        ) { _, bundle ->
+        this) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             if (result) {
                 updateUI()
             }
         }
 
-        setFragmentResultListener(
+        childFragmentManager.setFragmentResultListener(
             ConfirmType.SAVE.key,
+        this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)
-            Toast.makeText(context, "Save? $result", Toast.LENGTH_LONG).show()
             if (result) {
                 saveConfirmed = true
                 dismiss()
@@ -184,9 +180,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected fun ImageButton.setOnSavePressed() {
         setOnClickListener {
             saveConfirmed = true
-            setFragmentResult(
-                requestKey = REQUEST_KEY_DATA_MODEL_DIALOG,
-                result = bundleOf(
+            parentFragmentManager.setFragmentResult(
+                REQUEST_KEY_DATA_MODEL_DIALOG, bundleOf(
                     ARG_MODIFICATION_STATE to ModificationState.MODIFIED.name,
                     ARG_MODIFIED_ID to item?.id
                 )
@@ -199,7 +194,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         setOnClickListener {
             if (isNotEmpty()) {
                 ConfirmDeleteDialog.newInstance(item?.id)
-                    .show(parentFragmentManager, "delete_entry")
+                    .show(childFragmentManager, "delete_entry")
             } else {
                 onDeleteItem()
             }
@@ -212,9 +207,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     private fun onDeleteItem() {
         saveOnExit = false
 
-        setFragmentResult(
-            requestKey = REQUEST_KEY_DATA_MODEL_DIALOG,
-            result = bundleOf(
+        parentFragmentManager.setFragmentResult(
+            REQUEST_KEY_DATA_MODEL_DIALOG, bundleOf(
                 ARG_MODIFICATION_STATE to ModificationState.DELETED.name,
                 ARG_MODIFIED_ID to item?.id
             )
@@ -229,7 +223,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     protected fun ImageButton.setOnResetPressed() {
         setOnClickListener {
-            ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
+            ConfirmResetDialog.newInstance().show(childFragmentManager, null)
         }
     }
 

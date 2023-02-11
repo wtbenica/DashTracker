@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -86,8 +85,9 @@ class ExpenseListFragment : ListItemFragment() {
     }
 
     private fun setDialogListeners() {
-        setFragmentResultListener(
-            ConfirmType.DELETE.key
+        childFragmentManager.setFragmentResultListener(
+            ConfirmType.DELETE.key,
+            this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
@@ -158,7 +158,7 @@ class ExpenseListFragment : ListItemFragment() {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
                         ExpenseDialog.newInstance(item.id).show(
-                            parentFragmentManager,
+                            childFragmentManager,
                             "edit_details"
                         )
                     }
@@ -167,7 +167,7 @@ class ExpenseListFragment : ListItemFragment() {
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
                         ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.item.id)
-                            .show(parentFragmentManager, null)
+                            .show(childFragmentManager, null)
                     }
                 }
             }
@@ -212,7 +212,7 @@ class ExpenseListFragment : ListItemFragment() {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
                         ExpenseDialog.newInstance(item.id).show(
-                            parentFragmentManager,
+                            childFragmentManager,
                             "edit_details"
                         )
                     }
@@ -221,7 +221,7 @@ class ExpenseListFragment : ListItemFragment() {
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
                         ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.item.id)
-                            .show(parentFragmentManager, null)
+                            .show(childFragmentManager, null)
                     }
                 }
             }

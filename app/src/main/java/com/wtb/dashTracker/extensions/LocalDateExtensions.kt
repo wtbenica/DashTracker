@@ -23,11 +23,11 @@ import java.time.format.DateTimeFormatter
 /**
  * format: Mon Jan 01, 2022
  */
-val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd, yyyy")
+val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM d, yyyy")
 /**
  * format: Mon Jan 01
  */
-val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM dd")
+val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM d")
 /**
  * format: Jan 1, 2022
  */
@@ -55,23 +55,13 @@ val dtfDateTime: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:
 val dtfDateTimeOld: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm a")
 
 /**
- * format: if current year: Mon, Jan 01 else: Mon, Jan 01, 2021<
+ * format: if current year: Mon, Jan 1 else: Mon, Jan 1, 2021
  */
 val LocalDate.formatted: String
     get() = if (year == LocalDate.now().year) {
         format(dtfDateThisYear)
     } else {
         format(dtfDate)
-    }
-
-/**
- * format: if current year: Jan 1 else: Jan 1, 2021<
- */
-val LocalDate.shortFormat: String
-    get() = if (year == LocalDate.now().year) {
-        format(dtfShortDateThisYear)
-    } else {
-        format(dtfShortDate)
     }
 
 /**

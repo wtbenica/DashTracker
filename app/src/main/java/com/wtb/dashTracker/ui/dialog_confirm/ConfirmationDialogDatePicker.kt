@@ -28,7 +28,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import com.wtb.dashTracker.databinding.DialogFragConfirmDatePickerBinding
 import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
@@ -87,7 +86,7 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
 
         binding.yesButton1.setOnClickListener {
             val picker = binding.dialogDatePickerDatePicker
-            setFragmentResult(
+            parentFragmentManager.setFragmentResult(
                 REQUEST_KEY_DATE,
                 bundleOf(
                     ARG_DATE_PICKER_NEW_YEAR to picker.year,

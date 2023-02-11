@@ -39,7 +39,7 @@ class EntryDialog : BaseEntryDialog() {
     override val titleText: String
         get() = getString(R.string.dialog_title_dash_entry)
 
-    override fun updateUI(firstRun: Boolean) {
+    override fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
             val tempEntry = item
 

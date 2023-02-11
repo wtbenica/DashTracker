@@ -289,11 +289,6 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                 setOnClickListener {
                     dismiss()
                     negAction?.invoke()
-//
-//                    parentFragmentManager.setFragmentResult(
-//                        requestKey,
-//                        bundleOf(ARG_IS_CONFIRMED to false)
-//                    )
                 }
             }
         } else {
