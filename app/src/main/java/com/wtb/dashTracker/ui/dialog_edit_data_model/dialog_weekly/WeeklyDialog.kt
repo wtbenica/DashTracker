@@ -44,10 +44,10 @@ import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
@@ -61,7 +61,8 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
     override var item: Weekly? = null
     override val viewModel: WeeklyViewModel by viewModels()
     override lateinit var binding: DialogFragWeeklyBinding
-
+    override val itemType: String
+        get() = "Weekly adjustment"
     private var fullWeekly: FullWeekly? = null
     private var allWeeklyEndDates: List<LocalDate> = listOf()
 
@@ -187,7 +188,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         }
     }
 
-    override fun saveValues() {
+    override fun saveValues(showToast: Boolean) {
         val selectedDate =
             binding.fragAdjustDate.selectedItem as LocalDate
         val tempWeekly = fullWeekly?.weekly ?: Weekly(selectedDate)
@@ -196,6 +197,8 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             isNew = false
         }
         viewModel.upsert(tempWeekly)
+
+        super.saveValues(showToast)
     }
 
     override fun isEmpty(): Boolean = false

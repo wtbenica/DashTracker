@@ -69,6 +69,8 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
     override val viewModel: ExpenseViewModel by viewModels()
     override lateinit var binding: DialogFragExpenseBinding
+    override val itemType: String
+        get() = "Expense"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -179,8 +181,10 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
         }
     }
 
-    override fun saveValues() {
+    override fun saveValues(showToast: Boolean) {
         item?.apply {
+            super.saveValues(showToast)
+
             date = binding.fragExpenseDate.text.toDateOrNull() ?: LocalDate.now()
             amount = binding.fragExpenseAmount.text.toFloatOrNull()
             purpose = (binding.fragExpensePurpose.selectedItem as ExpensePurpose).purposeId

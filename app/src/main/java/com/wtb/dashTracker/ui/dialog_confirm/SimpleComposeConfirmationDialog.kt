@@ -41,6 +41,8 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
+import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.*
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.DefaultSpacer
@@ -104,24 +106,35 @@ open class SimpleComposeConfirmationDialog :
         arguments?.apply {
             content = with(
                 if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
-                    getParcelable(ARG_COMPOSE_CONTENT, ComposeWrapper::class.java)
+                    @Suppress("UNCHECKED_CAST")
+                    getParcelable(
+                        ARG_COMPOSE_CONTENT,
+                        ComposeWrapper::class.java
+                    ) as ComposeWrapper<SimpleComposeConfirmationDialog>
                 } else {
                     @Suppress("DEPRECATION")
-                    getParcelable(ARG_COMPOSE_CONTENT) as ComposeWrapper?
+                    getParcelable(ARG_COMPOSE_CONTENT) as ComposeWrapper<SimpleComposeConfirmationDialog>?
                 }?.action
-            ) { { this } }
+            ) {
+                { this?.invoke(this@SimpleComposeConfirmationDialog) }
+            }
         }
     }
 
     companion object {
         private const val ARG_COMPOSE_CONTENT = "dialog_compose_content"
 
+        /**
+         * New instance
+         *
+         * @param content parameter for lambda must be [SimpleComposeConfirmationDialog]
+         */
         fun newInstance(
-            content: @Composable () -> Unit,
+            content: (SimpleConfirmationDialog<View, Any, ViewBinding, ViewBinding>) -> @Composable () -> Unit,
             requestKey: String,
             confirmId: Long? = null,
             title: String? = null,
-            @StringRes posButton: Int = R.string.yes,
+            @StringRes posButton: Int? = R.string.yes,
             posAction: LambdaWrapper? = null,
             posIsDefault: Boolean = true,
             @StringRes negButton: Int? = null,
@@ -135,7 +148,7 @@ open class SimpleComposeConfirmationDialog :
                 putString(ARG_REQ_KEY, requestKey)
                 confirmId?.let { putLong(ARG_CONFIRM_ID, it) }
                 putString(ARG_MESSAGE, title)
-                putInt(ARG_POS_TEXT, posButton)
+                posButton?.let { putInt(ARG_POS_TEXT, it) }
                 putParcelable(ARG_POS_ACTION, posAction)
                 putBoolean(ARG_POS_IS_DEFAULT, posIsDefault)
                 negButton?.let { putInt(ARG_NEG_TEXT, it) }
@@ -153,9 +166,14 @@ class ConfirmationDialogUseTrackedMiles {
         internal const val REQ_KEY_DIALOG_USE_TRACKED_MILES =
             "${PACKAGE_NAME}.req_key_use_tracked_miles"
 
-        @OptIn(ExperimentalTextApi::class)
+        @OptIn(ExperimentalTextApi::class, ExperimentalMaterial3Api::class)
         @Composable
-        fun Content(startMileage: Int?, endMileage: Int?, distance: Int) {
+        fun Content(
+            startMileage: Int?,
+            endMileage: Int?,
+            distance: Int,
+            dialog: SimpleConfirmationDialog<View, Any, ViewBinding, ViewBinding>? = null
+        ) {
             DashTrackerTheme {
                 val baba = cardColors(
                     containerColor = if (isSystemInDarkTheme()) {
@@ -168,9 +186,40 @@ class ConfirmationDialogUseTrackedMiles {
                     disabledContentColor = MaterialTheme.colorScheme.onPrimary
                 )
 
-                Column {
+                Column(
+                    modifier = Modifier
+                        .padding(dimensionResource(id = R.dimen.margin_default))
+                ) {
+                    ValueText(
+                        text = "Which do you prefer to keep?",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        padding = 0.dp
+                    )
+
+                    DefaultSpacer()
+
                     Row {
                         Card(
+                            onClick = {
+                                if (dialog != null) {
+                                    dialog.dismiss()
+                                    if (dialog.confirmId == null) {
+                                        dialog.parentFragmentManager.setFragmentResult(
+                                            dialog.requestKey,
+                                            bundleOf(SimpleConfirmationDialog.ARG_IS_CONFIRMED to true)
+                                        )
+                                    } else {
+                                        dialog.parentFragmentManager.setFragmentResult(
+                                            dialog.requestKey,
+                                            bundleOf(
+                                                SimpleConfirmationDialog.ARG_IS_CONFIRMED to true,
+                                                SimpleConfirmationDialog.ARG_EXTRA_ITEM_ID to dialog.confirmId
+                                            )
+                                        )
+                                    }
+                                }
+                            },
                             modifier = Modifier
                                 .weight(1f),
                             colors = baba,
@@ -182,12 +231,6 @@ class ConfirmationDialogUseTrackedMiles {
                                     .padding(vertical = dimensionResource(id = R.dimen.margin_default)),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                HeaderText(
-                                    stringResource(id = R.string.lbl_start_mileage_adjusted),
-                                    textAlign = TextAlign.Center,
-                                    padding = 0.dp
-                                )
-
                                 ValueText(
                                     text = startMileage?.let {
                                         stringResource(
@@ -198,12 +241,37 @@ class ConfirmationDialogUseTrackedMiles {
                                     textAlign = TextAlign.Center,
                                     padding = dimensionResource(id = R.dimen.margin_narrow)
                                 )
+
+                                HeaderText(
+                                    stringResource(id = R.string.lbl_start_mileage_adjusted),
+                                    textAlign = TextAlign.Center,
+                                    padding = 0.dp
+                                )
                             }
                         }
 
                         DefaultSpacer()
 
                         Card(
+                            onClick = {
+                                if (dialog != null) {
+                                    dialog.dismiss()
+                                    if (dialog.confirmId == null) {
+                                        dialog.parentFragmentManager.setFragmentResult(
+                                            dialog.requestKey,
+                                            bundleOf(SimpleConfirmationDialog.ARG_IS_CONFIRMED_2 to true)
+                                        )
+                                    } else {
+                                        dialog.parentFragmentManager.setFragmentResult(
+                                            dialog.requestKey,
+                                            bundleOf(
+                                                SimpleConfirmationDialog.ARG_IS_CONFIRMED_2 to true,
+                                                SimpleConfirmationDialog.ARG_EXTRA_ITEM_ID to dialog.confirmId
+                                            )
+                                        )
+                                    }
+                                }
+                            },
                             modifier = Modifier
                                 .weight(1f),
                             colors = baba,
@@ -215,12 +283,6 @@ class ConfirmationDialogUseTrackedMiles {
                                     .padding(vertical = dimensionResource(id = R.dimen.margin_default)),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                HeaderText(
-                                    stringResource(id = R.string.lbl_end_mileage_adjusted),
-                                    textAlign = TextAlign.Center,
-                                    padding = 0.dp
-                                )
-
                                 ValueText(
                                     text = endMileage?.let {
                                         stringResource(
@@ -231,18 +293,15 @@ class ConfirmationDialogUseTrackedMiles {
                                     textAlign = TextAlign.Center,
                                     padding = dimensionResource(id = R.dimen.margin_narrow)
                                 )
+
+                                HeaderText(
+                                    stringResource(id = R.string.lbl_end_mileage_adjusted),
+                                    textAlign = TextAlign.Center,
+                                    padding = 0.dp
+                                )
                             }
                         }
                     }
-
-                    DefaultSpacer()
-
-                    ValueText(
-                        text = "Which values would you prefer to use?",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        padding = 0.dp
-                    )
                 }
             }
         }
@@ -253,17 +312,21 @@ class ConfirmationDialogUseTrackedMiles {
             distance: Int
         ): SimpleComposeConfirmationDialog =
             SimpleComposeConfirmationDialog.newInstance(
-                content = { Content(startMileage, endMileage, distance) },
+                content = { dialog ->
+                    {
+                        Content(
+                            startMileage = startMileage,
+                            endMileage = endMileage,
+                            distance = distance,
+                            dialog = dialog
+                        )
+                    }
+                },
                 requestKey = REQ_KEY_DIALOG_USE_TRACKED_MILES,
                 title = "Adjust mileage",
-                posButton = R.string.lbl_start_mileage_adjusted,
-                posAction = null,
+                posButton = null,
                 posIsDefault = true,
                 negButton = R.string.cancel,
-                negAction = null,
-                posButton2 = R.string.lbl_end_mileage_adjusted,
-                posAction2 = null,
-                pos2IsDefault = true
             )
     }
 }

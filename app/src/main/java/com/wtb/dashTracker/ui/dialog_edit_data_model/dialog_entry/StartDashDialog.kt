@@ -59,6 +59,8 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     override var item: DashEntry? = null
     override val viewModel: EntryViewModel by viewModels()
     override lateinit var binding: DialogFragStartDashBinding
+    override val itemType: String
+        get() = "Entry"
 
     private var startTimeChanged = false
 
@@ -128,7 +130,9 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
         }
     }
 
-    override fun saveValues() {
+    override fun saveValues(showToast: Boolean) {
+        super.saveValues(showToast)
+
         val currDate = binding.fragStartDashDate.tag as LocalDate?
         val e = DashEntry(
             entryId = item?.entryId ?: AUTO_ID,

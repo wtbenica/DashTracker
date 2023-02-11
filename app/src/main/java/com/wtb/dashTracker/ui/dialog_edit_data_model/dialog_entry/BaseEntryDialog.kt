@@ -60,6 +60,8 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
     override val viewModel: EntryViewModel by viewModels()
     override lateinit var binding: DialogFragEntryBinding
+    override val itemType: String
+        get() = "Entry"
 
     protected var startTimeChanged: Boolean = false
 
@@ -138,7 +140,11 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                         updateView = fragEntryTotalMileage,
                         otherValue = endMileage,
                         stringFormat = R.string.odometer_fmt
-                    ) { other, self -> max(other - self, 0f) }
+                    ) { other, self ->
+                        setUpdateMileageButtonVisibility()
+
+                        max(other - self, 0f)
+                    }
                 }
             }
 
@@ -197,16 +203,14 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
         }
 
     protected fun setUpdateMileageButtonVisibility() {
-        binding.fragEntryCheckboxUseTrackedMileage.setVisibleIfTrue(
-            !totalMileageMatchesTrackedMileage
-        )
+        binding.fragEntryCheckboxUseTrackedMileage.revealIfTrue(!totalMileageMatchesTrackedMileage)
 
-        binding.fragEntrySpace.setVisibleIfTrue(
-            totalMileageMatchesTrackedMileage
-        )
+        binding.fragEntrySpace.setVisibleIfTrue(totalMileageMatchesTrackedMileage)
     }
 
-    override fun saveValues() {
+    override fun saveValues(showToast: Boolean) {
+        super.saveValues(showToast)
+
         val currDate = binding.fragEntryDate.tag as LocalDate?
 
         val totalMileage =

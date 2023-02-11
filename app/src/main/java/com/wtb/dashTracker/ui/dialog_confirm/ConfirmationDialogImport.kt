@@ -22,11 +22,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmImportBinding
-import com.wtb.dashTracker.extensions.setVisibleIfTrue
+import com.wtb.dashTracker.extensions.revealIfTrue
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -43,13 +44,13 @@ open class ConfirmationDialogImport(val actionImport: () -> Unit) : FullWidthDia
         val binding = DialogFragConfirmImportBinding.inflate(inflater)
 
         binding.importNotesBtn.setOnClickListener {
-            binding.modifiedInfoText.setVisibleIfTrue(binding.modifiedInfoText.visibility == GONE)
-            val rs = if (binding.modifiedInfoText.visibility == GONE)
+            val rs = if (binding.modifiedInfoText.visibility == VISIBLE)
                 R.drawable.ic_arrow_expand
             else
                 R.drawable.ic_arrow_collapse
-
             binding.importNotesBtn.icon = AppCompatResources.getDrawable(requireContext(), rs)
+
+            binding.modifiedInfoText.revealIfTrue(binding.modifiedInfoText.visibility == GONE)
         }
 
         binding.noButton.apply {

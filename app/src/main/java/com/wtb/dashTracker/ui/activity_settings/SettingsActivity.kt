@@ -63,6 +63,7 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.UI_MODE_PREF
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
@@ -407,9 +408,6 @@ class SettingsActivity : AuthenticatedActivity() {
 
         internal const val REQUEST_KEY_SETTINGS_ACTIVITY_RESULT =
             "${BuildConfig.APPLICATION_ID}.result_settings_fragment"
-
-        internal val Context.PREF_SHOW_BASE_PAY_ADJUSTS
-            get() = getString(R.string.prefs_show_base_pay_adjusts)
 
         internal const val EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED =
             "${BuildConfig.APPLICATION_ID}.extra_settings_activity_is_authenticated"

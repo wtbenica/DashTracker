@@ -95,7 +95,7 @@ class EndDashDialog : BaseEntryDialog() {
                             fragEntryEndTime.tag = time
                         }
 
-                        saveValues()
+                        saveValues(false)
                     } else {
                         fragEntryCheckEndsNextDay.isChecked =
                             tempEntry.endDate.minusDays(1L).equals(tempEntry.date)

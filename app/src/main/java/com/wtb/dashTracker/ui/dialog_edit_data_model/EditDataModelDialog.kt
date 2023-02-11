@@ -55,6 +55,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected abstract var item: M?
     protected abstract var binding: B
     protected abstract val viewModel: ListItemViewModel<M>
+    protected abstract val itemType: String
 
     /**
      * if save button is pressed or is confirmed by save dialog, gets assigned true
@@ -68,7 +69,12 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     protected abstract fun getViewBinding(inflater: LayoutInflater): B
     protected abstract fun updateUI(firstRun: Boolean = false)
-    protected abstract fun saveValues()
+    open protected fun saveValues(showToast: Boolean = true) {
+        if (showToast) {
+            Toast.makeText(context, "${itemType} saved", Toast.LENGTH_LONG)
+                .show()
+        }
+    }
 
     // TODO: should the name here be changed?
     protected abstract fun clearFields()

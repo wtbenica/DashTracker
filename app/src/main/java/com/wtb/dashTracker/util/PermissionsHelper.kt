@@ -256,6 +256,9 @@ class PermissionsHelper(val context: Context) {
         internal val Context.UI_MODE_PREF
             get() = getString(R.string.prefs_ui_mode)
 
+        internal val Context.PREF_SHOW_BASE_PAY_ADJUSTS
+            get() = getString(R.string.prefs_show_base_pay_adjusts)
+
         /**
          * If enabling/disabling authentication fails, this prevents re-authentication when the
          * setting is reverted

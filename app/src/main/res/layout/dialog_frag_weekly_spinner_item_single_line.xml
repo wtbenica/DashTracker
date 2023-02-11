@@ -18,8 +18,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_adjust_week_spinner_item_dates"
     style="@style/ListItemHeaderTextView.Title"
+    android:autoSizeTextType="uniform"
     android:layout_width="match_parent"
     android:textAlignment="viewEnd"
     android:layout_marginEnd="0dp"
     android:layout_height="wrap_content"
-    tools:text="Nov 29 - Dec 05" />
+    tools:text="Dec 25, 2022 - Jan 1, 2023" />

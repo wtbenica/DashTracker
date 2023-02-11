@@ -22,6 +22,8 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.annotation.StringRes
@@ -41,7 +43,9 @@ import kotlinx.parcelize.Parcelize
 data class LambdaWrapper(val action: () -> Unit) : Parcelable
 
 @Parcelize
-data class ComposeWrapper(val action: @Composable () -> Unit) : Parcelable
+data class ComposeWrapper<T : SimpleConfirmationDialog<*, *, *, *>>(
+    val action: (T) -> @Composable () -> Unit
+) : Parcelable
 
 enum class ConfirmType(val key: String) {
     DELETE("confirmDelete"),
@@ -54,12 +58,12 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
     FullWidthDialogFragment() {
     private lateinit var binding: ViewBinding
 
-    private lateinit var requestKey: String
-    private var confirmId: Long? = null
+    internal lateinit var requestKey: String
+    internal var confirmId: Long? = null
     private var message: String? = null
 
     @StringRes
-    var posButton: Int = R.string.yes
+    var posButton: Int? = null
     private var posAction: (() -> Unit)? = null
     private var posButtonIsDefault = true
     private var pos2ButtonIsDefault = false
@@ -112,7 +116,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
 
             getString(ARG_MESSAGE)?.let { message = it }
 
-            posButton = getIntNotZero(ARG_POS_TEXT) ?: R.string.yes
+            posButton = getIntNotZero(ARG_POS_TEXT)
             posAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 getParcelable(ARG_POS_ACTION, LambdaWrapper::class.java)
             } else {
@@ -205,7 +209,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
 
     private fun setToolbarTitle(toolbar: Toolbar) {
         toolbar.title =
-            message ?: getString(R.string.confirm_dialog, getString(posButton))
+            message ?: getString(R.string.confirm_dialog, posButton?.let { getString(it) } ?: "")
     }
 
     private fun <ContentArea : View, ContentType : Any> setDialogContent(
@@ -220,28 +224,34 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
 
     private fun updateYesButton1(button: Button) {
         button.apply {
-            setText(posButton)
-            setOnClickListener {
-                dismiss()
-                posAction?.invoke()
+            val pos = posButton
+            if (pos != null) {
+                visibility = VISIBLE
+                setText(pos)
+                setOnClickListener {
+                    dismiss()
+                    posAction?.invoke()
 
-                if (confirmId == null) {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED to true)
-                    )
-                } else {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(
-                            ARG_IS_CONFIRMED to true,
-                            ARG_EXTRA_ITEM_ID to confirmId
+                    if (confirmId == null) {
+                        parentFragmentManager.setFragmentResult(
+                            requestKey,
+                            bundleOf(ARG_IS_CONFIRMED to true)
                         )
-                    )
+                    } else {
+                        parentFragmentManager.setFragmentResult(
+                            requestKey,
+                            bundleOf(
+                                ARG_IS_CONFIRMED to true,
+                                ARG_EXTRA_ITEM_ID to confirmId
+                            )
+                        )
+                    }
                 }
-            }
 
-            setAsDefault(posButtonIsDefault)
+                setAsDefault(posButtonIsDefault)
+            } else {
+                visibility = GONE
+            }
         }
     }
 
@@ -287,8 +297,8 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                 }
             }
         } else {
-            button.visibility = View.GONE
-            divider.visibility = View.GONE
+            button.visibility = GONE
+            divider.visibility = GONE
         }
     }
 
