@@ -21,34 +21,45 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
- * format: Mon Jan 01, 2022
+ * format: Monday, January 1
  */
-val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM d, yyyy")
+val dtfFullDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eeee, MMMM d")
+
 /**
- * format: Mon Jan 01
+ * format: Monday January 1, 2022
  */
-val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eee MMM d")
+val dtfFullDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eeee, MMMM d, yyyy")
+
 /**
- * format: Jan 1, 2022
+ * format: January 1
  */
-val dtfShortDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
+val dtfDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("MMMM d")
+
 /**
- * format: Jan 1
+ * format: January 1, 2022
  */
-val dtfMini: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
+val dtfDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy")
 
 /**
  * format: Jan 1
  */
 val dtfShortDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
+
+/**
+ * format: Jan 1, 2023
+ */
+val dtfShortDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
+
 /**
  * format: 1:12 PM
  */
 val dtfTime: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
+
 /**
  * format: 01/01/2022 01:12:23
  */
 val dtfDateTime: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
+
 /**
  * format: 01/01/2022 01:12 PM
  */
@@ -58,11 +69,13 @@ val dtfDateTimeOld: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy 
  * format: if current year: Mon, Jan 1 else: Mon, Jan 1, 2021
  */
 val LocalDate.formatted: String
-    get() = if (year == LocalDate.now().year) {
-        format(dtfDateThisYear)
-    } else {
-        format(dtfDate)
-    }
+    get() = format(
+        if (endOfWeek == LocalDate.now().endOfWeek) {
+            dtfFullDate
+        } else {
+            dtfDate
+        }
+    )
 
 /**
  * the [LocalDate] of the next [DayOfWeek]. It will return the same date if today is [untilDay]

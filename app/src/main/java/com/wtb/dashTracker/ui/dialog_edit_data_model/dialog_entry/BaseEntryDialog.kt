@@ -35,7 +35,9 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker.Companion.REQUEST_KEY_TIME
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogUseTrackedMiles
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogUseTrackedMiles.Companion.REQ_KEY_DIALOG_USE_TRACKED_MILES
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
@@ -56,6 +58,8 @@ import kotlin.math.roundToInt
 abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
     abstract val titleText: String
+    abstract fun onFirstRun()
+
     override var item: DashEntry? = null
     protected var fullEntry: FullEntry? = null
 
@@ -93,7 +97,11 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.fullDash.collectLatest {
+                    val firstRun = fullEntry == null
                     fullEntry = it
+                    if (firstRun) {
+                        onFirstRun()
+                    }
                 }
             }
         }
@@ -105,7 +113,7 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                 setOnClickListener {
                     ConfirmationDialogDatePicker.newInstance(
                         textViewId = R.id.frag_entry_date,
-                        currentText = this.text.toString(),
+                        currentText = this.tag as LocalDate? ?: LocalDate.now(),
                         headerText = getString(R.string.lbl_date)
                     ).show(childFragmentManager, "entry_date_picker")
                 }
@@ -115,7 +123,7 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                 setOnClickListener {
                     ConfirmationDialogTimePicker.newInstance(
                         textViewId = R.id.frag_entry_start_time,
-                        currentText = this.text.toString(),
+                        currentText = this.tag as LocalTime?,
                         headerText = getString(R.string.lbl_start_time)
                     ).show(childFragmentManager, "time_picker_start")
                     startTimeChanged = true
@@ -126,7 +134,7 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                 setOnClickListener {
                     ConfirmationDialogTimePicker.newInstance(
                         textViewId = R.id.frag_entry_end_time,
-                        currentText = this.text.toString(),
+                        currentText = this.tag as LocalTime?,
                         headerText = getString(R.string.lbl_end_time)
                     ).show(childFragmentManager, "time_picker_end")
                 }
@@ -201,15 +209,68 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
             fragEntryToolbar.title = titleText
         }
 
-    protected fun setUpdateMileageButtonVisibility() {
-        binding.fragEntryCheckboxUseTrackedMileage.revealIfTrue(!totalMileageMatchesTrackedMileage)
+    override fun setDialogListeners() {
+        super.setDialogListeners()
 
-        binding.fragEntrySpace.setVisibleIfTrue(totalMileageMatchesTrackedMileage)
+        childFragmentManager.apply {
+            setFragmentResultListener(REQUEST_KEY_DATE, this@BaseEntryDialog) { _, bundle ->
+                val year = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_YEAR)
+                val month = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_MONTH)
+                val dayOfMonth = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_DAY)
+                when (bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_TEXTVIEW)) {
+                    R.id.frag_entry_date -> {
+                        val date = LocalDate.of(year, month, dayOfMonth)
+                        binding.fragEntryDate.text = date.format(dtfFullDate)
+                        binding.fragEntryDate.tag = date
+                    }
+                }
+            }
+
+            setFragmentResultListener(REQUEST_KEY_TIME, this@BaseEntryDialog) { _, bundle ->
+                val hour = bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_NEW_HOUR)
+                val minute = bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_NEW_MINUTE)
+                val dialogTime = LocalTime.of(hour, minute)
+
+                when (bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_TEXTVIEW)) {
+                    R.id.frag_entry_start_time -> {
+                        binding.fragEntryStartTime.text = dialogTime.format(dtfTime)
+                        binding.fragEntryStartTime.tag = dialogTime
+                    }
+                    R.id.frag_entry_end_time -> {
+                        binding.fragEntryEndTime.text = dialogTime.format(dtfTime)
+                        binding.fragEntryEndTime.tag = dialogTime
+                    }
+                }
+            }
+
+            setFragmentResultListener(
+                REQ_KEY_DIALOG_USE_TRACKED_MILES,
+                this@BaseEntryDialog
+            ) { _, bundle ->
+                val keepStartMileage = bundle.getBoolean(ARG_IS_CONFIRMED)
+                val keepEndMileage = bundle.getBoolean(ARG_IS_CONFIRMED_2)
+
+                when {
+                    keepStartMileage -> {
+                        binding.fragEntryEndMileage.setText(
+                            @Suppress("SetTextI18n")
+                            ((currStartOdo ?: 0) + distance).toString()
+                        )
+                    }
+                    keepEndMileage -> {
+                        val newEnd = maxOf(currEndOdo ?: 0, distance)
+                        val newStart = newEnd - distance
+
+                        @Suppress("SetTextI18n")
+                        binding.fragEntryStartMileage.setText(newStart.toString())
+                        binding.fragEntryEndMileage.setText(newEnd.toString())
+                    }
+                }
+            }
+        }
     }
 
-    override fun saveValues(showToast: Boolean) {
-        super.saveValues(showToast)
-
+    override fun saveValues() {
         val currDate = binding.fragEntryDate.tag as LocalDate?
 
         val totalMileage =
@@ -237,72 +298,9 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
         viewModel.upsert(e)
     }
 
-    override fun setDialogListeners() {
-        super.setDialogListeners()
+    protected fun setUpdateMileageButtonVisibility() {
+        binding.fragEntryCheckboxUseTrackedMileage.revealIfTrue(!totalMileageMatchesTrackedMileage)
 
-        childFragmentManager.setFragmentResultListener(
-            ConfirmationDialogDatePicker.REQUEST_KEY_DATE,
-            this
-        ) { _, bundle ->
-            val year = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_YEAR)
-            val month = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_MONTH)
-            val dayOfMonth = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_DAY)
-
-            when (bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_TEXTVIEW)) {
-                R.id.frag_entry_date -> {
-                    val date = LocalDate.of(year, month, dayOfMonth)
-                    binding.fragEntryDate.text =
-                        date.format(dtfDate).toString()
-                    binding.fragEntryDate.tag = date
-                }
-            }
-        }
-
-        childFragmentManager.setFragmentResultListener(
-            ConfirmationDialogTimePicker.REQUEST_KEY_TIME,
-            this
-        ) { _, bundle ->
-            val hour = bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_NEW_HOUR)
-            val minute = bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_NEW_MINUTE)
-            val dialogTime = LocalTime.of(hour, minute)
-
-            when (bundle.getInt(ConfirmationDialogTimePicker.ARG_TIME_TEXTVIEW)) {
-                R.id.frag_entry_start_time -> {
-                    binding.fragEntryStartTime.text =
-                        dialogTime.format(dtfTime).toString()
-                    binding.fragEntryStartTime.tag = dialogTime
-                }
-                R.id.frag_entry_end_time -> {
-                    binding.fragEntryEndTime.text =
-                        dialogTime.format(dtfTime).toString()
-                    binding.fragEntryEndTime.tag = dialogTime
-                }
-            }
-        }
-
-        childFragmentManager.setFragmentResultListener(
-            REQ_KEY_DIALOG_USE_TRACKED_MILES,
-            this
-        ) { _, bundle ->
-            val keepStartMileage = bundle.getBoolean(ARG_IS_CONFIRMED)
-            val keepEndMileage = bundle.getBoolean(ARG_IS_CONFIRMED_2)
-
-            when {
-                keepStartMileage -> {
-                    binding.fragEntryEndMileage.setText(
-                        @Suppress("SetTextI18n")
-                        ((currStartOdo ?: 0) + distance).toString()
-                    )
-                }
-                keepEndMileage -> {
-                    val newEnd = maxOf(currEndOdo ?: 0, distance)
-                    val newStart = newEnd - distance
-
-                    @Suppress("SetTextI18n")
-                    binding.fragEntryStartMileage.setText(newStart.toString())
-                    binding.fragEntryEndMileage.setText(newEnd.toString())
-                }
-            }
-        }
+        binding.fragEntrySpace.setVisibleIfTrue(totalMileageMatchesTrackedMileage)
     }
 }

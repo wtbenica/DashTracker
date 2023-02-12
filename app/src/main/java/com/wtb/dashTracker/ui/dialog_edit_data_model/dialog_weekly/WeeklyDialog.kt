@@ -32,7 +32,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -187,7 +186,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         }
     }
 
-    override fun saveValues(showToast: Boolean) {
+    override fun saveValues() {
         val selectedDate =
             binding.fragAdjustDate.selectedItem as LocalDate
         val tempWeekly = fullWeekly?.weekly ?: Weekly(selectedDate)
@@ -196,8 +195,6 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             isNew = false
         }
         viewModel.upsert(tempWeekly)
-
-        super.saveValues(showToast)
     }
 
     override fun isEmpty(): Boolean = false
@@ -309,27 +306,29 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 }
 
 /**
- * @return  curr year + curr year -> "Sep 27 - Oct 1",
+ * @return  curr year + curr year -> "September 27 - October 1",
  * last year + curr year -> "Dec 27, 2022 - Jan 3, 2023",
  * prev year + same year -> "Sep 27 - Oct 1, 2022"
  */
-fun Fragment.getDateRange(start: LocalDate, end: LocalDate): String {
-    fun asRange(start: LocalDate, end: LocalDate): Pair<String, String> {
-        val mStart = if (start.year == end.year) {
-            start.format(dtfShortDateThisYear)
-        } else {
-            start.format(dtfShortDate)
+fun getDateRange(start: LocalDate, end: LocalDate): String {
+    return when {
+        start.year == end.year -> {
+            when {
+                start.month == end.month -> {
+                    // November 14-20, 2022
+                    "${start.format(dtfDateThisYear)}-${end.dayOfMonth}, ${end.year}"
+                }
+                else -> {
+                    // October 31 - November 6, 2022
+                    "${start.format(dtfDateThisYear)} - ${end.format(dtfDate)}"
+                }
+            }
         }
-        val mEnd = if (end.year == LocalDate.now().year && start.year == end.year) {
-            end.format(dtfDateThisYear)
-        } else {
-            end.format(dtfDate)
+        else -> {       // start.year != end.year
+            // Dec 26, 2022 - Jan 1, 2023
+            "${start.format(dtfShortDate)} - ${end.format(dtfShortDate)}"
         }
-        return Pair(mStart, mEnd)
     }
-
-    val weeklyRange = asRange(start, end)
-    return getString(R.string.date_range, weeklyRange.first, weeklyRange.second)
 }
 
 fun EditText.onTextChangeUpdateTotal(otherView: TextView, baseValue: Float?) {

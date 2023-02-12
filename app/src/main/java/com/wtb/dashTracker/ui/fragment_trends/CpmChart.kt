@@ -39,7 +39,7 @@ import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartCpmBinding
-import com.wtb.dashTracker.extensions.dtfMini
+import com.wtb.dashTracker.extensions.dtfShortDateThisYear
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.repository.DeductionType
@@ -93,8 +93,8 @@ class CpmChart(
                     return if (date.dayOfWeek == DayOfWeek.SUNDAY)
                         context.getString(
                             R.string.date_range,
-                            date.minusDays(6).format(dtfMini),
-                            date.format(dtfMini)
+                            date.minusDays(6).format(dtfShortDateThisYear),
+                            date.format(dtfShortDateThisYear)
                         )
                     else
                         ""

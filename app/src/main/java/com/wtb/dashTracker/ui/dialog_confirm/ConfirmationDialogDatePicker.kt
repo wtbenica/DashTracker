@@ -29,12 +29,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
 import com.wtb.dashTracker.databinding.DialogFragConfirmDatePickerBinding
-import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 
-// TODO: selecting a purpose to edit and then cancelling deletes the purpose
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
@@ -43,13 +41,13 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
 
     private lateinit var binding: DialogFragConfirmDatePickerBinding
     private var textViewId: Int? = null
-    private var currentText: String? = null
+    private var currentText: LocalDate? = null
     private var headerText: String? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arguments?.let {
             headerText = it.getString(ARG_DATE_PICKER_HEADER_TEXT)
-            currentText = it.getString(ARG_DATE_CURRENT_TEXT)
+            currentText = it.getSerializable(ARG_DATE_CURRENT_TEXT, LocalDate::class.java)
             textViewId = it.getInt(ARG_DATE_TEXTVIEW)
         }
 
@@ -61,7 +59,7 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val date = LocalDate.parse(currentText, dtfDate)
+        val date = currentText ?: LocalDate.now()
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
@@ -115,13 +113,13 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
         @JvmStatic
         fun newInstance(
             @IdRes textViewId: Int,
-            currentText: String,
+            currentText: LocalDate,
             headerText: String? = null
         ): ConfirmationDialogDatePicker =
             ConfirmationDialogDatePicker().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_DATE_TEXTVIEW, textViewId)
-                    putString(ARG_DATE_CURRENT_TEXT, currentText)
+                    putSerializable(ARG_DATE_CURRENT_TEXT, currentText)
                     putString(ARG_DATE_PICKER_HEADER_TEXT, headerText)
                 }
             }

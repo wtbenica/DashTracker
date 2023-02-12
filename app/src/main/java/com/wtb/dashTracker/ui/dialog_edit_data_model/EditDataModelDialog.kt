@@ -65,13 +65,25 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     protected abstract fun getViewBinding(inflater: LayoutInflater): B
     protected abstract fun updateUI()
-    open protected fun saveValues(showToast: Boolean = true) {
+
+    /**
+     * Save values - saves data from dialog fields to datamodel
+     *
+     * @param showToast whether to show the toast
+     */
+    abstract fun saveValues()
+
+    /**
+     * Save - if [showToast], shows a toast "${itemType} saved". calls [saveValues].
+     */
+    protected fun save(showToast: Boolean = true) {
         if (showToast) {
             Toast.makeText(context, "${itemType} saved", Toast.LENGTH_SHORT)
                 .show()
         }
-    }
 
+        saveValues()
+    }
     // TODO: should the name here be changed?
     protected abstract fun clearFields()
     protected abstract fun isEmpty(): Boolean
@@ -135,7 +147,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     override fun onDestroy() {
         if (saveOnExit && (isNotEmpty() || saveConfirmed)) {
-            saveValues()
+            save()
         }
 
         super.onDestroy()
