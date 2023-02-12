@@ -179,7 +179,7 @@ class ExpenseListFragment : ListItemFragment() {
                     viewModel.delete(item.expense)
                 }
 
-                binding.listItemTitle.text = this.item.expense.date.formatted.uppercase()
+                binding.listItemTitle.text = this.item.expense.date.formatted
                 binding.listItemTitle2.text =
                     getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
                 binding.listItemSubtitle.text = this.item.purpose.name
@@ -229,7 +229,7 @@ class ExpenseListFragment : ListItemFragment() {
             override fun bind(item: FullExpense, payloads: List<Any>?) {
                 this.item = item
 
-                binding.listItemTitle.text = this.item.expense.date.formatted.uppercase()
+                binding.listItemTitle.text = this.item.expense.date.formatted
                 binding.listItemTitle2.text =
                     getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
                 binding.listItemSubtitle.text = this.item.purpose.name

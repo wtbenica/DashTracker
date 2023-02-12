@@ -21,7 +21,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.extensions.dtfDate
+import com.wtb.dashTracker.extensions.dtfFullDate
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.toCurrencyString
@@ -39,60 +39,60 @@ class EntryDialog : BaseEntryDialog() {
     override val titleText: String
         get() = getString(R.string.dialog_title_dash_entry)
 
+    override fun onFirstRun() { /* Do nothing */ }
+
     override fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
-            val tempEntry = item
-
-            if (tempEntry != null) {
+            item?.let { entry ->
                 binding.apply {
-                    fragEntryDate.text = tempEntry.date.format(dtfDate)
-                    fragEntryDate.tag = tempEntry.date
+                    fragEntryDate.text = entry.date.format(dtfFullDate)
+                    fragEntryDate.tag = entry.date
 
-                    tempEntry.startTime.let { st ->
+                    entry.startTime.let { st ->
                         fragEntryStartTime.text = st?.format(dtfTime) ?: ""
                         fragEntryStartTime.tag = st
                     }
-                    tempEntry.endTime.let { et ->
+                    entry.endTime.let { et ->
                         fragEntryEndTime.text = et?.format(dtfTime) ?: ""
                         fragEntryEndTime.tag = et
                     }
 
                     fragEntryCheckEndsNextDay.isChecked =
-                        tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
+                        entry.endDate.minusDays(1L).equals(entry.date)
 
-                    tempEntry.startOdometer.let { so ->
+                    entry.startOdometer.let { so ->
                         fragEntryStartMileage.setText(
                             getStringOrElse(R.string.odometer_fmt, "", so)
                         )
                     }
 
-                    tempEntry.endOdometer.let { eo ->
+                    entry.endOdometer.let { eo ->
                         fragEntryEndMileage.setText(
                             getStringOrElse(R.string.odometer_fmt, "", eo)
                         )
                     }
 
-                    tempEntry.mileage.let { m ->
+                    entry.mileage.let { m ->
                         fragEntryTotalMileage.text =
                             getStringOrElse(R.string.odometer_fmt, "", m)
                     }
 
                     setUpdateMileageButtonVisibility()
 
-                    tempEntry.pay.let { p ->
+                    entry.pay.let { p ->
                         fragEntryPay.setText(p?.toCurrencyString() ?: "")
                     }
-                    tempEntry.otherPay.let { op ->
+                    entry.otherPay.let { op ->
                         fragEntryPayOther.setText(op?.toCurrencyString() ?: "")
                     }
-                    tempEntry.cashTips.let { ct ->
+                    entry.cashTips.let { ct ->
                         fragEntryCashTips.setText(ct?.toCurrencyString() ?: "")
                     }
-                    tempEntry.numDeliveries.let { nd ->
+                    entry.numDeliveries.let { nd ->
                         fragEntryNumDeliveries.setText(nd?.toString() ?: "")
                     }
                 }
-            } else {
+            } ?: {
                 clearFields()
             }
         }
@@ -101,7 +101,7 @@ class EntryDialog : BaseEntryDialog() {
     // TODO: This erases everything, whereas other dialogs it resets. decide what it should do
     override fun clearFields() {
         binding.apply {
-            fragEntryDate.text = LocalDate.now().format(dtfDate)
+            fragEntryDate.text = LocalDate.now().format(dtfFullDate)
             fragEntryStartTime.text = LocalDateTime.now().format(dtfTime)
             fragEntryEndTime.text = ""
             fragEntryStartMileage.text.clear()
@@ -115,7 +115,7 @@ class EntryDialog : BaseEntryDialog() {
     }
 
     override fun isEmpty(): Boolean {
-        val isTodaysDate = binding.fragEntryDate.text == LocalDate.now().format(dtfDate)
+        val isTodaysDate = binding.fragEntryDate.text == LocalDate.now().format(dtfFullDate)
         return isTodaysDate &&
                 !startTimeChanged &&
                 binding.fragEntryEndTime.text.isBlank() &&

@@ -36,6 +36,14 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">?attr/colorUi</item>
 
+        <!-- Chips -->
+        <item name="chipStrokeColorDefault">?attr/colorPrimary</item>
+        <item name="chipStrokeColorDisabled">?attr/colorPrimaryVariant</item>
+        <item name="chipBackgroundColorDefault">?attr/colorPrimaryVariant</item>
+        <item name="chipBackgroundColorDisabled">?attr/colorPrimaryFaded</item>
+        <item name="colorChipText">?attr/colorOnPrimary</item>
+        <item name="colorChipCloseIcon">?attr/colorOnPrimary</item>
+
         <!-- Text -->
         <item name="android:textColor">?attr/colorTextPrimary</item>
         <item name="android:textColorPrimary">@color/primary_text_color</item>

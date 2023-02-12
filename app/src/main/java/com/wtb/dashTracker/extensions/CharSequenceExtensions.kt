@@ -16,32 +16,6 @@
 
 package com.wtb.dashTracker.extensions
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.time.LocalDate
-import java.time.LocalTime
-
-@ExperimentalCoroutinesApi
-fun CharSequence.toTimeOrNull(): LocalTime? =
-    if (this.isNotEmpty()) LocalTime.parse(this, dtfTime) else null
-
-@ExperimentalCoroutinesApi
-fun CharSequence.toDateOrNull(): LocalDate? =
-    if (this.isNotEmpty()) {
-        try {
-            val df = dtfDate
-            LocalDate.parse(this, df)
-        } catch (e: Exception) {
-            try {
-                val df = dtfDateThisYear
-                LocalDate.parse(this, df)
-            } catch (e: Exception) {
-                null
-            }
-        }
-    } else {
-        null
-    }
-
 fun CharSequence.toFloatOrNull(): Float? =
     if (this.isNotEmpty()) this.padStart(2, '0').toString().toFloat() else null
 

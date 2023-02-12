@@ -31,11 +31,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
 import com.wtb.dashTracker.databinding.DialogFragConfirmTimePickerBinding
-import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalTime
-import java.time.format.DateTimeParseException
 
 // TODO: selecting a purpose to edit and then cancelling deletes the purpose
 @ExperimentalAnimationApi
@@ -46,13 +44,13 @@ class ConfirmationDialogTimePicker : FullWidthDialogFragment() {
 
     private lateinit var binding: DialogFragConfirmTimePickerBinding
     private var textViewId: Int? = null
-    private var currentText: String? = null
+    private var currentText: LocalTime? = null
     private var headerText: String? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arguments?.let {
             headerText = it.getString(ARG_TIME_PICKER_HEADER_TEXT)
-            currentText = it.getString(ARG_TIME_CURRENT_TEXT)
+            currentText = it.getSerializable(ARG_TIME_CURRENT_TEXT) as LocalTime?
             textViewId = it.getInt(ARG_TIME_TEXTVIEW)
         }
 
@@ -78,12 +76,7 @@ class ConfirmationDialogTimePicker : FullWidthDialogFragment() {
         }
 
         binding.dialogTimePickerTimePicker.apply {
-            val time: LocalTime = try {
-                LocalTime.parse(currentText, dtfTime)
-            } catch (e: DateTimeParseException) {
-                LocalTime.now()
-            }
-
+            val time: LocalTime = currentText ?: LocalTime.now()
             hour = time.hour
             minute = time.minute
         }
@@ -120,13 +113,13 @@ class ConfirmationDialogTimePicker : FullWidthDialogFragment() {
         @JvmStatic
         fun newInstance(
             @IdRes textViewId: Int,
-            currentText: String,
+            currentText: LocalTime?,
             headerText: String? = null
         ): ConfirmationDialogTimePicker =
             ConfirmationDialogTimePicker().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_TIME_TEXTVIEW, textViewId)
-                    putString(ARG_TIME_CURRENT_TEXT, currentText)
+                    putSerializable(ARG_TIME_CURRENT_TEXT, currentText)
                     putString(ARG_TIME_PICKER_HEADER_TEXT, headerText)
                 }
             }

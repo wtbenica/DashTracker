@@ -21,8 +21,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.extensions.dtfDate
+import com.wtb.dashTracker.extensions.dtfFullDate
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.toCurrencyString
@@ -40,83 +39,83 @@ class EndDashDialog : BaseEntryDialog() {
     override val titleText: String
         get() = getString(R.string.dialog_title_end_dash)
 
-    private var firstRun = true
+    override fun onFirstRun() {
+        item?.let { entry ->
+            binding.fragEntryCheckEndsNextDay.isChecked =
+                LocalDate.now().minusDays(1L).equals(entry.date)
+
+            entry.endTime.let { et: LocalTime? ->
+                val time = et ?: LocalTime.now()
+                binding.fragEntryEndTime.text = time.format(dtfTime)
+                binding.fragEntryEndTime.tag = time
+            }
+
+            updateTotalMileageFields()
+
+            save(showToast = false)
+        }
+    }
+
+    private fun updateTotalMileageFields() {
+        item?.let { entry ->
+            val distance: Float =
+                entry.mileage ?: fullEntry?.trackedDistance?.toFloat() ?: 0f
+            val calculatedEnd: Float = (entry.startOdometer ?: 0f) + distance
+            val endOdometer: Float = entry.endOdometer ?: calculatedEnd
+
+            binding.fragEntryEndMileage.setText(getString(R.string.odometer_fmt, endOdometer))
+
+            binding.fragEntryTotalMileage.text = getString(R.string.odometer_fmt, distance)
+
+            setUpdateMileageButtonVisibility()
+        }
+    }
 
     override fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
-            val tempEntry = item
-            if (tempEntry != null) {
+            item?.let { entry ->
                 binding.apply {
-                    fun onFirstRun(entry: DashEntry) {
-                        firstRun = false
+                    fragEntryDate.text = entry.date.format(dtfFullDate)
+                    fragEntryDate.tag = entry.date
 
-                        fragEntryCheckEndsNextDay.isChecked =
-                            LocalDate.now().minusDays(1L).equals(entry.date)
+                    fragEntryCheckEndsNextDay.isChecked =
+                        entry.endDate.minusDays(1L).equals(entry.date)
 
-                        entry.endTime.let { et: LocalTime? ->
-                            val time = et ?: LocalTime.now()
-                            fragEntryEndTime.text = time.format(dtfTime)
-                            fragEntryEndTime.tag = time
-                        }
-
-                        saveValues(false)
-                    }
-
-                    fragEntryDate.text = tempEntry.date.format(dtfDate)
-                    fragEntryDate.tag = tempEntry.date
-
-                    tempEntry.startTime.let { st: LocalTime? ->
+                    entry.startTime.let { st: LocalTime? ->
                         fragEntryStartTime.text = st?.format(dtfTime) ?: ""
                         fragEntryStartTime.tag = st
                     }
 
-                    tempEntry.startOdometer.let { so: Float? ->
+                    entry.endTime?.let { et: LocalTime ->
+                        fragEntryEndTime.text = et.format(dtfTime)
+                        fragEntryEndTime.tag = et
+                    }
+
+                    entry.startOdometer.let { so: Float? ->
                         fragEntryStartMileage.setText(
                             getStringOrElse(R.string.odometer_fmt, "", so)
                         )
                     }
 
-                    val distance: Float =
-                        tempEntry.mileage ?: fullEntry?.trackedDistance?.toFloat() ?: 0f
-                    val calculatedEnd: Float = (tempEntry.startOdometer ?: 0f) + distance
-                    val endOdometer: Float = tempEntry.endOdometer ?: calculatedEnd
+                    updateTotalMileageFields()
 
-                    fragEntryEndMileage.setText(getString(R.string.odometer_fmt, endOdometer))
-
-                    fragEntryTotalMileage.text = getString(R.string.odometer_fmt, distance)
-
-                    setUpdateMileageButtonVisibility()
-
-                    tempEntry.pay.let { p ->
+                    entry.pay.let { p ->
                         fragEntryPay.setText(p?.toCurrencyString() ?: "")
                     }
 
-                    tempEntry.otherPay.let { op ->
+                    entry.otherPay.let { op ->
                         fragEntryPayOther.setText(op?.toCurrencyString() ?: "")
                     }
 
-                    tempEntry.cashTips.let { ct ->
+                    entry.cashTips.let { ct ->
                         fragEntryCashTips.setText(ct?.toCurrencyString() ?: "")
                     }
 
-                    tempEntry.numDeliveries.let { nd ->
+                    entry.numDeliveries.let { nd ->
                         fragEntryNumDeliveries.setText(nd?.toString() ?: "")
                     }
-
-                    fragEntryCheckEndsNextDay.isChecked =
-                        tempEntry.endDate.minusDays(1L).equals(tempEntry.date)
-
-                    tempEntry.endTime.let { et: LocalTime? ->
-                        val time = et ?: LocalTime.now()
-                        fragEntryEndTime.text = time.format(dtfTime)
-                        fragEntryEndTime.tag = time
-                    }
-
-                    if (firstRun) {
-                        onFirstRun(tempEntry)
-                    }
                 }
-            } else {
+            } ?: {
                 clearFields()
             }
         }
@@ -124,7 +123,7 @@ class EndDashDialog : BaseEntryDialog() {
 
     override fun clearFields() {
         binding.apply {
-            fragEntryDate.text = item?.date?.format(dtfDate) ?: LocalDate.now().format(dtfDate)
+            fragEntryDate.text = item?.date?.format(dtfFullDate) ?: LocalDate.now().format(dtfFullDate)
             fragEntryStartTime.text =
                 item?.startTime?.format(dtfTime) ?: LocalDateTime.now().format(dtfTime)
             fragEntryStartTime.tag = item?.startTime ?: LocalTime.now()

@@ -29,7 +29,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.DialogFragStartDashBinding
-import com.wtb.dashTracker.extensions.dtfDate
+import com.wtb.dashTracker.extensions.dtfFullDate
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.toFloatOrNull
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
@@ -69,7 +69,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
                 setOnClickListener {
                     ConfirmationDialogDatePicker.newInstance(
                         R.id.frag_entry_date,
-                        this.text.toString(),
+                        this.tag as LocalDate? ?: LocalDate.now(),
                         getString(R.string.lbl_date)
                     ).show(childFragmentManager, "entry_date_picker")
                 }
@@ -79,7 +79,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
                 setOnClickListener {
                     ConfirmationDialogTimePicker.newInstance(
                         textViewId = R.id.frag_entry_start_time,
-                        currentText = this.text.toString(),
+                        currentText = this.tag as LocalTime?,
                         headerText = getString(R.string.lbl_start_time)
                     ).show(childFragmentManager, "time_picker_start")
                     startTimeChanged = true
@@ -111,7 +111,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     override fun updateUI() {
         val tempEntry = item
         if (tempEntry != null) {
-            binding.fragStartDashDate.text = tempEntry.date.format(dtfDate)
+            binding.fragStartDashDate.text = tempEntry.date.format(dtfFullDate)
             binding.fragStartDashDate.tag = tempEntry.date
 
             tempEntry.startTime?.let { st ->
@@ -127,9 +127,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
         }
     }
 
-    override fun saveValues(showToast: Boolean) {
-        super.saveValues(showToast)
-
+    override fun saveValues() {
         val currDate = binding.fragStartDashDate.tag as LocalDate?
         val e = DashEntry(
             entryId = item?.entryId ?: AUTO_ID,
@@ -143,7 +141,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
 
     override fun clearFields() {
         binding.apply {
-            fragStartDashDate.text = LocalDate.now().format(dtfDate)
+            fragStartDashDate.text = LocalDate.now().format(dtfFullDate)
             fragStartDashStartTime.text = LocalDateTime.now().format(dtfTime)
             fragStartDashStartTime.tag = LocalDateTime.now()
             fragStartDashStartMileage.text.clear()
@@ -151,7 +149,7 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     }
 
     override fun isEmpty(): Boolean {
-        val isTodaysDate = binding.fragStartDashDate.text == LocalDate.now().format(dtfDate)
+        val isTodaysDate = binding.fragStartDashDate.text == LocalDate.now().format(dtfFullDate)
         return isTodaysDate &&
                 !startTimeChanged &&
                 binding.fragStartDashStartMileage.text.isBlank()
@@ -169,26 +167,22 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             val dayOfMonth = bundle.getInt(ARG_DATE_PICKER_NEW_DAY)
             when (bundle.getInt(ARG_DATE_TEXTVIEW)) {
                 R.id.frag_entry_date -> {
-                    binding.fragStartDashDate.text =
-                        LocalDate.of(year, month, dayOfMonth).format(dtfDate).toString()
+                    val selectedDate = LocalDate.of(year, month, dayOfMonth)
+                    binding.fragStartDashDate.text = selectedDate.format(dtfFullDate)
+                    binding.fragStartDashDate.tag = selectedDate
                 }
             }
         }
 
-        childFragmentManager.setFragmentResultListener(
-            REQUEST_KEY_TIME,
-            this
-        ) { _, bundle ->
+        childFragmentManager.setFragmentResultListener(REQUEST_KEY_TIME, this) { _, bundle ->
             val hour = bundle.getInt(ARG_TIME_NEW_HOUR)
             val minute = bundle.getInt(ARG_TIME_NEW_MINUTE)
             val dialogTime = LocalTime.of(hour, minute)
 
             when (bundle.getInt(ARG_TIME_TEXTVIEW)) {
                 R.id.frag_entry_start_time -> {
-                    binding.fragStartDashStartTime.text =
-                        dialogTime.format(dtfTime).toString()
-                    binding.fragStartDashStartTime.tag =
-                        dialogTime
+                    binding.fragStartDashStartTime.text = dialogTime.format(dtfTime)
+                    binding.fragStartDashStartTime.tag = dialogTime
                 }
             }
         }

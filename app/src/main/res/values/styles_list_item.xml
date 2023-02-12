@@ -43,7 +43,7 @@
     <style name="ListItemHeaderTextView.Title">
         <item name="android:textSize">?attr/textSizeListItemTitle</item>
         <item name="android:textColor">?attr/colorListItemTitle</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:paddingBottom">@dimen/margin_narrow</item>
     </style>
 
     <style name="ListItemHeaderTextView.Subtitle">

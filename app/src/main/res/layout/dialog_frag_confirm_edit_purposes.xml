@@ -41,7 +41,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:title="Edit Expense types" />
+                app:title="Edit expense types" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_confirm_card"
@@ -54,7 +54,8 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorDialogContentBg">
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/purpose_chipgroup"
