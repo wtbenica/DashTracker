@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter
 val dtfFullDateThisYear: DateTimeFormatter = DateTimeFormatter.ofPattern("eeee, MMMM d")
 
 /**
- * format: Monday January 1, 2022
+ * format: Monday, January 1, 2022
  */
 val dtfFullDate: DateTimeFormatter = DateTimeFormatter.ofPattern("eeee, MMMM d, yyyy")
 

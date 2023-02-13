@@ -112,7 +112,6 @@
 
         <!-- dialog fragment -->
         <item name="dialogFragCornerRadius">?attr/defaultCornerRadius</item>
-        <item name="colorDialogFragSpinnerPopupBg">?attr/colorPrimaryFaded</item>
 
         <!-- Window transitions -->
         <item name="android:windowEnterTransition">@android:transition/slide_right</item>
@@ -204,6 +203,8 @@
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">?attr/colorPrimaryVariant</item>
         <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
+        <item name="colorListItemEntryDayThisWeek">?attr/colorAccent</item>
+        <item name="colorListItemEntryDay">?attr/colorTextPrimary</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
@@ -254,6 +255,7 @@
         <item name="colorDialogButtonStroke">?attr/colorPrimaryDark</item>
         <item name="colorDialogButtonBg">@android:color/transparent</item>
         <item name="dimenDialogButtonStrokeWidth">0dp</item>
+        <item name="colorDialogFragSpinnerPopupBg">?attr/colorPrimaryFaded</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>

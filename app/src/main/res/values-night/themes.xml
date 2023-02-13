@@ -37,12 +37,12 @@
         <item name="android:statusBarColor">?attr/colorUi</item>
 
         <!-- Chips -->
-        <item name="chipStrokeColorDefault">?attr/colorPrimary</item>
-        <item name="chipStrokeColorDisabled">?attr/colorPrimaryVariant</item>
-        <item name="chipBackgroundColorDefault">?attr/colorPrimaryVariant</item>
-        <item name="chipBackgroundColorDisabled">?attr/colorPrimaryFaded</item>
+        <item name="chipStrokeColorDefault">?attr/colorPrimaryVariant</item>
+        <item name="chipStrokeColorDisabled">?attr/colorPrimaryFaded</item>
+        <item name="chipBackgroundColorDefault">?attr/colorPrimaryDark</item>
+        <item name="chipBackgroundColorDisabled">?attr/colorPrimary</item>
         <item name="colorChipText">?attr/colorOnPrimary</item>
-        <item name="colorChipCloseIcon">?attr/colorOnPrimary</item>
+        <item name="colorChipCloseIcon">?attr/colorChipText</item>
 
         <!-- Text -->
         <item name="android:textColor">?attr/colorTextPrimary</item>
@@ -111,6 +111,8 @@
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">@android:color/transparent</item>
         <item name="colorListItemButtonIcon">?attr/colorSecondaryFaded</item>
+        <item name="colorListItemEntryDayThisWeek">?attr/colorSecondaryFaded</item>
+        <item name="colorListItemEntryDay">?attr/colorTextPrimary</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
@@ -161,6 +163,7 @@
         <item name="colorDialogButtonStroke">?attr/colorPrimaryVariant</item>
         <item name="colorDialogButtonBg">@android:color/transparent</item>
         <item name="dimenDialogButtonStrokeWidth">0dp</item>
+        <item name="colorDialogFragSpinnerPopupBg">?attr/colorSecondaryDark</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>

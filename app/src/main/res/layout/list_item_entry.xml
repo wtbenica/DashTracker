@@ -33,11 +33,35 @@
             style="@style/ListItemHeader">
 
             <TextView
-                android:id="@+id/list_item_title"
+                android:id="@+id/list_item_entry_day_of_week"
                 style="@style/ListItemHeaderTextView.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorListItemEntryDayThisWeek"
+                android:textSize="22sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Sun Nov 21, 2021" />
+                tools:text="Sunday, " />
+
+            <TextView
+                android:id="@+id/list_item_title"
+                style="@style/ListItemHeaderTextView.Title"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@id/list_item_entry_day_of_week"
+                app:layout_constraintStart_toEndOf="@id/list_item_entry_day_of_week"
+                app:layout_constraintTop_toTopOf="@id/list_item_entry_day_of_week"
+                tools:text="November 21, 2021" />
+
+            <TextView
+                android:id="@+id/list_item_title_2"
+                style="@style/ListItemHeaderTextView.Title"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:layout_constraintBottom_toBottomOf="@id/list_item_entry_day_of_week"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/list_item_recurring"
+                app:layout_constraintTop_toTopOf="@id/list_item_entry_day_of_week"
+                tools:text="$81.25" />
 
             <TextView
                 android:id="@+id/list_item_subtitle"
@@ -50,30 +74,19 @@
                 android:id="@+id/list_item_alert"
                 style="@style/ListItemHeaderIncompleteIndicator"
                 android:layout_marginStart="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_narrow"
                 android:contentDescription="@string/content_desc_incomplete_entry"
-                app:layout_constraintBottom_toBottomOf="@id/list_item_title"
+                app:layout_constraintBottom_toBottomOf="@id/list_item_entry_day_of_week"
                 app:layout_constraintStart_toEndOf="@id/list_item_title"
-                app:layout_constraintTop_toTopOf="@id/list_item_title" />
-
-            <TextView
-                android:id="@+id/list_item_title_2"
-                style="@style/ListItemHeaderTextView.Title"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:textAlignment="textEnd"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/list_item_recurring"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="$81.25" />
+                app:layout_constraintTop_toTopOf="@id/list_item_entry_day_of_week" />
 
             <TextView
                 android:id="@+id/list_item_subtitle_2_label"
                 style="@style/ListItemHeaderTextView.Subtitle"
+                android:layout_marginEnd="@dimen/margin_half"
                 android:text="@string/list_item_label_net"
-                app:layout_constraintTop_toTopOf="@id/list_item_subtitle_2"
                 app:layout_constraintBottom_toBottomOf="@id/list_item_subtitle_2"
-                app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2" />
+                app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2"
+                app:layout_constraintTop_toTopOf="@id/list_item_subtitle_2" />
 
             <TextView
                 android:id="@+id/list_item_subtitle_2"

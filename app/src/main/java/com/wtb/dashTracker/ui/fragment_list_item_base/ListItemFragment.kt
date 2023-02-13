@@ -72,8 +72,8 @@ interface ExpandableAdapter {
         }
 }
 
-abstract class BaseItemListAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
-    ListAdapter<T, BaseItemHolder<T>>(diffCallback), ExpandableAdapter {
+abstract class BaseItemListAdapter<ItemType : ListItemType>(diffCallback: DiffUtil.ItemCallback<ItemType>) :
+    ListAdapter<ItemType, BaseItemHolder<ItemType>>(diffCallback), ExpandableAdapter {
 
     override var mExpandedPositions: MutableSet<Int> = mutableSetOf()
 
@@ -84,7 +84,7 @@ abstract class BaseItemListAdapter<T : ListItemType>(diffCallback: DiffUtil.Item
     }
 
     override fun onBindViewHolder(
-        holder: BaseItemHolder<T>,
+        holder: BaseItemHolder<ItemType>,
         position: Int,
         payloads: List<Any>
     ) {
@@ -100,14 +100,14 @@ abstract class BaseItemListAdapter<T : ListItemType>(diffCallback: DiffUtil.Item
         }
     }
 
-    override fun onBindViewHolder(holder: BaseItemHolder<T>, position: Int) {
+    override fun onBindViewHolder(holder: BaseItemHolder<ItemType>, position: Int) {
         getItem(position)?.let { holder.bind(it) }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<T> =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<ItemType> =
         getViewHolder(parent, viewType)
 
-    abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): BaseItemHolder<T>
+    abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): BaseItemHolder<ItemType>
 }
 
 abstract class BaseItemPagingDataAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
@@ -198,6 +198,8 @@ abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
             else
                 R.drawable.bg_list_item
         )
+
+
 
         collapseArea.visibility = listItemDetailsVisibility
     }

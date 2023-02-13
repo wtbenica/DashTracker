@@ -34,16 +34,19 @@
     </style>
 
     <style name="DTChipTextAppearance" parent="TextAppearance.Material3.BodyLarge">
-        <item name="fontFamily">@font/lalezar</item>
+        <item name="fontFamily">@font/oswald</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="DTChipStyle" parent="Widget.Material3.Chip.Assist">
         <item name="android:textColor">?attr/colorChipText</item>
         <item name="android:textAppearance">@style/DTChipTextAppearance</item>
+        <item name="chipCornerRadius">@dimen/min_touch_target</item>
         <item name="chipStrokeColor">@color/chip_stroke</item>
         <item name="chipBackgroundColor">@color/chip_surface</item>
         <item name="closeIconVisible">true</item>
-        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipStrokeWidth">2dp</item>
+        <item name="chipMinHeight">36dp</item>
         <item name="closeIconTint">?attr/colorChipCloseIcon</item>
     </style>
 

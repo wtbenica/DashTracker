@@ -64,6 +64,7 @@ import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import java.time.LocalDate
 
 @ExperimentalAnimationApi
 @ExperimentalTextApi
@@ -269,7 +270,23 @@ class EntryListFragment : ListItemFragment() {
                     }
                 }
 
-                binding.listItemTitle.text = this.item.entry.date.formatted
+                fun String.capitalize(): String {
+                    return this.lowercase().replaceFirstChar {
+                        it.uppercase()
+                    }
+                }
+
+                binding.listItemEntryDayOfWeek.text =
+                    getString(R.string.add_comma, this.item.entry.date.dayOfWeek.name.capitalize())
+                binding.listItemEntryDayOfWeek.setTextColor(
+                    if (this.item.entry.date.endOfWeek == LocalDate.now().endOfWeek) {
+                        requireContext().getAttributeColor(R.attr.colorListItemEntryDayThisWeek)
+                    } else {
+                        requireContext().getAttributeColor(R.attr.colorListItemEntryDay)
+                    }
+                )
+
+                binding.listItemTitle.text = this.item.entry.date.format(dtfDate)
                 binding.listItemTitle2.text = getCurrencyString(this.item.entry.totalEarned)
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)

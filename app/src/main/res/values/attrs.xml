@@ -101,6 +101,9 @@
     <attr name="colorListItemSubtitle" format="reference" />
     <attr name="colorListItemButtonIcon" format="reference|color" />
     <attr name="colorListItemButtonBg" format="reference|color" />
+    <attr name="colorListItemEntryDay" format="reference|color" />
+    <attr name="colorListItemEntryDayThisWeek" format="reference|color" />
+
     <attr name="textSizeListItemTitle" format="reference" />
     <attr name="textSizeListItemSubtitle" format="reference" />
     <attr name="listItemCornerRadius" format="reference" />
