@@ -105,6 +105,8 @@
         <item name="dimenListItemMarginHorizontal">@dimen/margin_default</item>
         <item name="dimenListItemMarginVertical">@dimen/margin_half</item>
         <item name="dimenListItemButtonRadius">@dimen/margin_half</item>
+        <item name="dimenListItemElevationElevated">16dp</item>
+        <item name="dimenListItemElevationLowered">4dp</item>
 
         <!-- insights row -->
         <item name="insightsRowCornerRadius">?attr/defaultCornerRadius</item>
@@ -196,15 +198,17 @@
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
+        <item name="colorListItemBorder">?attr/colorUIBackground</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryFaded</item>
         <item name="colorListItemExpandedBorder">?attr/colorPrimary</item>
         <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
-        <item name="colorListItemButtonBg">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemButtonBg">@android:color/transparent</item>
         <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
         <item name="colorListItemEntryDayThisWeek">?attr/colorAccent</item>
         <item name="colorListItemEntryDay">?attr/colorTextPrimary</item>
+        <item name="colorListItemShadow">?attr/colorTextPrimary</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>

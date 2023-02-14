@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.Space
+import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -38,8 +39,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.databinding.YearlyMileageGridBinding
@@ -50,8 +51,6 @@ import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExpenseBreakdown
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogMileageBreakdown
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemListAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -67,9 +66,6 @@ class YearlyListFragment : ListItemFragment() {
     private val viewModel: YearlyListViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
-    private val yearlies = mutableListOf<Yearly>()
-
-    private lateinit var recyclerView: RecyclerView
     private var deductionType: DeductionType = DeductionType.NONE
 
     override fun onAttach(context: Context) {
@@ -81,12 +77,10 @@ class YearlyListFragment : ListItemFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.frag_item_list, container, false)
+        binding = FragItemListBinding.inflate(inflater)
+        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        recyclerView = view.findViewById(R.id.item_list_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        return view
+        return binding.root
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -109,8 +103,6 @@ class YearlyListFragment : ListItemFragment() {
             }
         }
     }
-
-    var bpaList: MutableMap<Int, Float> = mutableMapOf()
 
     interface YearlyListFragmentCallback : DeductionCallback
 
@@ -150,6 +142,8 @@ class YearlyListFragment : ListItemFragment() {
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
 
+            override val bgCard: CardView
+                get() = binding.root
 
             override fun bind(item: Yearly, payloads: List<Any>?) {
                 fun updateExpenseFields(item: Yearly) {

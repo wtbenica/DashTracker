@@ -29,7 +29,7 @@
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimaryDark</item>
         <item name="colorUIBackground">?attr/colorOnSecondary</item>
-        <item name="colorDisabled">@color/brick</item>
+        <item name="colorDisabled">?attr/colorSecondary</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
         <!-- Status bar color. -->
@@ -104,6 +104,7 @@
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
+        <item name="colorListItemBorder">?attr/colorPrimary</item>
         <item name="colorListItemExpanded">?attr/colorPrimary</item>
         <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorOnSecondaryVariant</item>
@@ -113,10 +114,11 @@
         <item name="colorListItemButtonIcon">?attr/colorSecondaryFaded</item>
         <item name="colorListItemEntryDayThisWeek">?attr/colorSecondaryFaded</item>
         <item name="colorListItemEntryDay">?attr/colorTextPrimary</item>
+        <item name="colorListItemShadow">?attr/colorUIBackground</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
-        <item name="colorListItemDetailsToolbar">?attr/colorListItemAccent</item>
+        <item name="colorListItemDetailsToolbar">?attr/colorUIBackground</item>
         <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
         <item name="colorRowHeaderText">?attr/colorOnPrimaryVariant</item>

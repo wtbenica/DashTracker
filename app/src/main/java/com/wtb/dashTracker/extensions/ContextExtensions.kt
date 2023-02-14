@@ -18,6 +18,7 @@ package com.wtb.dashTracker.extensions
 
 import android.content.Context
 import android.util.TypedValue
+import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
@@ -90,7 +91,7 @@ fun Context.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
         )
 
 @ColorInt
-fun Context.getAttributeColor(attr: Int): Int {
+fun Context.getAttributeColor(@AttrRes attr: Int): Int {
     val tv = TypedValue()
     theme.resolveAttribute(attr, tv, true)
     return tv.data

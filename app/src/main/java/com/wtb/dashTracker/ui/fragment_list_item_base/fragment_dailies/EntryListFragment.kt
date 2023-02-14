@@ -26,6 +26,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -59,8 +60,6 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Modific
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState.DELETED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -76,8 +75,6 @@ class EntryListFragment : ListItemFragment() {
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     private var deductionType: DeductionType = DeductionType.NONE
-
-    private lateinit var binding: FragItemListBinding
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -165,7 +162,7 @@ class EntryListFragment : ListItemFragment() {
 
     interface EntryListFragmentCallback : DeductionCallback
 
-    inner class EntryAdapter : BaseItemPagingDataAdapter<FullEntry>(DIFF_CALLBACK) {
+    inner class EntryAdapter : ListItemFragment.BaseItemPagingDataAdapter<FullEntry>(DIFF_CALLBACK) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullEntry> =
             EntryHolder(parent)
 
@@ -179,6 +176,8 @@ class EntryListFragment : ListItemFragment() {
                 get() = binding.listItemDetails
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
+            override val bgCard: CardView
+                get() = binding.root
 
             init {
                 binding.listItemBtnEdit.apply {

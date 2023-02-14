@@ -26,6 +26,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -53,8 +54,6 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.getDateRange
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import kotlinx.coroutines.*
@@ -68,7 +67,6 @@ class WeeklyListFragment : ListItemFragment() {
     private val viewModel: WeeklyViewModel by viewModels()
     private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
-    private lateinit var binding: FragItemListBinding
     private var deductionType: DeductionType = DeductionType.NONE
     private val fullWeeklyAdapter = FullWeeklyAdapter().apply {
         registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
@@ -163,9 +161,10 @@ class WeeklyListFragment : ListItemFragment() {
 
             override val collapseArea: ConstraintLayout
                 get() = binding.listItemDetails
-
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
+            override val bgCard: CardView
+                get() = binding.root
 
             private val showBPAs = PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getBoolean(requireContext().PREF_SHOW_BASE_PAY_ADJUSTS, true)

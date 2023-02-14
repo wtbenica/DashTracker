@@ -94,6 +94,7 @@
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
+    <attr name="colorListItemBorder" format="reference|color" />
     <attr name="colorListItemAccent" format="reference" />
     <attr name="colorListItemExpanded" format="reference" />
     <attr name="colorListItemExpandedBorder" format="reference|color" />
@@ -103,14 +104,18 @@
     <attr name="colorListItemButtonBg" format="reference|color" />
     <attr name="colorListItemEntryDay" format="reference|color" />
     <attr name="colorListItemEntryDayThisWeek" format="reference|color" />
+    <attr name="colorListItemShadow" format="reference|color" />
 
     <attr name="textSizeListItemTitle" format="reference" />
     <attr name="textSizeListItemSubtitle" format="reference" />
     <attr name="listItemCornerRadius" format="reference" />
     <attr name="listItemThinBorder" format="reference" />
+
     <attr name="dimenListItemButtonRadius" format="reference|dimension" />
     <attr name="dimenListItemMarginVertical" format="reference|dimension" />
     <attr name="dimenListItemMarginHorizontal" format="reference|dimension" />
+    <attr name="dimenListItemElevationElevated" format="reference|dimension" />
+    <attr name="dimenListItemElevationLowered" format="reference|dimension" />
 
     <!-- list_item_details -->
     <attr name="colorListItemDetails" format="reference" />

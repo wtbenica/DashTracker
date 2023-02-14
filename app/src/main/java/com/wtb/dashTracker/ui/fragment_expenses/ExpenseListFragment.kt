@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -34,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.database.models.Purpose.GAS
+import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemExpenseBinding
 import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
 import com.wtb.dashTracker.extensions.formatted
@@ -43,8 +45,6 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -58,8 +58,6 @@ class ExpenseListFragment : ListItemFragment() {
 
     private val viewModel: ExpenseListViewModel by viewModels()
     private var callback: ExpenseListFragmentCallback? = null
-
-    private lateinit var recyclerView: RecyclerView
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -76,12 +74,10 @@ class ExpenseListFragment : ListItemFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.frag_item_list, container, false)
+        binding = FragItemListBinding.inflate(inflater)
+        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        recyclerView = view.findViewById(R.id.item_list_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        return view
+        return binding.root
     }
 
     private fun setDialogListeners() {
@@ -153,6 +149,8 @@ class ExpenseListFragment : ListItemFragment() {
                 get() = binding.listItemDetails
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
+            override val bgCard: CardView
+                get() = binding.root
 
             init {
                 binding.listItemBtnEdit.apply {
@@ -207,6 +205,8 @@ class ExpenseListFragment : ListItemFragment() {
                 get() = binding.buttonBox
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
+            override val bgCard: CardView
+                get() = binding.root
 
             init {
                 binding.listItemBtnEdit.apply {
@@ -240,7 +240,6 @@ class ExpenseListFragment : ListItemFragment() {
     }
 
     companion object {
-
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FullExpense>() {
             override fun areItemsTheSame(oldItem: FullExpense, newItem: FullExpense): Boolean =
                 oldItem.expense.expenseId == newItem.expense.expenseId
