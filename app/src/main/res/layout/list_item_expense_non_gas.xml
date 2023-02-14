@@ -55,6 +55,7 @@
                 android:id="@+id/list_item_subtitle"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_height="wrap_content"
+                android:layout_row="1"
                 android:layout_columnSpan="2"
                 android:gravity="bottom"
                 android:text="@string/lbl_other" />
@@ -82,8 +83,12 @@
             android:id="@+id/button_box"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginEnd="@dimen/margin_half"
+            android:layout_marginBottom="@dimen/margin_half"
             android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/list_item_title_2"
             tools:visibility="visible">

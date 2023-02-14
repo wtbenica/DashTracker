@@ -30,7 +30,6 @@ import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
@@ -172,8 +171,8 @@ class EntryListFragment : ListItemFragment() {
             private val binding = ListItemEntryBinding.bind(itemView)
             private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
 
-            override val collapseArea: ConstraintLayout
-                get() = binding.listItemDetails
+            override val collapseArea: Array<View>
+                get() = arrayOf(binding.listItemDetails)
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
             override val bgCard: CardView
@@ -269,19 +268,13 @@ class EntryListFragment : ListItemFragment() {
                     }
                 }
 
-                fun String.capitalize(): String {
-                    return this.lowercase().replaceFirstChar {
-                        it.uppercase()
-                    }
-                }
-
                 binding.listItemEntryDayOfWeek.text =
                     getString(R.string.add_comma, this.item.entry.date.dayOfWeek.name.capitalize())
                 binding.listItemEntryDayOfWeek.setTextColor(
                     if (this.item.entry.date.endOfWeek == LocalDate.now().endOfWeek) {
-                        requireContext().getAttributeColor(R.attr.colorListItemEntryDayThisWeek)
+                        requireContext().getAttributeColor(R.attr.textColorListItemEntryDayThisWeek)
                     } else {
-                        requireContext().getAttributeColor(R.attr.colorListItemEntryDay)
+                        requireContext().getAttributeColor(R.attr.textColorListItemEntryDay)
                     }
                 )
 

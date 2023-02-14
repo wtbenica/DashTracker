@@ -20,3 +20,10 @@ fun CharSequence.toFloatOrNull(): Float? =
     if (this.isNotEmpty()) this.padStart(2, '0').toString().toFloat() else null
 
 fun CharSequence.toIntOrNull(): Int? = if (this.isNotEmpty()) this.toString().toInt() else null
+
+fun String.capitalize(): String {
+    return this.lowercase().replaceFirstChar {
+        it.uppercase()
+    }
+}
+

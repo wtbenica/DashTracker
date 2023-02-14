@@ -26,12 +26,11 @@ import android.view.View.*
 import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.LinearLayout
-import android.widget.Space
 import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.setPadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
@@ -56,6 +55,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 import java.time.Month
+import java.util.*
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -136,8 +136,8 @@ class YearlyListFragment : ListItemFragment() {
             private val mileageGridBinding: YearlyMileageGridBinding =
                 YearlyMileageGridBinding.bind(itemView)
 
-            override val collapseArea: ConstraintLayout
-                get() = binding.listItemDetails
+            override val collapseArea: Array<View>
+                get() = arrayOf(binding.listItemDetails)
 
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
@@ -247,8 +247,8 @@ class YearlyListFragment : ListItemFragment() {
                                         showExpenseFields(hasMultipleStdDeductions = hasMultipleStdDeductions)
 
                                         if (hasMultipleStdDeductions) {
-                                            val initChildren = 7
-                                            val spannedColumns = 8
+                                            val initChildren = 3
+                                            val spannedColumns = 0
                                             mileageGridBinding.mileageBreakdownGrid.apply {
                                                 removeViews(initChildren, childCount - initChildren)
                                             }
@@ -261,9 +261,11 @@ class YearlyListFragment : ListItemFragment() {
                                                     val dates = "${
                                                         Month.of(startMonth).toString()
                                                             .substring(0..2)
+                                                            .capitalize()
                                                     }-${
                                                         Month.of(entry.key).toString()
                                                             .substring(0..2)
+                                                            .capitalize()
                                                     }"
                                                     startMonth = entry.key + 1
                                                     yearlyMileageRow(
@@ -276,24 +278,24 @@ class YearlyListFragment : ListItemFragment() {
                                                     )
                                                 }
                                             }
-                                            mileageGridBinding.apply {
-                                                val endRow =
-                                                    (mileageBreakdownGrid.childCount + spannedColumns) / 3
-
-                                                mileageBreakdownGrid.addView(
-                                                    Space(context).apply {
-                                                        val lp = GridLayout.LayoutParams().apply {
-                                                            height =
-                                                                resources.getDimension(R.dimen.margin_default)
-                                                                    .toInt()
-                                                            columnSpec =
-                                                                GridLayout.spec(0, 3, 1f)
-                                                            rowSpec = GridLayout.spec(endRow)
-                                                        }
-                                                        layoutParams = lp
-                                                    }
-                                                )
-                                            }
+//                                            mileageGridBinding.apply {
+//                                                val endRow =
+//                                                    (mileageBreakdownGrid.childCount + spannedColumns) / 3
+//
+//                                                mileageBreakdownGrid.addView(
+//                                                    Space(context).apply {
+//                                                        val lp = GridLayout.LayoutParams().apply {
+//                                                            height =
+//                                                                resources.getDimension(R.dimen.margin_default)
+//                                                                    .toInt()
+//                                                            columnSpec =
+//                                                                GridLayout.spec(0, 3, 1f)
+//                                                            rowSpec = GridLayout.spec(endRow)
+//                                                        }
+//                                                        layoutParams = lp
+//                                                    }
+//                                                )
+//                                            }
                                         } else {
                                             detailsBinding.listItemYearlyCpmDeductionType.text =
                                                 deductionType.fullDesc
@@ -392,11 +394,12 @@ fun yearlyMileageRow(
             rowSpec = GridLayout.spec(row)
         }
 
-        root.addView(ValueTextView(context, pos = 0).apply {
+        root.addView(ValueTextView(context).apply {
             layoutParams = lp
             text = it
             textAlignment = TEXT_ALIGNMENT_TEXT_START
             textSize = context.getDimen(R.dimen.text_size_med)
+            setPadding(0)
         })
     }
 
@@ -405,10 +408,12 @@ fun yearlyMileageRow(
             columnSpec = GridLayout.spec(1, 1, 1f)
             rowSpec = GridLayout.spec(row)
         }
-        root.addView(HeaderTextView(context, pos = 1).apply {
+        root.addView(HeaderTextView(context).apply {
             layoutParams = lp
             text = context.getString(R.string.cpm_unit, it)
             textAlignment = TEXT_ALIGNMENT_TEXT_END
+            textSize = context.getDimen(R.dimen.text_size_med)
+            setPadding(0)
         })
     }
 
@@ -422,6 +427,7 @@ fun yearlyMileageRow(
             text = it.toInt().toString()
             textAlignment = TEXT_ALIGNMENT_TEXT_END
             textSize = context.getDimen(R.dimen.text_size_med)
+            setPadding(0)
         })
     }
 }

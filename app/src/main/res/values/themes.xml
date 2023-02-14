@@ -187,6 +187,7 @@
         <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
         <item name="colorOptionsMenuStroke">?attr/colorTabIndicator</item>
         <item name="colorOptionsButton">?attr/colorTabIndicator</item>
+        <item name="colorOptionsMenuRipple">?attr/colorSecondary</item>
 
         <item name="colorGroupButton">?attr/colorSecondaryDark</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondary</item>
@@ -198,20 +199,22 @@
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
-        <item name="colorListItemBorder">?attr/colorUIBackground</item>
+        <item name="colorListItemBorder">?attr/colorListItem</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryFaded</item>
-        <item name="colorListItemExpandedBorder">?attr/colorPrimary</item>
-        <item name="colorListItemAccent">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemExpandedBorder">?attr/colorListItemDetailsBorder</item>
+        <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
+
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">@android:color/transparent</item>
         <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
-        <item name="colorListItemEntryDayThisWeek">?attr/colorAccent</item>
-        <item name="colorListItemEntryDay">?attr/colorTextPrimary</item>
         <item name="colorListItemShadow">?attr/colorTextPrimary</item>
+        <item name="textColorListItemEntryDayThisWeek">?attr/colorAccent</item>
+        <item name="textColorListItemEntryDay">?attr/colorTextPrimary</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
+        <item name="colorListItemDetailsBorder">?attr/colorPrimary</item>
         <item name="colorListItemDetailsToolbar">?attr/colorOnSecondary</item>
         <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>

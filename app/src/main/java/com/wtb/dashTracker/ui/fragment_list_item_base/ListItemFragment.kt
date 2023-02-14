@@ -140,7 +140,7 @@ abstract class ListItemFragment : Fragment() {
     abstract inner class BaseItemHolder<T : ListItemType>(itemView: View) :
         RecyclerView.ViewHolder(itemView), OnClickListener {
         protected lateinit var item: T
-        abstract val collapseArea: ViewGroup
+        abstract val collapseArea: Array<View>
         abstract val backgroundArea: ViewGroup
         abstract val bgCard: CardView
 
@@ -190,10 +190,10 @@ abstract class ListItemFragment : Fragment() {
                 ) it[0] else null
             } ?: GONE) as Int
 
-            collapseArea.visibility = listItemDetailsVisibility
+            collapseArea.forEach { it.visibility = listItemDetailsVisibility }
 
             if (listItemDetailsVisibility == VISIBLE) {
-                backgroundArea.setBackgroundResource(R.drawable.fg_list_item)
+                backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
                 if (backgroundArea.background is RippleDrawable) {
                     (backgroundArea.background as RippleDrawable).setDrawable(
                         0,
@@ -216,13 +216,13 @@ abstract class ListItemFragment : Fragment() {
                     bgCard.cardElevation = elev
                 }
             } else {
-                backgroundArea.setBackgroundResource(R.drawable.fg_list_item)
+                backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
                 if (backgroundArea.background is RippleDrawable) {
                     (backgroundArea.background as RippleDrawable).setDrawable(
                         0,
                         ResourcesCompat.getDrawable(
                             resources,
-                            R.drawable.bg_list_item_new,
+                            R.drawable.bg_list_item,
                             requireContext().theme
                         )
                     )

@@ -20,6 +20,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +34,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.databinding.FragmentIncomeBinding
+import com.wtb.dashTracker.databinding.FragIncomeBinding
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.repository.DeductionType
@@ -70,13 +72,13 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_income, container, false)
+        return inflater.inflate(R.layout.frag_income, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentIncomeBinding.bind(view)
+        val binding = FragIncomeBinding.bind(view)
         val tabLayout = binding.fragIncomeTabLayout
         val viewPager = binding.fragIncomeViewPager
         viewPager.adapter = IncomePagerAdapter(this)
@@ -90,15 +92,16 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
         }.attach()
 
         val btnGroup = binding.filterBoxCollapsableArea
-        binding.filterBtn.setOnClickListener {
+        binding.topStuff.setOnClickListener {
             if (btnGroup.isVisible) {
                 btnGroup.collapse()
-                binding.filterBtn.setIconResource(R.drawable.ic_arrow_expand)
-                binding.filterBtn.text = cpmButtonText
+                binding.expandArrow.setImageResource(R.drawable.ic_arrow_expand)
+                binding.selectCpm.visibility = VISIBLE
+                binding.selectCpm.text = cpmButtonText
             } else {
                 btnGroup.expand()
-                binding.filterBtn.setIconResource(R.drawable.ic_arrow_collapse)
-                binding.filterBtn.text = null
+                binding.expandArrow.setImageResource(R.drawable.ic_arrow_collapse)
+                binding.selectCpm.visibility = GONE
             }
         }
 
@@ -133,7 +136,7 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
                                 ": " + it.text
                             }
                     if (!btnGroup.isVisible) {
-                        binding.filterBtn.text = this@IncomeFragment.cpmButtonText
+                        binding.selectCpm.text = this@IncomeFragment.cpmButtonText
                     }
                 }
             }

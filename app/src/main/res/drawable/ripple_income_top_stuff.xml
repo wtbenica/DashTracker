@@ -15,6 +15,6 @@
   -->
 
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="?attr/colorListItemExpandedBorder">
-    <item android:drawable="@drawable/bg_list_item_new" />
+    android:color="?attr/colorOptionsMenuRipple">
+    <item android:drawable="?attr/colorOptionsMenu" />
 </ripple>

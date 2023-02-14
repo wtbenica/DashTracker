@@ -27,47 +27,46 @@
         android:background="@drawable/bg_list_item"
         tools:background="@drawable/bg_list_item_expanded">
 
-        <GridLayout
-            android:id="@+id/top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/list_item_title"
+            style="@style/ListItemHeaderTextView.Title"
             android:layout_marginStart="@dimen/margin_default"
             android:layout_marginTop="@dimen/margin_default"
-            android:columnCount="2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="NOV 21, 2021" />
 
-            <TextView
-                android:id="@+id/list_item_title"
-                style="@style/ListItemHeaderTextView.Title"
-                tools:text="NOV 21, 2021" />
+        <ImageView
+            android:id="@+id/list_item_recurring"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="@dimen/margin_half"
+            android:contentDescription="@string/content_desc_recurring_expense"
+            android:paddingBottom="@dimen/margin_narrow"
+            android:src="@drawable/ic_recurring"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/list_item_title"
+            app:layout_constraintStart_toEndOf="@id/list_item_title"
+            app:tint="?attr/colorListItemTitle"
+            tools:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/list_item_recurring"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/margin_narrow"
-                android:layout_marginStart="@dimen/margin_half"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/content_desc_recurring_expense"
-                android:src="@drawable/ic_recurring"
-                android:visibility="gone"
-                app:tint="?attr/colorListItemTitle"
-                tools:visibility="visible" />
+        <TextView
+            android:id="@+id/list_item_subtitle"
+            style="@style/ListItemHeaderTextView.Subtitle"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="2"
+            android:gravity="bottom"
+            android:text="@string/lbl_other"
+            app:layout_constraintStart_toStartOf="@id/list_item_title"
+            app:layout_constraintTop_toBottomOf="@id/list_item_title" />
 
-            <TextView
-                android:id="@+id/list_item_subtitle"
-                style="@style/ListItemHeaderTextView.Subtitle"
-                android:layout_height="wrap_content"
-                android:layout_columnSpan="2"
-                android:gravity="bottom"
-                android:text="@string/lbl_other" />
-
-            <androidx.legacy.widget.Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/margin_default"
-                android:layout_columnSpan="2" />
-        </GridLayout>
+        <androidx.legacy.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_default"
+            android:layout_columnSpan="2"
+            app:layout_constraintStart_toStartOf="@id/list_item_subtitle"
+            app:layout_constraintTop_toBottomOf="@id/list_item_subtitle" />
 
         <TextView
             android:id="@+id/list_item_title_2"
@@ -81,83 +80,75 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="$20.00" />
 
-        <LinearLayout
-            android:id="@+id/list_item_details"
-            android:layout_width="match_parent"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/list_item_details_card"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_half"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginEnd="@dimen/margin_half"
+            android:layout_marginBottom="@dimen/margin_half"
+            android:layout_weight="1"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"
+            app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/top">
+            app:layout_constraintTop_toBottomOf="@id/list_item_subtitle">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/list_item_details_card"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_half"
-                android:layout_marginEnd="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_default"
-                android:layout_weight="1">
+            <TableLayout
+                style="@style/DetailsTable.Gas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                <TableLayout
-                    style="@style/PayTable.Gas"
+                <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <TextView
+                        style="@style/PayTableHeaderStyle"
+                        android:text="@string/lbl_price" />
 
-                        <TextView
-                            style="@style/PayTableHeaderStyle"
-                            android:text="@string/lbl_price" />
+                    <TextView
+                        style="@style/PayTableHeaderStyle"
+                        android:text="@string/lbl_gallons" />
+                </TableRow>
 
-                        <TextView
-                            style="@style/PayTableHeaderStyle"
-                            android:text="@string/lbl_gallons" />
-                    </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/list_item_price"
+                        style="@style/PayTableValueStyle"
+                        tools:text="$5.299" />
 
-                        <TextView
-                            android:id="@+id/list_item_price"
-                            style="@style/PayTableValueStyle"
-                            tools:text="$5.299" />
+                    <TextView
+                        android:id="@+id/list_item_gallons"
+                        style="@style/PayTableValueStyle"
+                        tools:text="3.77" />
+                </TableRow>
+            </TableLayout>
+        </androidx.cardview.widget.CardView>
 
-                        <TextView
-                            android:id="@+id/list_item_gallons"
-                            style="@style/PayTableValueStyle"
-                            tools:text="3.77" />
-                    </TableRow>
-                </TableLayout>
-            </androidx.cardview.widget.CardView>
+        <ImageButton
+            android:id="@+id/list_item_btn_delete"
+            style="@style/ListItemButton"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginBottom="@dimen/margin_half"
+            android:contentDescription="@string/content_desc_remove"
+            android:src="@drawable/ic_action_delete"
+            app:layout_constraintBottom_toTopOf="@id/list_item_btn_edit"
+            app:layout_constraintEnd_toEndOf="@id/list_item_btn_edit"
+            app:layout_constraintTop_toBottomOf="@id/list_item_title_2" />
 
-            <LinearLayout
-                android:id="@+id/button_box"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_half"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <ImageButton
-                    android:id="@+id/list_item_btn_delete"
-                    style="@style/ListItemButton"
-                    android:layout_marginBottom="@dimen/margin_half"
-                    android:contentDescription="@string/content_desc_remove"
-                    android:src="@drawable/ic_action_delete" />
-
-                <ImageButton
-                    android:id="@+id/list_item_btn_edit"
-                    style="@style/ListItemButton"
-                    android:contentDescription="@string/content_desc_edit_button"
-                    android:src="@drawable/ic_action_edit" />
-
-            </LinearLayout>
-        </LinearLayout>
+        <ImageButton
+            android:id="@+id/list_item_btn_edit"
+            style="@style/ListItemButton"
+            android:layout_marginEnd="@dimen/margin_half"
+            android:layout_marginBottom="@dimen/margin_half"
+            android:contentDescription="@string/content_desc_edit_button"
+            android:src="@drawable/ic_action_edit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

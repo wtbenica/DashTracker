@@ -91,6 +91,7 @@
     <attr name="colorGroupStroke" format="reference" />
     <attr name="colorOptionsButton" format="reference" />
     <attr name="colorOptionsMenuStroke" format="reference" />
+    <attr name="colorOptionsMenuRipple" format="reference" />
 
     <!-- list_item -->
     <attr name="colorListItem" format="reference|color" />
@@ -102,8 +103,8 @@
     <attr name="colorListItemSubtitle" format="reference" />
     <attr name="colorListItemButtonIcon" format="reference|color" />
     <attr name="colorListItemButtonBg" format="reference|color" />
-    <attr name="colorListItemEntryDay" format="reference|color" />
-    <attr name="colorListItemEntryDayThisWeek" format="reference|color" />
+    <attr name="textColorListItemEntryDay" format="reference|color" />
+    <attr name="textColorListItemEntryDayThisWeek" format="reference|color" />
     <attr name="colorListItemShadow" format="reference|color" />
 
     <attr name="textSizeListItemTitle" format="reference" />
@@ -119,6 +120,7 @@
 
     <!-- list_item_details -->
     <attr name="colorListItemDetails" format="reference" />
+    <attr name="colorListItemDetailsBorder" format="reference" />
     <attr name="colorListItemDetailsToolbar" format="reference" />
     <attr name="colorRowHeaderPayText" format="reference" />
     <attr name="colorRowValuePayText" format="reference" />

@@ -145,8 +145,12 @@ class ExpenseListFragment : ListItemFragment() {
         ), View.OnClickListener {
             private val binding: ListItemExpenseBinding = ListItemExpenseBinding.bind(itemView)
 
-            override val collapseArea: ViewGroup
-                get() = binding.listItemDetails
+            override val collapseArea: Array<View>
+                get() = arrayOf(
+                    binding.listItemDetailsCard,
+                    binding.listItemBtnDelete,
+                    binding.listItemBtnEdit
+                )
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
             override val bgCard: CardView
@@ -201,8 +205,8 @@ class ExpenseListFragment : ListItemFragment() {
             private val binding: ListItemExpenseNonGasBinding =
                 ListItemExpenseNonGasBinding.bind(itemView)
 
-            override val collapseArea: ViewGroup
-                get() = binding.buttonBox
+            override val collapseArea: Array<View>
+                get() = arrayOf(binding.buttonBox)
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
             override val bgCard: CardView

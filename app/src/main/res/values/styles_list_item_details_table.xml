@@ -49,13 +49,21 @@
         <item name="android:gravity">bottom</item>
     </style>
 
-    <style name="PayTable">
-        <item name="android:background">@drawable/bg_list_item_subtable</item>
-        <item name="android:paddingHorizontal">@dimen/margin_narrow</item>
-        <item name="android:paddingVertical">@dimen/margin_half</item>
+    <style name="DetailsTable">
+        <item name="android:background">@drawable/bg_list_item_details_table</item>
+        <item name="android:paddingBottom">@dimen/margin_default</item>
+        <item name="android:paddingHorizontal">@dimen/margin_wide</item>
     </style>
 
-    <style name="PayTable.Gas">
+    <style name="DetailsTableTop">
+        <item name="android:background">@drawable/bg_list_item_subtable</item>
+        <item name="android:paddingHorizontal">@dimen/margin_narrow</item>
+        <item name="android:paddingTop">@dimen/margin_half</item>
+        <item name="android:paddingBottom">@dimen/margin_default</item>
+    </style>
+
+    <style name="DetailsTable.Gas">
+        <item name="android:paddingTop">@dimen/margin_default</item>
         <item name="android:background">@drawable/bg_list_item_subtable_full</item>
     </style>
 
@@ -76,12 +84,6 @@
         <item name="android:textColor">?attr/colorRowValuePayText</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment">center</item>
-    </style>
-
-    <style name="DetailsTable">
-        <item name="android:background">@drawable/bg_list_item_details_table</item>
-        <item name="android:paddingVertical">@dimen/margin_default</item>
-        <item name="android:paddingHorizontal">@dimen/margin_wide</item>
     </style>
 
     <style name="ExpandDetailsButton">
