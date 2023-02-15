@@ -21,11 +21,6 @@
     </style>
 
     <!-- Licenses Activities Theme -->
-    <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="colorActionBarText">@color/on_brick</item>
-    </style>
-
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimary</item>
         <item name="colorUIBackground">?attr/colorOnSecondary</item>
@@ -61,7 +56,7 @@
 
         <!-- activity_main.xml -->
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBar">?attr/colorUIBackground</item>
+        <item name="colorSummaryBar">?attr/colorTextSecondaryDisabled</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorFab">?attr/colorSecondary</item>
         <item name="colorFabDisabled">?attr/colorPrimary</item>
@@ -80,10 +75,10 @@
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- active_dash_bar -->
-        <item name="colorActiveDashBarStroke">?attr/colorPrimary</item>
-        <item name="colorActiveDashBarBg">?attr/colorPrimary</item>
-        <item name="colorActiveDashBarDetailsStroke">?attr/colorPrimary</item>
-        <item name="colorActiveDashBarDetailsBg">?attr/colorOnSecondaryVariant</item>
+        <item name="colorActiveDashBarBg">?attr/colorSecondaryDark</item>
+        <item name="colorActiveDashBarStroke">?attr/colorSecondary</item>
+        <item name="colorActiveDashBarDetailsStroke">?attr/colorSecondary</item>
+        <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryVariant</item>
@@ -115,9 +110,13 @@
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">@android:color/transparent</item>
         <item name="colorListItemButtonIcon">?attr/colorSecondaryFaded</item>
+
         <item name="textColorListItemEntryDayThisWeek">?attr/colorSecondaryFaded</item>
         <item name="textColorListItemEntryDay">?attr/colorTextPrimary</item>
         <item name="colorListItemShadow">?attr/colorUIBackground</item>
+
+        <item name="dimenListItemElevationElevated">0dp</item>
+        <item name="dimenListItemElevationLowered">0dp</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
@@ -176,5 +175,10 @@
         <item name="colorDatePickerNavButton">@color/dark</item>
         <item name="colorDatePickerBackground">?attr/colorSurface</item>
         <item name="colorDatePickerText">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="LicensesActivitiesTheme" parent="LicensesActivitiesBase">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorActionBarText">@color/on_brick</item>
     </style>
 </resources>

@@ -271,7 +271,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
         fun initBottomNavBar() {
             val navView: BottomNavigationView = binding.navView
-            navView.background = null
 
             val appBarConfiguration = AppBarConfiguration(
                 setOf(

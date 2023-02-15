@@ -30,12 +30,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.database.models.Purpose.GAS
-import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemExpenseBinding
 import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
 import com.wtb.dashTracker.extensions.formatted
@@ -70,16 +68,16 @@ class ExpenseListFragment : ListItemFragment() {
         setDialogListeners()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragItemListBinding.inflate(inflater)
-        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        return binding.root
-    }
-
+//    override fun onCreateView(
+//        inflater: LayoutInflater, container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View {
+//        binding = FragItemListBinding.inflate(inflater)
+//        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
+//
+//        return binding.root
+//    }
+//
     private fun setDialogListeners() {
         childFragmentManager.setFragmentResultListener(
             ConfirmType.DELETE.key,

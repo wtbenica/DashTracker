@@ -16,7 +16,10 @@
 
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
+import android.content.Context
 import android.graphics.drawable.RippleDrawable
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
@@ -25,16 +28,38 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragItemListBinding
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@ExperimentalCoroutinesApi
+abstract class IncomeListItemFragment : ListItemFragment() {
+
+    protected var callback: IncomeFragment.IncomeFragmentCallback? = null
+
+    protected var deductionType: DeductionType = DeductionType.NONE
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        callback = context as IncomeFragment.IncomeFragmentCallback
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callback = null
+    }
+}
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -45,11 +70,24 @@ abstract class ListItemFragment : Fragment() {
     protected val recyclerView: RecyclerView
         get() = binding.itemListRecyclerView
 
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragItemListBinding.inflate(inflater)
+        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
+        val height = (requireActivity() as MainActivity).binding.bottomAppBar.measuredHeight
+        binding.itemListRecyclerView.updatePadding(bottom = height + 16)
+
+        return binding.root
+    }
+
     abstract inner class BaseItemListAdapter<ItemType : ListItemType>(diffCallback: DiffUtil.ItemCallback<ItemType>) :
         ListAdapter<ItemType, BaseItemHolder<ItemType>>(diffCallback),
         ExpandableAdapter {
 
-        override var mExpandedPositions: MutableSet<Int> = mutableSetOf()
+        override var mExpandedPosition: Int? = null
 
         override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
             super.onAttachedToRecyclerView(recyclerView)
@@ -63,7 +101,7 @@ abstract class ListItemFragment : Fragment() {
             payloads: List<Any>
         ) {
             super.onBindViewHolder(holder, position, payloads)
-            val itemIsExpanded = if (position in mExpandedPositions) {
+            val itemIsExpanded = if (position == mExpandedPosition) {
                 VISIBLE
             } else {
                 GONE
@@ -97,7 +135,7 @@ abstract class ListItemFragment : Fragment() {
         PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback),
         ExpandableAdapter {
 
-        override var mExpandedPositions: MutableSet<Int> = mutableSetOf()
+        override var mExpandedPosition: Int? = null
 
         override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
             super.onAttachedToRecyclerView(recyclerView)
@@ -111,7 +149,7 @@ abstract class ListItemFragment : Fragment() {
             payloads: List<Any>
         ) {
             super.onBindViewHolder(holder, position, payloads)
-            val itemIsExpanded = if (position in mExpandedPositions) {
+            val itemIsExpanded = if (position == mExpandedPosition) {
                 VISIBLE
             } else {
                 GONE
@@ -151,6 +189,8 @@ abstract class ListItemFragment : Fragment() {
 
         override fun onClick(v: View?) {
             if (bindingAdapter is ExpandableAdapter) {
+                var prev: Int? = null
+
                 val adapter: ExpandableAdapter? = when (bindingAdapter) {
                     is ListItemFragment.BaseItemPagingDataAdapter<*> -> bindingAdapter as ListItemFragment.BaseItemPagingDataAdapter<*>
                     is ListItemFragment.BaseItemListAdapter<*> -> bindingAdapter as ListItemFragment.BaseItemListAdapter<*>
@@ -158,10 +198,21 @@ abstract class ListItemFragment : Fragment() {
                 }
 
                 adapter?.let {
-                    if (bindingAdapterPosition in it.mExpandedPositions) {
-                        it.mExpandedPositions.remove(bindingAdapterPosition)
+                    prev = it.mExpandedPosition
+                    if (bindingAdapterPosition == it.mExpandedPosition) {
+                        (requireContext() as MainActivity).binding.apply {
+                            appBarLayout.setExpanded(true, true)
+                            bottomAppBar.performShow(true)
+                        }
+
+                        it.mExpandedPosition = null
                     } else {
-                        it.mExpandedPositions.add(bindingAdapterPosition)
+                        (requireContext() as MainActivity).binding.apply {
+                            appBarLayout.setExpanded(false, true)
+                            bottomAppBar.performHide()
+                        }
+
+                        it.mExpandedPosition = (bindingAdapterPosition)
                         val scroller = object : LinearSmoothScroller(context) {
                             override fun getVerticalSnapPreference(): Int {
                                 return SNAP_TO_START
@@ -169,15 +220,14 @@ abstract class ListItemFragment : Fragment() {
                         }.apply {
                             targetPosition = bindingAdapterPosition
                         }
+
                         recyclerView.layoutManager?.startSmoothScroll(scroller)
-                        (activity as MainActivity?)?.binding?.apply {
-                            appBarLayout.setExpanded(false, true)
-                        }
                     }
                 }
-            }
 
-            bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
+                prev?.let { bindingAdapter?.notifyItemChanged(it) }
+                bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
+            }
         }
 
         protected fun setVisibilityFromPayloads(payloads: List<Any>?) {
@@ -203,7 +253,7 @@ abstract class ListItemFragment : Fragment() {
                         )
                     )
 
-                    val elev = resources.getDimension(R.dimen.margin_half)
+                    val elev = resources.getDimension(R.dimen.margin_narrow)
 
                     bgCard.cardElevation = elev
                 }
@@ -229,30 +279,30 @@ abstract class ListItemFragment : Fragment() {
 interface ListItemType
 
 interface ExpandableAdapter {
-    var mExpandedPositions: MutableSet<Int>
+    var mExpandedPosition: Int?
 
     val adapterObserver: RecyclerView.AdapterDataObserver
         get() = object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
-                mExpandedPositions = mExpandedPositions.map {
+                mExpandedPosition = mExpandedPosition?.let {
                     if (it >= positionStart)
                         it + itemCount
                     else
                         it
-                }.toMutableSet()
+                }
             }
 
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
-                mExpandedPositions = mExpandedPositions.mapNotNull {
+                mExpandedPosition = mExpandedPosition?.let {
                     if (it >= positionStart + itemCount)
                         it - itemCount
                     else if (it >= positionStart)
                         null
                     else
                         it
-                }.toMutableSet()
+                }
             }
         }
 }

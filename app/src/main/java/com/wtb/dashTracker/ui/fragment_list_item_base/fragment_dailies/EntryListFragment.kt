@@ -17,9 +17,7 @@
 package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -36,18 +34,15 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
-import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
@@ -58,7 +53,7 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Compani
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState.DELETED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -68,17 +63,9 @@ import java.time.LocalDate
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-class EntryListFragment : ListItemFragment() {
+class EntryListFragment : IncomeListItemFragment() {
 
     private val viewModel: EntryListViewModel by viewModels()
-    private var callback: IncomeFragment.IncomeFragmentCallback? = null
-
-    private var deductionType: DeductionType = DeductionType.NONE
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = context as IncomeFragment.IncomeFragmentCallback
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,24 +73,14 @@ class EntryListFragment : ListItemFragment() {
         setDialogListeners()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragItemListBinding.inflate(inflater)
-        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        return binding.root
-    }
-
-    protected fun setDialogListeners() {
+    private fun setDialogListeners() {
         childFragmentManager.setFragmentResultListener(
             ConfirmType.DELETE.key,
             this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
-            Log.d(TAG, "Delete | $result | $id")
+
             if (result) {
                 (activity as MainActivity).clearActiveEntry(id)
                 viewModel.deleteEntryById(id)
@@ -154,14 +131,10 @@ class EntryListFragment : ListItemFragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        callback = null
-    }
-
     interface EntryListFragmentCallback : DeductionCallback
 
-    inner class EntryAdapter : ListItemFragment.BaseItemPagingDataAdapter<FullEntry>(DIFF_CALLBACK) {
+    inner class EntryAdapter :
+        ListItemFragment.BaseItemPagingDataAdapter<FullEntry>(DIFF_CALLBACK) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullEntry> =
             EntryHolder(parent)
 
@@ -188,7 +161,6 @@ class EntryListFragment : ListItemFragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        Log.d(TAG, "Delete pressed")
                         ConfirmDeleteDialog.newInstance(this@EntryHolder.item.entry.entryId)
                             .show(childFragmentManager, "delete_entry")
                     }
