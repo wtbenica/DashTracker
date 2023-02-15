@@ -21,7 +21,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardElevation="0dp">
+        app:cardBackgroundColor="@android:color/transparent">
 
         <FrameLayout
             style="@style/ChartCardDetailsLayout"
@@ -31,17 +31,20 @@
                 android:id="@+id/cpm_chart_card"
                 style="@style/ChartCard"
                 android:layout_width="match_parent"
+                app:cardBackgroundColor="@android:color/transparent"
                 android:layout_height="match_parent"
                 app:cardElevation="0dp">
 
                 <LinearLayout
                     style="@style/DashTrackerChart"
+                    android:background="@android:color/transparent"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <com.wtb.dashTracker.views.WeeklyLineChart
                         android:id="@+id/cpm_chart_line_cpm"
+                        android:background="@android:color/transparent"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1" />
@@ -60,8 +63,9 @@
                     style="@style/chartTunerTable"
                     tools:visibility="visible">
 
-                    <TableRow android:layout_marginBottom="@dimen/margin_default"
-                        android:layout_marginTop="@dimen/margin_narrow">
+                    <TableRow
+                        android:layout_marginTop="@dimen/margin_narrow"
+                        android:layout_marginBottom="@dimen/margin_default">
 
                         <TextView
                             android:id="@+id/cpm_label_num_weeks_tv"

@@ -19,7 +19,8 @@
     <style name="DTCardViewStyle.ListItem">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="cardElevation">8dp</item>
+        <item name="cardElevation">@dimen/margin_half</item>
+        <item name="cardCornerRadius">?attr/listItemCornerRadius</item>
         <item name="android:outlineAmbientShadowColor">?attr/colorListItemShadow</item>
         <item name="android:outlineSpotShadowColor">?attr/colorListItemShadow</item>
         <item name="android:layout_marginHorizontal">?attr/dimenListItemMarginHorizontal</item>

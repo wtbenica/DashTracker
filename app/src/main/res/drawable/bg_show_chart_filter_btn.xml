@@ -14,7 +14,10 @@
   ~ limitations under the License.
   -->
 
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="?attr/colorListItemRipple">
-    <item android:drawable="@drawable/bg_list_item" />
-</ripple>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="?attr/listItemCornerRadius" />
+    <stroke
+        android:width="2dp"
+        android:color="?attr/colorTabIndicator" />
+    <solid android:color="?attr/colorShowFiltersButtonBg" />
+</shape>

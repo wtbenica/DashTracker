@@ -99,6 +99,7 @@
     <attr name="colorListItemAccent" format="reference" />
     <attr name="colorListItemExpanded" format="reference" />
     <attr name="colorListItemExpandedBorder" format="reference|color" />
+    <attr name="colorListItemRipple" format="reference|color" />
     <attr name="colorListItemTitle" format="reference" />
     <attr name="colorListItemSubtitle" format="reference" />
     <attr name="colorListItemButtonIcon" format="reference|color" />

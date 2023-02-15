@@ -36,6 +36,7 @@
             style="@style/SummaryBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:elevation="@dimen/margin_half"
             android:fitsSystemWindows="true"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
@@ -116,6 +117,11 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
             </GridLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOptionsMenuStroke" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.fragment.app.FragmentContainerView
@@ -150,7 +156,7 @@
             android:animateLayoutChanges="true"
             android:backgroundTint="?attr/colorBottomNavBar"
             android:minHeight="?android:attr/actionBarSize"
-            app:elevation="1dp"
+            app:elevation="@dimen/margin_half"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="scale"
             app:fabCradleMargin="0dp"
@@ -167,9 +173,10 @@
                 android:background="?attr/selectableItemBackground"
                 android:paddingStart="0dp"
                 android:paddingEnd="80dp"
+                app:itemTextAppearanceActive="@style/BottomNavTextActive"
+                app:itemTextAppearanceInactive="@style/BottomNavTextInactive"
                 app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"
                 app:itemBackground="@drawable/ripple_bottom_nav"
-                app:itemIconSize="@dimen/margin_wide"
                 app:itemIconTint="?attr/colorBottomNavItem"
                 app:itemTextColor="?attr/colorBottomNavItemText"
                 app:labelVisibilityMode="labeled"

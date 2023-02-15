@@ -54,4 +54,13 @@
     <style name="BottomNavActiveIndicatorStyle" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">?attr/colorBottomNavItemIndicator</item>
     </style>
+
+    <style name="BottomNavTextActive" parent="ActiveDashTextView.Label">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_med</item>
+    </style>
+
+    <style name="BottomNavTextInactive" parent="ActiveDashTextView.Label">
+        <item name="android:textSize">@dimen/text_size_med</item>
+    </style>
 </resources>

@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
 import android.graphics.drawable.RippleDrawable
-import android.util.TypedValue
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
@@ -204,13 +203,6 @@ abstract class ListItemFragment : Fragment() {
                         )
                     )
 
-                    val tv = TypedValue()
-                    requireContext().theme.resolveAttribute(
-                        R.attr.dimenListItemElevationElevated,
-                        tv,
-                        true
-                    )
-
                     val elev = resources.getDimension(R.dimen.margin_half)
 
                     bgCard.cardElevation = elev
@@ -228,9 +220,7 @@ abstract class ListItemFragment : Fragment() {
                     )
                 }
 
-                val elev = resources.getDimension(R.dimen.margin_skinny)
-
-                bgCard.cardElevation = elev
+                bgCard.cardElevation = 0f
             }
         }
     }
@@ -245,36 +235,24 @@ interface ExpandableAdapter {
         get() = object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
-                val oldPositions = mutableListOf<Int>().apply {
-                    mExpandedPositions.forEach { this.add(it) }
-                }
-                val newPositions: List<Int> = oldPositions.map {
+                mExpandedPositions = mExpandedPositions.map {
                     if (it >= positionStart)
                         it + itemCount
                     else
                         it
-                }
-                mExpandedPositions = mutableSetOf<Int>().apply {
-                    newPositions.forEach { this.add(it) }
-                }
+                }.toMutableSet()
             }
 
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
-                val oldPositions = mutableListOf<Int>().apply {
-                    mExpandedPositions.forEach { this.add(it) }
-                }
-                val newPositions: List<Int> = oldPositions.mapNotNull {
+                mExpandedPositions = mExpandedPositions.mapNotNull {
                     if (it >= positionStart + itemCount)
                         it - itemCount
                     else if (it >= positionStart)
                         null
                     else
                         it
-                }
-                mExpandedPositions = mutableSetOf<Int>().apply {
-                    newPositions.forEach { this.add(it) }
-                }
+                }.toMutableSet()
             }
         }
 }

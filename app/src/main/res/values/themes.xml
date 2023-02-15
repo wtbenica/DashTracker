@@ -100,10 +100,11 @@
         <item name="textSizeItemHeader">@dimen/text_size_sm</item>
         <item name="textSizeItemValue">@dimen/text_size_large</item>
         <item name="textSizeItemSecondaryValue">@dimen/text_size_med</item>
-        <item name="listItemCornerRadius">?attr/defaultCornerRadius</item>
+        <item name="listItemCornerRadius">@dimen/margin_default</item>
         <item name="listItemThinBorder">@dimen/margin_half</item>
-        <item name="dimenListItemMarginHorizontal">@dimen/margin_default</item>
-        <item name="dimenListItemMarginVertical">@dimen/margin_half</item>
+
+        <item name="dimenListItemMarginHorizontal">@dimen/margin_half</item>
+        <item name="dimenListItemMarginVertical">@dimen/margin_narrow</item>
         <item name="dimenListItemButtonRadius">@dimen/margin_half</item>
         <item name="dimenListItemElevationElevated">16dp</item>
         <item name="dimenListItemElevationLowered">4dp</item>
@@ -121,14 +122,14 @@
     </style>
 
     <style name="Base.DasherCompanion">
-        <item name="colorUi">?attr/colorPrimaryVariant</item>
+        <item name="colorUi">?attr/colorPrimary</item>
         <item name="colorUIBackground">?attr/colorOnSecondary</item>
         <item name="colorDisabled">@color/brick</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
         <!-- Status bar color. -->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:statusBarColor">?attr/colorUi</item>
 
         <!-- Chips -->
         <item name="chipStrokeColorDefault">?attr/colorPrimary</item>
@@ -167,8 +168,8 @@
         <item name="colorBottomNavTextEnabled">?attr/colorAccent</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryDark</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorSecondary</item>
-        <item name="colorBottomNavRipple">?attr/colorSecondary</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorPrimaryFaded</item>
+        <item name="colorBottomNavRipple">?attr/colorPrimaryFaded</item>
         <item name="colorPopupBackground">?attr/colorSecondaryFaded</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
@@ -199,22 +200,23 @@
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
-        <item name="colorListItemBorder">?attr/colorListItem</item>
+        <item name="colorListItemBorder">?attr/colorUIBackground</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryFaded</item>
-        <item name="colorListItemExpandedBorder">?attr/colorListItemDetailsBorder</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimaryDark</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemRipple">?attr/colorPrimary</item>
 
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">@android:color/transparent</item>
-        <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
+        <item name="colorListItemButtonIcon">?attr/colorAccent</item>
         <item name="colorListItemShadow">?attr/colorTextPrimary</item>
         <item name="textColorListItemEntryDayThisWeek">?attr/colorAccent</item>
         <item name="textColorListItemEntryDay">?attr/colorTextPrimary</item>
 
         <!-- list_item_details -->
-        <item name="colorListItemDetails">?attr/colorListItem</item>
-        <item name="colorListItemDetailsBorder">?attr/colorPrimary</item>
+        <item name="colorListItemDetails">?attr/colorOnSecondary</item>
+        <item name="colorListItemDetailsBorder">?attr/colorPrimaryDark</item>
         <item name="colorListItemDetailsToolbar">?attr/colorOnSecondary</item>
         <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
@@ -223,7 +225,7 @@
         <item name="colorRowValueSecondaryText">?attr/colorOnPrimaryVariant</item>
 
         <!-- charts -->
-        <item name="colorChartBackground">?attr/colorListItem</item>
+        <item name="colorChartBackground">?attr/colorListItemDetails</item>
         <item name="colorBarChartDatasetDefault">?attr/colorSecondary</item>
 
         <!-- CPM Chart-->

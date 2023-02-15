@@ -33,7 +33,6 @@
             android:id="@+id/list_item_details_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_default"
             app:cardBackgroundColor="@android:color/transparent">
 
             <LinearLayout
@@ -194,6 +193,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/mileage_breakdown_card"
             android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/margin_default"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@android:color/transparent">
 

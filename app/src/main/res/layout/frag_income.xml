@@ -32,15 +32,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorOptionsMenuStroke"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/frag_income_tab_layout"
             style="@style/FragIncomeTabLayout"
@@ -49,7 +40,7 @@
             app:layout_constraintEnd_toStartOf="@id/divider_4"
             app:layout_constraintHorizontal_weight=".75"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider">
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -98,28 +89,6 @@
             app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <!--        <com.google.android.material.button.MaterialButton-->
-        <!--            android:id="@+id/filter_btn"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="@dimen/min_touch_target"-->
-        <!--            android:clickable="false"-->
-        <!--            android:contentDescription="@string/content_desc_expand_item_list_options_button"-->
-        <!--            android:insetTop="0dp"-->
-        <!--            android:insetBottom="0dp"-->
-        <!--            android:minWidth="@dimen/min_touch_target"-->
-        <!--            android:text="@string/lbl_cpm"-->
-        <!--            android:textColor="?attr/colorTextPrimary"-->
-        <!--            app:backgroundTint="@android:color/transparent"-->
-        <!--            app:cornerRadius="0dp"-->
-        <!--            app:icon="@drawable/ic_arrow_expand"-->
-        <!--            app:iconTint="?attr/colorTextPrimary"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintHorizontal_weight=".25"-->
-        <!--            app:layout_constraintStart_toEndOf="@id/frag_income_tab_layout"-->
-        <!--            app:layout_constraintTop_toTopOf="parent"-->
-        <!--            app:rippleColor="@null" />-->
 
         <LinearLayout
             android:id="@+id/filter_box"

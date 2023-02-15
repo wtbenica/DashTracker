@@ -27,7 +27,7 @@
     </style>
 
     <style name="Base.DasherCompanion">
-        <item name="colorUi">?attr/colorPrimaryDark</item>
+        <item name="colorUi">?attr/colorPrimary</item>
         <item name="colorUIBackground">?attr/colorOnSecondary</item>
         <item name="colorDisabled">?attr/colorSecondary</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
@@ -69,12 +69,12 @@
         <item name="colorBottomNavBar">?attr/colorUi</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorAccent</item>
-        <item name="colorBottomNavTextEnabled">?attr/colorAccent</item>
+        <item name="colorBottomNavEnabled">?attr/colorSecondaryFaded</item>
+        <item name="colorBottomNavTextEnabled">?attr/colorSecondaryFaded</item>
         <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavTextDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorSecondary</item>
-        <item name="colorBottomNavRipple">?attr/colorSecondary</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorPrimaryVariant</item>
+        <item name="colorBottomNavRipple">?attr/colorPrimaryVariant</item>
         <item name="colorPopupBackground">?attr/colorSecondaryDark</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
@@ -105,10 +105,12 @@
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
-        <item name="colorListItemBorder">?attr/colorListItemExpanded</item>
-        <item name="colorListItemExpanded">?attr/colorPrimary</item>
-        <item name="colorListItemExpandedBorder">?attr/colorListItemExpanded</item>
+        <item name="colorListItemBorder">?attr/colorListItem</item>
+        <item name="colorListItemExpanded">?attr/colorPrimaryDark</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorOnSecondaryVariant</item>
+        <item name="colorListItemRipple">?attr/colorPrimaryVariant</item>
+
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
         <item name="colorListItemButtonBg">@android:color/transparent</item>
@@ -119,7 +121,7 @@
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorListItem</item>
-        <item name="colorListItemDetailsBorder">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemDetailsBorder">?attr/colorListItemExpandedBorder</item>
         <item name="colorListItemDetailsToolbar">?attr/colorUIBackground</item>
         <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
