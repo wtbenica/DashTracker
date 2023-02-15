@@ -94,6 +94,7 @@
     <attr name="colorOptionsMenuRipple" format="reference" />
 
     <!-- list_item -->
+    <attr name="listItemCardStyle" format="reference" />
     <attr name="colorListItem" format="reference|color" />
     <attr name="colorListItemBorder" format="reference|color" />
     <attr name="colorListItemAccent" format="reference" />

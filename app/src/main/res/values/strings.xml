@@ -55,7 +55,7 @@
     <string name="lbl_show">Show</string>
     <string name="lbl_done">Done</string>
     <string name="lbl_cost_per_mile">Cost per mile</string>
-    <string name="lbl_set_cpm_method">Calculate cost per mile using:</string>
+    <string name="lbl_set_cpm_method">Estimate cost per mile using:</string>
     <string name="lbl_cpm">CPM</string>
     <string name="lbl_none">None</string>
     <string name="lbl_start_mileage_adjusted">Keep Start Mileage</string>

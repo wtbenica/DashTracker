@@ -95,6 +95,7 @@
         <item name="textSizeBottomNavInactive">@dimen/text_size_med</item>
 
         <!-- list_item -->
+        <item name="listItemCardStyle">@style/DTCardViewStyle.ListItem</item>
         <item name="textSizeListItemTitle">@dimen/text_size_xlarge</item>
         <item name="textSizeListItemSubtitle">@dimen/text_size_med</item>
         <item name="textSizeItemHeader">@dimen/text_size_sm</item>
@@ -106,8 +107,6 @@
         <item name="dimenListItemMarginHorizontal">@dimen/margin_half</item>
         <item name="dimenListItemMarginVertical">@dimen/margin_narrow</item>
         <item name="dimenListItemButtonRadius">@dimen/margin_half</item>
-        <item name="dimenListItemElevationElevated">16dp</item>
-        <item name="dimenListItemElevationLowered">4dp</item>
 
         <!-- insights row -->
         <item name="insightsRowCornerRadius">?attr/defaultCornerRadius</item>
@@ -156,11 +155,11 @@
 
         <!-- activity_main.xml -->
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBar">?attr/colorOnSecondary</item>
+        <item name="colorSummaryBar">?attr/colorSecondaryFaded</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
-        <item name="colorFab">?attr/colorSecondaryVariant</item>
+        <item name="colorFab">?attr/colorAccent</item>
         <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorFabIcon">?attr/colorAccent</item>
+        <item name="colorFabIcon">?attr/colorSecondaryDark</item>
         <item name="colorBottomNavBar">?attr/colorUi</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
@@ -175,10 +174,10 @@
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- active_dash_bar -->
-        <item name="colorActiveDashBarStroke">?attr/colorPrimary</item>
-        <item name="colorActiveDashBarBg">?attr/colorPrimaryVariant</item>
-        <item name="colorActiveDashBarDetailsStroke">?attr/colorPrimary</item>
-        <item name="colorActiveDashBarDetailsBg">?attr/colorOnSecondary</item>
+        <item name="colorActiveDashBarStroke">?attr/colorSecondaryDark</item>
+        <item name="colorActiveDashBarBg">?attr/colorSecondaryVariant</item>
+        <item name="colorActiveDashBarDetailsStroke">?attr/colorSecondaryDark</item>
+        <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryDark</item>
@@ -213,6 +212,9 @@
         <item name="colorListItemShadow">?attr/colorTextPrimary</item>
         <item name="textColorListItemEntryDayThisWeek">?attr/colorAccent</item>
         <item name="textColorListItemEntryDay">?attr/colorTextPrimary</item>
+
+        <item name="dimenListItemElevationElevated">16dp</item>
+        <item name="dimenListItemElevationLowered">4dp</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorOnSecondary</item>
