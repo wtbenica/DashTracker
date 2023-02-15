@@ -143,7 +143,6 @@
             app:backgroundTint="?attr/colorFab"
             app:layout_anchor="@id/bottom_app_bar"
             app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
-            app:layout_dodgeInsetEdges="bottom"
             app:maxImageSize="48dp"
             app:tint="?attr/colorFabIcon" />
 
@@ -153,17 +152,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:animateLayoutChanges="true"
-            android:backgroundTint="?attr/colorBottomNavBar"
-            android:minHeight="?android:attr/actionBarSize"
-            app:elevation="@dimen/margin_half"
+            app:fabCradleMargin="@dimen/margin_narrow"
+            app:backgroundTint="?attr/colorBottomNavBar"
             app:fabAlignmentMode="end"
-            app:fabAnimationMode="scale"
-            app:fabCradleMargin="0dp"
-            app:fabCradleRoundedCornerRadius="1dp"
-            app:fabCradleVerticalOffset="0dp"
-            app:hideOnScroll="true"
-            app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior">
+            app:hideOnScroll="true">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/nav_view"
@@ -173,11 +165,11 @@
                 android:background="?attr/selectableItemBackground"
                 android:paddingStart="0dp"
                 android:paddingEnd="80dp"
-                app:itemTextAppearanceActive="@style/BottomNavTextActive"
-                app:itemTextAppearanceInactive="@style/BottomNavTextInactive"
                 app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"
                 app:itemBackground="@drawable/ripple_bottom_nav"
                 app:itemIconTint="?attr/colorBottomNavItem"
+                app:itemTextAppearanceActive="@style/BottomNavTextActive"
+                app:itemTextAppearanceInactive="@style/BottomNavTextInactive"
                 app:itemTextColor="?attr/colorBottomNavItemText"
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/bottom_nav_menu" />

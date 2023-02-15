@@ -37,9 +37,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyBinding
 import com.wtb.dashTracker.databinding.ListItemYearlyDetailsTableBinding
 import com.wtb.dashTracker.databinding.YearlyMileageGridBinding
@@ -49,8 +47,7 @@ import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExpenseBreakdown
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogMileageBreakdown
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
@@ -61,27 +58,9 @@ import java.util.*
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class YearlyListFragment : ListItemFragment() {
+class YearlyListFragment : IncomeListItemFragment() {
 
     private val viewModel: YearlyListViewModel by viewModels()
-    private var callback: IncomeFragment.IncomeFragmentCallback? = null
-
-    private var deductionType: DeductionType = DeductionType.NONE
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = context as IncomeFragment.IncomeFragmentCallback
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragItemListBinding.inflate(inflater)
-        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        return binding.root
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -278,24 +257,6 @@ class YearlyListFragment : ListItemFragment() {
                                                     )
                                                 }
                                             }
-//                                            mileageGridBinding.apply {
-//                                                val endRow =
-//                                                    (mileageBreakdownGrid.childCount + spannedColumns) / 3
-//
-//                                                mileageBreakdownGrid.addView(
-//                                                    Space(context).apply {
-//                                                        val lp = GridLayout.LayoutParams().apply {
-//                                                            height =
-//                                                                resources.getDimension(R.dimen.margin_default)
-//                                                                    .toInt()
-//                                                            columnSpec =
-//                                                                GridLayout.spec(0, 3, 1f)
-//                                                            rowSpec = GridLayout.spec(endRow)
-//                                                        }
-//                                                        layoutParams = lp
-//                                                    }
-//                                                )
-//                                            }
                                         } else {
                                             detailsBinding.listItemYearlyCpmDeductionType.text =
                                                 deductionType.fullDesc

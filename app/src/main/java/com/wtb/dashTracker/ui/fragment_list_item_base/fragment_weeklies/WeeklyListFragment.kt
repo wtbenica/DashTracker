@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -38,11 +37,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
-import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyBinding
 import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
@@ -52,8 +49,7 @@ import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.getDateRange
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -62,32 +58,15 @@ import kotlinx.coroutines.flow.collectLatest
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-class WeeklyListFragment : ListItemFragment() {
+class WeeklyListFragment : IncomeListItemFragment() {
     private val viewModel: WeeklyViewModel by viewModels()
-    private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
-    private var deductionType: DeductionType = DeductionType.NONE
     private val fullWeeklyAdapter = FullWeeklyAdapter().apply {
         registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 binding.itemListRecyclerView.scrollToPosition(positionStart)
             }
         })
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = context as IncomeFragment.IncomeFragmentCallback
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragItemListBinding.inflate(inflater)
-        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        return binding.root
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -108,11 +87,6 @@ class WeeklyListFragment : ListItemFragment() {
                 }
             }
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback = null
     }
 
     override fun onResume() {
