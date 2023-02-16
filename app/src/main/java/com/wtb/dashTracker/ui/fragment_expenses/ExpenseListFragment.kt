@@ -39,7 +39,7 @@ import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
 import com.wtb.dashTracker.extensions.formatted
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
@@ -80,7 +80,7 @@ class ExpenseListFragment : ListItemFragment() {
 //
     private fun setDialogListeners() {
         childFragmentManager.setFragmentResultListener(
-            ConfirmType.DELETE.key,
+            ConfirmDialog.DELETE.key,
             this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)

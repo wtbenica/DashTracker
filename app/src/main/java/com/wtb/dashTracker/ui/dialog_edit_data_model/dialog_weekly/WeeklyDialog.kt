@@ -43,7 +43,7 @@ import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
 import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
@@ -210,7 +210,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
     // Weeklies don't have delete
     override fun setDialogListeners() {
         childFragmentManager.setFragmentResultListener(
-            ConfirmType.RESET.key,
+            ConfirmDialog.RESET.key,
             this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)

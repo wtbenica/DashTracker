@@ -44,7 +44,7 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFICATION_STATE
@@ -75,7 +75,7 @@ class EntryListFragment : IncomeListItemFragment() {
 
     private fun setDialogListeners() {
         childFragmentManager.setFragmentResultListener(
-            ConfirmType.DELETE.key,
+            ConfirmDialog.DELETE.key,
             this
         ) { _, bundle ->
             val result = bundle.getBoolean(ARG_IS_CONFIRMED)

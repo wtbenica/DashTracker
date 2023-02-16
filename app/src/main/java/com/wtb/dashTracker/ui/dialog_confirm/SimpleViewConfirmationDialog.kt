@@ -121,7 +121,7 @@ class ConfirmDeleteDialog {
             @StringRes text: Int? = null,
         ): SimpleViewConfirmationDialog = SimpleViewConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_delete,
-            requestKey = ConfirmType.DELETE.key,
+            requestKey = ConfirmDialog.DELETE.key,
             confirmId = confirmId,
             posButton = R.string.delete
         )
@@ -134,7 +134,7 @@ class ConfirmResetDialog {
             @StringRes text: Int? = null,
         ): SimpleViewConfirmationDialog = SimpleViewConfirmationDialog.newInstance(
             text = text ?: R.string.confirm_reset,
-            requestKey = ConfirmType.RESET.key,
+            requestKey = ConfirmDialog.RESET.key,
             posButton = R.string.reset
         )
     }
@@ -145,7 +145,7 @@ class ConfirmSaveDialog {
         fun newInstance(@StringRes text: Int? = null): SimpleViewConfirmationDialog =
             SimpleViewConfirmationDialog.newInstance(
                 text = text ?: R.string.dialog_restart,
-                requestKey = ConfirmType.SAVE.key,
+                requestKey = ConfirmDialog.SAVE.key,
                 posButton = R.string.save,
                 negButton = R.string.delete
             )
@@ -158,7 +158,7 @@ class ConfirmRestartDialog {
             @StringRes text: Int? = null,
         ): SimpleViewConfirmationDialog = SimpleViewConfirmationDialog.newInstance(
             text = text ?: R.string.dialog_restart,
-            requestKey = ConfirmType.RESTART.key,
+            requestKey = ConfirmDialog.RESTART.key,
             posButton = R.string.restart,
             negButton = R.string.later
         )

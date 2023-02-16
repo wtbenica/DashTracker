@@ -37,9 +37,9 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
@@ -84,6 +84,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
         saveValues()
     }
+
     // TODO: should the name here be changed?
     protected abstract fun clearFields()
     protected abstract fun isEmpty(): Boolean
@@ -170,7 +171,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     open fun setDialogListeners() {
         childFragmentManager.apply {
             setFragmentResultListener(
-                ConfirmType.DELETE.key,
+                ConfirmDialog.DELETE.key,
                 this@EditDataModelDialog
             ) { _, bundle ->
                 val result = bundle.getBoolean(ARG_IS_CONFIRMED)
@@ -180,7 +181,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
             }
 
             setFragmentResultListener(
-                ConfirmType.RESET.key,
+                ConfirmDialog.RESET.key,
                 this@EditDataModelDialog
             ) { _, bundle ->
                 val result = bundle.getBoolean(ARG_IS_CONFIRMED)
@@ -190,7 +191,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
             }
 
             setFragmentResultListener(
-                ConfirmType.SAVE.key,
+                ConfirmDialog.SAVE.key,
                 this@EditDataModelDialog
             ) { _, bundle ->
                 val result = bundle.getBoolean(ARG_IS_CONFIRMED)
@@ -221,11 +222,11 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     protected fun ImageButton.setOnDeletePressed() {
         setOnClickListener {
-            if (isNotEmpty()) {
+            if (isEmpty()) { // go ahead and delete it
+                onDeleteItem()
+            } else { // ask before deleting
                 ConfirmDeleteDialog.newInstance(item?.id)
                     .show(childFragmentManager, "delete_entry")
-            } else {
-                onDeleteItem()
             }
         }
     }
@@ -236,6 +237,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     private fun onDeleteItem() {
         saveOnExit = false
 
+        // This is used by MainActivity and EntryListFragment to stop tracking before trying to
+        // delete the active dash entry
         parentFragmentManager.setFragmentResult(
             REQUEST_KEY_DATA_MODEL_DIALOG, bundleOf(
                 ARG_MODIFICATION_STATE to ModificationState.DELETED.name,
@@ -245,7 +248,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
         dismiss()
 
-        // TODO: Why? Why do nothing if it is a DashEntry?
+        // Don't delete if it's a DashEntry in case it is the active entry & tracking is enabled.
+        // deleting it here can create an SQL constraint exception when a location is inserted.
         if (item !is DashEntry) {
             item?.let { viewModel.delete(it) }
         }

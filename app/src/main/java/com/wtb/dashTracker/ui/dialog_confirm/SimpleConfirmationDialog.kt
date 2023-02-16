@@ -47,7 +47,7 @@ data class ComposeWrapper<T : SimpleConfirmationDialog<*, *, *, *>>(
     val action: (T) -> @Composable () -> Unit
 ) : Parcelable
 
-enum class ConfirmType(val key: String) {
+enum class ConfirmDialog(val key: String) {
     DELETE("confirmDelete"),
     RESET("confirmReset"),
     SAVE("confirmSave"),
