@@ -168,37 +168,40 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     }
 
     open fun setDialogListeners() {
-        childFragmentManager.setFragmentResultListener(
-            ConfirmType.DELETE.key,
-            this
-        ) { _, bundle ->
-            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
-            if (result) {
-                onDeleteItem()
+        childFragmentManager.apply {
+            setFragmentResultListener(
+                ConfirmType.DELETE.key,
+                this@EditDataModelDialog
+            ) { _, bundle ->
+                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+                if (result) {
+                    onDeleteItem()
+                }
             }
-        }
 
-        childFragmentManager.setFragmentResultListener(
-            ConfirmType.RESET.key,
-        this) { _, bundle ->
-            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
-            if (result) {
-                updateUI()
+            setFragmentResultListener(
+                ConfirmType.RESET.key,
+                this@EditDataModelDialog
+            ) { _, bundle ->
+                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+                if (result) {
+                    updateUI()
+                }
             }
-        }
 
-        childFragmentManager.setFragmentResultListener(
-            ConfirmType.SAVE.key,
-        this
-        ) { _, bundle ->
-            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
-            if (result) {
-                saveConfirmed = true
-                dismiss()
-            } else {
-                saveOnExit = false
-                dismiss()
-                item?.let { e -> viewModel.delete(e) }
+            setFragmentResultListener(
+                ConfirmType.SAVE.key,
+                this@EditDataModelDialog
+            ) { _, bundle ->
+                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+                if (result) {
+                    saveConfirmed = true
+                    dismiss()
+                } else {
+                    saveOnExit = false
+                    dismiss()
+                    item?.let { e -> viewModel.delete(e) }
+                }
             }
         }
     }
@@ -242,6 +245,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
         dismiss()
 
+        // TODO: Why? Why do nothing if it is a DashEntry?
         if (item !is DashEntry) {
             item?.let { viewModel.delete(it) }
         }

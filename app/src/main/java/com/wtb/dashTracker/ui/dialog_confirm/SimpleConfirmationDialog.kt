@@ -289,6 +289,21 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                 setOnClickListener {
                     dismiss()
                     negAction?.invoke()
+
+                    if (confirmId == null) {
+                        parentFragmentManager.setFragmentResult(
+                            requestKey,
+                            bundleOf(ARG_IS_CONFIRMED to false)
+                        )
+                    } else {
+                        parentFragmentManager.setFragmentResult(
+                            requestKey,
+                            bundleOf(
+                                ARG_IS_CONFIRMED to false,
+                                ARG_EXTRA_ITEM_ID to confirmId
+                            )
+                        )
+                    }
                 }
             }
         } else {
