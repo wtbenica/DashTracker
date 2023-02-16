@@ -40,6 +40,15 @@
             android:fitsSystemWindows="true"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
+            <androidx.appcompat.widget.Toolbar
+                style="@style/DTActionBarStyle"
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
+                android:background="?android:attr/statusBarColor"
+                tools:title="DashTracker" />
+
             <GridLayout
                 android:id="@+id/summary_bar"
                 android:layout_width="match_parent"

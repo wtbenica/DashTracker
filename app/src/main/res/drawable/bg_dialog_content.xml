@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2023 Wesley T. Benica
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
   -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="?attr/colorDialogBg" />
     <corners android:radius="?attr/dialogFragCornerRadius" />
-    <solid android:color="?attr/colorDialog" />
-    <stroke android:width="2dp" android:color="?attr/colorPrimaryDark" />
+    <stroke android:width="@dimen/margin_skinny" android:color="?attr/colorDialogBgOutline" />
 </shape>

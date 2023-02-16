@@ -18,9 +18,7 @@
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <solid android:color="?attr/colorDialogGroupStroke" />
-            <corners
-                android:bottomLeftRadius="@dimen/margin_wide"
-                android:bottomRightRadius="@dimen/margin_wide" />
+            <corners android:radius="@dimen/margin_wide" />
             <padding
                 android:bottom="1dp"
                 android:top="1dp"
@@ -31,9 +29,7 @@
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <solid android:color="?attr/colorDialogUneditableItem" />
-            <corners
-                android:bottomLeftRadius="@dimen/margin_wide"
-                android:bottomRightRadius="@dimen/margin_wide" />
+            <corners android:radius="@dimen/margin_wide" />
         </shape>
     </item>
 </layer-list>

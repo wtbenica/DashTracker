@@ -25,7 +25,7 @@
     <dimen name="fab_menu_offset">16dp</dimen>
     <dimen name="min_touch_target">48dp</dimen>
 
-    <dimen name="text_size_xxl">24sp</dimen>
+    <dimen name="text_size_xxl">22sp</dimen>
     <dimen name="text_size_xlarge">20sp</dimen>
     <dimen name="text_size_large">18sp</dimen>
     <dimen name="text_size_med">16sp</dimen>

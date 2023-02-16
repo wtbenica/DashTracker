@@ -152,14 +152,16 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimary</item>
-        <item name="colorDialogSecondary">?attr/colorPrimary</item>
+        <item name="colorDialogOutline">?attr/colorPrimaryDark</item>
+        <item name="colorDialogConfirmDefaultButton">?attr/colorPrimary</item>
         <item name="colorDialogBg">?attr/colorOnSecondary</item>
+        <item name="colorDialogBgOutline">?attr/colorPrimary</item>
         <item name="colorDialogTitle">?attr/colorOnSecondary</item>
         <item name="colorDialogText">?attr/colorOnSurface</item>
         <item name="colorDialogItemOutline">?attr/colorPrimaryVariant</item>
         <item name="colorDialogGroupBg">?attr/colorOnSecondary</item>
         <item name="colorDialogGroupStroke">?attr/colorPrimaryVariant</item>
-        <item name="colorDialogContentBg">@drawable/bg_dialog_fragment</item>
+        <item name="colorDialogContentBg">@drawable/bg_dialog_content</item>
         <item name="colorDialogItem">?attr/colorOnSecondaryVariant</item>
         <item name="colorDialogUneditableItem">?attr/colorPrimaryDark</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryDark</item>
