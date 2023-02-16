@@ -20,5 +20,5 @@
         android:width="@dimen/bg_edit_text_border"
         android:color="?attr/colorDialogItemOutline" />
     <corners android:radius="24dp" />
-    <solid android:color="?attr/colorDialogItemDisabled" />
+    <solid android:color="?attr/colorDialogUneditableItem" />
 </shape>

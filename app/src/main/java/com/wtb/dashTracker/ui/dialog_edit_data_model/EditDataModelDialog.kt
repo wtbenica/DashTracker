@@ -35,6 +35,7 @@ import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
+import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
@@ -50,6 +51,7 @@ import kotlinx.coroutines.launch
 abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDialogFragment() {
     protected abstract var item: M?
     protected abstract var binding: B
+    protected abstract val buttonBinding: DialogListItemButtonsBinding?
     protected abstract val viewModel: ListItemViewModel<M>
     protected abstract val itemType: String
 
@@ -68,8 +70,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     /**
      * Save values - saves data from dialog fields to datamodel
-     *
-     * @param showToast whether to show the toast
      */
     abstract fun saveValues()
 
@@ -109,6 +109,20 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         binding = getViewBinding(inflater)
+
+        buttonBinding?.apply {
+            fragEntryBtnDelete.apply {
+                setOnDeletePressed()
+            }
+
+            fragEntryBtnCancel.apply {
+                setOnResetPressed()
+            }
+
+            fragEntryBtnSave.apply {
+                setOnSavePressed()
+            }
+        }
 
         updateUI()
 

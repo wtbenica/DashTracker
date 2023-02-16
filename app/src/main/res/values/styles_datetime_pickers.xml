@@ -54,7 +54,7 @@
 
         <item name="android:timePickerStyle">@style/MyTimePicker</item>
 
-        <item name="colorPickerHeader">@color/regular</item>
+        <item name="colorPickerHeader">@android:color/transparent</item>
     </style>
 
     <style name="MyDatePickerButtonStyle">

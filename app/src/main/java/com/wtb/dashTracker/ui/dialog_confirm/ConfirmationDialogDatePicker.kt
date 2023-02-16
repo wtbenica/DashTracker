@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.dialog_confirm
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -47,7 +48,12 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arguments?.let {
             headerText = it.getString(ARG_DATE_PICKER_HEADER_TEXT)
-            currentText = it.getSerializable(ARG_DATE_CURRENT_TEXT, LocalDate::class.java)
+            currentText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getSerializable(ARG_DATE_CURRENT_TEXT, LocalDate::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.getSerializable(ARG_DATE_CURRENT_TEXT) as LocalDate?
+            }
             textViewId = it.getInt(ARG_DATE_TEXTVIEW)
         }
 

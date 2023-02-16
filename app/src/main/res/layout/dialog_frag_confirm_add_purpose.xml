@@ -16,46 +16,22 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/margin_default"
-    tools:keep="@layout/dialog_frag_confirm_add_purpose">
+    style="@style/DialogFragmentWrapper">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+    <androidx.cardview.widget.CardView style="@style/DialogFragCard">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorDialogSecondary"
-            android:paddingBottom="@dimen/margin_half">
+        <LinearLayout style="@style/DialogFragLayout.Confirmation">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/new_expense_toolbar"
                 style="@style/DialogToolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:title="@string/dialog_title_new_expense_type" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_confirm_card"
-                style="@style/DialogContentCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/new_expense_toolbar">
+                style="@style/DialogContentCard">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/colorDialogContentBg">
+                <androidx.constraintlayout.widget.ConstraintLayout style="@style/DialogContent.Confirmation">
 
                     <TextView
                         android:id="@+id/the_question"
@@ -120,6 +96,6 @@
                         app:layout_constraintTop_toBottomOf="@id/divider_hor" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

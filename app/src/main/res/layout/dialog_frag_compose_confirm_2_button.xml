@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,45 +17,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/margin_default"
-    tools:keep="@layout/dialog_frag_confirm_2_button">
+    style="@style/DialogFragmentWrapper">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+    <androidx.cardview.widget.CardView style="@style/DialogFragCard">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorDialog"
-            android:paddingBottom="@dimen/margin_half">
+        <LinearLayout style="@style/DialogFragLayout.Confirmation">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_entry_toolbar"
                 style="@style/DialogToolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:title="Confirm" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_confirm_card"
-                style="@style/DialogContentCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
+                style="@style/DialogContentCard">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/colorDialogContentBg">
+                <androidx.constraintlayout.widget.ConstraintLayout style="@style/DialogContent.Confirmation">
 
                     <androidx.compose.ui.platform.ComposeView
                         android:id="@+id/the_question"
@@ -64,7 +40,8 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:layout_height="100dp" />
 
                     <View
                         android:id="@+id/divider_hor"
@@ -102,6 +79,6 @@
                         tools:text="Yes" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

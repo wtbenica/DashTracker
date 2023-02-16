@@ -250,19 +250,19 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorPrimaryVariant</item>
-        <item name="colorDialogSecondary">?attr/colorPrimary</item>
+        <item name="colorDialogSecondary">?attr/colorAccent</item>
         <item name="colorDialogBg">?attr/colorOnSecondary</item>
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?attr/colorTextPrimary</item>
-        <item name="colorDialogGroupBg">?attr/colorOnSecondary</item>
-        <item name="colorDialogGroupStroke">?attr/colorPrimary</item>
+        <item name="colorDialogGroupBg">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogGroupStroke">?attr/colorSecondaryDark</item>
         <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
-        <item name="colorDialogItem">?attr/colorPrimaryFaded</item>
-        <item name="colorDialogUneditableItem">?attr/colorPrimaryVariant</item>
-        <item name="colorDialogItemOutline">?attr/colorPrimary</item>
+        <item name="colorDialogItem">?attr/colorTextSecondary</item>
+        <item name="colorDialogUneditableItem">?attr/colorSecondary</item>
+        <item name="colorDialogItemOutline">?attr/colorSecondaryDark</item>
         <item name="colorDialogItemDisabled">?attr/colorPrimaryVariant</item>
         <item name="colorDialogButtonIcon">?attr/colorAccent</item>
-        <item name="colorDialogButton">?attr/colorPrimaryDark</item>
+        <item name="colorDialogButton">?attr/colorTextPrimary</item>
         <item name="colorDialogButtonStroke">?attr/colorPrimaryDark</item>
         <item name="colorDialogButtonBg">@android:color/transparent</item>
         <item name="dimenDialogButtonStrokeWidth">0dp</item>

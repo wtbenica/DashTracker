@@ -33,6 +33,7 @@ import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
+import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.REQUEST_KEY_DATE
@@ -65,6 +66,9 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
     override val viewModel: EntryViewModel by viewModels()
     override lateinit var binding: DialogFragEntryBinding
+    override val buttonBinding: DialogListItemButtonsBinding?
+        get() = binding.bottomButtonBar
+
     override val itemType: String
         get() = "Entry"
 
@@ -194,18 +198,18 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                 }
             }
 
-            fragEntryBtnDelete.apply {
-                setOnDeletePressed()
-            }
-
-            fragEntryBtnCancel.apply {
-                setOnResetPressed()
-            }
-
-            fragEntryBtnSave.apply {
-                setOnSavePressed()
-            }
-
+//            fragEntryBtnDelete.apply {
+//                setOnDeletePressed()
+//            }
+//
+//            fragEntryBtnCancel.apply {
+//                setOnResetPressed()
+//            }
+//
+//            fragEntryBtnSave.apply {
+//                setOnSavePressed()
+//            }
+//
             fragEntryToolbar.title = titleText
         }
 

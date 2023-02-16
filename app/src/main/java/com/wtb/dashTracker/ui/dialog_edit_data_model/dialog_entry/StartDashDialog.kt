@@ -29,6 +29,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.AUTO_ID
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.databinding.DialogFragStartDashBinding
+import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.dtfFullDate
 import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.toFloatOrNull
@@ -55,8 +56,13 @@ import java.time.LocalTime
 @ExperimentalCoroutinesApi
 class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBinding>() {
     override var item: DashEntry? = null
+
     override val viewModel: EntryViewModel by viewModels()
+
     override lateinit var binding: DialogFragStartDashBinding
+
+    override val buttonBinding: DialogListItemButtonsBinding? = null
+
     override val itemType: String
         get() = "Entry"
 

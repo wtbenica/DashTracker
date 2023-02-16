@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,47 +17,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/margin_default">
+    style="@style/DialogFragmentWrapper">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+    <androidx.cardview.widget.CardView style="@style/DialogFragCard">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/colorDialog">
+        <LinearLayout style="@style/DialogFragLayout">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_adjust_toolbar"
                 style="@style/DialogToolbar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:title="@string/dialog_title_weekly" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_adjust_table_card"
-                style="@style/DialogContentCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">
+                style="@style/DialogContentCard">
 
                 <TableLayout
                     android:id="@+id/frag_adjust_table"
-                    style="@style/DialogContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">
+                    style="@style/DialogContent">
 
                     <TableRow
                         android:layout_width="match_parent"
@@ -155,6 +131,6 @@
                     android:contentDescription="@string/content_desc_save"
                     android:src="@drawable/ic_action_save" />
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

@@ -19,7 +19,7 @@
     <stroke
         android:width="@dimen/bg_edit_text_border"
         android:color="?attr/colorDialogItemOutline" />
-    <corners android:radius="24dp" />
+    <corners android:radius="@dimen/margin_wide" />
     <solid
         android:color="?attr/colorDialogItem" />
 </shape>

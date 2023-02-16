@@ -17,43 +17,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/margin_default">
+    style="@style/DialogFragmentWrapper">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+    <androidx.cardview.widget.CardView style="@style/DialogFragCard">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorDialog">
+        <LinearLayout style="@style/DialogFragLayout">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_entry_toolbar"
                 style="@style/DialogToolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:title="@string/dialog_title_end_dash" />
+                tools:title="@string/dialog_title_end_dash" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_entry_table_card"
-                style="@style/DialogContentCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_entry_toolbar">
+                style="@style/DialogContentCard">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_dialog_fragment"
+                    style="@style/DialogContent"
                     android:orientation="vertical">
 
                     <TextView
@@ -63,8 +43,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="fill_horizontal"
                         android:layout_marginEnd="0dp"
-                        android:paddingHorizontal="@dimen/margin_default"
-                        android:paddingVertical="@dimen/margin_default"
+                        android:layout_marginBottom="@dimen/margin_default"
+                        android:gravity="center_vertical"
+                        android:minHeight="@dimen/min_touch_target"
                         android:textSize="@dimen/text_size_xlarge"
                         android:textStyle="bold"
                         tools:text="Mon Nov 23, 2021" />
@@ -73,20 +54,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:columnCount="3"
-                        android:paddingHorizontal="@dimen/margin_default"
-                        android:paddingBottom="@dimen/margin_default"
                         android:rowCount="13">
 
                         <!-- Row 0 -->
                         <View
+                            style="@style/DialogContentGroup"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             android:layout_row="0"
                             android:layout_rowSpan="3"
                             android:layout_column="0"
                             android:layout_columnSpan="3"
-                            android:layout_gravity="fill"
-                            android:background="@drawable/bg_grouping_card" />
+                            android:layout_gravity="fill" />
 
                         <TextView
                             style="@style/FragEntryHeaderTextView"
@@ -147,8 +126,8 @@
                             android:layout_column="0"
                             android:layout_columnSpan="3"
                             android:layout_gravity="end"
-                            android:paddingEnd="@dimen/margin_default"
                             android:paddingStart="0dp"
+                            android:paddingEnd="@dimen/margin_default"
                             android:text="@string/lbl_ends_on_following_day"
                             android:textColor="?attr/colorDialogButton"
                             android:textSize="@dimen/text_size_sm"
@@ -417,34 +396,9 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_entry_table_card">
-
-                <ImageButton
-                    android:id="@+id/frag_entry_btn_delete"
-                    style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/content_desc_delete"
-                    android:src="@drawable/ic_action_delete" />
-
-                <ImageButton
-                    android:id="@+id/frag_entry_btn_cancel"
-                    style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/content_desc_reset"
-                    android:src="@drawable/ic_action_reset" />
-
-                <ImageButton
-                    android:id="@+id/frag_entry_btn_save"
-                    style="@style/FragmentEntryImageButton"
-                    android:contentDescription="@string/content_desc_save"
-                    android:src="@drawable/ic_action_save" />
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <include
+                android:id="@+id/bottom_button_bar"
+                layout="@layout/dialog_list_item_buttons" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

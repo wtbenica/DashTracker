@@ -41,6 +41,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
+import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
@@ -57,11 +58,18 @@ import java.time.LocalDate
 class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
     override var item: Weekly? = null
+
     override val viewModel: WeeklyViewModel by viewModels()
+
     override lateinit var binding: DialogFragWeeklyBinding
+
+    override val buttonBinding: DialogListItemButtonsBinding? = null
+
     override val itemType: String
         get() = "Weekly adjustment"
+
     private var fullWeekly: FullWeekly? = null
+
     private var allWeeklyEndDates: List<LocalDate> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {

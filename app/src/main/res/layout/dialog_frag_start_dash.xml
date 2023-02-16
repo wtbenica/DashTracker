@@ -17,49 +17,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/margin_default">
+    style="@style/DialogFragmentWrapper">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+    <androidx.cardview.widget.CardView style="@style/DialogFragCard">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorDialog">
+        <LinearLayout style="@style/DialogFragLayout.Confirmation">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_start_dash_toolbar"
                 style="@style/DialogToolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:title="Start Dash" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_start_dash_table_card"
-                style="@style/DialogContentCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_start_dash_toolbar">
+                style="@style/DialogContentCard">
 
                 <GridLayout
                     android:id="@+id/frag_start_dash_table"
                     style="@style/DialogContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:columnCount="3"
-                    android:rowCount="11"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/frag_start_dash_toolbar">
+                    android:rowCount="11">
 
                     <!--    Row 0   -->
                     <TextView
@@ -121,7 +98,7 @@
                         android:layout_column="1"
                         android:layout_columnWeight="1"
                         android:importantForAutofill="no"
-                        android:inputType="number"/>
+                        android:inputType="number" />
                 </GridLayout>
             </androidx.cardview.widget.CardView>
 
@@ -153,6 +130,6 @@
                     android:contentDescription="@string/content_desc_start"
                     android:src="@drawable/ic_play_arrow" />
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

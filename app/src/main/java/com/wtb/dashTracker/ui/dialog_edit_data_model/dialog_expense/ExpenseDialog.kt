@@ -37,6 +37,7 @@ import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.Purpose.GAS
 import com.wtb.dashTracker.databinding.DialogFragExpenseBinding
 import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownFooterBinding
+import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
@@ -67,7 +68,12 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     override var item: Expense? = null
 
     override val viewModel: ExpenseViewModel by viewModels()
+
     override lateinit var binding: DialogFragExpenseBinding
+
+    override val buttonBinding: DialogListItemButtonsBinding
+        get() = binding.bottomButtonBar
+
     override val itemType: String
         get() = "Expense"
 
@@ -139,17 +145,17 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
                 }
 
-            fragExpenseBtnSave.apply {
-                setOnSavePressed()
-            }
-
-            fragExpenseBtnDelete.apply {
-                setOnDeletePressed()
-            }
-
-            fragExpenseBtnReset.apply {
-                setOnResetPressed()
-            }
+//            fragExpenseBtnSave.apply {
+//                setOnSavePressed()
+//            }
+//
+//            fragExpenseBtnDelete.apply {
+//                setOnDeletePressed()
+//            }
+//
+//            fragExpenseBtnReset.apply {
+//                setOnResetPressed()
+//            }
         }
 
 // TODO: add this and make a setLocalTime also
@@ -261,11 +267,11 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
         if (binding.fragExpenseAmount.text == null || binding.fragExpenseAmount.text.isEmpty() ||
             ((binding.fragExpensePurpose.selectedItem as ExpensePurpose?)?.purposeId == GAS.id && (binding.fragExpensePrice.text == null || binding.fragExpensePrice.text.isEmpty()))
         ) {
-            binding.fragExpenseBtnSave.alpha = 0.7f
-            binding.fragExpenseBtnSave.isClickable = false
+            buttonBinding.fragEntryBtnSave.alpha = 0.7f
+            buttonBinding.fragEntryBtnSave.isClickable = false
         } else {
-            binding.fragExpenseBtnSave.alpha = 1.0f
-            binding.fragExpenseBtnSave.isClickable = true
+            buttonBinding.fragEntryBtnSave.alpha = 1.0f
+            buttonBinding.fragEntryBtnSave.isClickable = true
         }
     }
 

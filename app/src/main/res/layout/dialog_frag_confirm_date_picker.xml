@@ -14,97 +14,69 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:keep="@layout/dialog_frag_confirm_date_picker">
+    style="@style/DialogFragmentWrapper">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="?attr/colorPrimary"
-        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+    <androidx.cardview.widget.CardView style="@style/DialogFragCard">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorDialogSecondary"
-            android:paddingBottom="@dimen/margin_half">
+        <LinearLayout style="@style/DialogFragLayout.Confirmation">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/dialog_date_picker_toolbar"
                 style="@style/DialogToolbar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:title="@string/lbl_date" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_confirm_card"
-                style="@style/DialogContentCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dialog_date_picker_toolbar">
+                style="@style/DialogContentCard">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/colorDialogBg">
+                <androidx.constraintlayout.widget.ConstraintLayout style="@style/DialogContent.Confirmation">
 
                     <DatePicker
                         android:id="@+id/dialog_date_picker_date_picker"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="0dp"
-                        android:background="?attr/colorDialogBg"
-                        android:paddingBottom="0dp"
-                        android:theme="@style/MyDatePickerStyle"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/MyDatePickerStyle" />
 
                     <View
                         android:id="@+id/divider_hor"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:background="?attr/colorDialogItemOutline"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/dialog_date_picker_date_picker" />
+                        app:layout_constraintTop_toBottomOf="@id/dialog_date_picker_date_picker"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:background="?attr/colorDialogItemOutline" />
 
                     <Button
                         android:id="@+id/no_button"
                         style="@style/ConfirmDialogButton"
-                        android:text="@string/cancel"
                         app:layout_constraintEnd_toStartOf="@id/divider_vert"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor"
+                        android:text="@string/cancel" />
 
                     <View
                         android:id="@+id/divider_vert"
-                        android:layout_width="1dp"
-                        android:layout_height="0dp"
-                        android:background="?attr/colorDialogItemOutline"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/yes_button_1"
                         app:layout_constraintStart_toEndOf="@id/no_button"
-                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="?attr/colorDialogItemOutline" />
 
                     <Button
                         android:id="@+id/yes_button_1"
                         style="@style/ConfirmDialogButton.Default"
-                        android:text="@string/save"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/divider_vert"
-                        app:layout_constraintTop_toBottomOf="@id/divider_hor" />
+                        app:layout_constraintTop_toBottomOf="@id/divider_hor"
+                        android:text="@string/save" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
-</FrameLayout>
+</LinearLayout>
