@@ -392,9 +392,14 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
         installSplashScreen()
         Repository.initialize(this)
-        supportActionBar?.title = "DashTracker"
+        supportActionBar?.apply {
+            title = "DashTracker"
+            isHideOnContentScrollEnabled = true
+
+        }
 
         initMainActivityBinding()
+        setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
 
         initBiometrics()

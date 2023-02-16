@@ -20,8 +20,7 @@
     <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
         style="@style/DialogFragCard">
 
-        <LinearLayout
-            style="@style/DialogFragLayout.Confirmation">
+        <LinearLayout style="@style/DialogFragLayout.Confirmation">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/dialog_time_picker_toolbar"
@@ -30,10 +29,10 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_confirm_card"
-                style="@style/DialogContentCard">
+                style="@style/DialogContentCard"
+                android:layout_marginBottom="@dimen/margin_half">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    style="@style/DialogContent.Confirmation">
+                <androidx.constraintlayout.widget.ConstraintLayout style="@style/DialogContent.Confirmation">
 
                     <TimePicker
                         android:id="@+id/dialog_time_picker_time_picker"
@@ -49,7 +48,6 @@
                         android:id="@+id/divider_hor"
                         android:layout_width="0dp"
                         android:layout_height="1dp"
-                        android:layout_marginTop="@dimen/margin_default"
                         android:background="?attr/colorDialogItemOutline"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

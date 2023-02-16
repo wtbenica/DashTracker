@@ -25,19 +25,19 @@
 
     <ImageButton
         android:id="@+id/frag_entry_btn_delete"
-        style="@style/FragmentEntryImageButton"
+        style="@style/DialogImageButton"
         android:contentDescription="@string/content_desc_delete"
         android:src="@drawable/ic_action_delete" />
 
     <ImageButton
         android:id="@+id/frag_entry_btn_cancel"
-        style="@style/FragmentEntryImageButton"
+        style="@style/DialogImageButton"
         android:contentDescription="@string/content_desc_reset"
         android:src="@drawable/ic_action_reset" />
 
     <ImageButton
         android:id="@+id/frag_entry_btn_save"
-        style="@style/FragmentEntryImageButton"
+        style="@style/DialogImageButton"
         android:contentDescription="@string/content_desc_save"
         android:src="@drawable/ic_action_save" />
 </LinearLayout>

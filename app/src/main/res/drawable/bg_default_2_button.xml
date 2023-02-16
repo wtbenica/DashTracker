@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2022 Wesley T. Benica
+  ~ Copyright 2023 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,15 +14,20 @@
   ~ limitations under the License.
   -->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/dialog_adjust_week_spinner_item_dates"
-    style="@style/ListItemHeaderTextView.Title"
-    android:maxLines="1"
-    android:textSize="?attr/textSizeItemValue"
-    android:autoSizeTextType="uniform"
-    android:layout_width="match_parent"
-    android:textAlignment="viewEnd"
-    android:layout_marginEnd="0dp"
-    android:layout_height="wrap_content"
-    tools:text="November 28 - December 4, 2022" />
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <padding
+                android:bottom="1dp"
+                android:right="1dp" />
+            <solid android:color="?attr/colorAccent" />
+            <corners android:bottomRightRadius="?attr/defaultCornerRadius" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="?attr/colorSecondaryVariant" />
+            <corners android:bottomRightRadius="?attr/defaultCornerRadius" />
+        </shape>
+    </item>
+</layer-list>

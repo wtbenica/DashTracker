@@ -158,25 +158,34 @@
     <attr name="colorChartBackground" format="reference|color" />
 
     <!-- dialog -->
+    <attr name="dialogFragCornerRadius" format="reference" />
+
     <attr name="colorDialog" format="reference" />
+    <attr name="colorDialogOutline" format="reference" />
+
     <attr name="colorDialogBg" format="reference" />
-    <attr name="colorDialogSecondary" format="reference" />
-    <attr name="colorDialogGroupBg" format="reference" />
-    <attr name="colorDialogGroupStroke" format="reference" />
+    <attr name="colorDialogBgOutline" format="reference" />
+
     <attr name="colorDialogContentBg" format="reference" />
+
     <attr name="colorDialogTitle" format="reference" />
     <attr name="colorDialogText" format="reference" />
+
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
     <attr name="colorDialogUneditableItem" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
-    <attr name="colorDialogButtonIcon" format="reference|color" />
-    <attr name="dialogFragCornerRadius" format="reference" />
-    <attr name="colorDialogFragSpinnerPopupBg" format="reference" />
+
     <attr name="colorDialogButton" format="reference" />
     <attr name="colorDialogButtonStroke" format="reference" />
     <attr name="dimenDialogButtonStrokeWidth" format="reference|dimension" />
     <attr name="colorDialogButtonBg" format="reference" />
+    <attr name="colorDialogButtonIcon" format="reference|color" />
+
+    <attr name="colorDialogConfirmDefaultButton" format="reference" />
+    <attr name="colorDialogGroupBg" format="reference" />
+    <attr name="colorDialogGroupStroke" format="reference" />
+    <attr name="colorDialogFragSpinnerPopupBg" format="reference" />
 
     <!-- datetime picker -->
     <attr name="colorPickerHeader" format="reference|color" />

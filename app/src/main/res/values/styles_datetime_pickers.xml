@@ -20,17 +20,17 @@
         <item name="android:textColorPrimary">@color/on_regular</item>
 
         <!-- calendar days of week -->
-        <item name="android:textColorSecondary">@color/dark</item>
+        <item name="android:textColorSecondary">@color/accent</item>
 
         <!--title bar day , month / selected day-->
 <!--        <item name="android:textColorPrimaryInverse">@color/on_brick</item>-->
         <item name="android:textColorPrimaryInverse">@color/on_regular</item>
 
         <!-- Title bar year -->
-        <item name="android:textColorSecondaryInverse">@color/dark</item>
+        <item name="android:textColorSecondaryInverse">@color/accent</item>
 
         <!-- Title bar background -->
-        <item name="colorAccent">?attr/colorPickerHeader</item>
+        <item name="colorAccent">@android:color/transparent</item>
 
         <!-- selector -->
         <item name="colorControlActivated">@color/brick_dark</item>

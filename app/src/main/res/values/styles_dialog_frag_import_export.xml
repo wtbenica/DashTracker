@@ -42,7 +42,7 @@
         <item name="android:orientation">vertical</item>
         <item name="android:background">@drawable/bg_notes</item>
         <item name="android:layout_marginBottom">@dimen/margin_default</item>
-        <item name="android:layout_marginHorizontal">@dimen/margin_default</item>
+        <item name="android:layout_marginHorizontal">@dimen/margin_wide</item>
     </style>
 
     <style  name="NotesStyle">
@@ -79,6 +79,5 @@
 
     <style name="ConfirmDialogButton.Default">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?attr/colorDialogButtonIcon</item>
     </style>
 </resources>

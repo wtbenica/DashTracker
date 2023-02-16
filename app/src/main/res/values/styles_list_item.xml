@@ -38,9 +38,9 @@
     </style>
 
     <style name="ListItemHeaderTextView" parent="Widget.AppCompat.TextView">
-        <item name="android:gravity">bottom</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">bottom</item>
         <item name="android:textAlignment">textStart</item>
     </style>
 
@@ -70,7 +70,7 @@
     <style name="ListItemButton">
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>
-        <item name="android:background">?attr/colorListItemButtonBg</item>
+        <item name="android:background">@drawable/bg_list_item_button</item>
         <item name="android:tint">?attr/colorListItemButtonIcon</item>
     </style>
 
