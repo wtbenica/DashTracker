@@ -7,10 +7,10 @@ import androidx.compose.ui.res.colorResource
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.util.PermissionsHelper
 
-val primary: Color = Color(0xFFE0F8C0)
-val primaryDark: Color = Color(0xFF90C860)
-val primaryLight: Color = Color(0xFFE8FFD0)
-val primaryFaded: Color = Color(0xFFF8FFF0)
+val primaryDark: Color = Color(0xFF669922)
+val primary: Color = Color(0xFFCCEE99)
+val primaryLight: Color = Color(0xFFE0FFB0)
+val primaryFaded: Color = Color(0xFFF8FFE8)
 val onPrimary: Color = Color(0xFF353539)
 val onPrimaryVariant: Color = Color(0xFF686879)
 val onSecondary: Color = Color(0xFFFEFEFE)

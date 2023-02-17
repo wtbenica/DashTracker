@@ -18,6 +18,6 @@
     <solid android:color="?attr/colorListItem" />
     <corners android:radius="?attr/listItemCornerRadius" />
     <stroke
-        android:width="@dimen/margin_skinny"
+        android:width="?attr/dimenListItemBorderWidth"
         android:color="?attr/colorListItemBorder" />
 </shape>

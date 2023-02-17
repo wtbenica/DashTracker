@@ -33,7 +33,7 @@ fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: 
 
 fun getElapsedHours(seconds: Long?): String =
     if (seconds == null || seconds < 0) {
-        "-"
+        "—"
     } else {
         val mHours = seconds / 3600
         val mMinutes = (seconds - 3600 * mHours) / 60
@@ -42,6 +42,10 @@ fun getElapsedHours(seconds: Long?): String =
             if (mHours > 0L) {
                 append("$mHours".format("%2d"))
                 append("h")
+
+                if (mMinutes > 0L) {
+                    append(" ")
+                }
             }
             if (mMinutes > 0L) {
                 append("$mMinutes".format(" %2d"))

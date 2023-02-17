@@ -29,7 +29,7 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_confirm_card"
-                style="@style/DialogContentCard">
+                style="@style/DialogContentCard.ConfirmDialog">
 
                 <androidx.constraintlayout.widget.ConstraintLayout style="@style/DialogContent.Confirmation">
 

@@ -18,6 +18,6 @@
     <corners android:radius="?attr/listItemCornerRadius" />
     <stroke
         android:width="2dp"
-        android:color="?attr/colorTabIndicator" />
+        android:color="?attr/colorShowFiltersButtonBorder" />
     <solid android:color="?attr/colorShowFiltersButtonBg" />
 </shape>

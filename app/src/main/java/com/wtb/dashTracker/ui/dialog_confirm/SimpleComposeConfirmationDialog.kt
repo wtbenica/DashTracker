@@ -27,7 +27,6 @@ import android.widget.Button
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.CardDefaults.cardColors
@@ -46,11 +45,10 @@ import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.*
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.DefaultSpacer
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogUseTrackedMiles.Companion.Content
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogUseTrackedMiles.Companion.AdjustMileageDialogContent
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
-import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.onSecondaryVariant
+import com.wtb.dashTracker.ui.theme.*
 
 open class SimpleComposeConfirmationDialog :
     SimpleConfirmationDialog<ComposeView, @Composable () -> Unit, DialogFragComposeConfirm2ButtonBinding, DialogFragComposeConfirm3ButtonBinding>() {
@@ -168,22 +166,19 @@ class ConfirmationDialogUseTrackedMiles {
 
         @OptIn(ExperimentalTextApi::class, ExperimentalMaterial3Api::class)
         @Composable
-        fun Content(
+        fun AdjustMileageDialogContent(
             startMileage: Int?,
             endMileage: Int?,
             distance: Int,
             dialog: SimpleConfirmationDialog<View, Any, ViewBinding, ViewBinding>? = null
         ) {
             DashTrackerTheme {
-                val baba = cardColors(
-                    containerColor = if (isSystemInDarkTheme()) {
-                        onSecondaryVariant()
-                    } else {
-                        MaterialTheme.colorScheme.tertiary
-                    },
+                val cardStroke = secondaryLight()
+                val cardColors = cardColors(
+                    containerColor = secondaryFaded(),
                     contentColor = MaterialTheme.colorScheme.onSecondary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                    disabledContainerColor = secondaryFaded(),
+                    disabledContentColor = onSecondaryVariant()
                 )
 
                 Column(
@@ -222,8 +217,8 @@ class ConfirmationDialogUseTrackedMiles {
                             },
                             modifier = Modifier
                                 .weight(1f),
-                            colors = baba,
-                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                            colors = cardColors,
+                            border = BorderStroke(2.dp, cardStroke)
                         ) {
                             Column(
                                 modifier = Modifier
@@ -274,8 +269,8 @@ class ConfirmationDialogUseTrackedMiles {
                             },
                             modifier = Modifier
                                 .weight(1f),
-                            colors = baba,
-                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                            colors = cardColors,
+                            border = BorderStroke(2.dp, cardStroke)
                         ) {
                             Column(
                                 modifier = Modifier
@@ -314,7 +309,7 @@ class ConfirmationDialogUseTrackedMiles {
             SimpleComposeConfirmationDialog.newInstance(
                 content = { dialog ->
                     {
-                        Content(
+                        AdjustMileageDialogContent(
                             startMileage = startMileage,
                             endMileage = endMileage,
                             distance = distance,
@@ -336,7 +331,7 @@ class ConfirmationDialogUseTrackedMiles {
 @Preview(showBackground = true)
 fun ContentPreview() {
     DashTrackerTheme {
-        Content(1, 30, 12)
+        AdjustMileageDialogContent(1, 30, 12)
     }
 }
 
@@ -345,6 +340,6 @@ fun ContentPreview() {
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 fun ContentPreviewNight() {
     DashTrackerTheme {
-        Content(1, 30, 12)
+        AdjustMileageDialogContent(1, 30, 12)
     }
 }

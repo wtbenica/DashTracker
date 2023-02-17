@@ -316,7 +316,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
         setTypeface(typeface, if (isDefault) BOLD else NORMAL)
         setTextColor(
             context.getAttributeColor(
-                if (isDefault) R.attr.colorDialogButtonIcon else R.attr.colorDialogText
+                if (isDefault) R.attr.textColorDialogButtonDefault else R.attr.colorDialogText
             )
         )
     }

@@ -45,7 +45,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalCoroutinesApi
 abstract class IncomeListItemFragment : ListItemFragment() {
 
-    protected var callback: IncomeFragment.IncomeFragmentCallback? = null
+    var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     protected var deductionType: DeductionType = DeductionType.NONE
 
@@ -76,9 +76,22 @@ abstract class ListItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragItemListBinding.inflate(inflater)
-        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
-        val height = (requireActivity() as MainActivity).binding.bottomAppBar.measuredHeight
-        binding.itemListRecyclerView.updatePadding(bottom = height + 16)
+        binding.itemListRecyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+
+            val height = (requireActivity() as MainActivity).binding.bottomAppBar.measuredHeight
+            updatePadding(bottom = height + 16)
+
+            this.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+                if (scrollY < oldScrollY) {
+                    (requireActivity() as MainActivity).binding.fab.show()
+                } else if (scrollY > oldScrollY) {
+                    (requireActivity() as MainActivity).binding.fab.hide()
+                }
+            }
+
+        }
+
 
         return binding.root
     }
@@ -200,17 +213,11 @@ abstract class ListItemFragment : Fragment() {
                 adapter?.let {
                     prev = it.mExpandedPosition
                     if (bindingAdapterPosition == it.mExpandedPosition) {
-                        (requireContext() as MainActivity).binding.apply {
-                            appBarLayout.setExpanded(true, true)
-                            bottomAppBar.performShow(true)
-                        }
+                        (requireContext() as MainActivity).showStuff()
 
                         it.mExpandedPosition = null
                     } else {
-                        (requireContext() as MainActivity).binding.apply {
-                            appBarLayout.setExpanded(false, true)
-                            bottomAppBar.performHide()
-                        }
+                        (requireContext() as MainActivity).hideStuff()
 
                         it.mExpandedPosition = (bindingAdapterPosition)
                         val scroller = object : LinearSmoothScroller(context) {

@@ -61,29 +61,13 @@ class ActiveDashBar @JvmOverloads constructor(
             TRACKING_ACTIVE -> {
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
-                    listOf(
-                        binding.activeBg,
-                        binding.lblMileage,
-                        binding.valMileage,
-                        binding.lblCost,
-                        binding.valCost
-                    ).forEach {
-                        it.visibility = VISIBLE
-                    }
+                    binding.activeDashDetails.visibility = VISIBLE
                 }
             }
             else -> {
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
-                    listOf(
-                        binding.activeBg,
-                        binding.lblMileage,
-                        binding.valMileage,
-                        binding.lblCost,
-                        binding.valCost
-                    ).forEach {
-                        it.visibility = GONE
-                    }
+                    binding.activeDashDetails.visibility = GONE
                 }
             }
         }

@@ -14,22 +14,10 @@
   ~ limitations under the License.
   -->
 
-<layer-list>
-    <item>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="?attr/colorDialogGroupStroke" />
-            <corners android:radius="@dimen/margin_wide" />
-            <padding
-                android:bottom="1dp"
-                android:top="1dp"
-                android:left="1dp"
-                android:right="1dp"/>
-        </shape>
-    </item>
-    <item>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="?attr/colorDialogUneditableItem" />
-            <corners android:radius="@dimen/margin_wide" />
-        </shape>
-    </item>
-</layer-list>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <stroke
+        android:width="1dp"
+        android:color="?attr/colorDialogUneditableItemOutline" />
+    <solid android:color="?attr/colorDialogUneditableItem" />
+    <corners android:radius="@dimen/margin_wide" />
+</shape>

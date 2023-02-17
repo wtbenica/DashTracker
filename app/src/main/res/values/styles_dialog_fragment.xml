@@ -56,6 +56,10 @@
         <item name="cardBackgroundColor">@android:color/transparent</item>
     </style>
 
+    <style name="DialogContentCard.ConfirmDialog">
+        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>
+    </style>
+
     <style name="DialogContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

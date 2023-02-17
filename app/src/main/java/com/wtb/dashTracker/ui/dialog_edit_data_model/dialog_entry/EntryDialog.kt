@@ -60,6 +60,8 @@ class EntryDialog : BaseEntryDialog() {
                     fragEntryCheckEndsNextDay.isChecked =
                         entry.endDate.minusDays(1L).equals(entry.date)
 
+                    updateTotalHours()
+
                     entry.startOdometer.let { so ->
                         fragEntryStartMileage.setText(
                             getStringOrElse(R.string.odometer_fmt, "", so)
@@ -91,6 +93,8 @@ class EntryDialog : BaseEntryDialog() {
                     entry.numDeliveries.let { nd ->
                         fragEntryNumDeliveries.setText(nd?.toString() ?: "")
                     }
+
+                    updateTotalPay()
                 }
             } ?: {
                 clearFields()

@@ -36,17 +36,15 @@
             style="@style/SummaryBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="@dimen/margin_half"
-            android:fitsSystemWindows="true"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
             <androidx.appcompat.widget.Toolbar
-                style="@style/DTActionBarStyle"
                 android:id="@+id/toolbar"
+                style="@style/DTActionBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlways|snap"
                 android:background="?android:attr/statusBarColor"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
                 tools:title="DashTracker" />
 
             <GridLayout
@@ -54,9 +52,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="3"
-                android:padding="@dimen/margin_half"
+                android:paddingTop="@dimen/margin_default"
                 android:rowCount="3"
-                app:layout_scrollFlags="scroll|enterAlways">
+                app:layout_scrollFlags="scroll|enterAlways|snap">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/act_main_lbl_hourly"
@@ -116,8 +114,12 @@
                     android:layout_row="1"
                     android:layout_column="2"
                     android:layout_columnWeight="1"
-                    app:layout_scrollFlags="scroll|enterAlways"
                     tools:text="$209.00" />
+
+                <View
+                    android:layout_width="@dimen/margin_half"
+                    android:layout_height="@dimen/margin_default"
+                    android:layout_columnSpan="3" />
 
                 <com.wtb.dashTracker.views.ActiveDashBar
                     android:id="@+id/adb"
@@ -125,7 +127,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_columnSpan="3"
-                    android:layout_margin="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/margin_half"
+                    android:layout_marginEnd="@dimen/margin_half"
+                    android:layout_marginBottom="@dimen/margin_half"
                     android:visibility="gone"
                     app:cardElevation="?attr/dimenListItemElevationLowered"
                     tools:visibility="visible" />
@@ -156,9 +160,10 @@
             app:backgroundTint="?attr/colorFab"
             app:borderWidth="1dp"
             app:layout_anchor="@id/bottom_app_bar"
-            app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
             app:maxImageSize="@dimen/margin_extra_wide"
             app:tint="?attr/colorFabIcon" />
+
+        <!--        app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"-->
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"

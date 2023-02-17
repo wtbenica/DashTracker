@@ -105,6 +105,7 @@
     <attr name="colorListItemSubtitle" format="reference" />
     <attr name="colorListItemButtonIcon" format="reference|color" />
     <attr name="colorListItemButtonBg" format="reference|color" />
+    <attr name="colorListItemButtonOutline" format="reference|color" />
     <attr name="textColorListItemEntryDay" format="reference|color" />
     <attr name="textColorListItemEntryDayThisWeek" format="reference|color" />
     <attr name="colorListItemShadow" format="reference|color" />
@@ -119,10 +120,12 @@
     <attr name="dimenListItemMarginHorizontal" format="reference|dimension" />
     <attr name="dimenListItemElevationElevated" format="reference|dimension" />
     <attr name="dimenListItemElevationLowered" format="reference|dimension" />
+    <attr name="dimenListItemBorderWidth" format="reference|dimension" />
 
     <!-- list_item_details -->
     <attr name="colorListItemDetails" format="reference" />
     <attr name="colorListItemDetailsBorder" format="reference" />
+    <attr name="dimenListItemDetailsBorderWidth" format="reference|dimension" />
     <attr name="colorListItemDetailsToolbar" format="reference" />
     <attr name="colorRowHeaderPayText" format="reference" />
     <attr name="colorRowValuePayText" format="reference" />
@@ -155,6 +158,7 @@
     <attr name="insightsRowCornerRadius" format="reference" />
     <attr name="colorShowFiltersButton" format="reference|color" />
     <attr name="colorShowFiltersButtonBg" format="reference|color" />
+    <attr name="colorShowFiltersButtonBorder" format="reference|color" />
     <attr name="colorChartBackground" format="reference|color" />
 
     <!-- dialog -->
@@ -174,13 +178,15 @@
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
     <attr name="colorDialogUneditableItem" format="reference" />
+    <attr name="colorDialogUneditableItemOutline" format="reference" />
     <attr name="colorDialogItemDisabled" format="reference" />
 
     <attr name="colorDialogButton" format="reference" />
     <attr name="colorDialogButtonStroke" format="reference" />
     <attr name="dimenDialogButtonStrokeWidth" format="reference|dimension" />
     <attr name="colorDialogButtonBg" format="reference" />
-    <attr name="colorDialogButtonIcon" format="reference|color" />
+    <attr name="colorDialogWidget" format="reference" />
+    <attr name="textColorDialogButtonDefault" format="reference|color" />
 
     <attr name="colorDialogConfirmDefaultButton" format="reference" />
     <attr name="colorDialogGroupBg" format="reference" />

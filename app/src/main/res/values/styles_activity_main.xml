@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@
   -->
 
 <resources>
+
     <style name="ActionBarOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="tint">?attr/colorOverflowMenuButton</item>
     </style>
@@ -29,9 +29,8 @@
         <item name="android:textColor">?attr/colorOverflowMenuText</item>
     </style>
 
-    <style name="SummaryBar">
+    <style name="SummaryBar" parent="Widget.Material3.AppBarLayout">
         <item name="android:background">?attr/colorSummaryBar</item>
-        <item name="android:elevation">1dp</item>
     </style>
 
     <style name="SummaryBarItem" parent="Widget.MaterialComponents.TextView">

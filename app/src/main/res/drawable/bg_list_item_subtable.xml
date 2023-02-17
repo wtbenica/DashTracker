@@ -20,6 +20,6 @@
         android:topLeftRadius="?attr/listItemCornerRadius"
         android:topRightRadius="?attr/listItemCornerRadius" />
     <stroke
-        android:width="@dimen/margin_skinny"
+        android:width="?attr/dimenListItemDetailsBorderWidth"
         android:color="?attr/colorListItemDetailsBorder" />
 </shape>

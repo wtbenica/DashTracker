@@ -154,6 +154,22 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     override val deductionType: StateFlow<DeductionType>
         get() = deductionTypeViewModel.deductionType
 
+    override fun hideStuff() {
+        binding.apply {
+            appBarLayout.setExpanded(false, true)
+            bottomAppBar.performHide()
+            fab.hide()
+        }
+    }
+
+    override fun showStuff() {
+        binding.apply {
+            appBarLayout.setExpanded(true, true)
+            bottomAppBar.performShow(true)
+            fab.show()
+        }
+    }
+
     override fun setDeductionType(dType: DeductionType) {
         deductionTypeViewModel.setDeductionType(dType)
     }
@@ -391,7 +407,9 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         installSplashScreen()
+
         Repository.initialize(this)
+
         supportActionBar?.apply {
             title = "DashTracker"
             isHideOnContentScrollEnabled = true

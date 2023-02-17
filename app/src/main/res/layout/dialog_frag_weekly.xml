@@ -32,6 +32,7 @@
                 android:id="@+id/frag_adjust_table_card"
                 style="@style/DialogContentCard">
 
+                <!-- This is a table instead of grid bc it's easier to hide the adjust row if necessary -->
                 <TableLayout
                     android:id="@+id/frag_adjust_table"
                     style="@style/DialogContent">

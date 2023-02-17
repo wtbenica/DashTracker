@@ -158,6 +158,8 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
     interface IncomeFragmentCallback {
         fun setDeductionType(dType: DeductionType)
         val deductionType: StateFlow<DeductionType>
+        fun hideStuff()
+        fun showStuff()
     }
 
     companion object {

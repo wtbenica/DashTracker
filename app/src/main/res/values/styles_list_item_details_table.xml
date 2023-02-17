@@ -91,7 +91,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|center_horizontal</item>
-        <item name="tint">?attr/colorDialogButtonIcon</item>
+        <item name="tint">?attr/colorListItemButtonIcon</item>
         <item name="android:src">@drawable/baseline_open_in_new_24</item>
     </style>
 

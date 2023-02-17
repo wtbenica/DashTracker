@@ -15,9 +15,10 @@
   -->
 
 <resources>
+
     <style name="DTCardViewStyle" parent="CardView">
         <item name="cardBackgroundColor">@android:color/transparent</item>
-        <item name="cardCornerRadius">?attr/defaultCornerRadius</item>
+        <item name="cardCornerRadius">@dimen/margin_default</item>
         <item name="cardElevation">0dp</item>
     </style>
 
@@ -30,7 +31,7 @@
         <item name="android:layout_margin">0dp</item>
     </style>
 
-    <style name="DTActionBarStyle" parent="Widget.Material3.ActionBar.Solid">
+    <style name="DTActionBarStyle" parent="Widget.Material3.Toolbar">
         <item name="titleTextStyle">@style/DTActionBarTitleTextAppearance</item>
         <item name="background">?android:attr/statusBarColor</item>
         <item name="android:hideOnContentScroll">true</item>

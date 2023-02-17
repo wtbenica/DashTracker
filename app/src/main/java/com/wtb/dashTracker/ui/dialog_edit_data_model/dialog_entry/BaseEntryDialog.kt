@@ -48,7 +48,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -144,6 +146,10 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                 }
             }
 
+            fragEntryCheckEndsNextDay.setOnCheckedChangeListener { buttonView, isChecked ->
+                binding.updateTotalHours()
+            }
+
             fragEntryStartMileage.apply {
                 doOnTextChanged { _, _, _, _ ->
                     val endMileage = fragEntryEndMileage.text?.toFloatOrNull() ?: 0f
@@ -198,29 +204,63 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                 }
             }
 
-//            fragEntryBtnDelete.apply {
-//                setOnDeletePressed()
-//            }
-//
-//            fragEntryBtnCancel.apply {
-//                setOnResetPressed()
-//            }
-//
-//            fragEntryBtnSave.apply {
-//                setOnSavePressed()
-//            }
-//
+            fragEntryPay.doOnTextChanged { text, start, before, count ->
+                updateTotalPay()
+            }
+
+            fragEntryPayOther.doOnTextChanged { text, start, before, count ->
+                updateTotalPay()
+            }
+
+            fragEntryCashTips.doOnTextChanged { text, start, before, count ->
+                updateTotalPay()
+            }
+
             fragEntryToolbar.title = titleText
         }
+
+    protected fun DialogFragEntryBinding.updateTotalPay() {
+        val total =
+            (fragEntryPay.text.toFloatOrNull() ?: 0f) + (fragEntryPayOther.text.toFloatOrNull()
+                ?: 0f) + (fragEntryCashTips.text.toFloatOrNull() ?: 0f)
+        fragEntryTotalEarned.text = getCurrencyString(total)
+    }
+
+    protected fun DialogFragEntryBinding.updateTotalHours() {
+        val startDate = fragEntryDate.tag as LocalDate?
+        val startTime = fragEntryStartTime.tag as LocalTime?
+        val startDateTime =
+            startDate?.let { sd -> startTime?.let { st -> LocalDateTime.of(sd, st) } }
+
+        val endDate = if (fragEntryCheckEndsNextDay.isChecked) {
+            startDate?.plusDays(1L)
+        } else {
+            startDate
+        }
+        val endTime = fragEntryEndTime.tag as LocalTime?
+        val endDateTime =
+            endDate?.let { ed -> endTime?.let { et -> LocalDateTime.of(ed, et) } }
+
+        val elapsedTime = startDateTime?.let { sdt ->
+            endDateTime?.let { edt ->
+                ChronoUnit.SECONDS.between(sdt, edt)
+            }
+        }
+
+        fragEntryTotalHours.text = getElapsedHours(elapsedTime)
+    }
 
     override fun setDialogListeners() {
         super.setDialogListeners()
 
         childFragmentManager.apply {
             setFragmentResultListener(REQUEST_KEY_DATE, this@BaseEntryDialog) { _, bundle ->
-                val year = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_YEAR)
-                val month = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_MONTH)
-                val dayOfMonth = bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_DAY)
+                val year =
+                    bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_YEAR)
+                val month =
+                    bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_MONTH)
+                val dayOfMonth =
+                    bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_PICKER_NEW_DAY)
                 when (bundle.getInt(ConfirmationDialogDatePicker.ARG_DATE_TEXTVIEW)) {
                     R.id.frag_entry_date -> {
                         val date = LocalDate.of(year, month, dayOfMonth)
@@ -245,6 +285,8 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                         binding.fragEntryEndTime.tag = dialogTime
                     }
                 }
+
+                binding.updateTotalHours()
             }
 
             setFragmentResultListener(
