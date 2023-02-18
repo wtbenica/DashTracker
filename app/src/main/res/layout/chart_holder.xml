@@ -45,16 +45,13 @@
 
             <ImageButton
                 android:id="@+id/btn_show_filters"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/min_touch_target"
-                android:layout_marginStart="@dimen/margin_default"
-                android:background="@drawable/bg_show_chart_filter_btn"
+                style="@style/ListItemButton"
+                android:layout_marginHorizontal="0dp"
+                android:layout_marginVertical="0dp"
                 android:contentDescription="@string/content_desc_show_chart_filtering_options"
-                android:minWidth="@dimen/min_touch_target"
                 android:src="@drawable/anim_tune_to_close"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/colorShowFiltersButton" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <FrameLayout
                 android:id="@+id/cpm_bottom"

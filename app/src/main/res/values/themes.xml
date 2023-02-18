@@ -119,6 +119,7 @@
 
         <!-- dialog fragment -->
         <item name="dialogFragCornerRadius">@dimen/margin_wide</item>
+        <item name="dialogContentButtonStrokeWidth">0dp</item>
 
         <!-- Window transitions -->
         <item name="android:windowEnterTransition">@android:transition/slide_right</item>
@@ -140,8 +141,8 @@
         <item name="chipBackgroundColorDefault">?attr/colorSecondaryFaded</item>
         <item name="chipStrokeColorDisabled">?attr/colorSecondaryFaded</item>
         <item name="chipBackgroundColorDisabled">?attr/colorSecondaryFaded</item>
-        <item name="colorChipText">?attr/colorOnPrimary</item>
-        <item name="colorChipCloseIcon">?attr/colorOnPrimary</item>
+        <item name="colorChipText">?attr/colorTextPrimary</item>
+        <item name="colorChipCloseIcon">?attr/colorTextPrimary</item>
 
         <!-- Text -->
         <item name="android:textColor">?attr/colorTextPrimary</item>
@@ -190,7 +191,7 @@
         <item name="colorTabLayoutBg">?attr/colorTextSecondary</item>
 
         <item name="colorOptionsMenu">?attr/colorSecondaryFaded</item>
-        <item name="colorOptionsMenuStroke">?attr/colorSecondaryVariant</item>
+        <item name="colorOptionsMenuStroke">?attr/colorSecondary</item>
         <item name="colorOptionsButton">?attr/colorPrimary</item>
         <item name="colorOptionsMenuRipple">?attr/colorSecondaryFaded</item>
 
@@ -206,7 +207,7 @@
         <item name="colorListItem">?attr/colorUIBackground</item>
         <item name="colorListItemBorder">?attr/colorUIBackground</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
-        <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimaryFaded</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
         <item name="colorListItemRipple">?attr/colorPrimary</item>
 
@@ -215,6 +216,7 @@
         <item name="colorListItemButtonBg">?attr/colorPrimaryFaded</item>
         <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
         <item name="colorListItemButtonOutline">?attr/colorPrimary</item>
+
         <item name="colorListItemShadow">?attr/colorTextPrimary</item>
         <item name="textColorListItemEntryDayThisWeek">?attr/colorPrimaryDark</item>
         <item name="textColorListItemEntryDay">?attr/colorTextPrimary</item>
@@ -256,13 +258,11 @@
         <item name="colorShowFiltersButtonBorder">?attr/colorPrimary</item>
 
         <!-- dialog fragment -->
-        <item name="colorDialog">?attr/colorSecondaryVariant</item>
-        <item name="colorDialogOutline">?attr/colorSecondaryVariant</item>
+        <item name="colorDialog">?attr/colorSecondary</item>
+        <item name="colorDialogOutline">?attr/colorSecondary</item>
 
         <item name="colorDialogBg">?attr/colorOnSecondary</item>
-        <item name="colorDialogBgOutline">?attr/colorSecondary</item>
-
-        <item name="colorDialogContentBg">?attr/colorOnSecondary</item>
+        <item name="colorDialogBgOutline">?attr/colorSecondaryDark</item>
 
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?attr/colorTextPrimary</item>
@@ -270,19 +270,14 @@
         <item name="colorDialogItemOutline">?attr/colorSecondary</item>
         <item name="colorDialogItem">?attr/colorOnSecondary</item>
         <item name="colorDialogUneditableItem">?attr/colorSecondaryFaded</item>
-        <item name="colorDialogUneditableItemOutline">?attr/colorSecondary</item>
-        <item name="colorDialogItemDisabled">?attr/colorSecondary</item>
+        <item name="colorDialogUneditableItemOutline">?attr/colorSecondaryVariant</item>
 
         <item name="colorDialogButton">?attr/colorAccent</item>
-        <item name="colorDialogButtonStroke">?attr/colorSecondary</item>
-        <item name="dimenDialogButtonStrokeWidth">0dp</item>
+        <item name="colorDialogButtonStroke">?attr/colorSecondaryDark</item>
         <item name="colorDialogButtonBg">?attr/colorSecondaryFaded</item>
         <item name="colorDialogWidget">?attr/colorTextPrimary</item>
-        <item name="textColorDialogButtonDefault">?attr/colorOnPrimary</item>
+        <item name="textColorDialogButtonDefault">?attr/colorTextPrimary</item>
 
-        <item name="colorDialogConfirmDefaultButton">?attr/colorAccent</item>
-        <item name="colorDialogGroupBg">?attr/colorOnSecondary</item>
-        <item name="colorDialogGroupStroke">@android:color/transparent</item>
         <item name="colorDialogFragSpinnerPopupBg">?attr/colorSecondaryFaded</item>
 
         <!-- datetime picker -->

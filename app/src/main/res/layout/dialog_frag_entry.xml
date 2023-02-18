@@ -136,7 +136,7 @@
                                 android:paddingVertical="@dimen/margin_narrow"
                                 android:paddingStart="0dp"
                                 android:paddingEnd="@dimen/margin_default"
-                                android:text="4h 15m"
+                                tools:text="4h 15m"
                                 android:textAlignment="textEnd" />
                         </LinearLayout>
 
@@ -234,7 +234,7 @@
                             app:iconTint="?attr/colorDialogWidget"
                             app:rippleColor="?attr/colorDialogItemOutline"
                             app:strokeColor="?attr/colorDialogButtonStroke"
-                            app:strokeWidth="?attr/dimenDialogButtonStrokeWidth"
+                            app:strokeWidth="?attr/dialogContentButtonStrokeWidth"
                             tools:visibility="visible" />
 
                         <android.widget.Space
@@ -444,7 +444,7 @@
                             android:background="@android:color/transparent"
                             android:paddingHorizontal="@dimen/margin_default"
                             android:paddingVertical="@dimen/margin_narrow"
-                            android:text="$8.25"
+                            tools:text="$8.25"
                             android:textAlignment="textEnd" />
                     </GridLayout>
                 </LinearLayout>

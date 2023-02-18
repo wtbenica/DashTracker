@@ -15,23 +15,26 @@
   -->
 
 <resources>
-    <color name="dark">#692</color>
-    <color name="regular">#ce9</color>
-    <color name="light">#e0ffb0</color>
-    <color name="faded">#f8ffe8</color>
+<!--    <color name="dark">#692</color>-->
+<!--    <color name="dark">#74c000</color>-->
+<!--    <color name="regular">#ce9</color>-->
+    <color name="dark">#70A918</color>
+    <color name="regular">#c2f770</color>
+    <color name="light">#d4fb99</color>
+    <color name="faded">#f7ffdf</color>
 
     <color name="on_regular">#353539</color>
     <color name="on_regular_light">#686879</color>
 
-    <color name="brick_dark">#7ac</color>
-    <color name="brick">#90c8f0</color>
-    <color name="brick_light">#b0e0ff</color>
-    <color name="brick_faded">#e8f8ff</color>
+    <color name="accent">#09609e</color>
+    <color name="brick_dark">#4592c9</color>
+    <color name="brick">#69abda</color>
+    <color name="brick_light">#bfe2fa</color>
+    <color name="brick_faded">#f5fbff</color>
 
     <color name="on_brick">#FEFEFE</color>
-    <color name="on_brick_light">#EDEDED</color>
+    <color name="on_brick_light">#F7F7F7</color>
 
-    <color name="accent">#158</color>
 <!--    <color name="accent">#48b</color>-->
 
     <color name="daytime_solid">#F8F890</color>

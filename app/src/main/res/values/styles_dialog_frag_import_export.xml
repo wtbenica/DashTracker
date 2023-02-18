@@ -79,5 +79,6 @@
 
     <style name="ConfirmDialogButton.Default">
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/textColorDialogButtonDefault</item>
     </style>
 </resources>

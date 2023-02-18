@@ -22,14 +22,15 @@
     <color name="on_regular">#E8E8E8</color>
     <color name="on_regular_light">#CDCDCD</color>
 
-    <color name="brick_dark">#103443</color>
-    <color name="brick">#1f4b5f</color>
-    <color name="brick_light">#396c85</color>
-    <color name="brick_faded">#7197ac</color>
+    <color name="brick_dark">#07202b</color>
+    <color name="brick">#133443</color>
+    <color name="brick_light">#234756</color>
+    <color name="brick_faded">#375B6B</color>
+    <color name="accent">#b0d8e0</color>
+
     <color name="on_brick">#101014</color>
     <color name="on_brick_light">#202024</color>
 
-    <color name="accent">#b8d4e2</color>
 
     <color name="daytime_solid">#C8C860</color>
     <color name="daytime_light">#CFCF88</color>
