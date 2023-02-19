@@ -53,6 +53,7 @@
                             android:id="@+id/frag_adjust_date"
                             style="@style/DialogFragSpinnerStyle"
                             android:layout_width="0dp"
+                            android:layout_marginStart="@dimen/margin_default"
                             tools:listitem="@layout/dialog_frag_weekly_spinner_item_single_line" />
                     </TableRow>
 
@@ -73,6 +74,7 @@
                             android:id="@+id/frag_adjust_amount"
                             style="@style/DialogValueTextView"
                             android:layout_width="0dp"
+                            android:layout_marginStart="@dimen/margin_default"
                             android:layout_weight="1"
                             android:autofillHints="false"
                             android:inputType="numberDecimal"
@@ -95,6 +97,7 @@
                             android:id="@+id/frag_adjust_total"
                             style="@style/DialogValueTextView"
                             android:layout_width="0dp"
+                            android:layout_marginStart="@dimen/margin_default"
                             android:layout_weight="1"
                             android:autofillHints="false"
                             android:background="@drawable/bg_edit_text_disabled"

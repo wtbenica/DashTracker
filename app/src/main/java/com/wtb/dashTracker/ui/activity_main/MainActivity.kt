@@ -410,12 +410,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
         Repository.initialize(this)
 
-        supportActionBar?.apply {
-            title = "DashTracker"
-            isHideOnContentScrollEnabled = true
-
-        }
-
         initMainActivityBinding()
         setSupportActionBar(binding.toolbar)
         setContentView(binding.root)

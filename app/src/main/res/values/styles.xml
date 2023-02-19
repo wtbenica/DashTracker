@@ -34,7 +34,7 @@
     <style name="DTActionBarStyle" parent="Widget.Material3.Toolbar">
         <item name="titleTextStyle">@style/DTActionBarTitleTextAppearance</item>
         <item name="background">?android:attr/statusBarColor</item>
-        <item name="android:hideOnContentScroll">true</item>
+<!--        <item name="android:hideOnContentScroll">true</item>-->
     </style>
 
     <style name="DTChipTextAppearance" parent="TextAppearance.Material3.BodyLarge">

@@ -121,6 +121,12 @@
     <attr name="dimenListItemElevationElevated" format="reference|dimension" />
     <attr name="dimenListItemElevationLowered" format="reference|dimension" />
     <attr name="dimenListItemBorderWidth" format="reference|dimension" />
+    <attr name="dimenDialogMargin" format="reference|dimension" />
+    <attr name="dimenDialogHeaderMarginStart" format="reference|dimension" />
+    <attr name="dimenDialogContentMarginHorizontal" format="reference|dimension" />
+    <attr name="dimenDialogContentPaddingVertical" format="reference|dimension" />
+    <attr name="dimenDialogContentPaddingHorizontal" format="reference|dimension" />
+
 
     <!-- list_item_details -->
     <attr name="colorListItemDetails" format="reference" />
@@ -184,6 +190,7 @@
     <attr name="colorDialogButtonBg" format="reference" />
     <attr name="colorDialogWidget" format="reference" />
     <attr name="textColorDialogButtonDefault" format="reference|color" />
+    <attr name="textColorDialogHeader" format="reference|color" />
 
     <attr name="colorDialogGroupBg" format="reference" />
     <attr name="colorDialogGroupStroke" format="reference" />

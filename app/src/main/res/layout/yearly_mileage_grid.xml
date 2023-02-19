@@ -27,7 +27,7 @@
             style="@style/DetailsTableTop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_half"
+            android:layout_marginBottom="?attr/listItemThinBorder"
             android:text="@string/header_mileage_breakdown"
             android:textAlignment="center"
             android:textSize="@dimen/text_size_large" />

@@ -18,19 +18,19 @@
 <!--    <color name="dark">#692</color>-->
 <!--    <color name="dark">#74c000</color>-->
 <!--    <color name="regular">#ce9</color>-->
-    <color name="dark">#70A918</color>
-    <color name="regular">#c2f770</color>
-    <color name="light">#d4fb99</color>
+    <color name="dark">#90c060</color>
+    <color name="regular">#d4fb99</color>
+    <color name="light">#e4ffb9</color>
     <color name="faded">#f7ffdf</color>
 
     <color name="on_regular">#353539</color>
     <color name="on_regular_light">#686879</color>
 
-    <color name="accent">#09609e</color>
-    <color name="brick_dark">#4592c9</color>
-    <color name="brick">#69abda</color>
-    <color name="brick_light">#bfe2fa</color>
-    <color name="brick_faded">#f5fbff</color>
+    <color name="accent">#196f90</color>
+    <color name="brick_dark">#79abca</color>
+    <color name="brick">#8fcff0</color>
+    <color name="brick_light">#c0e8f5</color>
+    <color name="brick_faded">#dff8ff</color>
 
     <color name="on_brick">#FEFEFE</color>
     <color name="on_brick_light">#F7F7F7</color>

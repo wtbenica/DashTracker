@@ -20,7 +20,7 @@
     <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
         style="@style/DialogFragCard">
 
-        <LinearLayout style="@style/DialogFragLayout.Confirmation">
+        <LinearLayout style="@style/DialogFragLayout">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/dialog_time_picker_toolbar"

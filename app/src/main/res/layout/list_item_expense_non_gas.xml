@@ -48,6 +48,7 @@
                 android:contentDescription="@string/content_desc_recurring_expense"
                 android:src="@drawable/ic_recurring"
                 android:visibility="gone"
+                android:layout_gravity="center_vertical"
                 app:tint="?attr/colorListItemTitle"
                 tools:visibility="visible" />
 
@@ -84,8 +85,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_half"
-            android:layout_marginEnd="@dimen/margin_half"
-            android:layout_marginBottom="@dimen/margin_half"
+            android:layout_marginEnd="?attr/listItemThinBorder"
+            android:layout_marginBottom="?attr/listItemThinBorder"
             android:orientation="vertical"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -96,6 +97,7 @@
             <ImageButton
                 android:id="@+id/list_item_btn_delete"
                 style="@style/ListItemButton"
+                android:layout_marginBottom="?attr/listItemThinBorder"
                 android:contentDescription="@string/content_desc_remove"
                 android:src="@drawable/ic_action_delete" />
 

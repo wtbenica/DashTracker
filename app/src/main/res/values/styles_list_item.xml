@@ -19,7 +19,6 @@
     <style name="DTCardViewStyle.ListItem">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="cardElevation">@dimen/margin_half</item>
         <item name="cardCornerRadius">?attr/listItemCornerRadius</item>
         <item name="android:outlineAmbientShadowColor">?attr/colorListItemShadow</item>
         <item name="android:outlineSpotShadowColor">?attr/colorListItemShadow</item>
@@ -72,6 +71,7 @@
         <item name="android:layout_width">@dimen/min_touch_target</item>
         <item name="android:background">@drawable/bg_list_item_button</item>
         <item name="android:tint">?attr/colorListItemButtonIcon</item>
+        <item name="rippleColor">?attr/colorListItemButtonOutline</item>
     </style>
 
     <style name="listItemDetailsPane">

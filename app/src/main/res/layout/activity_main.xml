@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
-            <androidx.appcompat.widget.Toolbar
+            <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 style="@style/DTActionBarStyle"
                 android:layout_width="match_parent"
@@ -64,7 +64,8 @@
                     android:layout_row="0"
                     android:layout_column="0"
                     android:layout_columnWeight="1"
-                    android:text="@string/lbl_hourly" />
+                    android:text="@string/lbl_hourly"
+                    app:layout_collapseMode="pin" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/act_main_lbl_last_week"
@@ -127,9 +128,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_columnSpan="3"
-                    android:layout_marginStart="@dimen/margin_half"
-                    android:layout_marginEnd="@dimen/margin_half"
-                    android:layout_marginBottom="@dimen/margin_half"
+                    android:layout_marginStart="@dimen/margin_narrow"
+                    android:layout_marginEnd="@dimen/margin_narrow"
+                    android:layout_marginBottom="@dimen/margin_narrow"
                     android:visibility="gone"
                     app:cardElevation="?attr/dimenListItemElevationLowered"
                     tools:visibility="visible" />

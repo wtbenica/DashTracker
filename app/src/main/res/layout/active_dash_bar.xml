@@ -43,7 +43,6 @@
                 android:layout_weight="1"
                 android:text="@string/adb_current_dash"
                 android:textAlignment="textStart"
-                android:textColor="?attr/colorTextPrimaryDisabled"
                 android:textSize="@dimen/text_size_xxl" />
 
             <TextView
@@ -54,7 +53,6 @@
                 android:layout_marginEnd="@dimen/margin_default"
                 android:layout_weight="1"
                 android:textAlignment="textEnd"
-                android:textColor="?attr/colorTextPrimaryDisabled"
                 android:textSize="@dimen/text_size_xxl"
                 tools:text="3:33p - " />
         </LinearLayout>

@@ -157,23 +157,24 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorSecondary</item>
-        <item name="colorDialogOutline">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogOutline">?attr/colorSecondary</item>
 
         <item name="colorDialogBg">?attr/colorOnSecondary</item>
-        <item name="colorDialogBgOutline">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogBgOutline">?attr/colorSecondary</item>
 
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?attr/colorTextPrimary</item>
+        <item name="textColorDialogHeader">?attr/colorSecondaryFaded</item>
 
-        <item name="colorDialogItemOutline">?attr/colorSecondaryFaded</item>
-        <item name="colorDialogItem">?attr/colorOnSecondaryVariant</item>
-        <item name="colorDialogUneditableItem">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogItemOutline">?attr/colorSecondaryDark</item>
+        <item name="colorDialogItem">?attr/colorTextSecondaryDisabled</item>
+        <item name="colorDialogUneditableItem">?attr/colorTextSecondary</item>
         <item name="colorDialogUneditableItemOutline">?attr/colorSecondaryFaded</item>
 
         <item name="colorDialogButton">?attr/colorAccent</item>
         <item name="colorDialogButtonStroke">?attr/colorSecondaryDark</item>
-        <item name="colorDialogButtonBg">?attr/colorSecondaryFaded</item>
-        <item name="colorDialogWidget">?attr/colorTextPrimary</item>
+        <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogWidget">?attr/colorAccent</item>
         <item name="textColorDialogButtonDefault">?attr/colorTextPrimary</item>
 
         <item name="colorDialogFragSpinnerPopupBg">?attr/colorSecondaryDark</item>

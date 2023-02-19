@@ -84,7 +84,7 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
 
                     Divider(
                         thickness = 1.dp,
-                        color = Color(context.getAttributeColor(R.attr.colorPrimaryDark))
+                        color = Color(context.getAttributeColor(R.attr.colorSecondaryDark))
                     )
 
                     yearly.expenses?.let {

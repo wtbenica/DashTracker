@@ -110,7 +110,7 @@
                 layout="@layout/list_item_entry_details_table"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_half"
+                android:layout_marginEnd="?attr/listItemThinBorder"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"
                 app:layout_constraintStart_toStartOf="parent"

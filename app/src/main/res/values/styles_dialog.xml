@@ -17,11 +17,10 @@
 <resources>
 
     <style name="DialogHeaderTextView" parent="Widget.AppCompat.TextView">
-        <item name="android:layout_marginEnd">@dimen/margin_default</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:singleLine">true</item>
         <item name="android:textSize">?attr/textSizeItemHeader</item>
-        <item name="android:textColor">?attr/colorDialogText</item>
+        <item name="android:textColor">?attr/textColorDialogHeader</item>
     </style>
 
     <style name="DialogHeaderTextView.SideLabel" parent="Widget.AppCompat.TextView">
@@ -43,7 +42,7 @@
 
     <style name="DialogImageButton">
         <item name="android:layout_marginHorizontal">@dimen/margin_narrow</item>
-        <item name="android:layout_marginVertical">@dimen/margin_half</item>
+        <item name="android:layout_marginVertical">?attr/dimenDialogContentMarginHorizontal</item>
         <item name="android:background">@drawable/bg_dialog_button</item>
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>

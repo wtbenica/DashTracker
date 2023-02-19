@@ -105,13 +105,20 @@
         <item name="textSizeItemValue">@dimen/text_size_large</item>
         <item name="textSizeItemSecondaryValue">@dimen/text_size_med</item>
         <item name="listItemCornerRadius">@dimen/margin_wide</item>
-        <item name="listItemThinBorder">@dimen/margin_half</item>
+        <item name="listItemThinBorder">?attr/dimenDialogContentMarginHorizontal</item>
 
         <item name="dimenListItemMarginHorizontal">@dimen/margin_half</item>
         <item name="dimenListItemMarginVertical">@dimen/margin_narrow</item>
+
         <item name="dimenListItemButtonRadius">@dimen/margin_extra_wide</item>
         <item name="dimenListItemBorderWidth">1dp</item>
         <item name="dimenListItemDetailsBorderWidth">1dp</item>
+
+        <item name="dimenDialogMargin">@dimen/margin_default</item>
+        <item name="dimenDialogHeaderMarginStart">@dimen/margin_wide</item>
+        <item name="dimenDialogContentMarginHorizontal">@dimen/margin_narrow</item>
+        <item name="dimenDialogContentPaddingHorizontal">@dimen/margin_wide</item>
+        <item name="dimenDialogContentPaddingVertical">@dimen/margin_default</item>
 
         <!-- insights row -->
         <item name="insightsRowCornerRadius">?attr/defaultCornerRadius</item>
@@ -163,26 +170,26 @@
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBar">?attr/colorOnSecondary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
-        <item name="colorFab">?attr/colorSecondaryFaded</item>
+        <item name="colorFab">?attr/colorSecondaryVariant</item>
         <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
         <item name="colorFabIcon">?attr/colorAccent</item>
         <item name="colorBottomNavBar">?attr/colorUi</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorAccent</item>
-        <item name="colorBottomNavTextEnabled">?attr/colorAccent</item>
-        <item name="colorBottomNavDisabled">?attr/colorPrimaryDark</item>
-        <item name="colorBottomNavTextDisabled">?attr/colorPrimaryDark</item>
+        <item name="colorBottomNavEnabled">?attr/colorTextPrimary</item>
+        <item name="colorBottomNavTextEnabled">?attr/colorTextPrimary</item>
+        <item name="colorBottomNavDisabled">?attr/colorTextPrimaryDisabled</item>
+        <item name="colorBottomNavTextDisabled">?attr/colorTextPrimaryDisabled</item>
         <item name="colorBottomNavItemIndicator">?attr/colorPrimaryFaded</item>
-        <item name="colorBottomNavRipple">?attr/colorPrimaryFaded</item>
+        <item name="colorBottomNavRipple">?attr/colorPrimaryVariant</item>
         <item name="colorPopupBackground">?attr/colorSecondaryFaded</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- active_dash_bar -->
-        <item name="colorActiveDashBarStroke">?attr/colorSecondaryDark</item>
-        <item name="colorActiveDashBarBg">?attr/colorSecondaryVariant</item>
-        <item name="colorActiveDashBarDetailsStroke">?attr/colorSecondary</item>
+        <item name="colorActiveDashBarStroke">?attr/colorPrimaryVariant</item>
+        <item name="colorActiveDashBarBg">?attr/colorPrimary</item>
+        <item name="colorActiveDashBarDetailsStroke">?attr/colorPrimaryVariant</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
 
         <!-- fragment_income -->
@@ -190,43 +197,44 @@
         <item name="colorTabText">?attr/colorTextPrimary</item>
         <item name="colorTabLayoutBg">?attr/colorTextSecondary</item>
 
-        <item name="colorOptionsMenu">?attr/colorSecondaryFaded</item>
+        <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
         <item name="colorOptionsMenuStroke">?attr/colorSecondary</item>
         <item name="colorOptionsButton">?attr/colorPrimary</item>
-        <item name="colorOptionsMenuRipple">?attr/colorSecondaryFaded</item>
+        <item name="colorOptionsMenuRipple">?attr/colorTextSecondary</item>
 
         <item name="colorGroupButton">?attr/colorSecondary</item>
-        <item name="colorGroupButtonDisabled">?attr/colorSecondaryVariant</item>
+        <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
         <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
 
         <item name="colorGroupButtonText">@color/button_group_button_text</item>
-        <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>
+        <item name="colorGroupButtonTextDefault">?attr/colorTextPrimaryDisabled</item>
         <item name="colorGroupButtonTextChecked">?attr/colorTextPrimary</item>
 
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
         <item name="colorListItemBorder">?attr/colorUIBackground</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
-        <item name="colorListItemExpandedBorder">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimaryDark</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
         <item name="colorListItemRipple">?attr/colorPrimary</item>
 
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
+
         <item name="colorListItemButtonBg">?attr/colorPrimaryFaded</item>
         <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
-        <item name="colorListItemButtonOutline">?attr/colorPrimary</item>
+        <item name="colorListItemButtonOutline">?attr/colorPrimaryDark</item>
 
         <item name="colorListItemShadow">?attr/colorTextPrimary</item>
         <item name="textColorListItemEntryDayThisWeek">?attr/colorPrimaryDark</item>
         <item name="textColorListItemEntryDay">?attr/colorTextPrimary</item>
 
-        <item name="dimenListItemElevationElevated">16dp</item>
-        <item name="dimenListItemElevationLowered">4dp</item>
+        <item name="dimenListItemElevationElevated">0dp</item>
+        <item name="dimenListItemElevationLowered">0dp</item>
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorOnSecondary</item>
-        <item name="colorListItemDetailsBorder">?attr/colorPrimary</item>
+        <item name="colorListItemDetailsBorder">?attr/colorPrimaryDark</item>
         <item name="colorListItemDetailsToolbar">?attr/colorOnSecondary</item>
         <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
@@ -239,9 +247,9 @@
         <item name="colorBarChartDatasetDefault">?attr/colorSecondary</item>
 
         <!-- CPM Chart-->
-        <item name="colorSeekBarThumb">?attr/colorAccent</item>
-        <item name="colorSeekBarProgress">?attr/colorAccent</item>
-        <item name="colorSeekBarProgressBg">?attr/colorSecondaryDark</item>
+        <item name="colorSeekBarThumb">?attr/colorSecondaryDark</item>
+        <item name="colorSeekBarProgress">?attr/colorSecondary</item>
+        <item name="colorSeekBarProgressBg">?attr/colorSecondaryVariant</item>
 
         <!-- daily stats row -->
         <item name="colorChartGrossIncome">#8fc</item>
@@ -259,16 +267,17 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorSecondary</item>
-        <item name="colorDialogOutline">?attr/colorSecondary</item>
+        <item name="colorDialogOutline">?attr/colorSecondaryDark</item>
 
         <item name="colorDialogBg">?attr/colorOnSecondary</item>
         <item name="colorDialogBgOutline">?attr/colorSecondaryDark</item>
 
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?attr/colorTextPrimary</item>
+        <item name="textColorDialogHeader">?attr/colorAccent</item>
 
-        <item name="colorDialogItemOutline">?attr/colorSecondary</item>
-        <item name="colorDialogItem">?attr/colorOnSecondary</item>
+        <item name="colorDialogItemOutline">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogItem">?attr/colorTextSecondary</item>
         <item name="colorDialogUneditableItem">?attr/colorSecondaryFaded</item>
         <item name="colorDialogUneditableItemOutline">?attr/colorSecondaryVariant</item>
 
