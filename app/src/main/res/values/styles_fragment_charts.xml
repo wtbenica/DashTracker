@@ -16,7 +16,6 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="ChartCardDetailsLayout">
-        <item name="android:background">?attr/colorUIBackground</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
     </style>
@@ -27,14 +26,14 @@
 
     <style name="ChartCard" parent="CardView">
         <item name="cardElevation">0dp</item>
-        <item name="cardCornerRadius">?attr/defaultCornerRadius</item>
+        <item name="cardCornerRadius">?attr/listItemCornerRadius</item>
     </style>
 
-    <style name="chartTunerTable">
+    <style name="ChartTunerTable">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@drawable/chart_options_menu_bg</item>
-        <item name="android:padding">@dimen/margin_default</item>
+        <item name="android:padding">@dimen/margin_wide</item>
         <item name="android:visibility">gone</item>
         <item name="android:columnCount">2</item>
     </style>

@@ -18,106 +18,100 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardElevation="0dp">
+    <FrameLayout
+        style="@style/ChartCardDetailsLayout"
+        android:layout_height="match_parent">
 
-        <FrameLayout
-            style="@style/ChartCardDetailsLayout"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/chart_card_2"
+            style="@style/ChartCard"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/chart_card_2"
-                style="@style/ChartCard"
+            <LinearLayout
+                style="@style/DashTrackerChart"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    style="@style/DashTrackerChart"
+                <TextView
+                    android:id="@+id/chart_title"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:text="@string/chart_title_avg_per_hour"
+                    android:textSize="@dimen/text_size_large" />
+
+                <com.github.mikephil.charting.charts.HorizontalBarChart
+                    android:id="@+id/chart_bar_daily_hourly"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_filter_table"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:cardCornerRadius="?attr/listItemCornerRadius">
+
+            <TableLayout
+                android:id="@+id/table_filters"
+                style="@style/ChartTunerTable"
+                tools:visibility="visible">
+
+                <TableRow tools:ignore="UselessParent">
 
                     <TextView
-                        android:id="@+id/chart_title"
-                        android:layout_width="match_parent"
+                        android:layout_width="75dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/chart_title_avg_per_hour"
-                        android:textSize="@dimen/text_size_large" />
+                        android:layout_gravity="center_vertical|start"
+                        android:layout_marginEnd="@dimen/margin_half"
+                        android:lineHeight="@dimen/text_size_med"
+                        android:text="@string/content_desc_chart_dow_show"
+                        android:textAlignment="gravity" />
 
-                    <com.github.mikephil.charting.charts.HorizontalBarChart
-                        android:id="@+id/chart_bar_daily_hourly"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/graph_selector"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:checkedButton="@id/btn_chart_hourly_by_day"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/chart_card_2"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_filter_table"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                app:cardElevation="0dp">
-
-                <TableLayout
-                    android:id="@+id/table_filters"
-                    style="@style/chartTunerTable"
-                    tools:visibility="visible">
-
-                    <TableRow tools:ignore="UselessParent">
-
-                        <TextView
-                            android:layout_width="75dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical|start"
-                            android:layout_marginEnd="@dimen/margin_half"
-                            android:lineHeight="@dimen/text_size_med"
-                            android:text="@string/content_desc_chart_dow_show"
-                            android:textAlignment="gravity" />
-
-                        <com.google.android.material.button.MaterialButtonToggleGroup
-                            android:id="@+id/graph_selector"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_chart_hourly_by_day"
+                            style="@style/MaterialToggleButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            app:checkedButton="@id/btn_chart_hourly_by_day"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/chart_card_2"
-                            app:selectionRequired="true"
-                            app:singleSelection="true">
+                            android:text="@string/units_pay_rate" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_chart_hourly_by_day"
-                                style="@style/MaterialToggleButton"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/units_pay_rate" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_chart_per_delivery"
+                            style="@style/MaterialToggleButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/units_avg_delivery" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_chart_per_delivery"
-                                style="@style/MaterialToggleButton"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/units_avg_delivery" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_chart_del_per_hr"
+                            style="@style/MaterialToggleButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/units_del_per_hr" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_chart_del_per_hr"
-                                style="@style/MaterialToggleButton"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/units_del_per_hr" />
-
-                        </com.google.android.material.button.MaterialButtonToggleGroup>
-                    </TableRow>
-                </TableLayout>
-            </androidx.cardview.widget.CardView>
-        </FrameLayout>
-    </androidx.cardview.widget.CardView>
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </TableRow>
+            </TableLayout>
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
 </merge>

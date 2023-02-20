@@ -47,6 +47,7 @@
                         android:minHeight="@dimen/min_touch_target"
                         android:textColor="?attr/colorTextPrimary"
                         android:textSize="@dimen/text_size_xlarge"
+                        android:autoSizeMaxTextSize="@dimen/text_size_xxl"
                         android:autoSizeTextType="uniform"
                         android:textStyle="bold"
                         tools:text="Mon Nov 23, 2021" />
@@ -437,7 +438,6 @@
                     </GridLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-
             <include
                 android:id="@+id/bottom_button_bar"
                 layout="@layout/dialog_list_item_buttons" />

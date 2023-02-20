@@ -170,7 +170,7 @@
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBar">?attr/colorOnSecondary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
-        <item name="colorFab">?attr/colorSecondaryVariant</item>
+        <item name="colorFab">?attr/colorSecondaryFaded</item>
         <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
         <item name="colorFabIcon">?attr/colorAccent</item>
         <item name="colorBottomNavBar">?attr/colorUi</item>
@@ -214,7 +214,7 @@
         <item name="colorListItem">?attr/colorUIBackground</item>
         <item name="colorListItemBorder">?attr/colorUIBackground</item>
         <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
-        <item name="colorListItemExpandedBorder">?attr/colorPrimaryDark</item>
+        <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorPrimaryVariant</item>
         <item name="colorListItemRipple">?attr/colorPrimary</item>
 
@@ -234,7 +234,7 @@
 
         <!-- list_item_details -->
         <item name="colorListItemDetails">?attr/colorOnSecondary</item>
-        <item name="colorListItemDetailsBorder">?attr/colorPrimaryDark</item>
+        <item name="colorListItemDetailsBorder">?attr/colorPrimaryVariant</item>
         <item name="colorListItemDetailsToolbar">?attr/colorOnSecondary</item>
         <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValuePayText">?attr/colorTextPrimary</item>
@@ -267,10 +267,10 @@
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorSecondary</item>
-        <item name="colorDialogOutline">?attr/colorSecondaryDark</item>
+        <item name="colorDialogOutline">?attr/colorSecondary</item>
 
         <item name="colorDialogBg">?attr/colorOnSecondary</item>
-        <item name="colorDialogBgOutline">?attr/colorSecondaryDark</item>
+        <item name="colorDialogBgOutline">?attr/colorSecondary</item>
 
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?attr/colorTextPrimary</item>
