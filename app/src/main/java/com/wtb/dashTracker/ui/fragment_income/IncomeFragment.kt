@@ -38,6 +38,8 @@ import com.wtb.dashTracker.databinding.FragIncomeBinding
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment.Companion.REQ_KEY_INCOME_LIST_ITEM_SELECTED
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies.WeeklyListFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.YearlyListFragment
@@ -56,29 +58,41 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback,
+class IncomeFragment : Fragment(), IncomeListItemFragment.IncomeListItemFragmentCallback,
+    WeeklyListFragment.WeeklyListFragmentCallback,
     EntryListFragment.EntryListFragmentCallback,
     YearlyListFragment.YearlyListFragmentCallback {
     private lateinit var callback: IncomeFragmentCallback
     private var cpmButtonText: String? = null
+    private lateinit var binding: FragIncomeBinding
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = (context as IncomeFragmentCallback)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        childFragmentManager.setFragmentResultListener(
+            REQ_KEY_INCOME_LIST_ITEM_SELECTED,
+            this
+        ) { string, bundle ->
+            hideOptionsMenu()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.frag_income, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragIncomeBinding.bind(view)
+        binding = FragIncomeBinding.bind(view)
         val tabLayout = binding.fragIncomeTabLayout
         val viewPager = binding.fragIncomeViewPager
         viewPager.adapter = IncomePagerAdapter(this)
@@ -91,17 +105,9 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
             }
         }.attach()
 
-        val btnGroup = binding.filterBoxCollapsableArea
-        binding.topStuff.setOnClickListener {
-            if (btnGroup.isVisible) {
-                btnGroup.collapse()
-                binding.expandArrow.setImageResource(R.drawable.ic_arrow_expand)
-                binding.selectCpm.visibility = VISIBLE
-                binding.selectCpm.text = cpmButtonText
-            } else {
-                btnGroup.expand()
-                binding.expandArrow.setImageResource(R.drawable.ic_arrow_collapse)
-                binding.selectCpm.visibility = GONE
+        binding.topStuff.apply {
+            setOnClickListener {
+                toggleOptionsMenuOpen()
             }
         }
 
@@ -135,12 +141,33 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
                             } else {
                                 ": " + it.text
                             }
-                    if (!btnGroup.isVisible) {
+                    if (!binding.filterBoxCollapsableArea.isVisible) {
                         binding.selectCpm.text = this@IncomeFragment.cpmButtonText
                     }
                 }
             }
         }
+    }
+
+    private fun toggleOptionsMenuOpen() {
+        if (binding.filterBoxCollapsableArea.isVisible) {
+            hideOptionsMenu()
+        } else {
+            showOptionsMenu()
+        }
+    }
+
+    private fun showOptionsMenu() {
+        binding.filterBoxCollapsableArea.expand()
+        binding.expandArrow.setImageResource(R.drawable.ic_arrow_collapse)
+        binding.selectCpm.visibility = GONE
+    }
+
+    private fun hideOptionsMenu() {
+        binding.filterBoxCollapsableArea.collapse()
+        binding.expandArrow.setImageResource(R.drawable.ic_arrow_expand)
+        binding.selectCpm.visibility = VISIBLE
+        binding.selectCpm.text = cpmButtonText
     }
 
     @ExperimentalCoroutinesApi
@@ -167,5 +194,11 @@ class IncomeFragment : Fragment(), WeeklyListFragment.WeeklyListFragmentCallback
 
         @JvmStatic
         fun newInstance(): IncomeFragment = IncomeFragment()
+    }
+
+    override fun onItemSelected() {
+        if (binding.filterBoxCollapsableArea.isVisible) {
+            hideOptionsMenu()
+        }
     }
 }

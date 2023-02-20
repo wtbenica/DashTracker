@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
-import android.content.Context
 import android.graphics.drawable.RippleDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -34,32 +33,8 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.*
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragItemListBinding
-import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-
-@ExperimentalAnimationApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-@ExperimentalCoroutinesApi
-abstract class IncomeListItemFragment : ListItemFragment() {
-
-    var callback: IncomeFragment.IncomeFragmentCallback? = null
-
-    protected var deductionType: DeductionType = DeductionType.NONE
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        callback = context as IncomeFragment.IncomeFragmentCallback
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback = null
-    }
-}
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -89,7 +64,6 @@ abstract class ListItemFragment : Fragment() {
                     (requireActivity() as MainActivity).binding.fab.hide()
                 }
             }
-
         }
 
 
@@ -213,11 +187,11 @@ abstract class ListItemFragment : Fragment() {
                 adapter?.let {
                     prev = it.mExpandedPosition
                     if (bindingAdapterPosition == it.mExpandedPosition) {
-                        (requireContext() as MainActivity).showStuff()
+                        onItemClosed()
 
                         it.mExpandedPosition = null
                     } else {
-                        (requireContext() as MainActivity).hideStuff()
+                        onItemExpanded()
 
                         it.mExpandedPosition = (bindingAdapterPosition)
                         val scroller = object : LinearSmoothScroller(context) {
@@ -280,6 +254,14 @@ abstract class ListItemFragment : Fragment() {
                 bgCard.cardElevation = 0f
             }
         }
+    }
+
+    protected open fun onItemExpanded() {
+        (requireContext() as MainActivity).hideStuff()
+    }
+
+    protected open fun onItemClosed() {
+        (requireContext() as MainActivity).showStuff()
     }
 }
 
