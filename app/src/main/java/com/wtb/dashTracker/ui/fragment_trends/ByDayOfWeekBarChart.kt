@@ -23,7 +23,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -41,6 +40,8 @@ import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartByDayOfWeekBinding
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getFloatString
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
@@ -255,39 +256,6 @@ class ByDayOfWeekBarChart(
             }
     }
 }
-
-
-/**
- * TODO
- *
- * @param resId
- * @param ifNull
- * @param args
- * @return
- */
-fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?): String =
-    if (args.map { it != null }.reduce { acc, b -> acc && b })
-        getString(resId, *args)
-    else
-        ifNull
-
-fun Context.getCurrencyString(value: Float?): String =
-    if (value == null || value == 0f || value.isNaN() || value.isInfinite())
-        getString(R.string.blank_currency)
-    else
-        getStringOrElse(R.string.currency_unit, "-", value)
-
-/**
- * TODO
- *
- * @param value
- * @return
- */
-fun Context.getFloatString(value: Float?): String =
-    if (value == null || value == 0f || value.isNaN() || value.isInfinite())
-        getString(R.string.blank_float)
-    else
-        getStringOrElse(R.string.float_fmt, "-", value)
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api

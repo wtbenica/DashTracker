@@ -42,7 +42,7 @@
     <string name="lbl_last_week">Last Week</string>
     <string name="lbl_amount">Amount</string>
     <string name="lbl_base_pay_adjust">Base Pay\nAdjust</string>
-    <string name="lbl_total_earned">Total\nEarned</string>
+    <string name="lbl_total_earned">Earnings</string>
     <string name="lbl_adjust">Base Pay Adjustment</string>
     <string name="lbl_shifts">shifts</string>
     <string name="lbl_reported_income">Reported Income</string>

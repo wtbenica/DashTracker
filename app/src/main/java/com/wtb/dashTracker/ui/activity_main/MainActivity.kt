@@ -314,18 +314,23 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         fun initObservers() {
-            viewModel.hourly.observe(this) {
-                binding.actMainHourly.text =
+            viewModel.thisWeekHourly.observe(this) {
+                binding.actMainThisWeekHourly.text =
                     getCurrencyString(it)
             }
 
-            viewModel.thisWeek.observe(this) {
-                binding.actMainThisWeek.text =
+            viewModel.lastWeekHourly.observe(this) {
+                binding.actMainLastWeekHourly.text =
                     getCurrencyString(it)
             }
 
-            viewModel.lastWeek.observe(this) {
-                binding.actMainLastWeek.text =
+            viewModel.thisWeekEarnings.observe(this) {
+                binding.actMainThisWeekTotal.text =
+                    getCurrencyString(it)
+            }
+
+            viewModel.lastWeekEarnings.observe(this) {
+                binding.actMainLastWeekTotal.text =
                     getCurrencyString(it)
             }
 

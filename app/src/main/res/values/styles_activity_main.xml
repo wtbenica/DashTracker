@@ -40,6 +40,7 @@
 
     <style name="SummaryBarItem.Header">
         <item name="android:textSize">?attr/textSizeSummaryBarHeader</item>
+        <item name="android:textColor">?attr/colorTextPrimaryDisabled</item>
     </style>
 
     <style name="SummaryBarItem.Value">

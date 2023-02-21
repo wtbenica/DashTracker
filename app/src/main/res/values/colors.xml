@@ -21,7 +21,7 @@
     <color name="dark">#90c060</color>
     <color name="regular">#d4fb99</color>
     <color name="light">#e4ffb9</color>
-    <color name="faded">#f7ffdf</color>
+    <color name="faded">#F0ffe8</color>
 
     <color name="on_regular">#353539</color>
     <color name="on_regular_light">#686879</color>
