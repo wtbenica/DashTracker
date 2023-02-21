@@ -138,7 +138,7 @@
             android:contentDescription="@string/content_desc_remove"
             android:src="@drawable/ic_action_delete"
             app:layout_constraintBottom_toTopOf="@id/list_item_btn_edit"
-            app:layout_constraintEnd_toEndOf="@id/list_item_btn_edit" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageButton
             android:id="@+id/list_item_btn_edit"

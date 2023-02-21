@@ -41,6 +41,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED_2
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -194,14 +195,17 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                 ConfirmDialog.SAVE.key,
                 this@EditDataModelDialog
             ) { _, bundle ->
-                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
-                if (result) {
-                    saveConfirmed = true
-                    dismiss()
-                } else {
+                val isDelete = bundle.getBoolean(ARG_IS_CONFIRMED_2)
+                if (isDelete) {
                     saveOnExit = false
                     dismiss()
                     item?.let { e -> viewModel.delete(e) }
+                } else {
+                    val isSave = bundle.getBoolean(ARG_IS_CONFIRMED)
+                    if (isSave) {
+                        saveConfirmed = true
+                        dismiss()
+                    }
                 }
             }
         }
@@ -220,7 +224,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         }
     }
 
-    protected fun ImageButton.setOnDeletePressed() {
+    protected open fun ImageButton.setOnDeletePressed() {
         setOnClickListener {
             if (isEmpty()) { // go ahead and delete it
                 onDeleteItem()

@@ -21,7 +21,7 @@
         <item name="android:paddingHorizontal">@dimen/margin_default</item>
         <item name="iconTint">?attr/colorAccent</item>
         <item name="iconGravity">end</item>
-        <item name="iconSize">@dimen/margin_wide</item>
+        <item name="iconSize">@dimen/margin_default</item>
         <item name="icon">@drawable/ic_arrow_expand</item>
         <item name="android:textColor">?attr/colorDialogText</item>
         <item name="android:textAlignment">textStart</item>
@@ -31,8 +31,8 @@
     </style>
 
     <style name="ConfirmImportPrimaryTextStyle">
-        <item name="fontFamily">sans-serif</item>
-        <item name="android:padding">@dimen/margin_default</item>
+        <item name="android:fontFamily">@font/noto_sans</item>
+        <item name="android:padding">@dimen/margin_wide</item>
         <item name="android:textColor">?attr/colorDialogText</item>
         <item name="android:textSize">@dimen/text_size_med</item>
         <item name="android:textStyle">bold</item>
@@ -46,8 +46,8 @@
     </style>
 
     <style  name="NotesStyle">
+        <item name="android:fontFamily">@font/noto_sans</item>
         <item name="android:layout_marginBottom">@dimen/margin_default</item>
-        <item name="android:fontFamily">sans-serif</item>
         <item name="android:paddingHorizontal">@dimen/margin_default</item>
         <item name="android:textColor">?attr/colorDialogText</item>
         <item name="android:textSize">@dimen/text_size_med</item>

@@ -42,11 +42,12 @@
 
     <style name="DialogImageButton">
         <item name="android:layout_marginHorizontal">@dimen/margin_narrow</item>
-        <item name="android:layout_marginVertical">?attr/dimenDialogContentMarginHorizontal</item>
+        <item name="android:layout_marginVertical">@dimen/margin_narrow</item>
         <item name="android:background">@drawable/bg_dialog_button</item>
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>
         <item name="android:tint">?attr/colorDialogButton</item>
+        <item name="android:elevation">?attr/dimenButtonElevation</item>
     </style>
 
     <style name="DialogDivider">

@@ -71,12 +71,20 @@
         <item name="android:layout_width">@dimen/min_touch_target</item>
         <item name="android:background">@drawable/bg_list_item_button</item>
         <item name="android:tint">?attr/colorListItemButtonIcon</item>
+        <item name="android:layout_marginEnd">?attr/listItemThinBorder</item>
+        <item name="android:layout_marginBottom">?attr/listItemThinBorder</item>
         <item name="rippleColor">?attr/colorListItemButtonOutline</item>
+        <item name="android:elevation">?attr/dimenButtonElevation</item>
     </style>
 
     <style name="listItemDetailsPane">
         <item name="android:visibility">gone</item>
-        <item name="android:paddingHorizontal">?attr/listItemThinBorder</item>
-        <item name="android:paddingBottom">?attr/listItemThinBorder</item>
+<!--        <item name="android:paddingHorizontal">?attr/listItemThinBorder</item>-->
+<!--        <item name="android:paddingBottom">?attr/listItemThinBorder</item>-->
+    </style>
+
+    <style name="DetailsTableCard">
+        <item name="android:layout_marginHorizontal">?attr/listItemThinBorder</item>
+        <item name="android:layout_marginBottom">?attr/listItemThinBorder</item>
     </style>
 </resources>

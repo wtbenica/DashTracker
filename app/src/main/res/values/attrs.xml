@@ -51,6 +51,7 @@
     <attr name="colorSummaryBar" format="reference" />
     <attr name="colorSummaryBarItemText" format="reference" />
     <attr name="colorSummaryBarHighlight" format="reference" />
+    <attr name="colorSummaryBarHighlightStroke" format="reference" />
     <attr name="colorBottomNavBar" format="reference|color" />
     <attr name="colorBottomNavItem" format="reference|color" />
     <attr name="colorBottomNavItemText" format="reference|color" />
@@ -117,6 +118,7 @@
     <attr name="listItemCornerRadius" format="reference" />
     <attr name="listItemThinBorder" format="reference" />
 
+    <attr name="dimenButtonElevation" format="reference|dimension" />
     <attr name="dimenListItemButtonRadius" format="reference|dimension" />
     <attr name="dimenListItemMarginVertical" format="reference|dimension" />
     <attr name="dimenListItemMarginHorizontal" format="reference|dimension" />

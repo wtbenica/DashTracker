@@ -18,13 +18,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_card"
-    style="@style/DTCardViewStyle.ListItem">
+    style="@style/DTCardViewStyle.ListItem"
+    android:clipChildren="false">
 
     <LinearLayout
         android:id="@+id/list_item_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_list_item"
+        android:clipChildren="false"
         android:orientation="vertical"
         tools:background="@drawable/bg_list_item_expanded">
 
@@ -58,7 +60,6 @@
                 android:layout_weight="1"
                 app:layout_constraintBottom_toBottomOf="@id/list_item_entry_day_of_week"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/list_item_recurring"
                 app:layout_constraintTop_toTopOf="@id/list_item_entry_day_of_week"
                 tools:text="$81.25" />
 
@@ -104,13 +105,15 @@
             style="@style/listItemDetailsPane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipChildren="false"
             tools:visibility="visible">
 
             <include
+                android:id="@+id/details_table"
+                style="@style/DetailsTableCard"
                 layout="@layout/list_item_entry_details_table"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="?attr/listItemThinBorder"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"
                 app:layout_constraintStart_toStartOf="parent"
