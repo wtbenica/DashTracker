@@ -17,6 +17,8 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.ImageButton
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -26,9 +28,12 @@ import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.toCurrencyString
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.TAG
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
@@ -39,7 +44,8 @@ class EntryDialog : BaseEntryDialog() {
     override val titleText: String
         get() = getString(R.string.dialog_title_dash_entry)
 
-    override fun onFirstRun() { /* Do nothing */ }
+    override fun onFirstRun() { /* Do nothing */
+    }
 
     override fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
@@ -102,7 +108,9 @@ class EntryDialog : BaseEntryDialog() {
         }
     }
 
-    // TODO: This erases everything, whereas other dialogs it resets. decide what it should do
+    // TODO: This erases everything, whereas other dialogs it resets. decide what it should do,
+    //  also considering how it is used in updateUI here. I don't think it's used this way anywhere
+    //  else. Why would I want to clear fields when it receives a null item?
     override fun clearFields() {
         binding.apply {
             fragEntryDate.text = LocalDate.now().format(dtfFullDate)
@@ -119,17 +127,29 @@ class EntryDialog : BaseEntryDialog() {
     }
 
     override fun isEmpty(): Boolean {
-        val isTodaysDate = binding.fragEntryDate.text == LocalDate.now().format(dtfFullDate)
+        val isTodaysDate = binding.fragEntryDate.tag == LocalDate.now()
+        val startUnchanged: Boolean = with (binding.fragEntryStartTime.tag) {
+           Log.d(TAG, "Saved: $this | entered: ${item?.startTime}")
+            this != null && ((this as LocalTime) == item?.startTime)
+        }
         return isTodaysDate &&
-                !startTimeChanged &&
-                binding.fragEntryEndTime.text.isBlank() &&
-                binding.fragEntryStartMileage.text.isBlank() &&
-                binding.fragEntryEndMileage.text.isBlank() &&
-                binding.fragEntryPay.text.isBlank() &&
-                binding.fragEntryPayOther.text.isBlank() &&
-                binding.fragEntryCashTips.text.isBlank() &&
-                binding.fragEntryNumDeliveries.text.isBlank()
+                startUnchanged &&
+                binding.fragEntryEndTime.tag == null &&
+                binding.fragEntryStartMileage.text.isNullOrBlank() &&
+                binding.fragEntryEndMileage.text.isNullOrBlank() &&
+                binding.fragEntryPay.text.isNullOrBlank() &&
+                binding.fragEntryPayOther.text.isNullOrBlank() &&
+                binding.fragEntryCashTips.text.isNullOrBlank() &&
+                binding.fragEntryNumDeliveries.text.isNullOrBlank()
     }
+
+    override fun ImageButton.setOnDeletePressed() {
+        setOnClickListener {
+            ConfirmDeleteDialog.newInstance(fullEntry?.entry?.entryId)
+                .show(childFragmentManager, "delete_entry")
+        }
+    }
+
 
     companion object {
         fun newInstance(entryId: Long): EntryDialog =

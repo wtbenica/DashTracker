@@ -47,7 +47,7 @@
                         android:minHeight="@dimen/min_touch_target"
                         android:textColor="?attr/colorTextPrimary"
                         android:textSize="@dimen/text_size_xlarge"
-                        android:autoSizeMaxTextSize="@dimen/text_size_xxl"
+                        android:autoSizeMaxTextSize="@dimen/text_size_xlarge"
                         android:autoSizeTextType="uniform"
                         android:textStyle="bold"
                         tools:text="Mon Nov 23, 2021" />

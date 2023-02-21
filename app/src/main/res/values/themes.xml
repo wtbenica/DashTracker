@@ -172,6 +172,7 @@
         <item name="colorSummaryBar">?attr/colorOnSecondary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBarHighlight">?attr/colorSecondaryFaded</item>
+        <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
         <item name="colorFab">?attr/colorSecondaryFaded</item>
         <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
         <item name="colorFabIcon">?attr/colorAccent</item>
@@ -222,7 +223,7 @@
         <item name="colorListItemRipple">?attr/colorPrimary</item>
 
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
-        <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
+        <item name="colorListItemSubtitle">?attr/colorTextPrimaryDisabled</item>
 
         <item name="colorListItemButtonBg">?attr/colorPrimaryFaded</item>
         <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
@@ -279,7 +280,7 @@
         <item name="colorDialogText">?attr/colorTextPrimary</item>
         <item name="textColorDialogHeader">?attr/colorAccent</item>
 
-        <item name="colorDialogItemOutline">?attr/colorSecondaryVariant</item>
+        <item name="colorDialogItemOutline">?attr/colorDialog</item>
         <item name="colorDialogItem">?attr/colorTextSecondary</item>
         <item name="colorDialogUneditableItem">?attr/colorSecondaryFaded</item>
         <item name="colorDialogUneditableItemOutline">?attr/colorSecondaryVariant</item>

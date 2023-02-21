@@ -20,10 +20,9 @@
             <solid android:color="?attr/colorTabIndicator" />
             <corners android:radius="?attr/listItemCornerRadius" />
             <padding
-                android:bottom="1dp"
-                android:left="1dp"
-                android:right="1dp"
-                android:top="@dimen/margin_narrow" />
+                android:left="@dimen/margin_skinny"
+                android:right="@dimen/margin_skinny"
+                android:top="@dimen/margin_half" />
         </shape>
     </item>
     <item>

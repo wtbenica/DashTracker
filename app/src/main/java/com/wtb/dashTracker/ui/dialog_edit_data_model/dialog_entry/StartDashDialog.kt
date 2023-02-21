@@ -155,9 +155,12 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
     }
 
     override fun isEmpty(): Boolean {
-        val isTodaysDate = binding.fragStartDashDate.text == LocalDate.now().format(dtfFullDate)
+        val isTodaysDate = binding.fragStartDashDate.tag == LocalDate.now()
+        val startChanged: Boolean = with (binding.fragStartDashStartTime.tag) {
+            this != null && ((this as LocalTime) == item?.startTime)
+        }
         return isTodaysDate &&
-                !startTimeChanged &&
+                !startChanged &&
                 binding.fragStartDashStartMileage.text.isBlank()
     }
 

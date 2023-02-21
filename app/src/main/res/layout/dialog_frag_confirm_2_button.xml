@@ -39,7 +39,6 @@
                         style="@style/ConfirmImportPrimaryTextStyle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/margin_default"
                         android:textColor="?attr/colorDialogText"
                         android:textSize="@dimen/text_size_med"
                         app:layout_constraintEnd_toEndOf="parent"

@@ -92,9 +92,11 @@
 
             <include
                 android:id="@+id/details_table"
+                style="@style/DetailsTableCard"
                 layout="@layout/list_item_weekly_details_table"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -102,7 +104,6 @@
             <ImageButton
                 android:id="@+id/list_item_btn_edit"
                 style="@style/ListItemButton"
-                android:layout_marginStart="?attr/listItemThinBorder"
                 android:contentDescription="@string/content_desc_edit_button"
                 android:src="@drawable/ic_action_edit"
                 app:layout_constraintBottom_toBottomOf="parent"

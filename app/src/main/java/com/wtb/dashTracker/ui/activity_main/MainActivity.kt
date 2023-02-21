@@ -315,22 +315,22 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
         fun initObservers() {
             viewModel.thisWeekHourly.observe(this) {
-                binding.actMainThisWeekHourly.text =
+                binding.summaryBar.actMainThisWeekHourly.text =
                     getCurrencyString(it)
             }
 
             viewModel.lastWeekHourly.observe(this) {
-                binding.actMainLastWeekHourly.text =
+                binding.summaryBar.actMainLastWeekHourly.text =
                     getCurrencyString(it)
             }
 
             viewModel.thisWeekEarnings.observe(this) {
-                binding.actMainThisWeekTotal.text =
+                binding.summaryBar.actMainThisWeekTotal.text =
                     getCurrencyString(it)
             }
 
             viewModel.lastWeekEarnings.observe(this) {
-                binding.actMainLastWeekTotal.text =
+                binding.summaryBar.actMainLastWeekTotal.text =
                     getCurrencyString(it)
             }
 

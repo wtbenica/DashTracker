@@ -147,7 +147,8 @@ class ConfirmSaveDialog {
                 text = text ?: R.string.dialog_restart,
                 requestKey = ConfirmDialog.SAVE.key,
                 posButton = R.string.save,
-                negButton = R.string.delete
+                negButton = R.string.cancel,
+                posButton2 = R.string.delete,
             )
     }
 }

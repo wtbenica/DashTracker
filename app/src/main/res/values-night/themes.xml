@@ -59,7 +59,8 @@
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBar">?attr/colorTextSecondaryDisabled</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBarHighlight">?attr/colorSecondary</item>
+        <item name="colorSummaryBarHighlight">?attr/colorSecondaryFaded</item>
+        <item name="colorSummaryBarHighlightStroke">?attr/colorSecondaryVariant</item>
         <item name="colorFab">?attr/colorSecondary</item>
         <item name="colorFabDisabled">?attr/colorPrimary</item>
         <item name="colorFabIcon">?attr/colorAccent</item>
@@ -110,7 +111,7 @@
         <item name="colorListItemRipple">?attr/colorPrimaryVariant</item>
 
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
-        <item name="colorListItemSubtitle">?attr/colorTextPrimary</item>
+        <item name="colorListItemSubtitle">?attr/colorTextPrimaryDisabled</item>
         <item name="colorListItemButtonBg">?attr/colorPrimaryVariant</item>
         <item name="colorListItemButtonIcon">?attr/colorPrimaryFaded</item>
         <item name="colorListItemButtonOutline">?attr/colorPrimaryDark</item>
@@ -167,9 +168,9 @@
 
         <item name="colorDialogTitle">?attr/colorActionBarText</item>
         <item name="colorDialogText">?attr/colorTextPrimary</item>
-        <item name="textColorDialogHeader">?attr/colorSecondaryFaded</item>
+        <item name="textColorDialogHeader">?attr/colorAccent</item>
 
-        <item name="colorDialogItemOutline">?attr/colorSecondaryDark</item>
+        <item name="colorDialogItemOutline">?attr/colorDialog</item>
         <item name="colorDialogItem">?attr/colorTextSecondaryDisabled</item>
         <item name="colorDialogUneditableItem">?attr/colorTextSecondary</item>
         <item name="colorDialogUneditableItemOutline">?attr/colorSecondaryFaded</item>
@@ -177,7 +178,7 @@
         <item name="colorDialogButton">?attr/colorAccent</item>
         <item name="colorDialogButtonStroke">?attr/colorSecondaryDark</item>
         <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
-        <item name="colorDialogWidget">?attr/colorAccent</item>
+        <item name="colorDialogWidget">?attr/colorTextPrimary</item>
         <item name="textColorDialogButtonDefault">?attr/colorTextPrimary</item>
 
         <item name="colorDialogFragSpinnerPopupBg">?attr/colorSecondaryDark</item>

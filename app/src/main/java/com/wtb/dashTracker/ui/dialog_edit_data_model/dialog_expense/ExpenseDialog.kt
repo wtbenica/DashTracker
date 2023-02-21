@@ -158,11 +158,12 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 //            }
         }
 
-// TODO: add this and make a setLocalTime also
+    // TODO: add this and make a setLocalTime also
     fun TextView.setLocalDate(date: LocalDate) {
         text = date.format(dtfDate)
         tag = date
     }
+
     override fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
             val tempExpense = item
@@ -206,10 +207,12 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     override fun isEmpty(): Boolean {
-        val isTodaysDate = binding.fragExpenseDate.text == LocalDate.now().format(dtfFullDate)
+        val isTodaysDate = binding.fragExpenseDate.tag == LocalDate.now()
         val amountIsBlank = binding.fragExpenseAmount.text.isNullOrBlank()
-        val isGasExpense =
-            binding.fragExpensePurpose.let { it.adapter.getItem(it.selectedItemPosition) } == GAS.id
+        val selectedExpenseId = (binding.fragExpensePurpose.let {
+            it.adapter.getItem(it.selectedItemPosition)
+        } as ExpensePurpose).id
+        val isGasExpense = selectedExpenseId == GAS.id
         val priceIsBlank = binding.fragExpensePrice.text.isNullOrBlank()
         return isTodaysDate && amountIsBlank && isGasExpense && priceIsBlank
     }
