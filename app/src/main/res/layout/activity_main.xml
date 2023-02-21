@@ -43,7 +43,6 @@
                 style="@style/DTActionBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/statusBarColor"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 tools:title="DashTracker" />
 
@@ -130,7 +129,7 @@
                     android:layout_columnSpan="3"
                     android:layout_marginStart="@dimen/margin_narrow"
                     android:layout_marginEnd="@dimen/margin_narrow"
-                    android:layout_marginBottom="@dimen/margin_narrow"
+                    android:layout_marginBottom="@dimen/margin_half"
                     android:visibility="gone"
                     app:cardElevation="?attr/dimenListItemElevationLowered"
                     tools:visibility="visible" />
@@ -153,7 +152,7 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
-            style="@style/Widget.Material3.FloatingActionButton.Primary"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/content_desc_fab_start_new_dash"
@@ -161,14 +160,11 @@
             app:backgroundTint="?attr/colorFab"
             app:borderWidth="1dp"
             app:layout_anchor="@id/bottom_app_bar"
-            app:maxImageSize="@dimen/margin_extra_wide"
+            app:maxImageSize="@dimen/min_touch_target"
             app:tint="?attr/colorFabIcon" />
-
-        <!--        app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"-->
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"
-            style="@style/Widget.Material3.BottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

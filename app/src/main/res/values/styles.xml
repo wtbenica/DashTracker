@@ -15,7 +15,6 @@
   -->
 
 <resources>
-
     <style name="DTCardViewStyle" parent="CardView">
         <item name="cardBackgroundColor">@android:color/transparent</item>
         <item name="cardCornerRadius">@dimen/margin_default</item>
@@ -33,8 +32,7 @@
 
     <style name="DTActionBarStyle" parent="Widget.Material3.Toolbar">
         <item name="titleTextStyle">@style/DTActionBarTitleTextAppearance</item>
-        <item name="background">?android:attr/statusBarColor</item>
-<!--        <item name="android:hideOnContentScroll">true</item>-->
+        <item name="android:background">?attr/colorActionBar</item>
     </style>
 
     <style name="DTChipTextAppearance" parent="TextAppearance.Material3.BodyLarge">

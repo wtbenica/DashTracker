@@ -46,7 +46,7 @@
     <attr name="colorTextSecondaryDisabled" format="reference" />
 
     <!--    activity_main   -->
-    <attr name="colorToolbar" format="reference" />
+    <attr name="colorActionBar" format="reference" />
     <attr name="colorActionBarText" format="reference" />
     <attr name="colorSummaryBar" format="reference" />
     <attr name="colorSummaryBarItemText" format="reference" />
@@ -59,6 +59,7 @@
     <attr name="colorBottomNavTextDisabled" format="reference|color" />
     <attr name="colorBottomNavItemIndicator" format="reference|color" />
     <attr name="colorBottomNavRipple" format="reference|color" />
+    <attr name="colorDropdownRipple" format="reference|color" />
     <attr name="colorFab" format="reference|color" />
     <attr name="colorFabDisabled" format="reference|color" />
     <attr name="colorFabIcon" format="reference|color" />

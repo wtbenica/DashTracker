@@ -55,6 +55,7 @@
         <item name="colorTabItemRipple">?attr/colorTabIndicator</item>
 
         <!-- activity_main.xml -->
+        <item name="colorActionBar">?attr/colorPrimaryVariant</item>
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBar">?attr/colorTextSecondaryDisabled</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
@@ -71,13 +72,14 @@
         <item name="colorBottomNavItemIndicator">?attr/colorPrimaryVariant</item>
         <item name="colorBottomNavRipple">?attr/colorPrimaryVariant</item>
         <item name="colorPopupBackground">?attr/colorSecondaryDark</item>
+        <item name="colorDropdownRipple">?attr/colorSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- active_dash_bar -->
-        <item name="colorActiveDashBarBg">?attr/colorSecondary</item>
-        <item name="colorActiveDashBarStroke">?attr/colorSecondaryFaded</item>
-        <item name="colorActiveDashBarDetailsStroke">?attr/colorSecondaryFaded</item>
+        <item name="colorActiveDashBarBg">?attr/colorSecondaryVariant</item>
+        <item name="colorActiveDashBarStroke">?attr/colorActiveDashBarBg</item>
+        <item name="colorActiveDashBarDetailsStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
 
         <!-- fragment_income -->
