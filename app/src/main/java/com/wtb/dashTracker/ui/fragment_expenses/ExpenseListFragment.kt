@@ -68,16 +68,6 @@ class ExpenseListFragment : ListItemFragment() {
         setDialogListeners()
     }
 
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View {
-//        binding = FragItemListBinding.inflate(inflater)
-//        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
-//
-//        return binding.root
-//    }
-//
     private fun setDialogListeners() {
         childFragmentManager.setFragmentResultListener(
             ConfirmDialog.DELETE.key,

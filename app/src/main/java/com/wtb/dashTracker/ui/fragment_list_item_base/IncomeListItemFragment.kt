@@ -17,10 +17,16 @@
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
 import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
@@ -40,6 +46,29 @@ abstract class IncomeListItemFragment : ListItemFragment() {
         super.onAttach(context)
 
         callback = context as IncomeFragment.IncomeFragmentCallback
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+
+        binding.itemListRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (newState != SCROLL_STATE_IDLE) {
+                    parentFragmentManager.setFragmentResult(
+                        REQ_KEY_INCOME_LIST_ITEM_SELECTED,
+                        bundleOf()
+                    )
+                }
+            }
+        })
+
+        return view
     }
 
     override fun onDetach() {
