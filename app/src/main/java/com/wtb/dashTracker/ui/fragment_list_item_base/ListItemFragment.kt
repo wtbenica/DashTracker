@@ -234,7 +234,7 @@ abstract class ListItemFragment : Fragment() {
                         )
                     )
 
-                    val elev = resources.getDimension(R.dimen.margin_narrow)
+                    val elev = resources.getDimension(R.dimen.margin_skinny)
 
                     bgCard.cardElevation = elev
                 }

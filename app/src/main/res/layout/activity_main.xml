@@ -43,7 +43,6 @@
                 style="@style/DTActionBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/margin_default"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 tools:title="DashTracker" />
 
@@ -53,14 +52,14 @@
 
             <com.wtb.dashTracker.views.ActiveDashBar
                 android:id="@+id/adb"
-                style="@style/DTCardViewStyle.ListItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/margin_half"
-                android:layout_marginStart="@dimen/margin_half"
-                android:layout_marginEnd="@dimen/margin_half"
+                android:layout_marginHorizontal="@dimen/margin_half"
+                android:layout_marginBottom="@dimen/margin_default"
                 android:visibility="gone"
                 app:cardElevation="?attr/dimenListItemElevationLowered"
+                app:cardMaxElevation="@dimen/margin_default"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
                 tools:visibility="visible" />
 
             <View
@@ -86,7 +85,8 @@
             android:contentDescription="@string/content_desc_fab_start_new_dash"
             android:src="@drawable/anim_play_to_stop"
             app:backgroundTint="?attr/colorFab"
-            app:borderWidth="1dp"
+            app:borderWidth="@dimen/margin_skinny"
+            app:elevation="@dimen/margin_skinny"
             app:layout_anchor="@id/bottom_app_bar"
             app:maxImageSize="@dimen/min_touch_target"
             app:tint="?attr/colorFabIcon" />
@@ -98,7 +98,9 @@
             android:layout_gravity="bottom"
             app:backgroundTint="?attr/colorBottomNavBar"
             app:fabAlignmentMode="end"
-            app:fabCradleMargin="@dimen/margin_narrow"
+            app:fabCradleMargin="0dp"
+            app:fabCradleRoundedCornerRadius="?attr/listItemCornerRadius"
+            app:fabCradleVerticalOffset="0dp"
             app:hideOnScroll="true">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
