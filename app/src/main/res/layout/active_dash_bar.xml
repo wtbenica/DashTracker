@@ -26,15 +26,13 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bg_active_dash_bar"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/margin_half"
-        android:paddingTop="@dimen/margin_default"
-        android:paddingBottom="@dimen/margin_half">
+        android:padding="?attr/listItemThinBorder">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_default"
-            android:paddingHorizontal="@dimen/margin_default">
+            android:layout_marginBottom="@dimen/margin_narrow"
+            android:paddingHorizontal="@dimen/margin_half">
 
             <TextView
                 android:layout_width="0dp"
@@ -57,13 +55,6 @@
                 tools:text="3:33p - " />
         </LinearLayout>
 
-        <!--        <View-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="1dp"-->
-        <!--            android:layout_marginHorizontal="@dimen/margin_default"-->
-        <!--            android:layout_marginBottom="@dimen/margin_half"-->
-        <!--            android:background="?attr/colorOnPrimaryVariant" />-->
-
         <GridLayout
             android:id="@+id/active_dash_details"
             android:layout_width="match_parent"
@@ -71,7 +62,7 @@
             android:background="@drawable/bg_active_dash_bar_details"
             android:columnCount="5"
             android:paddingHorizontal="@dimen/margin_skinny"
-            android:paddingVertical="@dimen/margin_default"
+            android:paddingVertical="@dimen/margin_half"
             android:rowCount="2">
 
             <View

@@ -91,19 +91,19 @@
         <item name="titleFontFamily">@font/oswald</item>
 
         <!-- activity_main -->
-        <item name="textSizeActionBarTitle">@dimen/text_size_xxl</item>
-        <item name="textSizeSummaryBarHeader">@dimen/text_size_med</item>
-        <item name="textSizeSummaryBarValue">@dimen/text_size_xlarge</item>
-        <item name="textSizeBottomNavActive">@dimen/text_size_large</item>
-        <item name="textSizeBottomNavInactive">@dimen/text_size_med</item>
+        <item name="textSizeActionBarTitle">@dimen/text_size_xlarge</item>
+        <item name="textSizeSummaryBarHeader">@dimen/text_size_sm</item>
+        <item name="textSizeSummaryBarValue">@dimen/text_size_large</item>
+        <item name="textSizeBottomNavActive">@dimen/text_size_med</item>
+        <item name="textSizeBottomNavInactive">@dimen/text_size_sm</item>
 
         <!-- list_item -->
         <item name="listItemCardStyle">@style/DTCardViewStyle.ListItem</item>
-        <item name="textSizeListItemTitle">@dimen/text_size_xlarge</item>
+        <item name="textSizeListItemTitle">@dimen/text_size_large</item>
         <item name="textSizeListItemSubtitle">@dimen/text_size_med</item>
         <item name="textSizeItemHeader">@dimen/text_size_sm</item>
-        <item name="textSizeItemValue">@dimen/text_size_large</item>
-        <item name="textSizeItemSecondaryValue">@dimen/text_size_med</item>
+        <item name="textSizeItemValue">@dimen/text_size_med</item>
+        <item name="textSizeItemSecondaryValue">@dimen/text_size_sm</item>
         <item name="listItemCornerRadius">@dimen/margin_wide</item>
         <item name="listItemThinBorder">?attr/dimenDialogContentMarginHorizontal</item>
 
@@ -171,6 +171,7 @@
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBar">?attr/colorOnSecondary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
+        <item name="colorSummaryBarHighlight">?attr/colorSecondaryFaded</item>
         <item name="colorFab">?attr/colorSecondaryFaded</item>
         <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
         <item name="colorFabIcon">?attr/colorAccent</item>

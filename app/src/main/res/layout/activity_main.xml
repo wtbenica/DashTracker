@@ -64,8 +64,8 @@
                     android:layout_column="0"
                     android:layout_columnSpan="2"
                     android:layout_columnWeight="1"
-                    android:text="@string/lbl_last_week"
-                    android:textSize="@dimen/text_size_sm" />
+                    android:background="@drawable/dialog_frag_bottom_row_bg2"
+                    android:text="@string/lbl_last_week" />
 
                 <View
                     android:layout_width="1dp"
@@ -76,7 +76,7 @@
                     android:layout_column="2"
                     android:layout_marginStart="@dimen/margin_half"
                     android:layout_marginEnd="@dimen/margin_half"
-                    android:background="?attr/colorUi" />
+                    android:background="?attr/colorActiveDashBarBg" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/act_main_lbl_this_week"
@@ -87,6 +87,7 @@
                     android:layout_column="3"
                     android:layout_columnSpan="2"
                     android:layout_columnWeight="1"
+                    android:background="@drawable/dialog_frag_bottom_row_bg2"
                     android:text="@string/lbl_this_week"
                     android:textSize="@dimen/text_size_sm" />
 
@@ -180,10 +181,9 @@
                 style="@style/DTCardViewStyle.ListItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_columnSpan="3"
-                android:layout_marginStart="@dimen/margin_narrow"
-                android:layout_marginEnd="@dimen/margin_narrow"
-                android:layout_marginBottom="@dimen/margin_half"
+                android:layout_marginVertical="@dimen/margin_half"
+                android:layout_marginStart="@dimen/margin_half"
+                android:layout_marginEnd="@dimen/margin_half"
                 android:visibility="gone"
                 app:cardElevation="?attr/dimenListItemElevationLowered"
                 tools:visibility="visible" />

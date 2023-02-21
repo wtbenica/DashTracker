@@ -59,6 +59,7 @@
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBar">?attr/colorTextSecondaryDisabled</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
+        <item name="colorSummaryBarHighlight">?attr/colorSecondary</item>
         <item name="colorFab">?attr/colorSecondary</item>
         <item name="colorFabDisabled">?attr/colorPrimary</item>
         <item name="colorFabIcon">?attr/colorAccent</item>
