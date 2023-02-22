@@ -97,6 +97,9 @@
         <item name="textSizeBottomNavActive">@dimen/text_size_med</item>
         <item name="textSizeBottomNavInactive">@dimen/text_size_sm</item>
 
+        <!-- active dash -->
+        <item name="activeDashCornerRadius">@dimen/min_touch_target</item>
+
         <!-- list_item -->
         <item name="listItemCardStyle">@style/DTCardViewStyle.ListItem</item>
         <item name="textSizeListItemTitle">@dimen/text_size_large</item>

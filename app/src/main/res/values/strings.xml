@@ -156,7 +156,7 @@
     <string name="expense_purpose_all">All</string>
     <string name="expense_purpose_standard">IRS Rate</string>
     <string name="dummy_text_label">Lorem ipso</string>
-    <string name="lbl_net_expenses">Est. mileage cost</string>
+    <string name="lbl_net_expenses">Est. expense</string>
     <string name="lbl_hourly_gross_net">Hourly gross/net</string>
     <string name="lbl_hourly_by_day_of_week">Stats by Day of Week</string>
     <string name="lbl_num_days">Num Days</string>

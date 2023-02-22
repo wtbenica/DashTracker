@@ -79,6 +79,7 @@
     <attr name="colorActiveDashBarBg" format="reference" />
     <attr name="colorActiveDashBarDetailsStroke" format="reference" />
     <attr name="colorActiveDashBarDetailsBg" format="reference" />
+    <attr name="activeDashCornerRadius" format="reference" />
 
     <!-- fragment_income -->
     <attr name="colorTabIndicator" format="reference" />

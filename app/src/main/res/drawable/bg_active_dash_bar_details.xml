@@ -19,5 +19,5 @@
         android:width="1dp"
         android:color="?attr/colorActiveDashBarDetailsStroke" />
     <solid android:color="?attr/colorActiveDashBarDetailsBg" />
-    <corners android:radius="?attr/listItemCornerRadius" />
+    <corners android:radius="?attr/activeDashCornerRadius" />
 </shape>
