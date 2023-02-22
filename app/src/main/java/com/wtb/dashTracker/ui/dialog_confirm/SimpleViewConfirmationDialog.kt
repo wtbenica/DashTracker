@@ -94,9 +94,9 @@ open class SimpleViewConfirmationDialog :
             @StringRes posButton: Int = R.string.yes,
             posAction: LambdaWrapper? = null,
             @StringRes negButton: Int? = null,
-            negAction: (LambdaWrapper)? = null,
+            negAction: LambdaWrapper? = null,
             @StringRes posButton2: Int? = null,
-            posAction2: (LambdaWrapper)? = null,
+            posAction2: LambdaWrapper? = null,
         ): SimpleViewConfirmationDialog = SimpleViewConfirmationDialog().apply {
             arguments = Bundle().apply {
                 text?.let { putInt(ARG_TEXT_CONTENT, it) }

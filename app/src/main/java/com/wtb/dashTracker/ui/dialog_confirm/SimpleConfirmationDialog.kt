@@ -31,6 +31,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.compose.runtime.Composable
 import androidx.core.os.bundleOf
 import androidx.viewbinding.ViewBinding
+import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.getAttributeColor
 import com.wtb.dashTracker.extensions.getIntNotZero
@@ -232,20 +233,13 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                     dismiss()
                     posAction?.invoke()
 
-                    if (confirmId == null) {
-                        parentFragmentManager.setFragmentResult(
-                            requestKey,
-                            bundleOf(ARG_IS_CONFIRMED to true)
-                        )
-                    } else {
-                        parentFragmentManager.setFragmentResult(
-                            requestKey,
-                            bundleOf(
-                                ARG_IS_CONFIRMED to true,
-                                ARG_EXTRA_ITEM_ID to confirmId
-                            )
-                        )
+                    val bundle = bundleOf(ARG_IS_CONFIRMED to true).apply {
+                        confirmId?.let {
+                            putLong(ARG_EXTRA_ITEM_ID, it)
+                        }
                     }
+
+                    parentFragmentManager.setFragmentResult(requestKey, bundle)
                 }
 
                 setAsDefault(posButtonIsDefault)
@@ -322,41 +316,41 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
     }
 
     companion object {
-        const val ARG_IS_CONFIRMED: String = "confirm"
-        const val ARG_IS_CONFIRMED_2: String = "confirm2"
-        const val ARG_EXTRA_ITEM_ID: String = "extra"
+        const val ARG_IS_CONFIRMED: String = "${BuildConfig.APPLICATION_ID}.confirm"
+        const val ARG_IS_CONFIRMED_2: String = "${BuildConfig.APPLICATION_ID}.confirm2"
+        const val ARG_EXTRA_ITEM_ID: String = "${BuildConfig.APPLICATION_ID}.extra_id"
 
         @JvmStatic
-        protected val ARG_REQ_KEY: String = "request_key"
+        protected val ARG_REQ_KEY: String = "${BuildConfig.APPLICATION_ID}.request_key"
 
         @JvmStatic
-        protected val ARG_CONFIRM_ID: String = "confirm_id"
+        protected val ARG_CONFIRM_ID: String = "${BuildConfig.APPLICATION_ID}.confirm_id"
 
         @JvmStatic
-        protected val ARG_MESSAGE: String = "message"
+        protected val ARG_MESSAGE: String = "${BuildConfig.APPLICATION_ID}.message"
 
         @JvmStatic
-        protected val ARG_POS_TEXT: String = "pos_btn_text"
+        protected val ARG_POS_TEXT: String = "${BuildConfig.APPLICATION_ID}.pos_btn_text"
 
         @JvmStatic
-        protected val ARG_POS_ACTION: String = "pos_action"
+        protected val ARG_POS_ACTION: String = "${BuildConfig.APPLICATION_ID}.pos_action"
 
         @JvmStatic
-        protected val ARG_POS_IS_DEFAULT: String = "pos_is_default"
+        protected val ARG_POS_IS_DEFAULT: String = "${BuildConfig.APPLICATION_ID}.pos_is_default"
 
         @JvmStatic
-        protected val ARG_NEG_TEXT: String = "neg_btn_txt"
+        protected val ARG_NEG_TEXT: String = "${BuildConfig.APPLICATION_ID}.neg_btn_txt"
 
         @JvmStatic
-        protected val ARG_NEG_ACTION: String = "neg_action"
+        protected val ARG_NEG_ACTION: String = "${BuildConfig.APPLICATION_ID}.neg_action"
 
         @JvmStatic
-        protected val ARG_POS_TEXT_2: String = "pos_btn_text_2"
+        protected val ARG_POS_TEXT_2: String = "${BuildConfig.APPLICATION_ID}.pos_btn_text_2"
 
         @JvmStatic
-        protected val ARG_POS_ACTION_2: String = "pos_action_2"
+        protected val ARG_POS_ACTION_2: String = "${BuildConfig.APPLICATION_ID}.pos_action_2"
 
         @JvmStatic
-        protected val ARG_POS_2_IS_DEFAULT: String = "pos_2_is_default"
+        protected val ARG_POS_2_IS_DEFAULT: String = "${BuildConfig.APPLICATION_ID}.pos_2_is_default"
     }
 }
