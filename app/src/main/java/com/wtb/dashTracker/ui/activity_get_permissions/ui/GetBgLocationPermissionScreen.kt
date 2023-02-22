@@ -16,17 +16,16 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.PinDrop
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -41,6 +40,7 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerI
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.accent
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -68,7 +68,7 @@ fun GetBgLocationPermissionScreen(
             )
         },
         mainContent = {
-            CustomOutlinedCard {
+            CustomOutlinedCard(context = activity) {
                 Text(
                     text = stringResource(R.string.dialog_bg_location_text),
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
@@ -77,16 +77,21 @@ fun GetBgLocationPermissionScreen(
             }
 
             val uriHandler = LocalUriHandler.current
-
-            CustomTextButton(onClick = {
-                uriHandler.openUri("https://www.benica.dev")
-            }) {
+            TextButton(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = accent(),
+                ),
+                onClick = {
+                    uriHandler.openUri("https://www.benica.dev")
+                }
+            ) {
                 Text("Privacy Policy")
             }
 
             FillSpacer()
 
-            SecondaryOutlinedCard {
+            SecondaryCard {
                 val str = buildAnnotatedString {
                     append("To grant background location permission, select ")
 
@@ -149,7 +154,7 @@ fun GetBgLocationPermissionNav(
 
         DefaultSpacer()
 
-        CustomOutlinedButton(
+        CustomButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
                 activity?.setLocationEnabled(true)
@@ -176,6 +181,29 @@ fun GetBgLocationPermissionNav(
 @Preview(showBackground = true)
 @Composable
 fun GetBgLocationPermissionPreview() {
+    DashTrackerTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Column {
+                GetBgLocationPermissionScreen()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 2
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun GetBgLocationPermissionPreviewNight() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

@@ -19,8 +19,8 @@ package com.wtb.dashTracker.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.widget.FrameLayout
 import androidx.annotation.AttrRes
-import androidx.cardview.widget.CardView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
@@ -35,7 +35,7 @@ class ActiveDashBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = 0
-) : CardView(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private var binding: ActivityMainActiveDashBarBinding
     private var callback: ActiveDashBarCallback? = null

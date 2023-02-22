@@ -65,7 +65,7 @@ fun ReenableBatteryOptimizationScreen(
             )
         },
         mainContent = {
-            CustomOutlinedCard {
+            CustomOutlinedCard(context = activity) {
                 val str = buildAnnotatedString {
                     append(stringResource(id = R.string.reenable_battery_permission_1))
 
@@ -98,7 +98,7 @@ fun ReenableBatteryOptimizationScreen(
 
             FillSpacer()
 
-            SecondaryOutlinedCard {
+            SecondaryCard {
                 val str = buildAnnotatedString {
                     append("To grant unrestricted background battery use, select ")
 

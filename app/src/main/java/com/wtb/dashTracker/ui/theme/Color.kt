@@ -7,21 +7,21 @@ import androidx.compose.ui.res.colorResource
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.util.PermissionsHelper
 
-val primaryDark: Color = Color(0xFF669922)
-val primary: Color = Color(0xFFCCEE99)
-val primaryLight: Color = Color(0xFFE0FFB0)
-val primaryFaded: Color = Color(0xFFF8FFE8)
+val primaryDark: Color = Color(0xFF90C060)
+val primary: Color = Color(0xFFD4FB99)
+val primaryLight: Color = Color(0xFFE4FFB9)
+val primaryFaded: Color = Color(0xFFF0FFE8)
 val onPrimary: Color = Color(0xFF353539)
-val onPrimaryVariant: Color = Color(0xFF686879)
+
 val onSecondary: Color = Color(0xFFFEFEFE)
-val onSecondaryVariant: Color = Color(0xFFEDEDED)
+
 
 val secondaryFaded: Color = Color(0xFFF8FDFF)
 
+val darkPrimaryDark: Color = Color(0xFF1B201B)
 val darkPrimary: Color = Color(0xFF283028)
-val darkPrimaryDark: Color = Color(0xFF1b201b)
 val darkPrimaryLight: Color = Color(0xFF384038)
-val darkPrimaryFaded: Color = Color(0xFFa0a080)
+val darkPrimaryFaded: Color = Color(0xFFA0A080)
 val darkOnPrimary: Color = Color(0xFFE8E8E8)
 val darkOnPrimaryVariant: Color = Color(0xFFCDCDCD)
 val darkOnSecondary: Color = Color(0xFF101014)
@@ -30,6 +30,18 @@ val darkOnSecondaryVariant: Color = Color(0xFF202024)
 val up: Color = Color(0xFF90C860)
 val down: Color = Color(0xFFF0A0B0)
 val car: Color = Color(0xFF99CCEE)
+
+@Composable
+fun iconColor(context: Context?): Color =
+    context?.let {
+        getDayNightColor(context, accent(), secondaryDark())
+    } ?: secondary()
+
+@Composable
+fun rippleColor(context: Context?): Color =
+    context?.let {
+        getDayNightColor(context, accent(), secondaryFaded())
+    } ?: secondaryLight()
 
 fun getDayNightColor(context: Context, nightColor: Color, dayColor: Color): Color {
     val mode = PermissionsHelper(context).uiModeIsDarkMode
@@ -40,15 +52,6 @@ fun getDayNightColor(context: Context, nightColor: Color, dayColor: Color): Colo
         dayColor
     }
 }
-
-fun accent(context: Context): Color =
-    getDayNightColor(context, Color(0xFF205060), Color(0xFFE0F0FF))
-
-fun accentDark(context: Context): Color =
-    getDayNightColor(context, Color(0xFF103038), Color(0xFF99CCEE))
-
-fun accentFaded(context: Context): Color =
-    getDayNightColor(context, Color(0xFF486878), Color(0xFFF8FDFF))
 
 @Composable
 fun secondary(): Color = colorResource(id = R.color.brick)

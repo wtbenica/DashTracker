@@ -503,7 +503,7 @@ internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selecte
                     numPages
                 ),
                 modifier = Modifier.size(8.dp),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.onTertiaryContainer
             )
         }
     }
@@ -547,8 +547,11 @@ fun GetPermissionsActivityPreviewNight() {
     }
 }
 
+@ExperimentalTextApi
 @Preview(showBackground = true)
 @Composable
 fun PageIndicatorPreview() {
-    PageIndicator(numPages = 4, selectedPage = 1)
+    DashTrackerTheme {
+        PageIndicator(numPages = 4, selectedPage = 1)
+    }
 }

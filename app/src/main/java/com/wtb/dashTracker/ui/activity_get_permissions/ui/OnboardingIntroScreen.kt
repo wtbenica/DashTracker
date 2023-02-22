@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -42,7 +43,7 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.welcomeIconColor
+import com.wtb.dashTracker.ui.theme.iconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
@@ -84,14 +85,15 @@ fun OnboardingIntroScreen(
                     ContentCard(
                         titleText = it,
                         icon = icons[i],
-                        iconTint = welcomeIconColor(),
+                        iconTint = iconColor(activity as? Context),
                         iconDescription = "Punch Clock",
+                        context = activity
                     )
                 }
 
             FillSpacer()
 
-            SecondaryOutlinedCard {
+            SecondaryCard {
                 val str = buildAnnotatedString {
                     append("To grant permissions, select ")
 
@@ -152,7 +154,7 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
 
             DefaultSpacer()
 
-            CustomOutlinedButton(
+            CustomButton(
                 onClick = {
                     activity?.setOptOutLocation(false)
                     activity?.setLocationEnabled(true)

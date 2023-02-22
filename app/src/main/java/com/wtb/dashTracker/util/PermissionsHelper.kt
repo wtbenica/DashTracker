@@ -138,7 +138,7 @@ class PermissionsHelper(val context: Context) {
 
             val options: Array<String> = context.resources.getStringArray(R.array.theme_options)
 
-            return when (sharedPrefs.getString(context.UI_MODE_PREF, options.last())) {
+            return when (sharedPrefs.getString(context.UI_MODE_PREF, options.first())) {
                 "Dark" -> true
                 "Light" -> false
                 else -> systemDarkMode()

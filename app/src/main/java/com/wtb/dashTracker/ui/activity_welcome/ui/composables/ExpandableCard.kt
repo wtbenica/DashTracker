@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
+import android.content.Context
 import androidx.annotation.DimenRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -51,10 +52,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.cardShape
-import com.wtb.dashTracker.ui.theme.down
-import com.wtb.dashTracker.ui.theme.up
+import com.wtb.dashTracker.ui.theme.*
 
 @Composable
 fun fontSizeDimensionResource(@DimenRes id: Int): TextUnit =
@@ -71,9 +69,20 @@ fun customCardColors(): CardColors {
 }
 
 val borderStrokeColor: Color
-    @Composable get() = MaterialTheme.colorScheme.primary
+    @Composable get() = secondary()
+//        MaterialTheme.colorScheme.secondary
 
-val borderStrokeWidth: Dp = 2.dp
+val borderStrokeWidth: Dp
+    @Composable get() = dimensionResource(id = R.dimen.margin_skinny)
+
+
+@Composable
+fun borderColor(context: Context?): Color =
+    context?.let {getDayNightColor(
+    context = context,
+    nightColor = secondary(),
+    dayColor = secondary(),
+) } ?: secondary()
 
 @ExperimentalTextApi
 @Composable
@@ -84,7 +93,8 @@ fun SingleExpandableCard(
     iconDescription: String,
     isExpanded: Boolean,
     callback: () -> Unit,
-    content: @Composable (() -> Unit)? = null
+    context: Context? = null,
+    content: @Composable() (() -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     OutlinedCard(
@@ -96,13 +106,13 @@ fun SingleExpandableCard(
                 indication = rememberRipple(
                     bounded = true,
                     radius = Dp.Unspecified,
-                    color = MaterialTheme.colorScheme.tertiary
+                    color = rippleColor(context = context)
                 ),
                 enabled = content != null
             ) { callback() },
         shape = cardShape,
         colors = customCardColors(),
-        border = BorderStroke(width = borderStrokeWidth, color = borderStrokeColor)
+        border = BorderStroke(width = borderStrokeWidth, color = borderColor(context))
     ) {
         Column {
             Row(
@@ -159,7 +169,7 @@ fun SingleExpandableCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(16.dp),
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = accent()
                     )
                     false -> Icon(
                         Icons.Filled.KeyboardArrowDown,
@@ -167,7 +177,7 @@ fun SingleExpandableCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(16.dp),
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = accent()
                     )
                 }
             }
@@ -180,6 +190,7 @@ fun SingleExpandableCard(
 fun CustomOutlinedCard(
     modifier: Modifier = Modifier,
     padding: Int? = null,
+    context: Context? = null,
     content: @Composable (ColumnScope.() -> Unit)
 ): Unit = OutlinedCard(
     modifier = modifier
@@ -187,7 +198,7 @@ fun CustomOutlinedCard(
         .clip(cardShape),
     shape = cardShape,
     colors = customCardColors(),
-    border = BorderStroke(width = borderStrokeWidth, color = borderStrokeColor),
+    border = BorderStroke(width = borderStrokeWidth, color = borderColor(context)),
 ) {
     Column(
         modifier = Modifier.padding(
@@ -215,6 +226,7 @@ fun ContentCard(
     icon: ImageVector,
     iconTint: Color,
     iconDescription: String,
+    context: Context? = null,
     content: @Composable (() -> Unit)? = null
 ) {
     OutlinedCard(
@@ -223,7 +235,7 @@ fun ContentCard(
             .clip(cardShape),
         shape = cardShape,
         colors = customCardColors(),
-        border = BorderStroke(width = borderStrokeWidth, color = borderStrokeColor)
+        border = BorderStroke(width = borderStrokeWidth, color = borderColor(context))
     ) {
         Row(
             modifier = if (content == null) {
@@ -265,7 +277,7 @@ fun ContentCard(
 
 @ExperimentalTextApi
 @Composable
-fun SecondaryOutlinedCard(
+fun SecondaryCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -276,7 +288,6 @@ fun SecondaryOutlinedCard(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        border = BorderStroke(borderStrokeWidth, borderStrokeColor)
     ) {
         content()
     }
@@ -304,7 +315,7 @@ fun ListRow(
                 .size(iconSize + 6.dp)
                 .align(Alignment.CenterVertically)
                 .padding(6.dp),
-            tint = MaterialTheme.colorScheme.secondary
+            tint = accent()
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -320,17 +331,6 @@ fun ListRow(
 
 @ExperimentalTextApi
 @Composable
-fun HeaderRow(text: String, modifier: Modifier = Modifier, icon: ImageVector): Unit =
-    ListRow(
-        text = text,
-        modifier = modifier,
-        fontSize = 18.sp,
-        iconSize = 18.dp,
-        icon = icon
-    )
-
-@ExperimentalTextApi
-@Composable
 @Preview
 fun PreviewSingleExpandableCard() {
     DashTrackerTheme {
@@ -341,10 +341,9 @@ fun PreviewSingleExpandableCard() {
             iconDescription = "Stinky Fish",
             isExpanded = true,
             callback = { },
-            content = {
-                ListRow("Eat your potato salad, dearie")
-            }
-        )
+        ) {
+            ListRow("Eat your potato salad, dearie")
+        }
     }
 }
 
@@ -371,23 +370,13 @@ fun PreviewContentCard() {
     }
 }
 
-@ExperimentalTextApi
-@Composable
-@Preview
-fun PreviewCustomOutlined() {
-    DashTrackerTheme {
-        CustomOutlinedCard {
-            Text("This is just an outlined card")
-        }
-    }
-}
 
 @ExperimentalTextApi
 @Composable
 @Preview
 fun PreviewSecondaryCustomOutlined() {
     DashTrackerTheme {
-        SecondaryOutlinedCard {
+        SecondaryCard {
             val str = buildAnnotatedString {
                 append("To grant location permissions, select ")
 

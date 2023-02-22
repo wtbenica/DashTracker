@@ -45,7 +45,7 @@ fun CustomButton(
 ) {
     Button(
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
         onClick = onClick,

@@ -66,7 +66,7 @@ fun ScreenTemplate(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ),
-            border = BorderStroke(borderWidth, MaterialTheme.colorScheme.inversePrimary)
+            border = BorderStroke(width = borderStrokeWidth, color = MaterialTheme.colorScheme.inversePrimary)
         ) {
             WideSpacer()
 
@@ -93,7 +93,7 @@ fun ScreenTemplate(
 
                 FillSpacer()
 
-                OutlinedCard(
+                Card(
                     modifier = Modifier
                         .width(128.dp)
                         .height(96.dp)
@@ -104,12 +104,10 @@ fun ScreenTemplate(
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.tertiary
                     ),
-                    border = BorderStroke(borderWidth, MaterialTheme.colorScheme.tertiaryContainer)
                 ) {
                     Column(
-                        modifier = Modifier.align(
-                            Alignment.CenterHorizontally
-                        ),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         iconImage()
