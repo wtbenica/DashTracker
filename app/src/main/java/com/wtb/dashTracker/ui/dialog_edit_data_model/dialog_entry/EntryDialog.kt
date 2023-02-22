@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +27,6 @@ import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.toCurrencyString
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -129,7 +127,6 @@ class EntryDialog : BaseEntryDialog() {
     override fun isEmpty(): Boolean {
         val isTodaysDate = binding.fragEntryDate.tag == LocalDate.now()
         val startUnchanged: Boolean = with (binding.fragEntryStartTime.tag) {
-           Log.d(TAG, "Saved: $this | entered: ${item?.startTime}")
             this != null && ((this as LocalTime) == item?.startTime)
         }
         return isTodaysDate &&
