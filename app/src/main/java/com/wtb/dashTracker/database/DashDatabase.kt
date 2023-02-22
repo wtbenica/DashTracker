@@ -113,12 +113,15 @@ abstract class DashDatabase : RoomDatabase() {
 
         }
 
+        @Suppress("ClassName")
         @DeleteTable.Entries(DeleteTable(tableName = "StandardMileageDeduction"))
         class AutoMigrateSpec_7_8 : AutoMigrationSpec
 
+        @Suppress("ClassName")
         @DeleteTable.Entries(DeleteTable(tableName = "Pause"))
         class AutoMigrateSpec_10_11 : AutoMigrationSpec
 
+        @Suppress("ClassName")
         @DeleteTable.Entries(DeleteTable(tableName = "Drive"))
         class AutoMigrateSpec_11_12 : AutoMigrationSpec
 

@@ -17,6 +17,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <stroke
         android:width="2dp"
-        android:color="?attr/colorDialogItemOutline" />
+        android:color="?attr/colorSecondaryVariant" />
     <corners android:radius="@dimen/margin_wide" />
+    <solid android:color="?attr/colorSecondaryFaded" />
 </shape>

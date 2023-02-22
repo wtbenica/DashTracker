@@ -39,7 +39,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-// TODO: selecting a purpose to edit and then cancelling deletes the purpose
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
@@ -63,17 +62,6 @@ class ConfirmationDialogEditPurposes : FullWidthDialogFragment() {
         binding.noButton.setOnClickListener {
             dismiss()
         }
-
-//        setFragmentResultListener(REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE) { _, bundle ->
-//            val updatePurpose = bundle.getBoolean(ARG_UPDATE_PURPOSE)
-//            if (updatePurpose) {
-//                bundle.getLong(ARG_PURPOSE_ID, -1L).let { id ->
-//                    bundle.getString(ARG_PURPOSE_NAME)?.let { purposeName ->
-//                        viewModel.upsert(ExpensePurpose(purposeId = id, name = purposeName))
-//                    }
-//                }
-//            }
-//        }
 
         return binding.root
     }

@@ -52,17 +52,21 @@ class MainActivityViewModel : ViewModel() {
         initialValue = null
     )
 
-    private val _hourly = MutableLiveData(0f)
-    val hourly: LiveData<Float>
-        get() = _hourly
+    private val _thisWeekEarnings = MutableLiveData(0f)
+    val thisWeekEarnings: LiveData<Float>
+        get() = _thisWeekEarnings
 
-    private val _thisWeek = MutableLiveData(0f)
-    val thisWeek: LiveData<Float>
-        get() = _thisWeek
+    private val _lastWeekEarnings = MutableLiveData(0f)
+    val lastWeekEarnings: LiveData<Float>
+        get() = _lastWeekEarnings
 
-    private val _lastWeek = MutableLiveData(0f)
-    val lastWeek: LiveData<Float>
-        get() = _lastWeek
+    private val _thisWeekHourly = MutableLiveData(0f)
+    val thisWeekHourly: LiveData<Float>
+        get() = _thisWeekHourly
+
+    private val _lastWeekHourly = MutableLiveData(0f)
+    val lastWeekHourly: LiveData<Float>
+        get() = _lastWeekHourly
 
     private val _cpm = MutableLiveData(0f)
     val cpm: LiveData<Float>
@@ -70,20 +74,16 @@ class MainActivityViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            repository.allWeeklies.collectLatest {
-                _hourly.value = getHourlyFromWeeklies(it)
-            }
-        }
-
-        viewModelScope.launch {
             repository.getWeeklyByDate(LocalDate.now().endOfWeek).collectLatest { tw ->
-                _thisWeek.value = tw?.totalPay
+                _thisWeekEarnings.value = tw?.totalPay
+                _thisWeekHourly.value = tw?.hourly
             }
         }
 
         viewModelScope.launch {
             repository.getWeeklyByDate(LocalDate.now().endOfWeek.minusDays(7)).collectLatest { lw ->
-                _lastWeek.value = lw?.totalPay
+                _lastWeekEarnings.value = lw?.totalPay
+                _lastWeekHourly.value = lw?.hourly
             }
         }
 

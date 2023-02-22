@@ -16,20 +16,60 @@
 
 <resources>
 
+    <style name="DialogFragmentWrapper">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingHorizontal">?attr/dimenDialogMargin</item>
+    </style>
+
+    <style name="DialogFragCard" parent="DTCardViewStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardCornerRadius">?attr/dialogFragCornerRadius</item>
+        <item name="cardBackgroundColor">@android:color/transparent</item>
+    </style>
+
+    <style name="DialogFragLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_dialog</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+<!--    <style name="DialogFragLayout.Confirmation">-->
+<!--        <item name="android:paddingBottom">?attr/dimenDialogContentMarginHorizontal</item>-->
+<!--    </style>-->
+
     <style name="DialogToolbar" parent="Widget.AppCompat.Toolbar">
-        <item name="titleMarginStart">24dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="titleMarginStart">?attr/dimenDialogHeaderMarginStart</item>
         <item name="titleTextAppearance">@style/DTActionBarTitleTextAppearance</item>
     </style>
 
     <style name="DialogContentCard" parent="DTCardViewStyle">
-        <item name="android:layout_marginHorizontal">@dimen/margin_half</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">?attr/dimenDialogContentMarginHorizontal</item>
         <item name="cardCornerRadius">?attr/dialogFragCornerRadius</item>
+        <item name="cardBackgroundColor">@android:color/transparent</item>
+    </style>
+
+    <style name="DialogContentCard.ConfirmDialog">
+        <item name="android:layout_marginBottom">@dimen/margin_narrow</item>
     </style>
 
     <style name="DialogContent">
-        <item name="android:paddingVertical">@dimen/margin_default</item>
-        <item name="android:paddingHorizontal">@dimen/margin_wide</item>
-        <item name="android:background">?attr/colorDialogContentBg</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingVertical">?attr/dimenDialogContentPaddingVertical</item>
+        <item name="android:paddingHorizontal">?attr/dimenDialogContentPaddingHorizontal</item>
+        <item name="android:background">@drawable/bg_dialog_content</item>
+    </style>
+
+    <style name="DialogContent.Confirmation">
+        <item name="android:padding">0dp</item>
     </style>
 
     <style name="DialogFragSpinnerStyle">

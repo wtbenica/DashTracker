@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.wtb.notificationUtil.BuildConfig
@@ -32,10 +31,10 @@ class ActivityTransitionUtils(private val context: Context) {
 
         task.run {
             addOnSuccessListener {
-                Log.d(TAG, "Request activity updates success")
+                this@ActivityTransitionUtils.debugLog("Request activity updates success")
             }
             addOnFailureListener {
-                Log.d(TAG, "Request activity updates failed")
+                this@ActivityTransitionUtils.debugLog("Request activity updates failed")
             }
         }
     }
@@ -54,10 +53,10 @@ class ActivityTransitionUtils(private val context: Context) {
 
         task.run {
             addOnSuccessListener {
-                Log.d(TAG, "Remove activity updates success")
+                this@ActivityTransitionUtils.debugLog("Remove activity updates success")
             }
             addOnFailureListener {
-                Log.d(TAG, "Remove activity updates failed")
+                this@ActivityTransitionUtils.debugLog("Remove activity updates failed")
             }
         }
     }

@@ -18,7 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_card"
-    style="@style/CardViewStyle.ListItem">
+    style="@style/DTCardViewStyle.ListItem">
 
     <LinearLayout
         android:id="@+id/list_item_wrapper"
@@ -45,6 +45,7 @@
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_width="0dp"
                 android:textAlignment="textEnd"
+                app:layout_constraintBottom_toBottomOf="@id/list_item_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/list_item_title"
                 app:layout_constraintTop_toTopOf="parent"
@@ -54,16 +55,17 @@
                 android:id="@+id/list_item_subtitle"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_marginEnd="@dimen/margin_half"
-                app:layout_constraintTop_toBottomOf="@id/list_item_title"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/list_item_title"
                 tools:text="" />
 
             <TextView
                 android:id="@+id/list_item_subtitle_2_label"
                 style="@style/ListItemHeaderTextView.Subtitle"
+                android:layout_marginEnd="@dimen/margin_half"
+                android:text="@string/list_item_label_net"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2"
-                android:text="@string/list_item_label_net" />
+                app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2" />
 
             <TextView
                 android:id="@+id/list_item_subtitle_2"
@@ -78,13 +80,16 @@
             android:id="@+id/list_item_details"
             style="@style/listItemDetailsPane"
             android:layout_width="match_parent"
+            android:background="@android:color/transparent"
             android:layout_height="wrap_content"
             tools:visibility="visible">
 
             <include
+                style="@style/DetailsTableCard"
                 layout="@layout/list_item_yearly_details_table"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/list_item_header" />
@@ -92,9 +97,10 @@
             <ImageButton
                 android:id="@+id/list_item_btn_edit"
                 style="@style/ListItemButton"
+                android:layout_marginEnd="@dimen/margin_half"
                 android:contentDescription="@string/content_desc_edit_button"
                 android:src="@drawable/ic_action_edit"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

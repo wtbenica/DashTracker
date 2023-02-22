@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2023 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.fragment_income.IncomeFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_stuff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_income_top_stuff"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/frag_income_tab_layout"
+            style="@style/FragIncomeTabLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/divider_4"
+            app:layout_constraintHorizontal_weight=".75"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/frag_title_daily_list" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/frag_title_weekly_list" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/frag_title_yearly_list" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <View
+            android:id="@+id/divider_4"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="?attr/colorOptionsMenuStroke"
+            app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"
+            app:layout_constraintEnd_toEndOf="@id/frag_income_tab_layout"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/expand_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/margin_default"
+            android:layout_marginHorizontal="@dimen/margin_default"
+            android:src="@drawable/ic_arrow_expand"
+            app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"
+            app:layout_constraintEnd_toStartOf="@id/select_cpm"
+            app:layout_constraintStart_toEndOf="@id/divider_4"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorTextPrimary" />
+
+        <TextView
+            android:id="@+id/select_cpm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="0dp"
+            android:paddingEnd="@dimen/margin_default"
+            android:text="@string/lbl_cpm"
+            app:layout_constraintBottom_toBottomOf="@id/frag_income_tab_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/filter_box"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout">
+
+            <LinearLayout
+                android:id="@+id/filter_box_collapsable_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/margin_default"
+                android:paddingVertical="@dimen/margin_default"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@id/button_group_deduction_type"
+                    android:paddingStart="@dimen/margin_default"
+                    android:paddingEnd="0dp"
+                    android:text="@string/lbl_set_cpm_method" />
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/button_group_deduction_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:checkedButton="@id/none_button"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/none_button"
+                        style="@style/MaterialToggleButton"
+                        android:text="@string/lbl_none" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/gas_button"
+                        style="@style/MaterialToggleButton"
+                        android:text="@string/expense_purpose_gas" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/actual_button"
+                        style="@style/MaterialToggleButton"
+                        android:text="@string/expense_purpose_all" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/standard_button"
+                        style="@style/MaterialToggleButton"
+                        android:text="@string/expense_purpose_standard" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider_2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/colorOptionsMenuStroke" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/divider_3"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="?attr/colorOptionsMenuStroke"
+            app:layout_constraintEnd_toEndOf="@id/frag_income_tab_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/frag_income_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="?attr/colorUIBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_stuff" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,21 +15,27 @@
   -->
 
 <resources>
-    <color name="dark">#90C860</color>
-    <color name="regular">#E0F8C0</color>
-    <color name="light">#E8FFD0</color>
-    <color name="faded">#f8fff0</color>
+<!--    <color name="dark">#692</color>-->
+<!--    <color name="dark">#74c000</color>-->
+<!--    <color name="regular">#ce9</color>-->
+    <color name="dark">#90c060</color>
+    <color name="regular">#d4fb99</color>
+    <color name="light">#e4ffb9</color>
+    <color name="faded">#F0ffe8</color>
+
     <color name="on_regular">#353539</color>
     <color name="on_regular_light">#686879</color>
 
-    <color name="brick_dark">#9ce</color>
-    <color name="brick">#e0f0ff</color>
-    <color name="brick_light">#f0f8ff</color>
-    <color name="brick_faded">#f8fdff</color>
-    <color name="on_brick">#FEFEFE</color>
-    <color name="on_brick_light">#EDEDED</color>
+    <color name="accent">#196f90</color>
+    <color name="brick_dark">#79abca</color>
+    <color name="brick">#8fcff0</color>
+    <color name="brick_light">#c0e8f5</color>
+    <color name="brick_faded">#dff8ff</color>
 
-    <color name="accent">#48b</color>
+    <color name="on_brick">#FEFEFE</color>
+    <color name="on_brick_light">#F7F7F7</color>
+
+<!--    <color name="accent">#48b</color>-->
 
     <color name="daytime_solid">#F8F890</color>
     <color name="daytime_light">#FFFFB8</color>
@@ -37,10 +43,4 @@
     <color name="nighttime_light">#CCEEEE</color>
 
     <color name="alert">#EE5522</color>
-
-    <color name="light_blue_400">#FF29B6F6</color>
-    <color name="light_blue_600">#FF039BE5</color>
-    <color name="gray_400">#FFBDBDBD</color>
-    <color name="gray_600">#FF757575</color>
-
 </resources>

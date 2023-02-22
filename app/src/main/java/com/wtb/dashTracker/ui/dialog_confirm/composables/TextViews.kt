@@ -17,17 +17,17 @@
 package com.wtb.dashTracker.ui.dialog_confirm.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -40,13 +40,15 @@ import com.wtb.dashTracker.ui.theme.onPrimaryVariant
 fun RowScope.HeaderText(
     text: String,
     modifier: Modifier = Modifier,
-    textAlign: TextAlign = TextAlign.Start
+    textAlign: TextAlign = TextAlign.Start,
+    padding: Dp = 16.dp
 ) {
     Text(
         text = text,
         modifier = modifier
-            .padding(16.dp)
-            .weight(weight = 1f, fill = true),
+            .padding(padding)
+            .weight(weight = 1f, fill = true)
+            .align(CenterVertically),
         color = onPrimaryVariant(),
         fontSize = 14.sp,
         fontFamily = FontFamilyOswald,
@@ -59,13 +61,63 @@ fun RowScope.HeaderText(
 fun RowScope.ValueText(
     text: String,
     modifier: Modifier = Modifier,
-    textAlign: TextAlign = TextAlign.End
+    textAlign: TextAlign = TextAlign.End,
+    padding: Dp = 16.dp
 ) {
     Text(
         text = text,
         modifier = modifier
-            .padding(all = 16.dp)
+            .padding(all = padding)
             .weight(weight = 1f, fill = true),
+        color = onPrimary(),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamilyOswald,
+        textAlign = textAlign,
+    )
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+fun ColumnScope.HeaderText(
+    text: String,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start,
+    padding: Dp = 16.dp
+) {
+    Text(
+        text = text,
+        modifier = modifier
+            .padding(padding)
+            .width(IntrinsicSize.Max),
+        color = onPrimaryVariant(),
+        fontSize = 14.sp,
+        fontFamily = FontFamilyOswald,
+        textAlign = textAlign
+    )
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+fun ColumnScope.ValueText(
+    text: String,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.End,
+    padding: Dp? = null,
+    paddingTop: Dp = 16.dp,
+    paddingBottom: Dp = 16.dp,
+    paddingStart: Dp = 16.dp,
+    paddingEnd: Dp = 16.dp
+) {
+    Text(
+        text = text,
+        modifier = modifier.apply {
+            width(IntrinsicSize.Max)
+            if (padding != null)
+                padding(all = padding)
+            else
+                padding(start = paddingStart, top = paddingTop, end = paddingEnd, bottom = paddingBottom)
+        },
         color = onPrimary(),
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
@@ -89,7 +141,7 @@ fun TextViews() {
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun TextViewsNight() {
-    DashTrackerTheme() {
+    DashTrackerTheme {
         Card {
             Row {
                 HeaderText(text = "Header")

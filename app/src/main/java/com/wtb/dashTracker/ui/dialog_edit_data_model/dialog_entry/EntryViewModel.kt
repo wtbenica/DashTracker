@@ -22,6 +22,8 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.time.LocalDate
+import java.time.LocalTime
 
 @ExperimentalCoroutinesApi
 class EntryViewModel : ListItemViewModel<DashEntry>() {
@@ -36,4 +38,47 @@ class EntryViewModel : ListItemViewModel<DashEntry>() {
     override fun getItemFlowById(id: Long): Flow<DashEntry?> =
         repository.getEntryFlowById(id)
 
+    fun updateEntry(
+        entry: DashEntry,
+        date: LocalDate? = null,
+        endDate: LocalDate? = null,
+        startTime: LocalTime? = null,
+        endTime: LocalTime? = null,
+        startOdometer: Float? = null,
+        endOdometer: Float? = null,
+        pay: Float? = null,
+        otherPay: Float? = null,
+        cashTips: Float? = null,
+        numDeliveries: Int? = null
+    ) {
+        val mDate = date ?: entry.date
+        val mEndDate = endDate ?: entry.endDate
+        val mStartTime = startTime ?: entry.startTime
+        val mEndTime = endTime ?: entry.endTime
+        val mStartOdometer = startOdometer ?: entry.startOdometer
+        val mEndOdometer = endOdometer ?: entry.endOdometer
+        val mPay = pay ?: entry.pay
+        val mOtherPay = otherPay ?: entry.otherPay
+        val mCashTips = cashTips ?: entry.cashTips
+        val mNumDeliveries = numDeliveries ?: entry.numDeliveries
+
+        @Suppress("DEPRECATION")
+        val newEntry = DashEntry(
+            entryId = entry.entryId,
+            date = mDate,
+            endDate = mEndDate,
+            startTime = mStartTime,
+            endTime = mEndTime,
+            startOdometer = mStartOdometer,
+            endOdometer = mEndOdometer,
+            totalMileage = entry.totalMileage,
+            pay = mPay,
+            otherPay = mOtherPay,
+            cashTips = mCashTips,
+            numDeliveries = mNumDeliveries,
+            week = entry.week
+        )
+
+        upsert(newEntry)
+    }
 }

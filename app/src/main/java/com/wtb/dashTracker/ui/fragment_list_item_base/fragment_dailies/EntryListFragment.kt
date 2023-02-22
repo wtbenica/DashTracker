@@ -17,7 +17,6 @@
 package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,22 +24,19 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
-import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
@@ -48,55 +44,61 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFICATION_STATE
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFIED_ID
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.REQUEST_KEY_DATA_MODEL_DIALOG
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState.DELETED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
+import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import java.time.LocalDate
 
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-class EntryListFragment : ListItemFragment() {
+class EntryListFragment : IncomeListItemFragment() {
 
     private val viewModel: EntryListViewModel by viewModels()
-    private var callback: IncomeFragment.IncomeFragmentCallback? = null
 
-    private var deductionType: DeductionType = DeductionType.NONE
-
-    private lateinit var binding: FragItemListBinding
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = context as IncomeFragment.IncomeFragmentCallback
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragItemListBinding.inflate(inflater)
-        binding.itemListRecyclerView.layoutManager = LinearLayoutManager(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         setDialogListeners()
-
-        return binding.root
     }
 
     private fun setDialogListeners() {
-        setFragmentResultListener(
-            ConfirmType.DELETE.key
+        childFragmentManager.setFragmentResultListener(
+            ConfirmDialog.DELETE.key,
+            this
         ) { _, bundle ->
-            val result = bundle.getBoolean(ARG_CONFIRM)
-            val id = bundle.getLong(ARG_EXTRA)
+            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+            val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
+
             if (result) {
-                (activity as MainActivity).clearActiveEntry()
+                (activity as MainActivity).clearActiveEntry(id)
+                viewModel.deleteEntryById(id)
+            }
+        }
+
+        // Entry Dialog Result
+        childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_DATA_MODEL_DIALOG,
+            this
+        ) { _, bundle ->
+            val modifyState = bundle.getString(ARG_MODIFICATION_STATE)
+                ?.let { ModificationState.valueOf(it) }
+
+            val id = bundle.getLong(ARG_MODIFIED_ID, -1)
+
+            if (modifyState == DELETED && id != -1L) {
+                (activity as MainActivity).clearActiveEntry(id)
                 viewModel.deleteEntryById(id)
             }
         }
@@ -129,14 +131,10 @@ class EntryListFragment : ListItemFragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        callback = null
-    }
-
     interface EntryListFragmentCallback : DeductionCallback
 
-    inner class EntryAdapter : BaseItemPagingDataAdapter<FullEntry>(DIFF_CALLBACK) {
+    inner class EntryAdapter :
+        ListItemFragment.BaseItemPagingDataAdapter<FullEntry>(DIFF_CALLBACK) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullEntry> =
             EntryHolder(parent)
 
@@ -146,24 +144,25 @@ class EntryListFragment : ListItemFragment() {
             private val binding = ListItemEntryBinding.bind(itemView)
             private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
 
-            override val collapseArea: ConstraintLayout
-                get() = binding.listItemDetails
+            override val collapseArea: Array<View>
+                get() = arrayOf(binding.listItemDetails)
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
+            override val bgCard: CardView
+                get() = binding.root
 
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
                         EntryDialog.newInstance(this@EntryHolder.item.entry.entryId)
-                            .show(parentFragmentManager, "edit_entry_details")
+                            .show(childFragmentManager, "edit_entry_details")
                     }
                 }
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(
-                            confirmId = this@EntryHolder.item.entry.entryId
-                        ).show(parentFragmentManager, "delete_entry")
+                        ConfirmDeleteDialog.newInstance(this@EntryHolder.item.entry.entryId)
+                            .show(childFragmentManager, "delete_entry")
                     }
                 }
             }
@@ -241,7 +240,17 @@ class EntryListFragment : ListItemFragment() {
                     }
                 }
 
-                binding.listItemTitle.text = this.item.entry.date.formatted.uppercase()
+                binding.listItemEntryDayOfWeek.text =
+                    getString(R.string.add_comma, this.item.entry.date.dayOfWeek.name.capitalize())
+                binding.listItemEntryDayOfWeek.setTextColor(
+                    if (this.item.entry.date.endOfWeek == LocalDate.now().endOfWeek) {
+                        requireContext().getAttributeColor(R.attr.textColorListItemEntryDayThisWeek)
+                    } else {
+                        requireContext().getAttributeColor(R.attr.textColorListItemEntryDay)
+                    }
+                )
+
+                binding.listItemTitle.text = this.item.entry.date.format(dtfDate)
                 binding.listItemTitle2.text = getCurrencyString(this.item.entry.totalEarned)
                 binding.listItemSubtitle.text =
                     getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)
@@ -319,7 +328,7 @@ class EntryListFragment : ListItemFragment() {
                 newItem: FullEntry
             ): Boolean =
                 oldItem.entry.equals(newItem.entry) &&
-                        oldItem.distance == newItem.distance
+                        oldItem.trackedDistance == newItem.trackedDistance
         }
     }
 }

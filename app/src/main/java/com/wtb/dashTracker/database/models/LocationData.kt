@@ -143,6 +143,9 @@ class LocationData constructor(
     }
 }
 
+/**
+ * Distance calculates the distance traveled, excluding when still or moving slowly
+ */
 @ExperimentalCoroutinesApi
 val List<LocationData>.distance: Double
     get() {

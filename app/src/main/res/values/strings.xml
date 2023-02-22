@@ -42,7 +42,7 @@
     <string name="lbl_last_week">Last Week</string>
     <string name="lbl_amount">Amount</string>
     <string name="lbl_base_pay_adjust">Base Pay\nAdjust</string>
-    <string name="lbl_total_earned">Total\nEarned</string>
+    <string name="lbl_total_earned">Earnings</string>
     <string name="lbl_adjust">Base Pay Adjustment</string>
     <string name="lbl_shifts">shifts</string>
     <string name="lbl_reported_income">Reported Income</string>
@@ -55,9 +55,11 @@
     <string name="lbl_show">Show</string>
     <string name="lbl_done">Done</string>
     <string name="lbl_cost_per_mile">Cost per mile</string>
-    <string name="lbl_set_cpm_method">Calculate cost per mile using:</string>
+    <string name="lbl_set_cpm_method">Estimate cost per mile using:</string>
     <string name="lbl_cpm">CPM</string>
     <string name="lbl_none">None</string>
+    <string name="lbl_start_mileage_adjusted">Keep Start Mileage</string>
+    <string name="lbl_end_mileage_adjusted">Keep End Mileage</string>
 
     <string name="content_desc_delete">Delete</string>
     <string name="content_desc_reset">Reset</string>
@@ -103,6 +105,7 @@
     <string name="gas_price_display">$%.3f</string>
     <string name="blank_currency">$  -  </string>
     <string name="odometer_range" formatted="true">%1$.0f - %2$.0f</string>
+    <string name="odometer_range_int" formatted="true">%d - %d</string>
     <string name="time_range" formatted="true">%1$s - %2$s</string>
     <string name="format_hours">%.2fh</string>
     <string name="float_fmt">%.2f</string>
@@ -134,11 +137,11 @@
     <string name="dont_ask">Don\'t ask again</string>
 
     <string name="confirm_delete">The information you\'ve entered will not be recoverable</string>
-    <string name="confirm_reset">Any changes will be permanently lost</string>
+    <string name="confirm_reset">Recent changes may be lost</string>
     <string name="csv_generation_failed">CSV generation failed</string>
 
     <string name="confirm_dialog">Confirm %s</string>
-    <string name="confirm_save_entry_incomplete">This entry is incomplete. Do you want to save it anyways?</string>
+    <string name="confirm_save_entry_incomplete">This entry is incomplete. Would you like to save it?</string>
 
     <string name="confirm_import_show_modified_info_lbl">Notes</string>
     <string name="confirm_export_notes_lbl">Notes</string>
@@ -281,7 +284,7 @@
     <string name="header_mileage_breakdown">Mileage breakdown</string>
     <string name="lbl_dates">Dates</string>
     <string name="bioprompt_title_default">Unlock DashTracker</string>
-    <string name="content_desc_page_indicator">Page %d of %d</string>
+    <string name="content_desc_page_indicator">Page %1$d of %2$d</string>
     <string name="notification_button_open_app">Open</string>
     <string name="notification_button_stop">Stop</string>
     <string name="notification_text_tracking_on">Mileage tracking is on. Background location is in use.</string>
@@ -307,4 +310,11 @@
     <string name="content_desc_open_mileage_breakdown">Open mileage breakdown</string>
     <string name="business_expense_explanation">Business costs are estimates based on business mileage. This is not accurate for all expenses, e.g. supplies that are only used for business.</string>
     <string name="title_action_contact">Contact us</string>
+    <string name="content_desc_close_dialog_window">Close dialog window</string>
+    <string name="lbl_use_tracked_mileage">Use tracked mileage</string>
+    <string name="dialog_title_end_dash">End Dash</string>
+    <string name="toast_base_entry_dialog_matches_tracked_mileage">Total mileage already matches tracked mileage</string>
+    <string name="toast_base_entry_dialog_end_mileage_set_to">End mileage set to %d</string>
+    <string name="toast_base_entry_dialog_start_mileage_set_to">Start mileage set to %d</string>
+    <string name="add_comma">"%s, "</string>
 </resources>

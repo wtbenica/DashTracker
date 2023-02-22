@@ -77,10 +77,11 @@ import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
-import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.REQUEST_KEY_DATA_MODEL_DIALOG
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -91,8 +92,8 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialo
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasPermissions
@@ -114,9 +115,19 @@ import java.time.format.DateTimeParseException
 import kotlin.system.exitProcess
 
 private const val APP = "GT_"
-private var IS_TESTING = false
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
+
+private var IS_TESTING = false
+
+private const val DEBUGGING = true
+internal fun Any.debugLog(message: String) {
+    if (DEBUGGING) Log.d(TAG, message)
+}
+
+internal fun Any.errorLog(message: String) {
+    if (DEBUGGING) Log.e(TAG, message)
+}
 
 /**
  * Primary [AppCompatActivity] for DashTracker. Contains [BottomNavigationView] for switching
@@ -135,8 +146,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
     private var isTesting: Boolean = false
 
-    internal val permissionsHelper = PermissionsHelper(this)
-
     private val viewModel: MainActivityViewModel by viewModels()
 
     // IncomeFragmentCallback
@@ -144,6 +153,22 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
     override val deductionType: StateFlow<DeductionType>
         get() = deductionTypeViewModel.deductionType
+
+    override fun hideStuff() {
+        binding.apply {
+            appBarLayout.setExpanded(false, true)
+            bottomAppBar.performHide()
+            fab.hide()
+        }
+    }
+
+    override fun showStuff() {
+        binding.apply {
+            appBarLayout.setExpanded(true, true)
+            bottomAppBar.performShow(true)
+            fab.show()
+        }
+    }
 
     override fun setDeductionType(dType: DeductionType) {
         deductionTypeViewModel.setDeductionType(dType)
@@ -160,7 +185,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         get() {
             val hasPermissions = this.hasPermissions(*REQUIRED_PERMISSIONS)
             val isEnabled = sharedPrefs.getBoolean(LOCATION_ENABLED, false)
-            Log.d(TAG, "trackingENabled | hasPermissions: $hasPermissions | isEnabled: $isEnabled")
+
             return hasPermissions && isEnabled
         }
 
@@ -262,7 +287,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
         fun initBottomNavBar() {
             val navView: BottomNavigationView = binding.navView
-            navView.background = null
 
             val appBarConfiguration = AppBarConfiguration(
                 setOf(
@@ -290,18 +314,23 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         fun initObservers() {
-            viewModel.hourly.observe(this) {
-                binding.actMainHourly.text =
+            viewModel.thisWeekHourly.observe(this) {
+                binding.summaryBar.actMainThisWeekHourly.text =
                     getCurrencyString(it)
             }
 
-            viewModel.thisWeek.observe(this) {
-                binding.actMainThisWeek.text =
+            viewModel.lastWeekHourly.observe(this) {
+                binding.summaryBar.actMainLastWeekHourly.text =
                     getCurrencyString(it)
             }
 
-            viewModel.lastWeek.observe(this) {
-                binding.actMainLastWeek.text =
+            viewModel.thisWeekEarnings.observe(this) {
+                binding.summaryBar.actMainThisWeekTotal.text =
+                    getCurrencyString(it)
+            }
+
+            viewModel.lastWeekEarnings.observe(this) {
+                binding.summaryBar.actMainLastWeekTotal.text =
                     getCurrencyString(it)
             }
 
@@ -312,7 +341,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             lifecycleScope.launch {
                 this@MainActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.activeEntry.collectLatest {
-                        Log.d(TAG, "new active entry: ${it?.entry?.entryId}")
                         activeDash.activeEntry = it
                     }
                 }
@@ -348,6 +376,21 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                     sharedPrefs.edit().putLong(ACTIVE_ENTRY_ID, entryId).apply()
                 }
             }
+
+            supportFragmentManager.setFragmentResultListener(
+                REQUEST_KEY_DATA_MODEL_DIALOG,
+                this
+            ) { _, bundle ->
+                val modifyState = bundle.getString(EditDataModelDialog.ARG_MODIFICATION_STATE)
+                    ?.let { EditDataModelDialog.ModificationState.valueOf(it) }
+
+                val id = bundle.getLong(EditDataModelDialog.ARG_MODIFIED_ID, -1L)
+
+                if (modifyState == EditDataModelDialog.ModificationState.DELETED && id != -1L) {
+                    clearActiveEntry(id)
+                    viewModel.deleteEntry(id)
+                }
+            }
         }
 
         /**
@@ -362,7 +405,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                     showStartDashDialog()
                 } else {
                     viewModel.loadActiveEntry(null)
-
                 }
             }
 
@@ -370,10 +412,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         installSplashScreen()
+
         Repository.initialize(this)
-        supportActionBar?.title = "DashTracker"
 
         initMainActivityBinding()
+        setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
 
         initBiometrics()
@@ -451,9 +494,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     }
 
     override fun onPause() {
-        activeDash.apply {
-            unbindLocationService()
-        }
+        activeDash.unbindLocationService()
 
         super.onPause()
     }
@@ -548,8 +589,13 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         activeDash.stopDash(entryId)
     }
 
-    fun clearActiveEntry() {
-        viewModel.loadActiveEntry(null)
+    var activeEntryDeleted: Boolean = false
+
+    fun clearActiveEntry(id: Long) {
+        if (activeDash.activeEntry?.entry?.entryId == id) {
+            activeEntryDeleted = true
+            viewModel.loadActiveEntry(null)
+        }
     }
 
     private fun insertOrReplace(models: ModelMap) {
@@ -621,7 +667,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         val activeEntryId = sharedPrefs.getLong(ACTIVE_ENTRY_ID, -1L)
 
         if (activeEntryId != -1L && !activeDash.locationServiceBound) {
-            Log.d(TAG, "onUnlock $activeEntryId")
             viewModel.loadActiveEntry(activeEntryId)
         }
     }
@@ -636,7 +681,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             set(value) {
                 onNewActiveEntry(field, value)
                 field = value
-
                 binding.adb.updateEntry(field, activeCpm)
             }
 
@@ -684,8 +728,12 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             sharedPrefs.edit().putLong(ACTIVE_ENTRY_ID, -1L).apply()
 
             stopTracking()
-            EndDashDialog.newInstance(id)
-                .show(supportFragmentManager, "end_dash_dialog")
+            if (!activeEntryDeleted) {
+                EndDashDialog.newInstance(id)
+                    .show(supportFragmentManager, "end_dash_dialog")
+            } else {
+                activeEntryDeleted = false
+            }
         }
 
         /**
@@ -707,8 +755,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
          * false, [locationServiceConnection] to null, and [locationService] to null.
          */
         internal fun unbindLocationService() {
-            if (locationServiceBound) {
-
+            if (locationServiceBound && locationServiceConnection != null) {
                 unbindService(locationServiceConnection!!)
                 locationServiceBound = false
                 locationServiceConnection = null
@@ -747,10 +794,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         private var locationServiceConnection: ServiceConnection? = null
 
         internal var locationServiceBound: Boolean = false
-            set(value) {
-                field = value
-                Log.d(TAG, "LSB -> $field")
-            }
 
         /**
          * lock to prevent location service from being started multiple times
@@ -765,7 +808,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
          * Launches [OnboardingMileageActivity] to check for permissions, and, if location is enabled, calls [resumeOrStartNewTrip]
          */
         private fun startTracking() {
-            Log.d(TAG, "startTracking")
             startOnBind = false
             stopOnBind = false
             expectedExit = true
@@ -822,33 +864,29 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         internal fun bindLocationService() {
-            if (!locationServiceBound && !startingService) {
+            fun onBind() {
+                activeEntryId?.let { id ->
+                    if (locationServiceState != TRACKING_ACTIVE) {
+                        startLocationService(id)
+                    }
+                }
+            }
+
+            if (!locationServiceBound && !startingService && trackingEnabled) {
                 startingService = true
                 val locationServiceIntent =
                     Intent(applicationContext, LocationService::class.java)
 
-                if (trackingEnabled) {
-                    fun onBind() {
-                        activeEntryId?.let { id ->
-                            if (locationServiceState != TRACKING_ACTIVE) {
-                                startLocationService(id)
-                            }
-                        }
-                    }
-
+                if (locationServiceConnection == null) {
                     val conn = getLocationServiceConnection(::onBind)
                     locationServiceConnection = conn
-
-                    bindService(
-                        locationServiceIntent,
-                        locationServiceConnection!!,
-                        BIND_AUTO_CREATE
-                    )
-                } else {
-                    startingService = false
                 }
-            } else {
-                startingService = false
+
+                bindService(
+                    locationServiceIntent,
+                    locationServiceConnection!!,
+                    BIND_AUTO_CREATE
+                )
             }
         }
 
@@ -950,7 +988,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         private fun getLocationServiceConnection(onBind: (() -> Unit)? = null): ServiceConnection =
             object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                    Log.d(TAG, "Service connected")
                     fun syncActiveEntryId() {
                         locationService?.tripId?.value?.let {
                             viewModel.loadActiveEntry(it)
@@ -980,9 +1017,8 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
-                    Log.d(TAG, "Service disconnected")
-                    locationServiceConnection = null
                     locationServiceBound = false
+                    locationServiceConnection = null
                     locationService = null
                 }
             }

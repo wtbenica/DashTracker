@@ -21,16 +21,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullExpense
@@ -40,12 +39,10 @@ import com.wtb.dashTracker.databinding.ListItemExpenseNonGasBinding
 import com.wtb.dashTracker.extensions.formatted
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_EXTRA
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemHolder
-import com.wtb.dashTracker.ui.fragment_list_item_base.BaseItemPagingDataAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
@@ -60,33 +57,24 @@ class ExpenseListFragment : ListItemFragment() {
     private val viewModel: ExpenseListViewModel by viewModels()
     private var callback: ExpenseListFragmentCallback? = null
 
-    private lateinit var recyclerView: RecyclerView
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = context as ExpenseListFragmentCallback
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val view = inflater.inflate(R.layout.frag_item_list, container, false)
-
-        recyclerView = view.findViewById(R.id.item_list_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         setDialogListeners()
-
-        return view
     }
 
     private fun setDialogListeners() {
-        setFragmentResultListener(
-            ConfirmType.DELETE.key
+        childFragmentManager.setFragmentResultListener(
+            ConfirmDialog.DELETE.key,
+            this
         ) { _, bundle ->
-            val result = bundle.getBoolean(ARG_CONFIRM)
-            val id = bundle.getLong(ARG_EXTRA)
+            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+            val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
             if (result) {
                 viewModel.deleteExpenseById(id)
             }
@@ -145,16 +133,22 @@ class ExpenseListFragment : ListItemFragment() {
         ), View.OnClickListener {
             private val binding: ListItemExpenseBinding = ListItemExpenseBinding.bind(itemView)
 
-            override val collapseArea: ViewGroup
-                get() = binding.listItemDetails
+            override val collapseArea: Array<View>
+                get() = arrayOf(
+                    binding.listItemDetailsCard,
+                    binding.listItemBtnDelete,
+                    binding.listItemBtnEdit
+                )
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
+            override val bgCard: CardView
+                get() = binding.root
 
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
                         ExpenseDialog.newInstance(item.id).show(
-                            parentFragmentManager,
+                            childFragmentManager,
                             "edit_details"
                         )
                     }
@@ -163,7 +157,7 @@ class ExpenseListFragment : ListItemFragment() {
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
                         ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.item.id)
-                            .show(parentFragmentManager, null)
+                            .show(childFragmentManager, null)
                     }
                 }
             }
@@ -175,7 +169,7 @@ class ExpenseListFragment : ListItemFragment() {
                     viewModel.delete(item.expense)
                 }
 
-                binding.listItemTitle.text = this.item.expense.date.formatted.uppercase()
+                binding.listItemTitle.text = this.item.expense.date.formatted
                 binding.listItemTitle2.text =
                     getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
                 binding.listItemSubtitle.text = this.item.purpose.name
@@ -199,16 +193,18 @@ class ExpenseListFragment : ListItemFragment() {
             private val binding: ListItemExpenseNonGasBinding =
                 ListItemExpenseNonGasBinding.bind(itemView)
 
-            override val collapseArea: ViewGroup
-                get() = binding.buttonBox
+            override val collapseArea: Array<View>
+                get() = arrayOf(binding.buttonBox)
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
+            override val bgCard: CardView
+                get() = binding.root
 
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
                         ExpenseDialog.newInstance(item.id).show(
-                            parentFragmentManager,
+                            childFragmentManager,
                             "edit_details"
                         )
                     }
@@ -217,7 +213,7 @@ class ExpenseListFragment : ListItemFragment() {
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
                         ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.item.id)
-                            .show(parentFragmentManager, null)
+                            .show(childFragmentManager, null)
                     }
                 }
             }
@@ -225,7 +221,7 @@ class ExpenseListFragment : ListItemFragment() {
             override fun bind(item: FullExpense, payloads: List<Any>?) {
                 this.item = item
 
-                binding.listItemTitle.text = this.item.expense.date.formatted.uppercase()
+                binding.listItemTitle.text = this.item.expense.date.formatted
                 binding.listItemTitle2.text =
                     getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
                 binding.listItemSubtitle.text = this.item.purpose.name
@@ -236,7 +232,6 @@ class ExpenseListFragment : ListItemFragment() {
     }
 
     companion object {
-
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FullExpense>() {
             override fun areItemsTheSame(oldItem: FullExpense, newItem: FullExpense): Boolean =
                 oldItem.expense.expenseId == newItem.expense.expenseId

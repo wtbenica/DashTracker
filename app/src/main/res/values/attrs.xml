@@ -46,10 +46,12 @@
     <attr name="colorTextSecondaryDisabled" format="reference" />
 
     <!--    activity_main   -->
-    <attr name="colorToolbar" format="reference" />
+    <attr name="colorActionBar" format="reference" />
     <attr name="colorActionBarText" format="reference" />
     <attr name="colorSummaryBar" format="reference" />
     <attr name="colorSummaryBarItemText" format="reference" />
+    <attr name="colorSummaryBarHighlight" format="reference" />
+    <attr name="colorSummaryBarHighlightStroke" format="reference" />
     <attr name="colorBottomNavBar" format="reference|color" />
     <attr name="colorBottomNavItem" format="reference|color" />
     <attr name="colorBottomNavItemText" format="reference|color" />
@@ -59,6 +61,7 @@
     <attr name="colorBottomNavTextDisabled" format="reference|color" />
     <attr name="colorBottomNavItemIndicator" format="reference|color" />
     <attr name="colorBottomNavRipple" format="reference|color" />
+    <attr name="colorDropdownRipple" format="reference|color" />
     <attr name="colorFab" format="reference|color" />
     <attr name="colorFabDisabled" format="reference|color" />
     <attr name="colorFabIcon" format="reference|color" />
@@ -91,26 +94,48 @@
     <attr name="colorGroupStroke" format="reference" />
     <attr name="colorOptionsButton" format="reference" />
     <attr name="colorOptionsMenuStroke" format="reference" />
+    <attr name="colorOptionsMenuRipple" format="reference" />
 
     <!-- list_item -->
+    <attr name="listItemCardStyle" format="reference" />
     <attr name="colorListItem" format="reference|color" />
+    <attr name="colorListItemBorder" format="reference|color" />
     <attr name="colorListItemAccent" format="reference" />
     <attr name="colorListItemExpanded" format="reference" />
     <attr name="colorListItemExpandedBorder" format="reference|color" />
+    <attr name="colorListItemRipple" format="reference|color" />
     <attr name="colorListItemTitle" format="reference" />
     <attr name="colorListItemSubtitle" format="reference" />
     <attr name="colorListItemButtonIcon" format="reference|color" />
     <attr name="colorListItemButtonBg" format="reference|color" />
+    <attr name="colorListItemButtonOutline" format="reference|color" />
+    <attr name="textColorListItemEntryDay" format="reference|color" />
+    <attr name="textColorListItemEntryDayThisWeek" format="reference|color" />
+    <attr name="colorListItemShadow" format="reference|color" />
+
     <attr name="textSizeListItemTitle" format="reference" />
     <attr name="textSizeListItemSubtitle" format="reference" />
     <attr name="listItemCornerRadius" format="reference" />
     <attr name="listItemThinBorder" format="reference" />
+
+    <attr name="dimenButtonElevation" format="reference|dimension" />
     <attr name="dimenListItemButtonRadius" format="reference|dimension" />
     <attr name="dimenListItemMarginVertical" format="reference|dimension" />
     <attr name="dimenListItemMarginHorizontal" format="reference|dimension" />
+    <attr name="dimenListItemElevationElevated" format="reference|dimension" />
+    <attr name="dimenListItemElevationLowered" format="reference|dimension" />
+    <attr name="dimenListItemBorderWidth" format="reference|dimension" />
+    <attr name="dimenDialogMargin" format="reference|dimension" />
+    <attr name="dimenDialogHeaderMarginStart" format="reference|dimension" />
+    <attr name="dimenDialogContentMarginHorizontal" format="reference|dimension" />
+    <attr name="dimenDialogContentPaddingVertical" format="reference|dimension" />
+    <attr name="dimenDialogContentPaddingHorizontal" format="reference|dimension" />
+
 
     <!-- list_item_details -->
     <attr name="colorListItemDetails" format="reference" />
+    <attr name="colorListItemDetailsBorder" format="reference" />
+    <attr name="dimenListItemDetailsBorderWidth" format="reference|dimension" />
     <attr name="colorListItemDetailsToolbar" format="reference" />
     <attr name="colorRowHeaderPayText" format="reference" />
     <attr name="colorRowValuePayText" format="reference" />
@@ -143,24 +168,36 @@
     <attr name="insightsRowCornerRadius" format="reference" />
     <attr name="colorShowFiltersButton" format="reference|color" />
     <attr name="colorShowFiltersButtonBg" format="reference|color" />
+    <attr name="colorShowFiltersButtonBorder" format="reference|color" />
     <attr name="colorChartBackground" format="reference|color" />
 
     <!-- dialog -->
+    <attr name="dialogFragCornerRadius" format="reference" />
+
     <attr name="colorDialog" format="reference" />
+    <attr name="colorDialogOutline" format="reference" />
+
     <attr name="colorDialogBg" format="reference" />
-    <attr name="colorDialogSecondary" format="reference" />
-    <attr name="colorDialogGroupBg" format="reference" />
-    <attr name="colorDialogGroupStroke" format="reference" />
-    <attr name="colorDialogContentBg" format="reference" />
+    <attr name="colorDialogBgOutline" format="reference" />
+
     <attr name="colorDialogTitle" format="reference" />
     <attr name="colorDialogText" format="reference" />
+
     <attr name="colorDialogItemOutline" format="reference" />
     <attr name="colorDialogItem" format="reference" />
     <attr name="colorDialogUneditableItem" format="reference" />
-    <attr name="colorDialogItemDisabled" format="reference" />
-    <attr name="colorDialogButtonIcon" format="reference|color" />
-    <attr name="colorDialogButtonBg" format="reference|color" />
-    <attr name="dialogFragCornerRadius" format="reference" />
+    <attr name="colorDialogUneditableItemOutline" format="reference" />
+
+    <attr name="colorDialogButton" format="reference" />
+    <attr name="colorDialogButtonStroke" format="reference" />
+    <attr name="dialogContentButtonStrokeWidth" format="reference|dimension" />
+    <attr name="colorDialogButtonBg" format="reference" />
+    <attr name="colorDialogWidget" format="reference" />
+    <attr name="textColorDialogButtonDefault" format="reference|color" />
+    <attr name="textColorDialogHeader" format="reference|color" />
+
+    <attr name="colorDialogGroupBg" format="reference" />
+    <attr name="colorDialogGroupStroke" format="reference" />
     <attr name="colorDialogFragSpinnerPopupBg" format="reference" />
 
     <!-- datetime picker -->

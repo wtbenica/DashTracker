@@ -26,12 +26,13 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.wtb.dashTracker.R
+import com.wtb.dashTracker.extensions.getAttributeColor
 
 val cardShape: RoundedCornerShape = RoundedCornerShape(24.dp)
 
@@ -51,6 +52,7 @@ private val DarkColorScheme: ColorScheme = darkColorScheme(
     onTertiaryContainer = darkPrimaryFaded,
     surface = darkOnSecondary,
     onSurface = darkOnPrimary,
+    surfaceVariant = darkOnSecondaryVariant,
     background = Color.Black,
     onBackground = darkOnPrimary,
     outline = darkPrimaryDark,
@@ -72,6 +74,7 @@ private val LightColorScheme: ColorScheme = lightColorScheme(
     onTertiaryContainer = primaryDark,
     surface = onSecondary,
     onSurface = onPrimary,
+    surfaceVariant = onSecondary,
     background = Color.White,
     onBackground = onPrimary,
     outline = primaryDark,
@@ -94,11 +97,13 @@ fun DashTrackerTheme(
         else -> LightColorScheme
     }
 
+    // sets status bar text to light/dark
     val view = LocalView.current
-    if (!view.isInEditMode) {
+    if (!view.isInEditMode && view.context is Activity) {
         SideEffect {
+            val statusBarColor = view.context.getAttributeColor(R.attr.colorUi)
             val theWindow = (view.context as Activity).window
-            theWindow.statusBarColor = colorScheme.primary.toArgb()
+            theWindow.statusBarColor = statusBarColor
             WindowCompat.getInsetsController(theWindow, view).isAppearanceLightStatusBars =
                 darkTheme
         }

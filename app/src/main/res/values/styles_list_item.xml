@@ -17,12 +17,16 @@
 
 <resources>
     <style name="DTCardViewStyle.ListItem">
-        <item name="android:background">?attr/colorListItem</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="cardCornerRadius">?attr/listItemCornerRadius</item>
+        <item name="android:outlineAmbientShadowColor">?attr/colorListItemShadow</item>
+        <item name="android:outlineSpotShadowColor">?attr/colorListItemShadow</item>
         <item name="android:layout_marginHorizontal">?attr/dimenListItemMarginHorizontal</item>
         <item name="android:layout_marginVertical">?attr/dimenListItemMarginVertical</item>
         <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:background">@drawable/ripple_list_item</item>
+        <item name="android:clickable">true</item>
     </style>
 
     <style name="ListItemHeader">
@@ -33,10 +37,9 @@
     </style>
 
     <style name="ListItemHeaderTextView" parent="Widget.AppCompat.TextView">
-        <item name="android:layout_gravity">bottom</item>
-        <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">bottom</item>
         <item name="android:textAlignment">textStart</item>
     </style>
 
@@ -59,17 +62,29 @@
         <item name="android:tint">@color/alert</item>
     </style>
 
+    <style name="ListItemHeaderIncompleteIndicator.Header">
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
     <style name="ListItemButton">
         <item name="android:layout_height">@dimen/min_touch_target</item>
         <item name="android:layout_width">@dimen/min_touch_target</item>
-        <item name="android:background">?attr/colorListItemExpanded</item>
+        <item name="android:background">@drawable/bg_list_item_button</item>
         <item name="android:tint">?attr/colorListItemButtonIcon</item>
+        <item name="android:layout_marginEnd">?attr/listItemThinBorder</item>
+        <item name="android:layout_marginBottom">?attr/listItemThinBorder</item>
+        <item name="rippleColor">?attr/colorListItemButtonOutline</item>
+        <item name="android:elevation">?attr/dimenButtonElevation</item>
     </style>
 
     <style name="listItemDetailsPane">
         <item name="android:visibility">gone</item>
-        <item name="android:paddingEnd">0dp</item>
-        <item name="android:paddingBottom">?attr/listItemThinBorder</item>
-        <item name="android:paddingStart">?attr/listItemThinBorder</item>
+<!--        <item name="android:paddingHorizontal">?attr/listItemThinBorder</item>-->
+<!--        <item name="android:paddingBottom">?attr/listItemThinBorder</item>-->
+    </style>
+
+    <style name="DetailsTableCard">
+        <item name="android:layout_marginHorizontal">?attr/listItemThinBorder</item>
+        <item name="android:layout_marginBottom">?attr/listItemThinBorder</item>
     </style>
 </resources>

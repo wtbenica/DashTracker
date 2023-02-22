@@ -16,8 +16,22 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.parcelize.Parcelize
 
-val Any.TAG: String
-    get() = "GT_" + this.javaClass.simpleName
+private const val APP = "GT_"
+internal val Any.TAG: String
+    get() = APP + this::class.simpleName
+
+@Suppress("unused")
+private var IS_TESTING = false
+
+private const val DEBUGGING = false
+internal fun Any.debugLog(message: String) {
+    if (DEBUGGING) Log.d(TAG, message)
+}
+
+internal fun Any.errorLog(message: String) {
+    if (DEBUGGING) Log.e(TAG, message)
+}
+
 
 @ExperimentalCoroutinesApi
 class LocationService : Service() {
@@ -54,6 +68,7 @@ class LocationService : Service() {
     private val isStarted: StateFlow<Boolean>
         get() = _isStarted
 
+    @Suppress("unused")
     fun setIsTesting(isTesting: Boolean) {
         _isTesting.value = isTesting
     }
@@ -151,6 +166,7 @@ class LocationService : Service() {
      * same [tripId].
      *
      */
+    @Suppress("unused")
     fun pause() {
         _isStarted.value = false
     }
@@ -186,7 +202,7 @@ class LocationService : Service() {
                 stopSelf()
             }
         } catch (e: SecurityException) {
-            Log.e(TAG, e.toString())
+            errorLog(e.toString())
         }
     }
 
@@ -292,7 +308,7 @@ class LocationService : Service() {
                         Looper.getMainLooper()
                     )
                 } catch (e: SecurityException) {
-                    Log.e(TAG, e.toString())
+                    errorLog(e.toString())
                 }
             }
         }
@@ -312,8 +328,6 @@ class LocationService : Service() {
         serviceScope.cancel()
         super.onDestroy()
     }
-
-    private var numBound = 0
 
     override fun onBind(intent: Intent): IBinder {
         stopForeground(STOP_FOREGROUND_REMOVE)

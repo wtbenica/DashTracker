@@ -18,6 +18,7 @@ package com.wtb.dashTracker.extensions
 
 import android.content.Context
 import android.util.TypedValue
+import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
@@ -32,7 +33,7 @@ fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: 
 
 fun getElapsedHours(seconds: Long?): String =
     if (seconds == null || seconds < 0) {
-        "-"
+        "—"
     } else {
         val mHours = seconds / 3600
         val mMinutes = (seconds - 3600 * mHours) / 60
@@ -41,6 +42,10 @@ fun getElapsedHours(seconds: Long?): String =
             if (mHours > 0L) {
                 append("$mHours".format("%2d"))
                 append("h")
+
+                if (mMinutes > 0L) {
+                    append(" ")
+                }
             }
             if (mMinutes > 0L) {
                 append("$mMinutes".format(" %2d"))
@@ -54,12 +59,18 @@ fun getElapsedHours(seconds: Long?): String =
     }
 
 
+/**
+ * @return '$ -' if [value] is null, 0, NaN, or Infinite, else [value] formatted as '$%.2f'
+ */
 fun Context.getCurrencyString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())
         getString(R.string.blank_currency)
     else
         getStringOrElse(R.string.currency_unit, "-", value)
 
+/**
+ * @return '-' if [value] is null, 0, NaN, or Infinite, else [value] formatted as '$%.2f'
+ */
 fun Context.getFloatString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())
         getString(R.string.blank_float)
@@ -69,6 +80,10 @@ fun Context.getFloatString(value: Float?): String =
 fun Context.getDimen(@DimenRes res: Int): Float =
     resources.getDimension(res) / resources.displayMetrics.density
 
+/**
+ * @return if [start] and [end] are null, '', else formats them with [dtfTime], or '' for either if
+ * it is null. E.g. '2:13 PM - 4:15 PM', '10:11 AM - ', ' - 3:15 PM'
+ */
 fun Context.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
     if (start == null && end == null)
         ""
@@ -80,7 +95,7 @@ fun Context.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
         )
 
 @ColorInt
-fun Context.getAttributeColor(attr: Int): Int {
+fun Context.getAttributeColor(@AttrRes attr: Int): Int {
     val tv = TypedValue()
     theme.resolveAttribute(attr, tv, true)
     return tv.data

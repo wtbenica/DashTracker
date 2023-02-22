@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,54 +17,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/margin_default">
+    style="@style/DialogFragmentWrapper">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="?attr/dialogFragCornerRadius">
+    <androidx.cardview.widget.CardView style="@style/DialogFragCard">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/colorDialog">
+        <LinearLayout style="@style/DialogFragLayout">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/frag_adjust_toolbar"
                 style="@style/DialogToolbar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:title="@string/dialog_title_weekly" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_adjust_table_card"
-                style="@style/DialogContentCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">
+                style="@style/DialogContentCard">
 
+                <!-- This is a table instead of grid bc it's easier to hide the adjust row if necessary -->
                 <TableLayout
                     android:id="@+id/frag_adjust_table"
-                    style="@style/DialogContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/frag_adjust_toolbar">
+                    style="@style/DialogContent">
 
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
                         <TextView
-                            style="@style/FragEntryHeaderTextView"
+                            style="@style/DialogHeaderTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:focusable="false"
@@ -76,6 +53,7 @@
                             android:id="@+id/frag_adjust_date"
                             style="@style/DialogFragSpinnerStyle"
                             android:layout_width="0dp"
+                            android:layout_marginStart="@dimen/margin_default"
                             tools:listitem="@layout/dialog_frag_weekly_spinner_item_single_line" />
                     </TableRow>
 
@@ -85,7 +63,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            style="@style/FragEntryHeaderTextView"
+                            style="@style/DialogHeaderTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:focusable="false"
@@ -94,8 +72,9 @@
 
                         <EditText
                             android:id="@+id/frag_adjust_amount"
-                            style="@style/FragEntryValueTextView"
+                            style="@style/DialogValueTextView"
                             android:layout_width="0dp"
+                            android:layout_marginStart="@dimen/margin_default"
                             android:layout_weight="1"
                             android:autofillHints="false"
                             android:inputType="numberDecimal"
@@ -107,7 +86,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            style="@style/FragEntryHeaderTextView"
+                            style="@style/DialogHeaderTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:focusable="false"
@@ -116,8 +95,9 @@
 
                         <TextView
                             android:id="@+id/frag_adjust_total"
-                            style="@style/FragEntryValueTextView"
+                            style="@style/DialogValueTextView"
                             android:layout_width="0dp"
+                            android:layout_marginStart="@dimen/margin_default"
                             android:layout_weight="1"
                             android:autofillHints="false"
                             android:background="@drawable/bg_edit_text_disabled"
@@ -138,17 +118,23 @@
                 app:layout_constraintTop_toBottomOf="@id/frag_adjust_table_card">
 
                 <ImageButton
+                    android:id="@+id/frag_adjust_btn_dismiss"
+                    style="@style/DialogImageButton"
+                    android:contentDescription="@string/content_desc_reset"
+                    android:src="@drawable/round_close_24" />
+
+                <ImageButton
                     android:id="@+id/frag_adjust_btn_cancel"
-                    style="@style/FragmentEntryImageButton"
+                    style="@style/DialogImageButton"
                     android:contentDescription="@string/content_desc_reset"
                     android:src="@drawable/ic_action_reset" />
 
                 <ImageButton
                     android:id="@+id/frag_adjust_btn_save"
-                    style="@style/FragmentEntryImageButton"
+                    style="@style/DialogImageButton"
                     android:contentDescription="@string/content_desc_save"
                     android:src="@drawable/ic_action_save" />
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

@@ -28,7 +28,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
@@ -84,14 +83,16 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
 
         binding.noButton.setOnClickListener {
             deleteButtonPressed = true
-            setFragmentResult(REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE, Bundle().apply {
-                putBoolean(RESULT_UPDATE_PURPOSE, false)
-            })
+            parentFragmentManager.setFragmentResult(
+                REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE,
+                Bundle().apply {
+                    putBoolean(RESULT_UPDATE_PURPOSE, false)
+                })
             dismiss()
         }
 
         binding.yesButton1.setOnClickListener {
-            setFragmentResult(
+            parentFragmentManager.setFragmentResult(
                 REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE,
                 Bundle().apply {
                     putBoolean(RESULT_UPDATE_PURPOSE, true)
@@ -148,8 +149,10 @@ class ConfirmationDialogAddOrModifyPurpose : FullWidthDialogFragment() {
 
     companion object {
         internal const val REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE: String = "add_purpose"
-        internal val RESULT_PURPOSE_ID: String = "${BuildConfig.APPLICATION_ID}.${this::class.simpleName}.result_purpose_id"
-        internal const val RESULT_UPDATE_PURPOSE = "${BuildConfig.APPLICATION_ID}.arg_update_purpose"
+        internal val RESULT_PURPOSE_ID: String =
+            "${BuildConfig.APPLICATION_ID}.${this::class.simpleName}.result_purpose_id"
+        internal const val RESULT_UPDATE_PURPOSE =
+            "${BuildConfig.APPLICATION_ID}.arg_update_purpose"
 
         private const val ARG_PURPOSE_ID: String = "arg_purpose_id"
         private const val ARG_IS_NEW = "arg_is_new"

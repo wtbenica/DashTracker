@@ -1,5 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2022 Wesley T. Benica
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!--
+  ~ Copyright 2023 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,26 +17,16 @@
   ~ limitations under the License.
   -->
 
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<GridLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/summary_bar"
-    style="@style/SummaryBar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:columnCount="3"
+    android:columnCount="5"
+    android:padding="@dimen/margin_default"
     android:rowCount="3"
-    app:layout_scrollFlags="scroll|enterAlways">
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/act_main_lbl_hourly"
-        style="@style/SummaryBarItem.Header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_row="0"
-        android:layout_column="0"
-        android:layout_columnWeight="1"
-        android:text="@string/lbl_hourly" />
+    app:layout_scrollFlags="scroll|enterAlways|snap"
+    tools:showIn="@layout/activity_main">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/act_main_lbl_last_week"
@@ -41,9 +34,24 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_row="0"
-        android:layout_column="1"
+        android:layout_column="0"
+        android:layout_columnSpan="2"
         android:layout_columnWeight="1"
+        android:layout_marginBottom="@dimen/margin_narrow"
+        android:background="@drawable/summary_bar_header_bg"
+        android:padding="@dimen/margin_skinny"
         android:text="@string/lbl_last_week" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_row="0"
+        android:layout_rowSpan="3"
+        android:layout_rowWeight="1"
+        android:layout_column="2"
+        android:layout_marginStart="@dimen/margin_half"
+        android:layout_marginEnd="@dimen/margin_half"
+        android:background="?attr/colorActiveDashBarBg" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/act_main_lbl_this_week"
@@ -51,45 +59,98 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_row="0"
-        android:layout_column="2"
+        android:layout_column="3"
+        android:layout_columnSpan="2"
         android:layout_columnWeight="1"
-        android:text="@string/lbl_this_week" />
+        android:layout_marginBottom="@dimen/margin_narrow"
+        android:background="@drawable/summary_bar_header_bg"
+        android:padding="@dimen/margin_skinny"
+        android:text="@string/lbl_this_week"
+        android:textSize="@dimen/text_size_sm" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/act_main_hourly"
-        style="@style/SummaryBarItem.Value"
+        android:id="@+id/act_main_lbl_last_week_hourly"
+        style="@style/SummaryBarItem.Header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_row="1"
         android:layout_column="0"
         android:layout_columnWeight="1"
-        tools:text="$4.25/hr" />
+        android:text="@string/lbl_hourly"
+        android:textSize="@dimen/text_size_sm" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/act_main_last_week"
-        style="@style/SummaryBarItem.Value"
+        android:id="@+id/act_main_lbl_last_week_total"
+        style="@style/SummaryBarItem.Header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_row="1"
         android:layout_column="1"
         android:layout_columnWeight="1"
-        tools:text="$209.00" />
+        android:text="@string/lbl_total_earned"
+        android:textSize="@dimen/text_size_sm" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/act_main_this_week"
-        style="@style/SummaryBarItem.Value"
+        android:id="@+id/act_main_lbl_this_week_hourly"
+        style="@style/SummaryBarItem.Header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_row="1"
-        android:layout_column="2"
+        android:layout_column="3"
         android:layout_columnWeight="1"
-        tools:text="$209.00" />
+        android:text="@string/lbl_hourly"
+        android:textSize="@dimen/text_size_sm" />
 
-    <com.wtb.dashTracker.views.ActiveDashBar
-        android:id="@+id/adb"
-        android:layout_width="match_parent"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/act_main_lbl_this_week_total"
+        style="@style/SummaryBarItem.Header"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_columnSpan="3"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        android:layout_row="1"
+        android:layout_column="4"
+        android:layout_columnWeight="1"
+        android:text="@string/lbl_total_earned"
+        android:textSize="@dimen/text_size_sm" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/act_main_last_week_hourly"
+        style="@style/SummaryBarItem.Value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_row="2"
+        android:layout_column="0"
+        android:layout_columnWeight="1"
+        tools:text="$18.25/hr" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/act_main_last_week_total"
+        style="@style/SummaryBarItem.Value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_row="2"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        tools:text="$356.25" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/act_main_this_week_hourly"
+        style="@style/SummaryBarItem.Value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_row="2"
+        android:layout_column="3"
+        android:layout_columnWeight="1"
+        tools:text="$21.26/hr" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/act_main_this_week_total"
+        style="@style/SummaryBarItem.Value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_row="2"
+        android:layout_column="4"
+        android:layout_columnWeight="1"
+        tools:text="$451.11" />
 </GridLayout>
+
+            

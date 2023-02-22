@@ -24,18 +24,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.ComponentDialog
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
-import com.wtb.dashTracker.ui.dialog_confirm.*
+import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmSaveDialog
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED_2
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,17 +52,41 @@ import kotlinx.coroutines.launch
 abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDialogFragment() {
     protected abstract var item: M?
     protected abstract var binding: B
+    protected abstract val buttonBinding: DialogListItemButtonsBinding?
     protected abstract val viewModel: ListItemViewModel<M>
+    protected abstract val itemType: String
 
-    // if save button is pressed or is confirmed by save dialog, gets assigned true
+    /**
+     * if save button is pressed or is confirmed by save dialog, gets assigned true
+     */
     protected var saveConfirmed: Boolean = false
 
-    // if delete button is pressed, gets assigned false
-    private var saveOnExit = true
+    /**
+     * if delete button is pressed, gets assigned false
+     */
+    protected var saveOnExit = true
 
     protected abstract fun getViewBinding(inflater: LayoutInflater): B
     protected abstract fun updateUI()
-    protected abstract fun saveValues()
+
+    /**
+     * Save values - saves data from dialog fields to datamodel
+     */
+    abstract fun saveValues()
+
+    /**
+     * Save - if [showToast], shows a toast "${itemType} saved". calls [saveValues].
+     */
+    protected fun save(showToast: Boolean = true) {
+        if (showToast) {
+            Toast.makeText(context, "${itemType} saved", Toast.LENGTH_SHORT)
+                .show()
+        }
+
+        saveValues()
+    }
+
+    // TODO: should the name here be changed?
     protected abstract fun clearFields()
     protected abstract fun isEmpty(): Boolean
     private fun isNotEmpty(): Boolean = !isEmpty()
@@ -68,6 +98,8 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                 viewModel.loadDataModel(it)
             }
         }
+
+        setDialogListeners()
     }
 
     override fun onCreateView(
@@ -75,11 +107,24 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setDialogListeners()
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         binding = getViewBinding(inflater)
+
+        buttonBinding?.apply {
+            fragEntryBtnDelete.apply {
+                setOnDeletePressed()
+            }
+
+            fragEntryBtnCancel.apply {
+                setOnResetPressed()
+            }
+
+            fragEntryBtnSave.apply {
+                setOnSavePressed()
+            }
+        }
 
         updateUI()
 
@@ -106,7 +151,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                     if (isEmpty() && !saveConfirmed) {
                         ConfirmSaveDialog.newInstance(
                             text = R.string.confirm_save_entry_incomplete
-                        ).show(parentFragmentManager, null)
+                        ).show(childFragmentManager, null)
                     } else {
                         isEnabled = false
                         it.onBackPressedDispatcher.onBackPressed()
@@ -118,53 +163,50 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     override fun onDestroy() {
         if (saveOnExit && (isNotEmpty() || saveConfirmed)) {
-            saveValues()
+            save()
         }
 
         super.onDestroy()
     }
 
     open fun setDialogListeners() {
-        setFragmentResultListener(
-            ConfirmType.DELETE.key,
-        ) { _, bundle ->
-            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
-            if (result) {
-                saveOnExit = false
-
-                // TODO: Is this necessary? Doesn't appear to get used anywhere
-                // It might have to do with trying to be more specific with notify data set changed
-                setFragmentResult(
-                    REQUEST_KEY_ENTRY_DIALOG,
-                    bundleOf(
-                        ARG_MODIFICATION_STATE to ModificationState.DELETED.ordinal
-                    )
-                )
-                dismiss()
-                item?.let { e -> viewModel.delete(e) }
+        childFragmentManager.apply {
+            setFragmentResultListener(
+                ConfirmDialog.DELETE.key,
+                this@EditDataModelDialog
+            ) { _, bundle ->
+                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+                if (result) {
+                    onDeleteItem()
+                }
             }
-        }
 
-        setFragmentResultListener(
-            ConfirmType.RESET.key,
-        ) { _, bundle ->
-            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
-            if (result) {
-                updateUI()
+            setFragmentResultListener(
+                ConfirmDialog.RESET.key,
+                this@EditDataModelDialog
+            ) { _, bundle ->
+                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+                if (result) {
+                    updateUI()
+                }
             }
-        }
 
-        setFragmentResultListener(
-            ConfirmType.SAVE.key,
-        ) { _, bundle ->
-            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
-            if (result) {
-                saveConfirmed = true
-                dismiss()
-            } else {
-                saveOnExit = false
-                dismiss()
-                item?.let { e -> viewModel.delete(e) }
+            setFragmentResultListener(
+                ConfirmDialog.SAVE.key,
+                this@EditDataModelDialog
+            ) { _, bundle ->
+                val isDelete = bundle.getBoolean(ARG_IS_CONFIRMED_2)
+                if (isDelete) {
+                    saveOnExit = false
+                    dismiss()
+                    item?.let { e -> viewModel.delete(e) }
+                } else {
+                    val isSave = bundle.getBoolean(ARG_IS_CONFIRMED)
+                    if (isSave) {
+                        saveConfirmed = true
+                        dismiss()
+                    }
+                }
             }
         }
     }
@@ -172,31 +214,54 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     protected fun ImageButton.setOnSavePressed() {
         setOnClickListener {
             saveConfirmed = true
-            setFragmentResult(
-                requestKey = REQUEST_KEY_ENTRY_DIALOG,
-                result = bundleOf(
-                    ARG_MODIFICATION_STATE to ModificationState.MODIFIED.ordinal
+            parentFragmentManager.setFragmentResult(
+                REQUEST_KEY_DATA_MODEL_DIALOG, bundleOf(
+                    ARG_MODIFICATION_STATE to ModificationState.MODIFIED.name,
+                    ARG_MODIFIED_ID to item?.id
                 )
             )
             dismiss()
         }
     }
 
-    protected fun ImageButton.setOnDeletePressed() {
+    protected open fun ImageButton.setOnDeletePressed() {
         setOnClickListener {
-            if (isNotEmpty()) {
-                ConfirmDeleteDialog.newInstance(null).show(parentFragmentManager, null)
-            } else {
-                saveOnExit = false
-                dismiss()
-                item?.let { viewModel.delete(it) }
+            if (isEmpty()) { // go ahead and delete it
+                onDeleteItem()
+            } else { // ask before deleting
+                ConfirmDeleteDialog.newInstance(item?.id)
+                    .show(childFragmentManager, "delete_entry")
             }
+        }
+    }
+
+    /**
+     * Sets fragment result. If item is not a [DashEntry], deletes item.
+     */
+    private fun onDeleteItem() {
+        saveOnExit = false
+
+        // This is used by MainActivity and EntryListFragment to stop tracking before trying to
+        // delete the active dash entry
+        parentFragmentManager.setFragmentResult(
+            REQUEST_KEY_DATA_MODEL_DIALOG, bundleOf(
+                ARG_MODIFICATION_STATE to ModificationState.DELETED.name,
+                ARG_MODIFIED_ID to item?.id
+            )
+        )
+
+        dismiss()
+
+        // Don't delete if it's a DashEntry in case it is the active entry & tracking is enabled.
+        // deleting it here can create an SQL constraint exception when a location is inserted.
+        if (item !is DashEntry) {
+            item?.let { viewModel.delete(it) }
         }
     }
 
     protected fun ImageButton.setOnResetPressed() {
         setOnClickListener {
-            ConfirmResetDialog.newInstance().show(parentFragmentManager, null)
+            ConfirmResetDialog.newInstance().show(childFragmentManager, null)
         }
     }
 
@@ -207,7 +272,20 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
 
     companion object {
         const val ARG_ITEM_ID: String = "item_id"
-        const val REQUEST_KEY_ENTRY_DIALOG: String = "result: modification state"
+
+        /**
+         * Fragment result has [ARG_MODIFICATION_STATE] and [ARG_MODIFIED_ID] set
+         */
+        const val REQUEST_KEY_DATA_MODEL_DIALOG: String = "result: modification state"
+
+        /**
+         * Set to a [ModificationState] if item has been modified or deleted
+         */
         const val ARG_MODIFICATION_STATE: String = "arg modification state"
+
+        /**
+         * Set to th the item id if the item has been modified or deleted
+         */
+        const val ARG_MODIFIED_ID: String = "arg modified id"
     }
 }

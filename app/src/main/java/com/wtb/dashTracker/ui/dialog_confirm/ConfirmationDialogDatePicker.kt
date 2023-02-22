@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.dialog_confirm
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,14 +29,11 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import com.wtb.dashTracker.databinding.DialogFragConfirmDatePickerBinding
-import com.wtb.dashTracker.extensions.dtfDate
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 
-// TODO: selecting a purpose to edit and then cancelling deletes the purpose
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
@@ -44,13 +42,18 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
 
     private lateinit var binding: DialogFragConfirmDatePickerBinding
     private var textViewId: Int? = null
-    private var currentText: String? = null
+    private var currentText: LocalDate? = null
     private var headerText: String? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arguments?.let {
             headerText = it.getString(ARG_DATE_PICKER_HEADER_TEXT)
-            currentText = it.getString(ARG_DATE_CURRENT_TEXT)
+            currentText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.getSerializable(ARG_DATE_CURRENT_TEXT, LocalDate::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.getSerializable(ARG_DATE_CURRENT_TEXT) as LocalDate?
+            }
             textViewId = it.getInt(ARG_DATE_TEXTVIEW)
         }
 
@@ -62,7 +65,7 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val date = LocalDate.parse(currentText, dtfDate)
+        val date = currentText ?: LocalDate.now()
 
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
@@ -87,7 +90,7 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
 
         binding.yesButton1.setOnClickListener {
             val picker = binding.dialogDatePickerDatePicker
-            setFragmentResult(
+            parentFragmentManager.setFragmentResult(
                 REQUEST_KEY_DATE,
                 bundleOf(
                     ARG_DATE_PICKER_NEW_YEAR to picker.year,
@@ -111,18 +114,18 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
         const val ARG_DATE_PICKER_NEW_YEAR: String = "year"
         const val ARG_DATE_PICKER_NEW_MONTH: String = "month"
         const val ARG_DATE_PICKER_NEW_DAY: String = "dayOfMonth"
-        const val ARG_DATE_PICKER_HEADER_TEXT = "arg_time_picker_header_text"
+        const val ARG_DATE_PICKER_HEADER_TEXT: String = "arg_time_picker_header_text"
 
         @JvmStatic
         fun newInstance(
             @IdRes textViewId: Int,
-            currentText: String,
+            currentText: LocalDate,
             headerText: String? = null
         ): ConfirmationDialogDatePicker =
             ConfirmationDialogDatePicker().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_DATE_TEXTVIEW, textViewId)
-                    putString(ARG_DATE_CURRENT_TEXT, currentText)
+                    putSerializable(ARG_DATE_CURRENT_TEXT, currentText)
                     putString(ARG_DATE_PICKER_HEADER_TEXT, headerText)
                 }
             }

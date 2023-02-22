@@ -32,19 +32,23 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.database.models.Weekly
 import com.wtb.dashTracker.databinding.DialogFragWeeklyBinding
+import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 
 @ExperimentalAnimationApi
@@ -54,10 +58,19 @@ import java.time.LocalDate
 class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
     override var item: Weekly? = null
+
     override val viewModel: WeeklyViewModel by viewModels()
+
     override lateinit var binding: DialogFragWeeklyBinding
 
+    override val buttonBinding: DialogListItemButtonsBinding? = null
+
+    override val itemType: String
+        get() = "Weekly adjustment"
+
     private var fullWeekly: FullWeekly? = null
+
+    private var allWeeklyEndDates: List<LocalDate> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,17 +97,21 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             fullWeekly = w
             updateUI()
         }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.allWeeklies.collectLatest { weeklies ->
+                    allWeeklyEndDates = weeklies.map { fullWeek -> fullWeek.weekly.date }
+                    binding.fragAdjustDate.adapter = getAdapter(allWeeklyEndDates.toTypedArray())
+                    updateUI()
+                }
+            }
+        }
     }
 
     override fun getViewBinding(inflater: LayoutInflater): DialogFragWeeklyBinding =
         DialogFragWeeklyBinding.inflate(layoutInflater).apply {
-            val adapter = WeekSpinnerAdapter(
-                requireContext(),
-                R.layout.dialog_frag_weekly_spinner_item_single_line,
-                getListOfWeeks()
-            ).apply {
-                setDropDownViewResource(R.layout.dialog_frag_weekly_spinner_item)
-            }
+            val adapter = getAdapter(allWeeklyEndDates.toTypedArray())
 
             fragAdjustDate.adapter = adapter
 
@@ -125,16 +142,20 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
 
             fragAdjustAmount.apply {
                 doOnTextChanged { text: CharSequence?, start, before, count ->
-                    updateSaveButtonIsEnabled(text)
                     this.onTextChangeUpdateTotal(fragAdjustTotal, fullWeekly?.totalPay)
                     val adjustAmount: Float = text?.toFloatOrNull() ?: 0f
                     val newTotal = (fullWeekly?.totalPay ?: 0f) + adjustAmount
                     fragAdjustTotal.text = if (newTotal == 0f) {
-                        null
+                        "-"
                     } else {
                         getCurrencyString(newTotal)
                     }
                 }
+            }
+
+            fragAdjustBtnDismiss.setOnClickListener {
+                saveOnExit = false
+                dismiss()
             }
 
             fragAdjustBtnCancel.apply {
@@ -146,6 +167,16 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             }
         }
 
+    private fun getAdapter(weeklyEndDates: Array<LocalDate>): WeekSpinnerAdapter {
+        return WeekSpinnerAdapter(
+            requireContext(),
+            R.layout.dialog_frag_weekly_spinner_item_single_line,
+            weeklyEndDates
+        ).apply {
+            setDropDownViewResource(R.layout.dialog_frag_weekly_spinner_item)
+        }
+    }
+
     override fun updateUI() {
         val tempWeekly = fullWeekly
         if (tempWeekly != null) {
@@ -153,11 +184,8 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
                 getSpinnerIndex(tempWeekly.weekly.date)?.let { setSelection(it) }
             }
 
-            val text = getStringOrElse(
-                R.string.float_fmt,
-                "",
-                tempWeekly.weekly.basePayAdjustment
-            )
+            val text =
+                getStringOrElse(R.string.float_fmt, "", tempWeekly.weekly.basePayAdjustment)
             binding.fragAdjustAmount.setText(text)
 
             binding.fragAdjustTotal.text = getString(R.string.float_fmt, tempWeekly.totalPay)
@@ -177,18 +205,15 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         viewModel.upsert(tempWeekly)
     }
 
-    override fun isEmpty(): Boolean {
-        return binding.fragAdjustDate.selectedItemPosition == 0 &&
-                binding.fragAdjustAmount.text.isNullOrBlank()
-                && fullWeekly?.weekly?.isNew == false
-    }
+    override fun isEmpty(): Boolean = false
 
     // Weeklies don't have delete
     override fun setDialogListeners() {
-        setFragmentResultListener(
-            ConfirmType.RESET.key,
+        childFragmentManager.setFragmentResultListener(
+            ConfirmDialog.RESET.key,
+            this
         ) { _, bundle ->
-            val result = bundle.getBoolean(ConfirmationDialog.ARG_CONFIRM)
+            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
             if (result) {
                 updateUI()
             }
@@ -202,18 +227,8 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         }
     }
 
-    private fun updateSaveButtonIsEnabled(text: CharSequence?) {
-        if (text == null || text.isEmpty()) {
-            binding.fragAdjustBtnSave.alpha = 0.7f
-            binding.fragAdjustBtnSave.isClickable = false
-        } else {
-            binding.fragAdjustBtnSave.alpha = 1.0f
-            binding.fragAdjustBtnSave.isClickable = true
-        }
-    }
-
     private fun getSpinnerIndex(date: LocalDate): Int? {
-        (0..binding.fragAdjustDate.count).forEach { i ->
+        (0 until binding.fragAdjustDate.count).forEach { i ->
             if (binding.fragAdjustDate.adapter.getItem(i) == date) {
                 return i
             }
@@ -230,16 +245,6 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             arguments = Bundle().apply {
                 putSerializable(ARG_DATE_ID, date)
             }
-        }
-
-        fun getListOfWeeks(): Array<LocalDate> {
-            val res = arrayListOf<LocalDate>()
-            var endOfWeek = LocalDate.now().endOfWeek
-            while (endOfWeek > LocalDate.now().minusYears(1)) {
-                res.add(endOfWeek)
-                endOfWeek = endOfWeek.minusDays(7)
-            }
-            return res.toTypedArray()
         }
     }
 
@@ -269,8 +274,7 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             }
             val endWeek: LocalDate = itemList[position]
             val startWeek = endWeek.minusDays(6)
-            viewHolder?.dates?.text =
-                getString(R.string.date_range, startWeek.shortFormat, endWeek.shortFormat)
+            viewHolder?.dates?.text = getDateRange(startWeek, endWeek)
 
             return cv
         }
@@ -297,8 +301,8 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
             val startWeek = endWeek.minusDays(6)
             val weekOfYear = endWeek.weekOfYear
             viewHolder?.weekNumber?.text = getString(R.string.week_number, weekOfYear)
-            viewHolder?.dates?.text =
-                getString(R.string.date_range, startWeek.shortFormat, endWeek.shortFormat)
+            viewHolder?.dates?.text = getDateRange(startWeek, endWeek)
+
             return cv
         }
     }
@@ -307,6 +311,32 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
         val weekNumber: TextView?,
         val dates: TextView
     )
+}
+
+/**
+ * @return  curr year + curr year -> "September 27 - October 1",
+ * last year + curr year -> "Dec 27, 2022 - Jan 3, 2023",
+ * prev year + same year -> "Sep 27 - Oct 1, 2022"
+ */
+fun getDateRange(start: LocalDate, end: LocalDate): String {
+    return when {
+        start.year == end.year -> {
+            when {
+                start.month == end.month -> {
+                    // November 14-20, 2022
+                    "${start.format(dtfDateThisYear)}-${end.dayOfMonth}, ${end.year}"
+                }
+                else -> {
+                    // October 31 - November 6, 2022
+                    "${start.format(dtfDateThisYear)} - ${end.format(dtfDate)}"
+                }
+            }
+        }
+        else -> {       // start.year != end.year
+            // Dec 26, 2022 - Jan 1, 2023
+            "${start.format(dtfShortDate)} - ${end.format(dtfShortDate)}"
+        }
+    }
 }
 
 fun EditText.onTextChangeUpdateTotal(otherView: TextView, baseValue: Float?) {

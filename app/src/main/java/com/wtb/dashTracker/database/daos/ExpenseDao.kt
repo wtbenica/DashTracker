@@ -49,6 +49,7 @@ abstract class ExpenseDao : BaseDao<Expense>("Expense", "expenseId") {
     @Query(SQL_GET_ALL)
     abstract fun getAllPagingSource(): PagingSource<Int, FullExpense>
 
+    @Transaction
     @Query(SQL_GET_ALL)
     abstract fun getAllFullExpenses(): Flow<List<FullExpense>>
 

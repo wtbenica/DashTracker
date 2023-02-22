@@ -52,7 +52,7 @@ class YearlyListViewModel : ViewModel() {
 
     private val allEntries: Flow<List<DashEntry>> = repository.allEntries
 
-    internal val allExpenses: Flow<List<FullExpense>> = repository.allExpenses
+    private val allExpenses: Flow<List<FullExpense>> = repository.allExpenses
 
     internal val yearlies: Flow<List<Yearly>> =
         combine(
@@ -77,7 +77,7 @@ class YearlyListViewModel : ViewModel() {
                 val thisYearsExpenses: Map<ExpensePurpose, Float> =
                     expenses.mapNotNull { entry: FullExpense ->
                         if (entry.expense.date.year == year) entry else null
-                    }.fold(mutableMapOf<ExpensePurpose, Float>()) { res, fe ->
+                    }.fold(mutableMapOf()) { res, fe ->
                         res[fe.purpose] =
                             res.getOrDefault(fe.purpose, 0f) + (fe.expense.amount ?: 0f)
                         res

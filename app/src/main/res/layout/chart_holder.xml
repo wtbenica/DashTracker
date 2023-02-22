@@ -20,61 +20,47 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/list_item_card"
-        style="@style/CardViewStyle.ListItem"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="@dimen/margin_half"
-        app:cardElevation="0dp">
+        style="@style/DTCardViewStyle.ListItem"
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_wrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_list_item_expanded"
-            android:orientation="vertical"
-            android:padding="@dimen/margin_half">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/chart_holder_title"
                 style="@style/ListItemHeaderTextView.Title"
-                android:layout_marginStart="@dimen/margin_half"
-                android:layout_marginTop="@dimen/margin_half"
+                android:layout_marginStart="?attr/textSizeItemHeader"
+                android:layout_marginTop="?attr/textSizeItemHeader"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/lbl_cost_per_mile" />
+                tools:text="@string/lbl_cost_per_mile"/>
 
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_show_filters_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_default"
-                android:padding="0dp"
-                app:cardCornerRadius="@dimen/margin_default"
-                app:cardElevation="0dp"
+            <ImageButton
+                android:id="@+id/btn_show_filters"
+                style="@style/ListItemButton"
+                android:layout_marginTop="?attr/listItemThinBorder"
+                android:layout_marginEnd="?attr/listItemThinBorder"
+                android:contentDescription="@string/content_desc_show_chart_filtering_options"
+                android:src="@drawable/anim_tune_to_close"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageButton
-                    android:id="@+id/btn_show_filters"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/min_touch_target"
-                    android:background="?attr/colorShowFiltersButtonBg"
-                    android:minWidth="@dimen/min_touch_target"
-                    android:src="@drawable/anim_tune_to_close"
-                    app:tint="?attr/colorShowFiltersButton"
-                    android:contentDescription="@string/content_desc_show_chart_filtering_options" />
-            </androidx.cardview.widget.CardView>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <FrameLayout
                 android:id="@+id/cpm_bottom"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="@dimen/margin_half"
+                android:background="@drawable/bg_list_item_subtable_full"
+                android:layout_marginTop="@dimen/margin_default"
                 app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginHorizontal="?attr/listItemThinBorder"
+                android:layout_marginBottom="?attr/listItemThinBorder"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/card_show_filters_button" />
+                app:layout_constraintTop_toBottomOf="@id/btn_show_filters" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </merge>

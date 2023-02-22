@@ -35,8 +35,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
@@ -47,9 +45,9 @@ import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity.Companion.EXTRA_PERMISSIONS_ROUTE
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmType
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialog.Companion.ARG_CONFIRM
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmRestartDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
@@ -63,6 +61,7 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.UI_MODE_PREF
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
@@ -161,13 +160,14 @@ class SettingsActivity : AuthenticatedActivity() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View {
-            setFragmentResultListener(
-                ConfirmType.RESTART.key,
+            childFragmentManager.setFragmentResultListener(
+                ConfirmDialog.RESTART.key,
+                this
             ) { _, bundle ->
-                val result = bundle.getBoolean(ARG_CONFIRM)
+                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
 
                 if (result) {
-                    setFragmentResult(
+                    parentFragmentManager.setFragmentResult(
                         REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
                         Bundle().apply { putBoolean(ACTIVITY_RESULT_NEEDS_RESTART, true) })
                 }
@@ -239,12 +239,7 @@ class SettingsActivity : AuthenticatedActivity() {
         OnSharedPreferenceChangeListener { sharedPreferences, key ->
             when (key) {
                 PREF_SHOW_BASE_PAY_ADJUSTS -> {
-                    ConfirmationDialog.newInstance(
-                        text = R.string.dialog_restart,
-                        requestKey = ConfirmType.RESTART.key,
-                        posButton = R.string.restart,
-                        negButton = R.string.later
-                    ).show(supportFragmentManager, null)
+                    ConfirmRestartDialog.newInstance().show(supportFragmentManager, null)
                 }
                 LOCATION_ENABLED -> {
                     val isChecked = sharedPrefs.getBoolean(key, false)
@@ -307,12 +302,7 @@ class SettingsActivity : AuthenticatedActivity() {
 
                             revokeSelfPermissionOnKill(POST_NOTIFICATIONS)
 
-                            ConfirmationDialog.newInstance(
-                                text = R.string.dialog_restart,
-                                requestKey = ConfirmType.RESTART.key,
-                                posButton = R.string.restart,
-                                negButton = R.string.later
-                            ).show(supportFragmentManager, null)
+                            ConfirmRestartDialog.newInstance().show(supportFragmentManager, null)
                         }
                     }
                 }
@@ -418,9 +408,6 @@ class SettingsActivity : AuthenticatedActivity() {
         internal const val REQUEST_KEY_SETTINGS_ACTIVITY_RESULT =
             "${BuildConfig.APPLICATION_ID}.result_settings_fragment"
 
-        internal val Context.PREF_SHOW_BASE_PAY_ADJUSTS
-            get() = getString(R.string.prefs_show_base_pay_adjusts)
-
         internal const val EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED =
             "${BuildConfig.APPLICATION_ID}.extra_settings_activity_is_authenticated"
 
@@ -436,7 +423,7 @@ class DTListPreference @JvmOverloads constructor(
         AlertDialog.Builder(context, R.style.DTAlertDialogStyle)
             .setCustomTitle(View.inflate(context, R.layout.prefs_dialog_title, null))
             .setSingleChoiceItems(entries, entries.indexOf(value)) { dialog, pos ->
-                this.value = entries.get(pos).toString()
+                this.value = entries[pos].toString()
                 dialog.dismiss()
             }
             .show()

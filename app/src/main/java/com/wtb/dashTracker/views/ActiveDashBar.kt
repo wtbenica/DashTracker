@@ -19,11 +19,11 @@ package com.wtb.dashTracker.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.GridLayout
 import androidx.annotation.AttrRes
+import androidx.cardview.widget.CardView
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
-import com.wtb.dashTracker.databinding.ActiveDashBarBinding
+import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
@@ -35,16 +35,16 @@ class ActiveDashBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = 0
-) : GridLayout(context, attrs, defStyleAttr) {
+) : CardView(context, attrs, defStyleAttr) {
 
-    private var binding: ActiveDashBarBinding
+    private var binding: ActivityMainActiveDashBarBinding
     private var callback: ActiveDashBarCallback? = null
     private var activeEntry: FullEntry? = null
 
     init {
-        val view: View = inflate(context, R.layout.active_dash_bar, this)
+        val view: View = inflate(context, R.layout.activity_main_active_dash_bar, this)
 
-        binding = ActiveDashBarBinding.bind(view)
+        binding = ActivityMainActiveDashBarBinding.bind(view)
     }
 
     fun initialize(cb: ActiveDashBarCallback) {
@@ -61,29 +61,13 @@ class ActiveDashBar @JvmOverloads constructor(
             TRACKING_ACTIVE -> {
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
-                    listOf(
-                        binding.activeBg,
-                        binding.lblMileage,
-                        binding.valMileage,
-                        binding.lblCost,
-                        binding.valCost
-                    ).forEach {
-                        it.visibility = VISIBLE
-                    }
+                    binding.activeDashDetails.visibility = VISIBLE
                 }
             }
             else -> {
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
-                    listOf(
-                        binding.activeBg,
-                        binding.lblMileage,
-                        binding.valMileage,
-                        binding.lblCost,
-                        binding.valCost
-                    ).forEach {
-                        it.visibility = GONE
-                    }
+                    binding.activeDashDetails.visibility = GONE
                 }
             }
         }
@@ -96,10 +80,14 @@ class ActiveDashBar @JvmOverloads constructor(
             binding.lblStarted.text = context.getHoursRangeString(it.entry.startTime, null)
 
             binding.valMileage.text =
-                context.getString(R.string.mileage_fmt, it.distance)
+                context.getString(R.string.mileage_fmt, it.trackedDistance ?: 0.0)
 
             binding.valCost.text =
-                context.getCurrencyString(it.distance.toFloat() * (activeCpm ?: 0f))
+                context.getCurrencyString(
+                    (it.trackedDistance ?: it.entry.mileage)?.let { miles ->
+                        miles.toFloat() * (activeCpm ?: 0f)
+                    }
+                )
 
             binding.valElapsedTime.text =
                 getElapsedHours(it.netTime)

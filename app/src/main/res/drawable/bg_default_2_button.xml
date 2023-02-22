@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2022 Wesley T. Benica
+  ~ Copyright 2023 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,22 +15,19 @@
   -->
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:top="@dimen/margin_narrow">
+    <item>
         <shape>
-            <corners android:topLeftRadius="@dimen/margin_default" />
-            <solid android:color="?attr/colorOptionsButton" />
-        </shape>
-    </item>
-    <item android:top="@dimen/margin_narrow">
-        <shape>
-            <corners android:topLeftRadius="@dimen/margin_default" />
-            <solid android:color="?attr/colorOptionsMenu" />
-            <padding android:bottom="1dp" />
+            <padding
+                android:bottom="1dp"
+                android:right="1dp" />
+            <solid android:color="?attr/colorAccent" />
+            <corners android:bottomRightRadius="?attr/defaultCornerRadius" />
         </shape>
     </item>
     <item>
         <shape>
-            <solid android:color="@android:color/transparent" />
+            <solid android:color="?attr/colorSecondaryVariant" />
+            <corners android:bottomRightRadius="?attr/defaultCornerRadius" />
         </shape>
     </item>
 </layer-list>

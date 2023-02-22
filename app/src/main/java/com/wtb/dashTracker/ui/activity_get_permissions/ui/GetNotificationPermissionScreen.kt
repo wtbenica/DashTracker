@@ -16,15 +16,15 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.os.Build.VERSION_CODES.TIRAMISU
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.Notifications
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -46,7 +45,6 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@RequiresApi(TIRAMISU)
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
@@ -70,7 +68,6 @@ fun GetNotificationPermissionScreen(
             )
         },
         mainContent = {
-            Log.d(TAG, "drawing notification")
             CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_notification_permission),
@@ -110,7 +107,6 @@ fun GetNotificationPermissionScreen(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-@RequiresApi(TIRAMISU)
 fun GetNotificationsPermissionNav(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
@@ -168,7 +164,6 @@ fun GetNotificationsPermissionNav(
 }
 
 @ExperimentalCoroutinesApi
-@RequiresApi(TIRAMISU)
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi

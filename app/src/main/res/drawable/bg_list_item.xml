@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2022 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,4 +17,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="?attr/colorListItem" />
     <corners android:radius="?attr/listItemCornerRadius" />
+    <stroke
+        android:width="?attr/dimenListItemBorderWidth"
+        android:color="?attr/colorListItemBorder" />
 </shape>

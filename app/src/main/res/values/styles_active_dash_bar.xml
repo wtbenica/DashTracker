@@ -15,22 +15,27 @@
   -->
 
 <resources>
+
     <style name="ActiveDashTextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/oswald</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textAlignment">center</item>
     </style>
 
     <style name="ActiveDashTextView.Label">
-        <item name="android:paddingStart">@dimen/margin_default</item>
-        <item name="android:layout_columnWeight">0.25</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textSize">@dimen/text_size_sm</item>
+        <item name="android:layout_columnWeight">1</item>
     </style>
 
     <style name="ActiveDashTextView.Value">
-        <item name="android:paddingEnd">@dimen/margin_default</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:layout_columnWeight">1</item>
-        <item name="android:textAlignment">textEnd</item>
+        <item name="android:textSize">@dimen/text_size_xxl</item>
+    </style>
+
+    <style name="ActiveDashTextView.Title">
+        <item name="android:textSize">@dimen/text_size_xxl</item>
     </style>
 </resources>

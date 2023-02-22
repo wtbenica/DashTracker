@@ -14,23 +14,12 @@
   ~ limitations under the License.
   -->
 
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape>
-            <padding android:bottom="4dp" />
-            <solid android:color="?attr/colorListItemExpanded" />
-            <corners
-                android:topLeftRadius="?attr/listItemCornerRadius"
-                android:topRightRadius="?attr/listItemCornerRadius" />
-        </shape>
-    </item>
-    <item>
-        <shape>
-            <solid android:color="?attr/colorListItemDetailsToolbar" />
-            <corners
-                android:topLeftRadius="?attr/listItemCornerRadius"
-                android:topRightRadius="?attr/listItemCornerRadius" />
-            <stroke android:color="?attr/colorListItemExpandedBorder" android:width="2dp" />
-        </shape>
-    </item>
-</layer-list>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="?attr/colorListItemDetailsToolbar" />
+    <corners
+        android:topLeftRadius="?attr/listItemCornerRadius"
+        android:topRightRadius="?attr/listItemCornerRadius" />
+    <stroke
+        android:width="?attr/dimenListItemDetailsBorderWidth"
+        android:color="?attr/colorListItemDetailsBorder" />
+</shape>

@@ -84,7 +84,7 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
 
                     Divider(
                         thickness = 1.dp,
-                        color = Color(context.getAttributeColor(R.attr.colorPrimaryDark))
+                        color = Color(context.getAttributeColor(R.attr.colorSecondaryDark))
                     )
 
                     yearly.expenses?.let {
@@ -105,12 +105,8 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
                                 verticalAlignment = Bottom
                             ) {
                                 HeaderText(text = it.key.name ?: "")
-                                ValueText(
-                                    text = getCurrencyString(it.value * yearly.businessMileagePercent),
-                                )
-                                ValueText(
-                                    text = getCurrencyString(it.value),
-                                )
+                                ValueText(text = getCurrencyString(it.value * yearly.businessMileagePercent))
+                                ValueText(text = getCurrencyString(it.value))
                             }
                         }
                     }

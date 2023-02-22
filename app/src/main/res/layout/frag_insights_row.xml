@@ -16,7 +16,8 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:parentTag="android.widget.GridLayout">
+    tools:parentTag="android.widget.GridLayout"
+    tools:keep="@layout/frag_insights_row">
 
 
     <TextView
