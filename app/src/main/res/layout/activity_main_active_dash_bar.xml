@@ -14,122 +14,128 @@
   ~ limitations under the License.
   -->
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Don't add vertical margins, it messes up the hiding on scroll -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@android:color/transparent"
-    app:cardCornerRadius="?attr/activeDashCornerRadius">
+    android:gravity="center"
+    android:padding="@dimen/margin_half">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorActiveDashBarBg"
-        android:orientation="vertical">
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="?attr/activeDashCornerRadius">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/margin_default"
-            android:layout_marginVertical="@dimen/margin_half"
-            android:paddingHorizontal="@dimen/margin_default">
+            android:background="?attr/colorActiveDashBarBg"
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:elegantTextHeight="true"
-                android:text="@string/adb_current_dash"
-                android:textAlignment="textStart"
-                android:textSize="@dimen/text_size_xlarge" />
+                android:layout_marginHorizontal="@dimen/margin_default"
+                android:layout_marginVertical="@dimen/margin_half"
+                android:paddingHorizontal="@dimen/margin_default">
 
-            <TextView
-                android:id="@+id/lbl_started"
-                style="@style/ActiveDashTextView"
-                android:layout_width="0dp"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/adb_current_dash"
+                    android:textAlignment="textStart"
+                    android:textSize="@dimen/text_size_large" />
+
+                <TextView
+                    android:id="@+id/lbl_started"
+                    style="@style/ActiveDashTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="textEnd"
+                    android:textSize="@dimen/text_size_large"
+                    tools:text="3:33p - " />
+            </LinearLayout>
+
+            <GridLayout
+                android:id="@+id/active_dash_details"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:elegantTextHeight="true"
-                android:textAlignment="textEnd"
-                android:textSize="@dimen/text_size_xlarge"
-                tools:text="3:33p - " />
+                android:layout_marginHorizontal="?attr/listItemThinBorder"
+                android:layout_marginBottom="?attr/listItemThinBorder"
+                android:background="@drawable/bg_active_dash_bar_details"
+                android:columnCount="5"
+                android:paddingHorizontal="@dimen/margin_skinny"
+                android:paddingVertical="@dimen/margin_default"
+                android:rowCount="2">
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_row="0"
+                    android:layout_rowSpan="2"
+                    android:layout_rowWeight="1"
+                    android:layout_column="1"
+                    android:background="?attr/colorActiveDashBarStroke" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_row="0"
+                    android:layout_rowSpan="2"
+                    android:layout_rowWeight="1"
+                    android:layout_column="3"
+                    android:background="?attr/colorActiveDashBarStroke" />
+
+                <!--    Row 0        -->
+                <TextView
+                    android:id="@+id/lbl_hrs"
+                    style="@style/ActiveDashTextView.Label"
+                    android:layout_row="0"
+                    android:layout_column="0"
+                    android:text="@string/header_hours" />
+
+                <TextView
+                    android:id="@+id/lbl_mileage"
+                    style="@style/ActiveDashTextView.Label"
+                    android:layout_row="0"
+                    android:layout_column="2"
+                    android:text="@string/header_mileage" />
+
+                <TextView
+                    android:id="@+id/lbl_cost"
+                    style="@style/ActiveDashTextView.Label"
+                    android:layout_row="0"
+                    android:layout_column="4"
+                    android:text="@string/lbl_net_expenses" />
+
+                <!-- Row 1 -->
+                <TextView
+                    android:id="@+id/val_elapsed_time"
+                    style="@style/ActiveDashTextView.Value"
+                    android:layout_row="1"
+                    android:layout_column="0"
+                    tools:text="4h 20m" />
+
+                <TextView
+                    android:id="@+id/val_mileage"
+                    style="@style/ActiveDashTextView.Value"
+                    android:layout_row="1"
+                    android:layout_column="2"
+                    tools:text="52.8mi" />
+
+                <!--    Row 3       -->
+                <TextView
+                    android:id="@+id/val_cost"
+                    style="@style/ActiveDashTextView.Value"
+                    android:layout_row="1"
+                    android:layout_column="4"
+                    tools:text="$14.75" />
+            </GridLayout>
         </LinearLayout>
-
-        <GridLayout
-            android:id="@+id/active_dash_details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="?attr/listItemThinBorder"
-            android:layout_marginBottom="?attr/listItemThinBorder"
-            android:background="@drawable/bg_active_dash_bar_details"
-            android:columnCount="5"
-            android:paddingHorizontal="@dimen/margin_skinny"
-            android:paddingVertical="@dimen/margin_default"
-            android:rowCount="2">
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:layout_row="0"
-                android:layout_rowSpan="2"
-                android:layout_rowWeight="1"
-                android:layout_column="1"
-                android:background="?attr/colorActiveDashBarStroke" />
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:layout_row="0"
-                android:layout_rowSpan="2"
-                android:layout_rowWeight="1"
-                android:layout_column="3"
-                android:background="?attr/colorActiveDashBarStroke" />
-
-            <!--    Row 0        -->
-            <TextView
-                android:id="@+id/lbl_hrs"
-                style="@style/ActiveDashTextView.Label"
-                android:layout_row="0"
-                android:layout_column="0"
-                android:text="@string/header_hours" />
-
-            <TextView
-                android:id="@+id/lbl_mileage"
-                style="@style/ActiveDashTextView.Label"
-                android:layout_row="0"
-                android:layout_column="2"
-                android:text="@string/header_mileage" />
-
-            <TextView
-                android:id="@+id/lbl_cost"
-                style="@style/ActiveDashTextView.Label"
-                android:layout_row="0"
-                android:layout_column="4"
-                android:text="@string/lbl_net_expenses" />
-
-            <!-- Row 1 -->
-            <TextView
-                android:id="@+id/val_elapsed_time"
-                style="@style/ActiveDashTextView.Value"
-                android:layout_row="1"
-                android:layout_column="0"
-                tools:text="4h 20m" />
-
-            <TextView
-                android:id="@+id/val_mileage"
-                style="@style/ActiveDashTextView.Value"
-                android:layout_row="1"
-                android:layout_column="2"
-                tools:text="52.8mi" />
-
-            <!--    Row 3       -->
-            <TextView
-                android:id="@+id/val_cost"
-                style="@style/ActiveDashTextView.Value"
-                android:layout_row="1"
-                android:layout_column="4"
-                tools:text="$14.75" />
-        </GridLayout>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

@@ -44,27 +44,17 @@ import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABL
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+
 @Composable
-fun customSwitchColors(context: Context?): SwitchColors {
-    return if (context != null) {
-        SwitchDefaults.colors(
-            checkedThumbColor = accentDark(context),
-            checkedTrackColor = accentFaded(context),
-            checkedBorderColor = MaterialTheme.colorScheme.primary,
-            uncheckedThumbColor = accent(context),
-            uncheckedTrackColor = accentFaded(context),
-            uncheckedBorderColor = MaterialTheme.colorScheme.primary
-        )
-    } else {
-        SwitchDefaults.colors(
-            checkedThumbColor = secondaryDark(),
-            checkedTrackColor = secondaryFaded(),
-            checkedBorderColor = MaterialTheme.colorScheme.primary,
-            uncheckedThumbColor = secondary(),
-            uncheckedTrackColor = secondaryFaded(),
-            uncheckedBorderColor = MaterialTheme.colorScheme.primary
-        )
-    }
+fun csc(): SwitchColors {
+    return SwitchDefaults.colors(
+        checkedThumbColor = secondaryDark(),
+        checkedTrackColor = secondaryLight(),
+        checkedBorderColor = secondary(),
+        uncheckedThumbColor = secondary(),
+        uncheckedTrackColor = secondaryLight(),
+        uncheckedBorderColor = secondary()
+    )
 }
 
 @ExperimentalCoroutinesApi
@@ -84,10 +74,10 @@ fun InitialSettings(context: Context? = null) {
             )
         },
         mainContent = {
-            CustomOutlinedCard(padding = 0) {
+            CustomOutlinedCard(padding = 0, context = context) {
                 Column {
                     Surface(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        color = secondaryFaded(),
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Row(
@@ -120,11 +110,10 @@ fun InitialSettings(context: Context? = null) {
                                             .apply()
                                     }
                                 },
-                                colors = customSwitchColors(context)
+                                colors = csc()
                             )
                         }
                     }
-
                     Text(
                         text = stringResource(R.string.show_weekly_bpa_desc),
                         modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_wide)),
@@ -136,10 +125,10 @@ fun InitialSettings(context: Context? = null) {
 
             HalfSpacer()
 
-            CustomOutlinedCard(padding = 0) {
+            CustomOutlinedCard(padding = 0, context = context) {
                 Column {
                     Surface(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        color = secondaryFaded(),
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Row(
@@ -172,7 +161,7 @@ fun InitialSettings(context: Context? = null) {
                                             .apply()
                                     }
                                 },
-                                colors = customSwitchColors(context)
+                                colors = csc()
                             )
                         }
                     }
@@ -208,7 +197,7 @@ fun InitialSettingsNav(callback: InitialScreenCallback? = null) {
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
-        CustomOutlinedButton(
+        CustomButton(
             onClick = {
                 cb.nextScreen2()
             },

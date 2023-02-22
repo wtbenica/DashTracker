@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -68,7 +69,7 @@ fun GetNotificationPermissionScreen(
             )
         },
         mainContent = {
-            CustomOutlinedCard {
+            CustomOutlinedCard(context = activity) {
                 Text(
                     text = stringResource(id = R.string.dialog_notification_permission),
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
@@ -78,7 +79,7 @@ fun GetNotificationPermissionScreen(
 
             FillSpacer()
 
-            SecondaryOutlinedCard {
+            SecondaryCard {
                 val str = buildAnnotatedString {
                     append("To grant notification permission, select ")
 
@@ -144,7 +145,7 @@ fun GetNotificationsPermissionNav(
 
         DefaultSpacer()
 
-        CustomOutlinedButton(
+        CustomButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, false)
                 activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, true)
@@ -170,6 +171,27 @@ fun GetNotificationsPermissionNav(
 @Preview
 @Composable
 fun PreviewGetNotificationPermissionScreen() {
+    DashTrackerTheme {
+        Surface {
+            Column {
+                GetNotificationPermissionScreen()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 3
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalCoroutinesApi
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewGetNotificationPermissionScreenNight() {
     DashTrackerTheme {
         Surface {
             Column {

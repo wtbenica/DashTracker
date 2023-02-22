@@ -70,7 +70,7 @@ fun GetBatteryPermissionScreen(
             )
         },
         mainContent = {
-            CustomOutlinedCard {
+            CustomOutlinedCard(context = activity) {
                 val str = buildAnnotatedString {
                     append(stringResource(id = R.string.dialog_battery_permission))
                 }
@@ -86,7 +86,7 @@ fun GetBatteryPermissionScreen(
 
             FillSpacer()
 
-            SecondaryOutlinedCard {
+            SecondaryCard {
                 val str = buildAnnotatedString {
                     append("To grant unrestricted background battery use, select ")
 
@@ -160,7 +160,7 @@ fun GetBatteryPermissionNav(
 
         DefaultSpacer()
 
-        CustomOutlinedButton(
+        CustomButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, false)
                 activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, true)

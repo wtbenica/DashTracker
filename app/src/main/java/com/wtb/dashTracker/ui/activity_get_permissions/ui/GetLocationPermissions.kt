@@ -16,17 +16,17 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.Context
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.LocationOn
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -42,6 +42,7 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerI
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.accent
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -67,7 +68,7 @@ fun GetLocationPermissionsScreen(
             )
         },
         mainContent = {
-            CustomOutlinedCard {
+            CustomOutlinedCard(context = activity) {
                 Text(
                     text = stringResource(id = R.string.dialog_location_permission),
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
@@ -77,7 +78,11 @@ fun GetLocationPermissionsScreen(
 
             val uriHandler = LocalUriHandler.current
 
-            CustomTextButton(
+            TextButton(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = borderColor(activity),
+                ),
                 onClick = { uriHandler.openUri("https://www.benica.dev/privacy") }
             ) {
                 Text("Privacy Policy")
@@ -85,7 +90,7 @@ fun GetLocationPermissionsScreen(
 
             FillSpacer()
 
-            SecondaryOutlinedCard {
+            SecondaryCard {
                 val str = buildAnnotatedString {
                     append("To grant location permissions, select ")
 
@@ -155,7 +160,7 @@ fun GetLocationPermissionsNav(
 
         DefaultSpacer()
 
-        CustomOutlinedButton(
+        CustomButton(
             onClick = {
                 activity?.setOptOutLocation(false)
                 activity?.setLocationEnabled(true)
@@ -181,6 +186,29 @@ fun GetLocationPermissionsNav(
 @Preview(showBackground = true)
 @Composable
 fun GetLocationPermissionsPreview() {
+    DashTrackerTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Column {
+                GetLocationPermissionsScreen()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 1
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun GetLocationPermissionsPreviewNight() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
