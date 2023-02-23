@@ -42,8 +42,6 @@ import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.welcomeIconColor
 import com.wtb.dashTracker.util.*
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
@@ -109,26 +107,15 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
                                     " Next time you hit Start Dash, you will be asked again if you would like to enable notifications."
                                 } else {
                                     ""
-                                } +
-                                if (!activity.hasBatteryPermission()
-                                    && permHelp.sharedPrefs.getBoolean(
-                                        activity.ASK_AGAIN_BATTERY_OPTIMIZER,
-                                        false
-                                    )
-                                ) {
-                                    " Next time you hit Start Dash, you will be asked again if you would like to allow unrestricted background battery use."
-                                } else {
-                                    ""
                                 }
                         permHelp.sharedPrefs.getBoolean(activity.OPT_OUT_LOCATION, true) -> {
                             "You've opted out of automatic mileage tracking. If you change your " +
                                     "mind, you can turn it on by going to Settings."
                         }
-                        permHelp.sharedPrefs.getBoolean(activity.ASK_AGAIN_LOCATION, false) ||
-                                permHelp.sharedPrefs.getBoolean(
-                                    activity.ASK_AGAIN_BG_LOCATION,
-                                    false
-                                ) -> "Next time you hit Start Dash, you will be asked whether you " +
+                        permHelp.sharedPrefs.getBoolean(
+                            activity.ASK_AGAIN_LOCATION,
+                            false
+                        ) -> "Next time you hit Start Dash, you will be asked whether you " +
                                 "want to enable automatic mileage tracking. You can also enable " +
                                 "automatic tracking from Settings."
                         else -> "Automatic mileage tracking is disabled. You can enable it from " +
@@ -141,9 +128,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
 
             PermissionsSummaryCard(
                 locationEnabled = permHelp.fgLocationEnabled,
-                bgLocationEnabled = permHelp.bgLocationEnabled,
                 notificationsEnabled = permHelp.notificationsEnabled,
-                batteryOptimizationDisabled = permHelp.batteryOptimizationDisabled,
                 context = activity
             )
         },
@@ -265,9 +250,7 @@ fun SummaryScreenPreview() {
 
                     PermissionsSummaryCard(
                         locationEnabled = true,
-                        bgLocationEnabled = true,
                         notificationsEnabled = true,
-                        batteryOptimizationDisabled = false,
                         context = null
                     )
                 },
@@ -307,9 +290,7 @@ fun SummaryScreenPreviewNight() {
 
                     PermissionsSummaryCard(
                         locationEnabled = true,
-                        bgLocationEnabled = true,
                         notificationsEnabled = true,
-                        batteryOptimizationDisabled = false,
                         context = null
                     )
                 },
@@ -325,9 +306,7 @@ fun SummaryScreenPreviewNight() {
 @Composable
 fun PermissionsSummaryCard(
     locationEnabled: Boolean,
-    bgLocationEnabled: Boolean,
     notificationsEnabled: Boolean,
-    batteryOptimizationDisabled: Boolean,
     context: Context?
 ) {
     CustomOutlinedCard(context = context) {
@@ -345,29 +324,10 @@ fun PermissionsSummaryCard(
         DefaultSpacer()
 
         PermRow(
-            permDesc = "Background Location",
-            permIcon = Icons.TwoTone.LocationSearching,
-            permIconDescription = "location icon",
-            isEnabled = bgLocationEnabled
-        )
-
-        DefaultSpacer()
-
-        PermRow(
             permDesc = "Notifications",
             permIcon = Icons.TwoTone.Notifications,
             permIconDescription = "notifications icon",
             isEnabled = notificationsEnabled,
-            isRequired = false
-        )
-
-        DefaultSpacer()
-
-        PermRow(
-            permDesc = "Battery Optimization Disabled",
-            permIcon = Icons.TwoTone.BatterySaver,
-            permIconDescription = "battery icon",
-            isEnabled = batteryOptimizationDisabled,
             isRequired = false
         )
     }

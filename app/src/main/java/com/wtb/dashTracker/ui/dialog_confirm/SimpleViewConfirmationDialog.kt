@@ -107,6 +107,7 @@ open class SimpleViewConfirmationDialog :
                 putParcelable(ARG_POS_ACTION, posAction)
                 negButton?.let { putInt(ARG_NEG_TEXT, it) }
                 putParcelable(ARG_NEG_ACTION, negAction)
+                putParcelable(ARG_NEG_ACTION, negAction)
                 posButton2?.let { putInt(ARG_POS_TEXT_2, it) }
                 putParcelable(ARG_POS_ACTION_2, posAction2)
             }

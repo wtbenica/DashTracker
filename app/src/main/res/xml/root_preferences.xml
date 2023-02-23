@@ -40,11 +40,11 @@
             app:key="@string/prefs_enable_notification"
             app:title="Show notification when active" />
 
-        <SwitchPreference
-            app:defaultValue="false"
-            app:dependency="@string/prefs_enable_location"
-            app:key="@string/prefs_enable_bg_battery"
-            app:title="Allow background battery usage" />
+<!--        <SwitchPreference-->
+<!--            app:defaultValue="false"-->
+<!--            app:dependency="@string/prefs_enable_location"-->
+<!--            app:key="@string/prefs_enable_bg_battery"-->
+<!--            app:title="Allow background battery usage" />-->
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/prefs_category_security">

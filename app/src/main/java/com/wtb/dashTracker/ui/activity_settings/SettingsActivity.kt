@@ -26,6 +26,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
@@ -44,28 +46,24 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity.Companion.EXTRA_PERMISSIONS_ROUTE
-import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmRestartDialog
+import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.NOTIFICATION_SCREEN
+import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmRestartDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.util.PermissionsHelper
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED_REVERTED
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_SUMMARY_SCREEN
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.UI_MODE_PREF
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
-import com.wtb.dashTracker.util.hasBatteryPermission
 import com.wtb.dashTracker.util.hasPermissions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -79,7 +77,6 @@ class SettingsActivity : AuthenticatedActivity() {
 
     var mileageTrackingEnabledPref: SwitchPreference? = null
     var notificationEnabledPref: SwitchPreference? = null
-    var bgBatteryEnabledPref: SwitchPreference? = null
     var authenticationEnabledPref: SwitchPreference? = null
     var uiModePref: ListPreference? = null
 
@@ -160,12 +157,12 @@ class SettingsActivity : AuthenticatedActivity() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View {
-            childFragmentManager.setFragmentResultListener(
+            setFragmentResultListener(
                 ConfirmDialog.RESTART.key,
-                this
             ) { _, bundle ->
+                Log.d(TAG, "Got fragment result 2")
                 val result = bundle.getBoolean(ARG_IS_CONFIRMED)
-
+                Log.d(TAG, "And you are ${if (!result) "not " else ""} the father 2 | $result")
                 if (result) {
                     parentFragmentManager.setFragmentResult(
                         REQUEST_KEY_SETTINGS_ACTIVITY_RESULT,
@@ -186,9 +183,6 @@ class SettingsActivity : AuthenticatedActivity() {
                 findPreference<SwitchPreference>(requireContext().NOTIFICATION_ENABLED)?.apply {
                     if (SDK_INT < TIRAMISU) isVisible = false
                 }
-
-            (activity as SettingsActivity).bgBatteryEnabledPref =
-                findPreference(requireContext().BG_BATTERY_ENABLED)
 
             (activity as SettingsActivity).authenticationEnabledPref =
                 findPreference(requireContext().AUTHENTICATION_ENABLED)
@@ -218,10 +212,6 @@ class SettingsActivity : AuthenticatedActivity() {
                 }
             }
 
-            (activity as SettingsActivity).bgBatteryEnabledPref?.apply {
-                isChecked = context.hasBatteryPermission()
-            }
-
             (activity as SettingsActivity).authenticationEnabledPref?.apply {
                 isChecked = sharedPrefs.getBoolean(requireContext().AUTHENTICATION_ENABLED, true)
             }
@@ -246,9 +236,7 @@ class SettingsActivity : AuthenticatedActivity() {
                     if (isChecked) {
                         sharedPreferences?.edit()?.apply {
                             putBoolean(ASK_AGAIN_LOCATION, false)
-                            putBoolean(ASK_AGAIN_BG_LOCATION, false)
                             putBoolean(ASK_AGAIN_NOTIFICATION, false)
-                            putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
                             putBoolean(OPT_OUT_LOCATION, false)
                             putBoolean(PREF_SHOW_SUMMARY_SCREEN, true)
                             apply()
@@ -261,16 +249,13 @@ class SettingsActivity : AuthenticatedActivity() {
 
                         permissionsHelper.whenHasDecided(
                             hasNotification = ::startOnboarding,
-                            hasBgLocation = ::startOnboarding,
                             hasLocation = ::startOnboarding,
                             noPermissions = ::startOnboarding
                         )?.invoke()
                     } else {
                         sharedPreferences?.edit()?.apply {
                             putBoolean(ASK_AGAIN_LOCATION, false)
-                            putBoolean(ASK_AGAIN_BG_LOCATION, false)
                             putBoolean(ASK_AGAIN_NOTIFICATION, false)
-                            putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
                             putBoolean(OPT_OUT_LOCATION, true)
                             putBoolean(PREF_SHOW_SUMMARY_SCREEN, false)
                             apply()
@@ -303,37 +288,6 @@ class SettingsActivity : AuthenticatedActivity() {
                             revokeSelfPermissionOnKill(POST_NOTIFICATIONS)
 
                             ConfirmRestartDialog.newInstance().show(supportFragmentManager, null)
-                        }
-                    }
-                }
-                BG_BATTERY_ENABLED -> {
-                    val isChecked = sharedPrefs.getBoolean(key, false)
-                    if (isChecked) {
-                        sharedPrefs.edit()
-                            .putBoolean(OPT_OUT_BATTERY_OPTIMIZER, false)
-                            .putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
-                            .apply()
-
-                        if (!hasBatteryPermission()) {
-                            expectedExit = true
-                            startActivity(
-                                Intent(this, OnboardingMileageActivity::class.java)
-                                    .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_OFF_SCREEN)
-                            )
-                        }
-                    } else {
-                        sharedPreferences?.edit()?.apply {
-                            putBoolean(OPT_OUT_BATTERY_OPTIMIZER, true)
-                            putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, true)
-                            apply()
-                        }
-
-                        if (hasBatteryPermission()) {
-                            expectedExit = true
-                            startActivity(
-                                Intent(this, OnboardingMileageActivity::class.java)
-                                    .putExtra(EXTRA_PERMISSIONS_ROUTE, OPTIMIZATION_ON_SCREEN)
-                            )
                         }
                     }
                 }
@@ -401,9 +355,6 @@ class SettingsActivity : AuthenticatedActivity() {
     companion object {
         internal const val ACTIVITY_RESULT_NEEDS_RESTART =
             "${BuildConfig.APPLICATION_ID}.result_needs_restart"
-
-        internal const val ACTIVITY_RESULT_LOCATION_ENABLED =
-            "${BuildConfig.APPLICATION_ID}.location_enabled"
 
         internal const val REQUEST_KEY_SETTINGS_ACTIVITY_RESULT =
             "${BuildConfig.APPLICATION_ID}.result_settings_fragment"

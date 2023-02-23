@@ -18,13 +18,10 @@ package com.wtb.dashTracker.ui.activity_get_permissions
 
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -55,14 +52,10 @@ import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
 import kotlinx.coroutines.*
@@ -107,18 +100,13 @@ class OnboardingMileageActivity : ComponentActivity() {
         showIntroScreen = sharedPrefs.getBoolean(ASK_AGAIN_LOCATION, true)
 
         val missingLocation = !hasPermissions(*LOCATION_PERMISSIONS)
-        val missingBgLocation = !hasPermissions(ACCESS_BACKGROUND_LOCATION)
         val missingNotification = ((SDK_INT >= TIRAMISU)
                 && !hasPermissions(POST_NOTIFICATIONS)
                 && !sharedPrefs.getBoolean(OPT_OUT_NOTIFICATION, false))
-        val missingBatteryOptimization = (!hasBatteryPermission()
-                && !sharedPrefs.getBoolean(OPT_OUT_BATTERY_OPTIMIZER, false))
         val missingPermissions = mutableListOf(
             showIntroScreen,
             missingLocation,
-            missingBgLocation,
             missingNotification,
-            missingBatteryOptimization,
         )
         showSummaryScreen = missingPermissions.contains(true)
                 && !sharedPrefs.getBoolean(OPT_OUT_LOCATION, false)
@@ -154,12 +142,6 @@ class OnboardingMileageActivity : ComponentActivity() {
                                         activity = this@OnboardingMileageActivity
                                     )
                                 }
-                                BG_LOCATION_SCREEN -> {
-                                    GetBgLocationPermissionScreen(
-                                        modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity
-                                    )
-                                }
                                 NOTIFICATION_SCREEN -> {
                                     if (SDK_INT >= TIRAMISU) {
                                         GetNotificationPermissionScreen(
@@ -169,24 +151,10 @@ class OnboardingMileageActivity : ComponentActivity() {
                                         )
                                     }
                                 }
-                                OPTIMIZATION_OFF_SCREEN -> {
-                                    GetBatteryPermissionScreen(
-                                        modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity,
-                                        finishWhenDone = true
-                                    )
-                                }
                                 SUMMARY_SCREEN -> {
                                     SummaryScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity,
-                                    )
-                                }
-                                OPTIMIZATION_ON_SCREEN -> {
-                                    ReenableBatteryOptimizationScreen(
-                                        modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity,
-                                        finishWhenDone = true
                                     )
                                 }
                             }
@@ -213,16 +181,10 @@ class OnboardingMileageActivity : ComponentActivity() {
                                 composable(LOCATION_SCREEN.name) {
                                     GetLocationPermissionsScreen(activity = this@OnboardingMileageActivity)
                                 }
-                                composable(BG_LOCATION_SCREEN.name) {
-                                    GetBgLocationPermissionScreen(activity = this@OnboardingMileageActivity)
-                                }
                                 composable(NOTIFICATION_SCREEN.name) {
                                     if (SDK_INT >= TIRAMISU) {
                                         GetNotificationPermissionScreen(activity = this@OnboardingMileageActivity)
                                     }
-                                }
-                                composable(OPTIMIZATION_OFF_SCREEN.name) {
-                                    GetBatteryPermissionScreen(activity = this@OnboardingMileageActivity)
                                 }
                                 composable(INTRO_SCREEN.name) {
                                     OnboardingIntroScreen(activity = this@OnboardingMileageActivity)
@@ -273,8 +235,6 @@ class OnboardingMileageActivity : ComponentActivity() {
     private fun <T : Any> whenHasDecided(
         optOutLocation: T? = null,
         hasAllPermissions: T? = null,
-        hasNotification: T? = null,
-        hasBgLocation: T? = null,
         hasLocation: T? = null,
         noPermissions: T? = null
     ): T? {
@@ -288,31 +248,15 @@ class OnboardingMileageActivity : ComponentActivity() {
                 || sharedPrefs.getBoolean(OPT_OUT_LOCATION, false)
                 || askAgainLocation
 
-        val askAgainBgLocation =
-            sharedPrefs.getBoolean(ASK_AGAIN_BG_LOCATION, false)
-
-        val hasDecidedBgLocation =
-            (this.hasPermissions(*REQUIRED_PERMISSIONS) && hasDecidedLocation)
-                    || sharedPrefs.getBoolean(OPT_OUT_LOCATION, false)
-                    || askAgainBgLocation
-
         val askAgainNotification =
             sharedPrefs.getBoolean(ASK_AGAIN_NOTIFICATION, false)
 
         val hasDecidedNotifs =
-            (this.hasPermissions(*OPTIONAL_PERMISSIONS) && hasDecidedBgLocation)
+            (this.hasPermissions(*OPTIONAL_PERMISSIONS) && hasDecidedLocation)
                     || sharedPrefs.getBoolean(OPT_OUT_NOTIFICATION, false)
                     || askAgainNotification
 
-        val askAgainBattery = sharedPrefs.getBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
-
-        val hasDecidedBattery = (permissionsHelper.hasBatteryPermission && hasDecidedNotifs)
-                || sharedPrefs.getBoolean(OPT_OUT_BATTERY_OPTIMIZER, false)
-                || askAgainBattery
-
-        val hasAll = hasDecidedBattery
-                && hasDecidedNotifs
-                && hasDecidedBgLocation
+        val hasAll = hasDecidedNotifs
                 && hasDecidedLocation
 
         return when {
@@ -321,12 +265,6 @@ class OnboardingMileageActivity : ComponentActivity() {
             }
             hasAll -> {
                 hasAllPermissions
-            }
-            hasDecidedNotifs -> {
-                hasNotification
-            }
-            hasDecidedBgLocation -> {
-                hasBgLocation
             }
             hasDecidedLocation -> {
                 hasLocation
@@ -349,9 +287,7 @@ class OnboardingMileageActivity : ComponentActivity() {
     ) = whenHasDecided(
         optOutLocation = if (showSummaryScreen) SUMMARY_SCREEN else null,
         hasAllPermissions = if (showSummaryScreen) SUMMARY_SCREEN else null,
-        hasNotification = OPTIMIZATION_OFF_SCREEN,
-        hasBgLocation = NOTIFICATION_SCREEN,
-        hasLocation = BG_LOCATION_SCREEN,
+        hasLocation = NOTIFICATION_SCREEN,
         noPermissions = if (showIntroScreen) INTRO_SCREEN else LOCATION_SCREEN
     )
 
@@ -365,9 +301,7 @@ class OnboardingMileageActivity : ComponentActivity() {
     override fun onDestroy() {
         permissionsHelper.sharedPrefs.edit()
             .putBoolean(ASK_AGAIN_LOCATION, false)
-            .putBoolean(ASK_AGAIN_BG_LOCATION, false)
             .putBoolean(ASK_AGAIN_NOTIFICATION, false)
-            .putBoolean(ASK_AGAIN_BATTERY_OPTIMIZER, false)
             .commit()
 
         super.onDestroy()
@@ -378,9 +312,7 @@ class OnboardingMileageActivity : ComponentActivity() {
             val route = whenHasDecided(
                 optOutLocation = SUMMARY_SCREEN,
                 hasAllPermissions = SUMMARY_SCREEN,
-                hasNotification = OPTIMIZATION_OFF_SCREEN,
-                hasBgLocation = NOTIFICATION_SCREEN,
-                hasLocation = BG_LOCATION_SCREEN,
+                hasLocation = NOTIFICATION_SCREEN,
                 noPermissions = LOCATION_SCREEN
             )!!
 
@@ -390,10 +322,7 @@ class OnboardingMileageActivity : ComponentActivity() {
         } else {
             val loadSingleComplete = when (loadSingleScreen!!) {
                 LOCATION_SCREEN -> hasPermissions(*LOCATION_PERMISSIONS)
-                BG_LOCATION_SCREEN -> hasPermissions(ACCESS_BACKGROUND_LOCATION)
                 NOTIFICATION_SCREEN -> SDK_INT < TIRAMISU || hasPermissions(POST_NOTIFICATIONS)
-                OPTIMIZATION_OFF_SCREEN -> hasBatteryPermission()
-                OPTIMIZATION_ON_SCREEN -> !hasBatteryPermission()
                 INTRO_SCREEN -> null
                 SUMMARY_SCREEN -> null
             }
@@ -435,19 +364,6 @@ class OnboardingMileageActivity : ComponentActivity() {
         }
     }
 
-    fun getBatteryPermission(ifHasPermission: Boolean = true) {
-        when (ifHasPermission) {
-            !sharedPrefs.getBoolean(BG_BATTERY_ENABLED, true) -> {}
-            hasBatteryPermission() -> {}
-            else -> {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", packageName, null)
-                }
-                startActivity(intent)
-            }
-        }
-    }
-
     fun setBooleanPref(prefKey: String, value: Boolean) {
         permissionsHelper.setBooleanPref(
             prefKey,
@@ -466,7 +382,6 @@ class OnboardingMileageActivity : ComponentActivity() {
     internal fun setLocationEnabled(enabled: Boolean) {
         if (!enabled) {
             permissionsHelper.setBooleanPref(NOTIFICATION_ENABLED, false)
-            permissionsHelper.setBooleanPref(BG_BATTERY_ENABLED, false)
         }
         permissionsHelper.setBooleanPref(LOCATION_ENABLED, enabled, ::onPermissionsUpdated)
     }
@@ -479,11 +394,7 @@ class OnboardingMileageActivity : ComponentActivity() {
 
 enum class OnboardingScreen {
     // page order/numbering matters for these
-    INTRO_SCREEN, LOCATION_SCREEN, BG_LOCATION_SCREEN, NOTIFICATION_SCREEN,
-    OPTIMIZATION_OFF_SCREEN, SUMMARY_SCREEN,
-
-    // page order/numbering doesn't matter - intended for loadSingleScreen ONLY
-    OPTIMIZATION_ON_SCREEN
+    INTRO_SCREEN, LOCATION_SCREEN, NOTIFICATION_SCREEN, SUMMARY_SCREEN,
 }
 
 @Composable
