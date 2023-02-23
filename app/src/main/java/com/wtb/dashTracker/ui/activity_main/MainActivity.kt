@@ -407,7 +407,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                     viewModel.loadActiveEntry(null)
                 }
             }
-
             binding.adb.initialize(this)
         }
 

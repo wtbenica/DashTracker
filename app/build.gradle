@@ -31,8 +31,8 @@ android {
         applicationId "com.wtb.dashTracker"
         minSdk 30
         targetSdk 33
-        versionCode 6
-        versionName "1.12"
+        versionCode 7
+        versionName "1.13"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -48,12 +48,17 @@ android {
 
     buildTypes {
         release {
+            debuggable false
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             ndk {
                 debugSymbolLevel = 'FULL'
             }
+        }
+
+        debug {
+            debuggable true
         }
     }
     compileOptions {

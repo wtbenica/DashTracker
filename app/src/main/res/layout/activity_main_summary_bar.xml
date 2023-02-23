@@ -17,16 +17,15 @@
   ~ limitations under the License.
   -->
 
-<GridLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Don't add vertical margins, it messes up the hiding on scroll -->
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:columnCount="5"
-    android:padding="@dimen/margin_default"
-    android:rowCount="3"
-    app:layout_scrollFlags="scroll|enterAlways|snap"
-    tools:showIn="@layout/activity_main">
+    android:paddingHorizontal="@dimen/margin_wide"
+    android:paddingVertical="@dimen/margin_half"
+    android:rowCount="3">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/act_main_lbl_last_week"

@@ -46,26 +46,31 @@
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 tools:title="DashTracker" />
 
+            <!-- Don't add vertical margins, it messes up the hiding on scroll -->
             <include
                 android:id="@+id/summary_bar"
-                layout="@layout/activity_main_summary_bar" />
+                layout="@layout/activity_main_summary_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlways|snapMargins" />
 
+            <!-- Don't add vertical margins, it messes up the hiding on scroll -->
             <com.wtb.dashTracker.views.ActiveDashBar
                 android:id="@+id/adb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_half"
-                android:layout_marginBottom="@dimen/margin_default"
+                android:minHeight="@dimen/min_touch_target"
                 android:visibility="gone"
-                app:cardElevation="?attr/dimenListItemElevationLowered"
-                app:cardMaxElevation="@dimen/margin_default"
-                app:layout_scrollFlags="scroll|enterAlways|snap"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="0dp"
+                app:layout_scrollFlags="scroll|enterAlways|snapMargins"
                 tools:visibility="visible" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?attr/colorOptionsMenuStroke" />
+                android:background="?attr/colorOptionsMenuStroke"
+                app:layout_scrollFlags="noScroll" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.fragment.app.FragmentContainerView

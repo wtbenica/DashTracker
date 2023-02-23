@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -95,7 +96,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
         headerText = "Mileage Tracking",
         iconImage = iconImage,
         mainContent = {
-            CustomOutlinedCard {
+            CustomOutlinedCard(context = activity) {
                 Text(
                     text = when {
                         permHelp.locationEnabled -> "Automatic mileage tracking is enabled." +
@@ -142,7 +143,8 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
                 locationEnabled = permHelp.fgLocationEnabled,
                 bgLocationEnabled = permHelp.bgLocationEnabled,
                 notificationsEnabled = permHelp.notificationsEnabled,
-                batteryOptimizationDisabled = permHelp.batteryOptimizationDisabled
+                batteryOptimizationDisabled = permHelp.batteryOptimizationDisabled,
+                context = activity
             )
         },
         navContent = {
@@ -167,7 +169,7 @@ fun SummaryScreenNav(
     ) {
         FillSpacer()
 
-        CustomOutlinedButton(
+        CustomButton(
             onClick = {
                 activity?.setBooleanPref(activity.PREF_SHOW_SUMMARY_SCREEN, false)
                 activity?.finish()
@@ -224,7 +226,7 @@ fun PermRow(
             Icon(
                 imageVector = Icons.TwoTone.Check,
                 contentDescription = "enabled",
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.onTertiaryContainer
             )
         else
             Icon(
@@ -265,7 +267,8 @@ fun SummaryScreenPreview() {
                         locationEnabled = true,
                         bgLocationEnabled = true,
                         notificationsEnabled = true,
-                        batteryOptimizationDisabled = false
+                        batteryOptimizationDisabled = false,
+                        context = null
                     )
                 },
                 navContent = {
@@ -292,11 +295,11 @@ fun SummaryScreenPreviewNight() {
                         imageVector = Icons.Outlined.LocationOff,
                         contentDescription = "Location Off",
                         modifier = Modifier.size(96.dp),
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = headerIconColor()
                     )
                 },
                 mainContent = {
-                    CustomOutlinedCard {
+                    CustomOutlinedCard() {
                         Text(text = "Automatic mileage tracking is enabled")
                     }
 
@@ -306,7 +309,8 @@ fun SummaryScreenPreviewNight() {
                         locationEnabled = true,
                         bgLocationEnabled = true,
                         notificationsEnabled = true,
-                        batteryOptimizationDisabled = false
+                        batteryOptimizationDisabled = false,
+                        context = null
                     )
                 },
                 navContent = {
@@ -323,9 +327,10 @@ fun PermissionsSummaryCard(
     locationEnabled: Boolean,
     bgLocationEnabled: Boolean,
     notificationsEnabled: Boolean,
-    batteryOptimizationDisabled: Boolean
+    batteryOptimizationDisabled: Boolean,
+    context: Context?
 ) {
-    CustomOutlinedCard {
+    CustomOutlinedCard(context = context) {
         Text(text = "Permissions")
 
         DefaultSpacer()
