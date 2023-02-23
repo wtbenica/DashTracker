@@ -285,7 +285,7 @@ fun SecondaryCard(
         modifier = modifier.fillMaxWidth(),
         shape = cardShape,
         colors = cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
+            containerColor = MaterialTheme.colorScheme.outline,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
     ) {
