@@ -74,7 +74,7 @@ import kotlinx.coroutines.*
 @ExperimentalTextApi
 class OnboardingMileageActivity : ComponentActivity() {
 
-    private val permissionsHelper = PermissionsHelper(this)
+    internal val permissionsHelper = PermissionsHelper(this)
 
     private val sharedPrefs
         get() = permissionsHelper.sharedPrefs

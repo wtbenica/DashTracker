@@ -115,7 +115,7 @@ fun OnboardingIntroScreen(
 @ExperimentalCoroutinesApi
 @Composable
 fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
-    DashTrackerTheme {
+    DashTrackerTheme(darkTheme = activity?.permissionsHelper?.uiModeIsDarkMode == true) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
