@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Wesley T. Benica
+ * Copyright 2023 Wesley T. Benica
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,18 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.BatterySaver
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
@@ -49,8 +52,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun ReenableBatteryOptimizationScreen(
     modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null,
-    finishWhenDone: Boolean = false
+    activity: OnboardingMileageActivity? = null
 ): Unit =
     ScreenTemplate(
         modifier = modifier,
@@ -61,11 +63,10 @@ fun ReenableBatteryOptimizationScreen(
                 imageVector = Icons.TwoTone.BatterySaver,
                 contentDescription = "Battery Saver Icon",
                 modifier = Modifier.size(96.dp),
-                tint = MaterialTheme.colorScheme.secondary
             )
         },
         mainContent = {
-            CustomOutlinedCard(context = activity) {
+            CustomOutlinedCard {
                 val str = buildAnnotatedString {
                     append(stringResource(id = R.string.reenable_battery_permission_1))
 
@@ -100,26 +101,27 @@ fun ReenableBatteryOptimizationScreen(
 
             SecondaryCard {
                 val str = buildAnnotatedString {
-                    append("To grant unrestricted background battery use, select ")
+                    append(stringResource(id = R.string.reenable_battery_permission_1))
 
                     withStyle(style = styleBold) {
-                        append("OK")
+                        append(stringResource(id = R.string.reenable_battery_permission_2_ital))
                     }
 
-                    append(", then ")
+                    append(stringResource(id = R.string.reenable_battery_permission_3))
 
                     withStyle(style = styleBold) {
-                        append("Battery")
+                        append(stringResource(id = R.string.reenable_battery_permission_4_ital))
                     }
 
-                    append(", then ")
+                    append(stringResource(id = R.string.reenable_battery_permission_5))
 
                     withStyle(style = styleBold) {
-                        append("Unrestricted")
+                        append(stringResource(id = R.string.reenable_battery_permission_6_ital))
                     }
 
-                    append(" then return to DashTracker.")
+                    append(stringResource(id = R.string.reenable_battery_permission_7))
                 }
+
                 Text(str, modifier = Modifier.padding(24.dp))
             }
         },
@@ -142,7 +144,6 @@ fun ReenableBatteryOptimizationNav(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        LocalContext.current
         FillSpacer()
 
         CustomTextButton(
@@ -182,6 +183,29 @@ fun ReenableBatteryOptimizationNav(
 @Preview(showBackground = true)
 @Composable
 fun ReenableBatteryOptimizationPreview() {
+    DashTrackerTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Column {
+                ReenableBatteryOptimizationScreen()
+                PageIndicator(
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
+                    numPages = 4,
+                    selectedPage = 4
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@ExperimentalCoroutinesApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun ReenableBatteryOptimizationPreviewNight() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

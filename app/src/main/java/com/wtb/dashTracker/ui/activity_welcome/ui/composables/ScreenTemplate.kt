@@ -59,14 +59,13 @@ fun ScreenTemplate(
     ) {
         DefaultSpacer()
 
-        val borderWidth = 3.dp
         OutlinedCard(
             shape = cardShape,
             colors = cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ),
-            border = BorderStroke(width = borderStrokeWidth, color = MaterialTheme.colorScheme.inversePrimary)
+            border = BorderStroke(width = borderStrokeWidth, color = MaterialTheme.colorScheme.primaryContainer)
         ) {
             WideSpacer()
 
@@ -165,7 +164,6 @@ fun PreviewScreenTemplate() {
                     ContentCard(
                         titleText = "ContentCard",
                         icon = Icons.TwoTone.AccessAlarm,
-                        iconTint = MaterialTheme.colorScheme.primary,
                         iconDescription = "Access Alarm"
                     )
                 },
@@ -202,7 +200,6 @@ fun PreviewScreenTemplateNight() {
                     ContentCard(
                         titleText = "ContentCard",
                         icon = Icons.TwoTone.AccessAlarm,
-                        iconTint = MaterialTheme.colorScheme.primary,
                         iconDescription = "Access Alarm"
                     )
                 },

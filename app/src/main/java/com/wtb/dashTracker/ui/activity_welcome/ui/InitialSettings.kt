@@ -16,7 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui
 
-import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -24,45 +24,42 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
-import com.wtb.dashTracker.ui.theme.*
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SKIP_WELCOME_SCREEN
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-
-
-@Composable
-fun csc(): SwitchColors {
-    return SwitchDefaults.colors(
-        checkedThumbColor = secondaryDark(),
-        checkedTrackColor = secondaryLight(),
-        checkedBorderColor = secondary(),
-        uncheckedThumbColor = secondary(),
-        uncheckedTrackColor = secondaryLight(),
-        uncheckedBorderColor = secondary()
-    )
-}
 
 @ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun InitialSettings(context: Context? = null) {
+fun InitialSettings(activity: WelcomeActivity? = null) {
+    val textSizeBody = R.dimen.text_size_sm
+
+    val permissionsHelper: PermissionsHelper? = activity?.let {
+        PermissionsHelper(activity)
+    }
+
+    val sharedPrefs: SharedPreferences? = permissionsHelper?.sharedPrefs
+
     ScreenTemplate(
         headerText = stringResource(R.string.welcome_header_initial_setup),
         iconImage = {
@@ -74,111 +71,205 @@ fun InitialSettings(context: Context? = null) {
             )
         },
         mainContent = {
-            CustomOutlinedCard(padding = 0, context = context) {
-                Column {
-                    Surface(
-                        color = secondaryFaded(),
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+            SettingsCard(
+                headerContent = {
+                    Text(
+                        text = stringResource(id = R.string.pref_title_light_dark_theme),
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    FillSpacer()
+                }
+            ) {
+                var expanded by remember { mutableStateOf(false) }
+
+                val mode = stringResource(
+                    (permissionsHelper?.uiMode ?: PermissionsHelper.UiMode.SYSTEM).displayName
+                )
+                var selectedTheme by remember { mutableStateOf(mode) }
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = {
+                        expanded = !expanded
+                    },
+                ) {
+                    TextField(
+                        value = selectedTheme,
+                        onValueChange = { },
+                        modifier = Modifier
+                            .menuAnchor(),
+                        readOnly = true,
+                        textStyle = TextStyle(
+                            fontSize = fontSizeDimensionResource(id = textSizeBody),
+                            fontFamily = FontFamilyFiraSans,
+                        ),
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        }
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = {
+                            expanded = false
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(1f)
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(
-                                    vertical = dimensionResource(R.dimen.margin_half),
-                                    horizontal = dimensionResource(id = R.dimen.margin_wide)
-                                ),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(R.string.pref_title_show_weekly_adjustment_field),
-                                fontWeight = FontWeight.Bold,
-                            )
-
-                            FillSpacer()
-
-                            val showBPAs = remember { mutableStateOf(true) }
-                            Switch(
-                                checked = showBPAs.value,
-                                onCheckedChange = { newValue ->
-                                    showBPAs.value = newValue
-                                    context?.let {
-                                        PreferenceManager.getDefaultSharedPreferences(context)
-                                            .edit()
-                                            .putBoolean(
-                                                context.PREF_SHOW_BASE_PAY_ADJUSTS,
-                                                newValue
-                                            )
-                                            .apply()
-                                    }
+                        PermissionsHelper.UiMode.values().forEach {
+                            val uiModeText = stringResource(it.displayName)
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = uiModeText,
+                                        fontSize = fontSizeDimensionResource(id = textSizeBody),
+                                        fontFamily = FontFamilyFiraSans,
+                                    )
                                 },
-                                colors = csc()
+                                onClick = {
+                                    selectedTheme = uiModeText
+                                    expanded = false
+
+                                    permissionsHelper?.apply {
+                                        val prev = uiModeIsDarkMode
+                                        updateUiMode(uiModeByDisplayName(selectedTheme)) {
+                                            if (prev != uiModeIsDarkMode) {
+                                                setBooleanPref(
+                                                    activity.PREF_SKIP_WELCOME_SCREEN,
+                                                    true
+                                                )
+                                                activity.finish()
+                                            }
+                                        }
+                                    }
+                                }
                             )
                         }
                     }
-                    Text(
-                        text = stringResource(R.string.show_weekly_bpa_desc),
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_wide)),
-                        fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
-                        fontFamily = FontFamilyFiraSans
-                    )
                 }
             }
 
             HalfSpacer()
 
-            CustomOutlinedCard(padding = 0, context = context) {
-                Column {
-                    Surface(
-                        color = secondaryFaded(),
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(
-                                    vertical = dimensionResource(R.dimen.margin_half),
-                                    horizontal = dimensionResource(id = R.dimen.margin_wide)
-                                ),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.pref_title_require_authentication),
-                                fontWeight = FontWeight.Bold
-                            )
-                            FillSpacer()
-
-                            val authEnabled = remember { mutableStateOf(true) }
-
-                            Switch(
-                                checked = authEnabled.value,
-                                onCheckedChange = { newValue ->
-                                    authEnabled.value = newValue
-                                    context?.let {
-                                        PreferenceManager.getDefaultSharedPreferences(context)
-                                            .edit()
-                                            .putBoolean(
-                                                context.AUTHENTICATION_ENABLED,
-                                                newValue
-                                            )
-                                            .apply()
-                                    }
-                                },
-                                colors = csc()
-                            )
-                        }
-                    }
-
+            SettingsCard(
+                headerContent = {
                     Text(
-                        text = stringResource(R.string.require_pin_desc),
-                        modifier = Modifier.padding(dimensionResource(R.dimen.margin_wide)),
-                        fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
-                        fontFamily = FontFamilyFiraSans
+                        text = stringResource(R.string.pref_title_show_weekly_adjustment_field),
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    FillSpacer()
+                    val prefShowBpas = permissionsHelper?.sharedPrefs?.getBoolean(
+                        activity.PREF_SHOW_BASE_PAY_ADJUSTS,
+                        true
+                    ) ?: true
+                    val showBPAs = remember { mutableStateOf(prefShowBpas) }
+
+                    Switch(
+                        checked = showBPAs.value,
+                        onCheckedChange = { newValue ->
+                            showBPAs.value = newValue
+                            permissionsHelper?.setBooleanPref(
+                                activity.PREF_SHOW_BASE_PAY_ADJUSTS,
+                                newValue
+                            )
+                        },
+                        colors = csc()
                     )
                 }
+            ) {
+                Text(
+                    text = stringResource(R.string.show_weekly_bpa_desc),
+                    fontSize = fontSizeDimensionResource(id = textSizeBody),
+                    fontFamily = FontFamilyFiraSans
+                )
+            }
+
+            HalfSpacer()
+
+            SettingsCard(
+                headerContent = {
+                    Text(
+                        text = stringResource(id = R.string.pref_title_require_authentication),
+                        fontWeight = FontWeight.Bold
+                    )
+                    FillSpacer()
+
+                    val prefAuthEnabled =
+                        sharedPrefs?.getBoolean(activity.AUTHENTICATION_ENABLED, true) ?: true
+                    val authEnabled = remember { mutableStateOf(prefAuthEnabled) }
+
+                    Switch(
+                        checked = authEnabled.value,
+                        onCheckedChange = { newValue ->
+                            authEnabled.value = newValue
+                            permissionsHelper?.setBooleanPref(
+                                activity.AUTHENTICATION_ENABLED,
+                                newValue
+                            )
+                        },
+                        colors = csc()
+                    )
+                }
+            ) {
+                Text(
+                    text = stringResource(R.string.require_pin_desc),
+                    fontSize = fontSizeDimensionResource(id = textSizeBody),
+                    fontFamily = FontFamilyFiraSans
+                )
             }
         },
         navContent = {
-            InitialSettingsNav(callback = context as InitialScreenCallback?)
+            InitialSettingsNav(callback = activity as InitialScreenCallback?)
         }
     )
+}
+
+@Composable
+fun csc(): SwitchColors {
+    return SwitchDefaults.colors(
+        checkedThumbColor = MaterialTheme.colorScheme.onSecondary,
+        checkedTrackColor = MaterialTheme.colorScheme.onBackground,
+        checkedBorderColor = MaterialTheme.colorScheme.onSecondary,
+        uncheckedThumbColor = MaterialTheme.colorScheme.onSecondary,
+        uncheckedTrackColor = MaterialTheme.colorScheme.outline,
+        uncheckedBorderColor = MaterialTheme.colorScheme.onSecondary
+    )
+}
+
+@ExperimentalTextApi
+@Composable
+fun SettingsCard(
+    headerContent: @Composable (RowScope.() -> Unit),
+    body: @Composable (ColumnScope.() -> Unit)
+) {
+    CustomOutlinedCard(padding = 0.dp) {
+        Column {
+            Surface(
+                color = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.min_touch_target))
+                        .padding(horizontal = dimensionResource(id = R.dimen.margin_wide)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    content = headerContent
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .padding(
+                        vertical = dimensionResource(id = R.dimen.margin_default),
+                        horizontal = dimensionResource(id = R.dimen.margin_wide)
+                    )
+            ) {
+                body()
+            }
+        }
+    }
 }
 
 interface InitialScreenCallback {

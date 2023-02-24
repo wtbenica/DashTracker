@@ -41,7 +41,6 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerI
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.ui.theme.accent
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -67,7 +66,7 @@ fun GetLocationPermissionsScreen(
             )
         },
         mainContent = {
-            CustomOutlinedCard(context = activity) {
+            CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_location_permission),
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
@@ -75,17 +74,7 @@ fun GetLocationPermissionsScreen(
                 )
             }
 
-            val uriHandler = LocalUriHandler.current
-
-            TextButton(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = accent(),
-                ),
-                onClick = { uriHandler.openUri("https://www.benica.dev/privacy") }
-            ) {
-                Text("Privacy Policy")
-            }
+            PrivacyPolicyLink()
 
             FillSpacer()
 
@@ -118,6 +107,22 @@ fun GetLocationPermissionsScreen(
             GetLocationPermissionsNav(activity = activity)
         }
     )
+
+@Composable
+fun PrivacyPolicyLink() {
+    val uriHandler = LocalUriHandler.current
+    TextButton(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.tertiary,
+        ),
+        onClick = {
+            uriHandler.openUri("https://www.benica.dev")
+        }
+    ) {
+        Text("Privacy Policy")
+    }
+}
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi

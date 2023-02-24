@@ -18,7 +18,7 @@ package com.wtb.dashTracker.ui.dialog_confirm.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -30,10 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.SecondaryCard
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyOswald
-import com.wtb.dashTracker.ui.theme.onPrimary
-import com.wtb.dashTracker.ui.theme.onPrimaryVariant
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -49,7 +48,7 @@ fun RowScope.HeaderText(
             .padding(padding)
             .weight(weight = 1f, fill = true)
             .align(CenterVertically),
-        color = onPrimaryVariant(),
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
         fontSize = 14.sp,
         fontFamily = FontFamilyOswald,
         textAlign = textAlign
@@ -69,7 +68,7 @@ fun RowScope.ValueText(
         modifier = modifier
             .padding(all = padding)
             .weight(weight = 1f, fill = true),
-        color = onPrimary(),
+        color = MaterialTheme.colorScheme.onPrimary,
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
         fontFamily = FontFamilyOswald,
@@ -90,7 +89,7 @@ fun ColumnScope.HeaderText(
         modifier = modifier
             .padding(padding)
             .width(IntrinsicSize.Max),
-        color = onPrimaryVariant(),
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
         fontSize = 14.sp,
         fontFamily = FontFamilyOswald,
         textAlign = textAlign
@@ -118,7 +117,7 @@ fun ColumnScope.ValueText(
             else
                 padding(start = paddingStart, top = paddingTop, end = paddingEnd, bottom = paddingBottom)
         },
-        color = onPrimary(),
+        color = MaterialTheme.colorScheme.onPrimary,
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
         fontFamily = FontFamilyOswald,
@@ -126,13 +125,16 @@ fun ColumnScope.ValueText(
     )
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Preview
 @Composable
 fun TextViews() {
-    Card {
-        Row {
-            HeaderText(text = "Header")
-            ValueText(text = "Value")
+    DashTrackerTheme {
+        SecondaryCard {
+            Row {
+                HeaderText(text = "Header")
+                ValueText(text = "Value")
+            }
         }
     }
 }
@@ -142,7 +144,7 @@ fun TextViews() {
 @Composable
 fun TextViewsNight() {
     DashTrackerTheme {
-        Card {
+        SecondaryCard {
             Row {
                 HeaderText(text = "Header")
                 ValueText(text = "Value")

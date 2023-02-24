@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Wesley T. Benica
+ * Copyright 2023 Wesley T. Benica
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ fun GetBatteryPermissionScreen(
             )
         },
         mainContent = {
-            CustomOutlinedCard(context = activity) {
+            CustomOutlinedCard {
                 val str = buildAnnotatedString {
                     append(stringResource(id = R.string.dialog_battery_permission))
                 }
@@ -97,7 +97,7 @@ fun GetBatteryPermissionScreen(
                     append(", then ")
 
                     withStyle(style = styleBold) {
-                        append("Battery")
+                        append("App Battery Usage")
                     }
 
                     append(", then ")

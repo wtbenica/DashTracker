@@ -40,6 +40,8 @@ class EndDashDialog : BaseEntryDialog() {
         get() = getString(R.string.dialog_title_end_dash)
 
     override fun onFirstRun() {
+        super.onFirstRun()
+
         item?.let { entry ->
             binding.fragEntryCheckEndsNextDay.isChecked =
                 LocalDate.now().minusDays(1L).equals(entry.date)
@@ -53,21 +55,6 @@ class EndDashDialog : BaseEntryDialog() {
             updateTotalMileageFields()
 
             save(showToast = false)
-        }
-    }
-
-    private fun updateTotalMileageFields() {
-        item?.let { entry ->
-            val distance: Float =
-                entry.mileage ?: fullEntry?.trackedDistance?.toFloat() ?: 0f
-            val calculatedEnd: Float = (entry.startOdometer ?: 0f) + distance
-            val endOdometer: Float = entry.endOdometer ?: calculatedEnd
-
-            binding.fragEntryEndMileage.setText(getString(R.string.odometer_fmt, endOdometer))
-
-            binding.fragEntryTotalMileage.text = getString(R.string.odometer_fmt, distance)
-
-            setUpdateMileageButtonVisibility()
         }
     }
 
