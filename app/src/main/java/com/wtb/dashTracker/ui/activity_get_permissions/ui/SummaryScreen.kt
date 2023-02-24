@@ -193,7 +193,7 @@ fun PermRow(
     isRequired: Boolean = true
 ) {
     Row {
-        Icon(permIcon, permIconDescription, tint = MaterialTheme.colorScheme.secondaryContainer)
+        Icon(permIcon, permIconDescription, tint = MaterialTheme.colorScheme.tertiary)
 
         HalfSpacer()
 
@@ -223,7 +223,7 @@ fun PermRow(
             Icon(
                 imageVector = Icons.TwoTone.Check,
                 contentDescription = "enabled",
-                tint = MaterialTheme.colorScheme.tertiary
+                tint = MaterialTheme.colorScheme.secondaryContainer
             )
         else
             Icon(

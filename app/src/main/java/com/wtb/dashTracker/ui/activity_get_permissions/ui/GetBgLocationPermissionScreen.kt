@@ -22,11 +22,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.PinDrop
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
@@ -75,18 +76,7 @@ fun GetBgLocationPermissionScreen(
                 )
             }
 
-            val uriHandler = LocalUriHandler.current
-            TextButton(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.tertiary,
-                ),
-                onClick = {
-                    uriHandler.openUri("https://www.benica.dev")
-                }
-            ) {
-                Text("Privacy Policy")
-            }
+            PrivacyPolicyLink()
 
             FillSpacer()
 

@@ -74,17 +74,7 @@ fun GetLocationPermissionsScreen(
                 )
             }
 
-            val uriHandler = LocalUriHandler.current
-
-            TextButton(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
-                onClick = { uriHandler.openUri("https://www.benica.dev/privacy") }
-            ) {
-                Text("Privacy Policy")
-            }
+            PrivacyPolicyLink()
 
             FillSpacer()
 
@@ -117,6 +107,22 @@ fun GetLocationPermissionsScreen(
             GetLocationPermissionsNav(activity = activity)
         }
     )
+
+@Composable
+fun PrivacyPolicyLink() {
+    val uriHandler = LocalUriHandler.current
+    TextButton(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.tertiary,
+        ),
+        onClick = {
+            uriHandler.openUri("https://www.benica.dev")
+        }
+    ) {
+        Text("Privacy Policy")
+    }
+}
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi

@@ -232,8 +232,8 @@ fun csc(): SwitchColors {
         checkedThumbColor = MaterialTheme.colorScheme.onSecondary,
         checkedTrackColor = MaterialTheme.colorScheme.onBackground,
         checkedBorderColor = MaterialTheme.colorScheme.onSecondary,
-        uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
-        uncheckedTrackColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        uncheckedThumbColor = MaterialTheme.colorScheme.onSecondary,
+        uncheckedTrackColor = MaterialTheme.colorScheme.outline,
         uncheckedBorderColor = MaterialTheme.colorScheme.onSecondary
     )
 }

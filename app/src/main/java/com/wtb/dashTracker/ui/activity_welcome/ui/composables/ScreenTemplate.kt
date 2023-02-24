@@ -62,10 +62,10 @@ fun ScreenTemplate(
         OutlinedCard(
             shape = cardShape,
             colors = cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ),
-            border = BorderStroke(width = borderStrokeWidth, color = MaterialTheme.colorScheme.primary)
+            border = BorderStroke(width = borderStrokeWidth, color = MaterialTheme.colorScheme.primaryContainer)
         ) {
             WideSpacer()
 

@@ -84,7 +84,7 @@ fun SingleExpandableCard(
     iconDescription: String,
     isExpanded: Boolean,
     callback: () -> Unit,
-    content: @Composable() (() -> Unit)? = null
+    content: @Composable (() -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     OutlinedCard(
@@ -104,7 +104,7 @@ fun SingleExpandableCard(
         colors = customCardColors(),
         border = BorderStroke(
             width = borderStrokeWidth,
-            color = MaterialTheme.colorScheme.secondaryContainer
+            color = MaterialTheme.colorScheme.secondary
         )
     ) {
         Column {
@@ -184,7 +184,7 @@ fun CustomOutlinedCard(
     modifier: Modifier = Modifier,
     padding: Dp? = null,
     outlineColor: Color = MaterialTheme.colorScheme.secondary,
-    content: @Composable() (ColumnScope.() -> Unit)
+    content: @Composable (ColumnScope.() -> Unit)
 ): Unit = OutlinedCard(
     modifier = modifier
         .fillMaxWidth()
@@ -222,7 +222,7 @@ fun ContentCard(
     icon: ImageVector,
     iconTint: Color = MaterialTheme.colorScheme.secondaryContainer,
     iconDescription: String,
-    content: @Composable() (() -> Unit)? = null
+    content: @Composable (() -> Unit)? = null
 ) {
     OutlinedCard(
         modifier = Modifier

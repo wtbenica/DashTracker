@@ -40,30 +40,34 @@ private val DarkColorScheme: ColorScheme = darkColorScheme(
     // secondary container
     tertiaryContainer = darkPrimaryDark,
     // card outline
-    secondary = darkSecondaryLight,
+    secondary = darkSecondaryFaded,
     // content card icon
-    secondaryContainer = darkSecondaryFaded,
+    secondaryContainer = darkAccent,
     // accent
     tertiary = darkAccent,
 
     onPrimary = darkOnPrimary,
     background = darkOnSecondary,
     onTertiary = darkOnPrimary,
-    onPrimaryContainer = darkOnPrimaryVariant,
-    onSecondaryContainer = darkOnSecondaryVariant,
+    onPrimaryContainer = darkOnSecondaryVariant,
+    onSecondaryContainer = darkOnPrimaryVariant,
+    // expandable card ripple,
     onTertiaryContainer = darkSecondary,
     surface = darkOnSecondary,
     onSurface = darkOnPrimary,
+    // DropDownMenuBox background
     surfaceVariant = darkOnSecondaryVariant,
 
     // switch thumb
+    // switch thumb disabled
     onSecondary = darkSecondaryDark,
     //switch track
-    onBackground = darkSecondaryFaded,
-    // switch thumb disabled
-    outline = darkSecondary,
+    onBackground = darkAccent,
+    // switch track disabled
+    outline = darkSecondaryFaded,
 
 )
+
 
 private val LightColorScheme: ColorScheme = lightColorScheme(
     // template header
@@ -86,19 +90,21 @@ private val LightColorScheme: ColorScheme = lightColorScheme(
     onTertiary = onPrimary,
     onPrimaryContainer = onPrimaryVariant,
     onSecondaryContainer = onSecondaryVariant,
+    // expandable card ripple,
     onTertiaryContainer = secondaryFaded,
     surface = onSecondary,
     onSurface = onPrimary,
+    // DropDownMenuBox background
     surfaceVariant = onSecondaryVariant,
 
     // switch thumb
+    // switch thumb disabled
     onSecondary = secondaryDark,
     // switch track
     onBackground = secondaryFaded,
-    // switch thumb disabled
-    outline = secondary,
+    // switch track disabled
+    outline = secondaryLight,
 )
-
 @ExperimentalTextApi
 @Composable
 fun DashTrackerTheme(
@@ -118,6 +124,7 @@ fun DashTrackerTheme(
 
     // sets status bar text to light/dark
     val systemUiController = rememberSystemUiController()
+
     SideEffect {
         systemUiController.setStatusBarColor(
             color = colorScheme.primary,

@@ -43,7 +43,7 @@ fun CustomButton(
 ) {
     Button(
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
         onClick = onClick,
@@ -62,7 +62,7 @@ fun CustomTextButton(
     TextButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.inversePrimary,
         ),
         onClick = onClick,
         modifier = modifier,
