@@ -317,4 +317,5 @@
     <string name="toast_base_entry_dialog_end_mileage_set_to">End mileage set to %d</string>
     <string name="toast_base_entry_dialog_start_mileage_set_to">Start mileage set to %d</string>
     <string name="add_comma">"%s, "</string>
+    <string name="prefs_skip_welcome_screen">prefs_skip_welcome_screen</string>
 </resources>

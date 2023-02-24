@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -40,7 +39,6 @@ import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.welcomeIconColor
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
@@ -96,7 +94,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
         headerText = "Mileage Tracking",
         iconImage = iconImage,
         mainContent = {
-            CustomOutlinedCard(context = activity) {
+            CustomOutlinedCard {
                 Text(
                     text = when {
                         permHelp.locationEnabled -> "Automatic mileage tracking is enabled." +
@@ -143,8 +141,7 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
                 locationEnabled = permHelp.fgLocationEnabled,
                 bgLocationEnabled = permHelp.bgLocationEnabled,
                 notificationsEnabled = permHelp.notificationsEnabled,
-                batteryOptimizationDisabled = permHelp.batteryOptimizationDisabled,
-                context = activity
+                batteryOptimizationDisabled = permHelp.batteryOptimizationDisabled
             )
         },
         navContent = {
@@ -196,7 +193,7 @@ fun PermRow(
     isRequired: Boolean = true
 ) {
     Row {
-        Icon(permIcon, permIconDescription, tint = welcomeIconColor())
+        Icon(permIcon, permIconDescription, tint = MaterialTheme.colorScheme.tertiary)
 
         HalfSpacer()
 
@@ -226,7 +223,7 @@ fun PermRow(
             Icon(
                 imageVector = Icons.TwoTone.Check,
                 contentDescription = "enabled",
-                tint = MaterialTheme.colorScheme.onTertiaryContainer
+                tint = MaterialTheme.colorScheme.secondaryContainer
             )
         else
             Icon(
@@ -267,8 +264,7 @@ fun SummaryScreenPreview() {
                         locationEnabled = true,
                         bgLocationEnabled = true,
                         notificationsEnabled = true,
-                        batteryOptimizationDisabled = false,
-                        context = null
+                        batteryOptimizationDisabled = false
                     )
                 },
                 navContent = {
@@ -299,7 +295,7 @@ fun SummaryScreenPreviewNight() {
                     )
                 },
                 mainContent = {
-                    CustomOutlinedCard() {
+                    CustomOutlinedCard {
                         Text(text = "Automatic mileage tracking is enabled")
                     }
 
@@ -309,8 +305,7 @@ fun SummaryScreenPreviewNight() {
                         locationEnabled = true,
                         bgLocationEnabled = true,
                         notificationsEnabled = true,
-                        batteryOptimizationDisabled = false,
-                        context = null
+                        batteryOptimizationDisabled = false
                     )
                 },
                 navContent = {
@@ -327,10 +322,9 @@ fun PermissionsSummaryCard(
     locationEnabled: Boolean,
     bgLocationEnabled: Boolean,
     notificationsEnabled: Boolean,
-    batteryOptimizationDisabled: Boolean,
-    context: Context?
+    batteryOptimizationDisabled: Boolean
 ) {
-    CustomOutlinedCard(context = context) {
+    CustomOutlinedCard {
         Text(text = "Permissions")
 
         DefaultSpacer()

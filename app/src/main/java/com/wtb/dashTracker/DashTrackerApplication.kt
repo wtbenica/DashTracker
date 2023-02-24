@@ -17,24 +17,14 @@
 package com.wtb.dashTracker
 
 import android.app.Application
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.PreferenceManager
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.UI_MODE_PREF
+import com.wtb.dashTracker.util.PermissionsHelper
 
 class DashTrackerApplication : Application() {
-    private val sharedPrefs: SharedPreferences
-        get() = PreferenceManager.getDefaultSharedPreferences(this)
+    private val permissionsHelper get() = PermissionsHelper(this)
 
     override fun onCreate() {
         super.onCreate()
 
-        val mode = when (sharedPrefs.getString(UI_MODE_PREF, "System default")) {
-            "Dark" -> AppCompatDelegate.MODE_NIGHT_YES
-            "Light" -> AppCompatDelegate.MODE_NIGHT_NO
-            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
-
-        AppCompatDelegate.setDefaultNightMode(mode)
+        permissionsHelper.setUiModeFromPrefs()
     }
 }

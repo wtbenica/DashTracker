@@ -53,6 +53,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.*
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
@@ -73,7 +74,7 @@ import kotlinx.coroutines.*
 @ExperimentalTextApi
 class OnboardingMileageActivity : ComponentActivity() {
 
-    private val permissionsHelper = PermissionsHelper(this)
+    internal val permissionsHelper = PermissionsHelper(this)
 
     private val sharedPrefs
         get() = permissionsHelper.sharedPrefs
@@ -92,6 +93,7 @@ class OnboardingMileageActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        debugLog("onCreate ${this::class.simpleName}")
         actionBar?.hide()
 
         @Suppress("DEPRECATION")
@@ -185,8 +187,7 @@ class OnboardingMileageActivity : ComponentActivity() {
                                 OPTIMIZATION_ON_SCREEN -> {
                                     ReenableBatteryOptimizationScreen(
                                         modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity,
-                                        finishWhenDone = true
+                                        activity = this@OnboardingMileageActivity
                                     )
                                 }
                             }
@@ -363,6 +364,8 @@ class OnboardingMileageActivity : ComponentActivity() {
 
     @SuppressLint("ApplySharedPref")
     override fun onDestroy() {
+        debugLog("onDestroy ${this::class.simpleName}")
+
         permissionsHelper.sharedPrefs.edit()
             .putBoolean(ASK_AGAIN_LOCATION, false)
             .putBoolean(ASK_AGAIN_BG_LOCATION, false)
@@ -423,6 +426,7 @@ class OnboardingMileageActivity : ComponentActivity() {
             }
         }
     }
+
     fun getNotificationPermission() {
         when {
             !sharedPrefs.getBoolean(NOTIFICATION_ENABLED, true) -> {}
@@ -503,7 +507,7 @@ internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selecte
                     numPages
                 ),
                 modifier = Modifier.size(8.dp),
-                tint = MaterialTheme.colorScheme.onTertiaryContainer
+                tint = MaterialTheme.colorScheme.inversePrimary
             )
         }
     }

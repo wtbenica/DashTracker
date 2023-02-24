@@ -12,7 +12,9 @@ import android.os.PowerManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.wtb.dashTracker.R
@@ -97,7 +99,6 @@ internal fun ComponentActivity.registerSinglePermissionLauncher(onGranted: (() -
 
 
 class PermissionsHelper(val context: Context) {
-
     internal val sharedPrefs
         get() = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -136,14 +137,20 @@ class PermissionsHelper(val context: Context) {
             fun systemDarkMode(): Boolean =
                 (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
-            val options: Array<String> = context.resources.getStringArray(R.array.theme_options)
-
-            return when (sharedPrefs.getString(context.UI_MODE_PREF, options.first())) {
-                "Dark" -> true
-                "Light" -> false
+            return when (uiMode) {
+                UiMode.DARK -> true
+                UiMode.LIGHT -> false
                 else -> systemDarkMode()
             }
         }
+
+    internal val uiMode: UiMode
+        get() = uiModeByDisplayName(
+            sharedPrefs.getString(
+                context.UI_MODE_PREF,
+                context.getString(UiMode.SYSTEM.displayName)
+            ) ?: context.getString(UiMode.SYSTEM.displayName)
+        )
 
     @SuppressLint("ApplySharedPref")
     fun setBooleanPref(
@@ -156,6 +163,59 @@ class PermissionsHelper(val context: Context) {
             prefValue
         )?.commit()
         onPrefSet?.invoke()
+    }
+
+    enum class UiMode(@StringRes val displayName: Int, val mode: Int) {
+        SYSTEM(
+            R.string.pref_theme_option_use_device_theme,
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        ),
+        LIGHT(R.string.pref_theme_option_light, AppCompatDelegate.MODE_NIGHT_NO),
+        DARK(R.string.pref_theme_option_dark, AppCompatDelegate.MODE_NIGHT_YES);
+    }
+
+    fun uiModeByDisplayName(mode: String): UiMode {
+        return UiMode.values().firstOrNull { context.getString(it.displayName) == mode }
+            ?: UiMode.SYSTEM
+    }
+
+    fun uiModeByMode(mode: Int): UiMode {
+        return UiMode.values().firstOrNull { it.mode == mode } ?: UiMode.SYSTEM
+    }
+
+    fun getUiModeDisplayName(): String {
+        return sharedPrefs.getString(
+            context.UI_MODE_PREF,
+            context.getString(UiMode.SYSTEM.displayName)
+        ) ?: context.getString(UiMode.SYSTEM.displayName)
+    }
+
+    fun updateUiMode(uiMode: UiMode, onPrefSet: (() -> Unit)? = null) {
+        @Suppress("ApplySharedPref")
+        sharedPrefs?.apply {
+            edit()
+                .putString(
+                    context.UI_MODE_PREF,
+                    context.getString(uiMode.displayName)
+                )
+                .commit()
+
+            onPrefSet?.invoke()
+
+            AppCompatDelegate.setDefaultNightMode(uiMode.mode)
+        }
+    }
+
+    fun setUiModeFromPrefs() {
+        val displayName = sharedPrefs.getString(
+            context.UI_MODE_PREF,
+            context.getString(UiMode.SYSTEM.displayName)
+        ) ?: context.getString(UiMode.SYSTEM.displayName)
+
+        val mode = uiModeByDisplayName(displayName).mode
+
+        AppCompatDelegate.setDefaultNightMode(mode)
+
     }
 
     /**
@@ -241,6 +301,9 @@ class PermissionsHelper(val context: Context) {
     }
 
     companion object {
+        // Some of these don't need to be stored as string resources. The reason that some
+        // are is that they are keys in root_preferences, where strings are required
+        // The same method is used for all prefs for consistency only.
         internal val Context.LOCATION_ENABLED
             get() = getString(R.string.prefs_enable_location)
 
@@ -286,6 +349,9 @@ class PermissionsHelper(val context: Context) {
 
         internal val Context.ASK_AGAIN_BATTERY_OPTIMIZER
             get() = getString(R.string.prefs_ask_again_battery_optimizer)
+
+        internal val Context.PREF_SKIP_WELCOME_SCREEN
+            get() = getString(R.string.prefs_skip_welcome_screen)
 
         internal val Context.PREF_SHOW_ONBOARD_INTRO
             get() = getString(R.string.prefs_show_onboard_intro)

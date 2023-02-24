@@ -27,7 +27,6 @@ import android.widget.Button
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.CardDefaults.cardColors
@@ -174,26 +173,14 @@ class ConfirmationDialogUseTrackedMiles {
             dialog: SimpleConfirmationDialog<View, Any, ViewBinding, ViewBinding>? = null
         ) {
             DashTrackerTheme {
-                val cardStroke = if (isSystemInDarkTheme()) {
-                    secondary()
-                } else {
-                    secondaryLight()
-                }
-                val cardColors = if (isSystemInDarkTheme()) {
+                val cardStroke = MaterialTheme.colorScheme.outline
+                val cardColors =
                     cardColors(
-                        containerColor = secondaryLight(),
+                        containerColor = MaterialTheme.colorScheme.onTertiaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSecondary,
-                        disabledContainerColor = secondaryFaded(),
-                        disabledContentColor = onSecondaryVariant()
+                        disabledContainerColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        disabledContentColor = MaterialTheme.colorScheme.onTertiaryContainer
                     )
-                } else {
-                    cardColors(
-                        containerColor = secondaryFaded(),
-                        contentColor = MaterialTheme.colorScheme.onSecondary,
-                        disabledContainerColor = secondaryFaded(),
-                        disabledContentColor = onSecondaryVariant()
-                    )
-                }
 
                 Column(
                     modifier = Modifier

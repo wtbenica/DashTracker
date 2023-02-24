@@ -30,14 +30,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
@@ -45,8 +44,8 @@ import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity.Companion.EXTRA_PERMISSIONS_ROUTE
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
-import com.wtb.dashTracker.ui.dialog_confirm.ConfirmRestartDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmRestartDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
@@ -90,6 +89,7 @@ class SettingsActivity : AuthenticatedActivity() {
         setContentView(R.layout.settings_activity)
 
         if (savedInstanceState == null) {
+            @Suppress("CommitTransaction")
             supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.settings, SettingsFragment())
@@ -152,17 +152,19 @@ class SettingsActivity : AuthenticatedActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+        private val permissionsHelper: PermissionsHelper
+            get() = PermissionsHelper(requireContext())
+
         private val sharedPrefs: SharedPreferences
-            get() = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            get() = permissionsHelper.sharedPrefs
 
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View {
-            childFragmentManager.setFragmentResultListener(
+            setFragmentResultListener(
                 ConfirmDialog.RESTART.key,
-                this
             ) { _, bundle ->
                 val result = bundle.getBoolean(ARG_IS_CONFIRMED)
 
@@ -227,10 +229,11 @@ class SettingsActivity : AuthenticatedActivity() {
             }
 
             (activity as SettingsActivity).uiModePref?.apply {
-                value = sharedPrefs.getString(
-                    requireContext().UI_MODE_PREF,
-                    resources.getString(R.string.pref_theme_option_use_device_theme)
-                )
+                value = permissionsHelper.getUiModeDisplayName()
+//                value = sharedPrefs.getString(
+//                    requireContext().UI_MODE_PREF,
+//                    resources.getString(R.string.pref_theme_option_use_device_theme)
+//                )
             }
         }
     }
@@ -385,15 +388,8 @@ class SettingsActivity : AuthenticatedActivity() {
                     }
                 }
                 UI_MODE_PREF -> {
-                    val mode = when (sharedPrefs.getString(
-                        UI_MODE_PREF,
-                        getString(R.string.pref_theme_option_use_device_theme)
-                    )) {
-                        getString(R.string.pref_theme_option_dark) -> AppCompatDelegate.MODE_NIGHT_YES
-                        getString(R.string.pref_theme_option_light) -> AppCompatDelegate.MODE_NIGHT_NO
-                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    }
-                    AppCompatDelegate.setDefaultNightMode(mode)
+                    permissionsHelper.setUiModeFromPrefs()
+//                    AppCompatDelegate.setDefaultNightMode(permissionsHelper.uiMode)
                 }
             }
         }
