@@ -25,7 +25,6 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
@@ -37,47 +36,72 @@ import com.wtb.dashTracker.extensions.getAttributeColor
 val cardShape: RoundedCornerShape = RoundedCornerShape(24.dp)
 
 private val DarkColorScheme: ColorScheme = darkColorScheme(
+    // template header
+    primaryContainer = darkPrimaryLight,
+    // template header stroke
     primary = darkPrimary,
+    // header icon color
+    inversePrimary = darkPrimaryFaded,
+    // secondary container
+    tertiaryContainer = darkPrimaryDark,
+    // card outline
+    secondary = darkSecondaryLight,
+    // content card icon
+    secondaryContainer = darkSecondaryFaded,
+    // accent
+    tertiary = darkAccent,
+
     onPrimary = darkOnPrimary,
-    primaryContainer = darkPrimary,
-    onPrimaryContainer = darkOnPrimary,
-    inversePrimary = darkPrimaryLight,
-    secondary = darkPrimaryDark,
-    onSecondary = darkOnSecondary,
-    secondaryContainer = darkPrimaryLight,
-    onSecondaryContainer = darkOnPrimary,
-    tertiary = darkPrimaryDark,
+    background = darkOnSecondary,
     onTertiary = darkOnPrimary,
-    tertiaryContainer = darkPrimaryLight,
-    onTertiaryContainer = darkPrimaryFaded,
+    onPrimaryContainer = darkOnPrimaryVariant,
+    onSecondaryContainer = darkOnSecondaryVariant,
+    onTertiaryContainer = darkSecondary,
     surface = darkOnSecondary,
     onSurface = darkOnPrimary,
     surfaceVariant = darkOnSecondaryVariant,
-    background = Color.Black,
-    onBackground = darkOnPrimary,
-    outline = darkPrimaryLight,
+
+    // switch thumb
+    onSecondary = darkSecondaryDark,
+    //switch track
+    onBackground = darkSecondaryFaded,
+    // switch thumb disabled
+    outline = darkSecondary,
+
 )
 
 private val LightColorScheme: ColorScheme = lightColorScheme(
+    // template header
+    primaryContainer = primaryLight,
+    // template header stroke
     primary = primary,
-    onPrimary = onPrimary,
-    primaryContainer = primary,
-    onPrimaryContainer = onPrimary,
+    // header icon color
     inversePrimary = primaryDark,
-    secondary = primaryLight,
-    onSecondary = onSecondary,
-    secondaryContainer = primaryLight,
-    onSecondaryContainer = onSecondary,
-    tertiary = primaryFaded,
+    // secondary container
+    tertiaryContainer = primaryFaded,
+    // card outline
+    secondary = secondaryLight,
+    // content card icon
+    secondaryContainer = secondaryDark,
+    // accent
+    tertiary = accent,
+
+    onPrimary = onPrimary,
+    background = onSecondary,
     onTertiary = onPrimary,
-    tertiaryContainer = primaryDark,
-    onTertiaryContainer = primaryDark,
+    onPrimaryContainer = onPrimaryVariant,
+    onSecondaryContainer = onSecondaryVariant,
+    onTertiaryContainer = secondaryFaded,
     surface = onSecondary,
     onSurface = onPrimary,
-    surfaceVariant = onSecondary,
-    background = Color.White,
-    onBackground = onPrimary,
-    outline = primaryLight,
+    surfaceVariant = onSecondaryVariant,
+
+    // switch thumb
+    onSecondary = secondaryDark,
+    // switch track
+    onBackground = secondaryFaded,
+    // switch thumb disabled
+    outline = secondary,
 )
 
 @ExperimentalTextApi

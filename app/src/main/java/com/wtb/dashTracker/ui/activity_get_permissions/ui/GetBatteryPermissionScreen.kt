@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Wesley T. Benica
+ * Copyright 2023 Wesley T. Benica
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
-import androidx.compose.material.icons.twotone.LocationOn
-import androidx.compose.material3.*
+import androidx.compose.material.icons.twotone.BatterySaver
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
@@ -41,93 +42,93 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerI
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetLocationPermissionsScreen(
+fun GetBatteryPermissionScreen(
     modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null
+    activity: OnboardingMileageActivity? = null,
+    finishWhenDone: Boolean = false
 ): Unit =
     ScreenTemplate(
         modifier = modifier,
-        headerText = "Location and Activity Permissions",
-        subtitleText = "Required for automatic mileage tracking",
+        headerText = "Battery Optimization",
+        subtitleText = "Optional",
         iconImage = {
             Icon(
-                imageVector = Icons.TwoTone.LocationOn,
-                contentDescription = "My Location",
+                imageVector = Icons.TwoTone.BatterySaver,
+                contentDescription = "Battery Saver Icon",
                 modifier = Modifier.size(96.dp),
                 tint = headerIconColor()
             )
         },
         mainContent = {
             CustomOutlinedCard {
+                val str = buildAnnotatedString {
+                    append(stringResource(id = R.string.dialog_battery_permission))
+                }
+
+
                 Text(
-                    text = stringResource(id = R.string.dialog_location_permission),
+                    text = str,
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
-            }
 
-            val uriHandler = LocalUriHandler.current
-
-            TextButton(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
-                onClick = { uriHandler.openUri("https://www.benica.dev/privacy") }
-            ) {
-                Text("Privacy Policy")
             }
 
             FillSpacer()
 
             SecondaryCard {
                 val str = buildAnnotatedString {
-                    append("To grant location permissions, select ")
+                    append("To grant unrestricted background battery use, select ")
 
                     withStyle(style = styleBold) {
                         append("OK")
                     }
 
-                    append(" then allow location access ")
+                    append(", then ")
 
                     withStyle(style = styleBold) {
-                        append("While using the app")
+                        append("App Battery Usage")
                     }
 
                     append(", then ")
 
                     withStyle(style = styleBold) {
-                        append("Allow")
+                        append("Unrestricted")
                     }
 
-                    append(" physical activity access.")
+                    append(" then return to DashTracker.")
                 }
                 Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {
-            GetLocationPermissionsNav(activity = activity)
+            GetBatteryPermissionNav(activity = activity, finishWhenDone = finishWhenDone)
         }
     )
+
 
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetLocationPermissionsNav(
-    activity: OnboardingMileageActivity? = null
+fun GetBatteryPermissionNav(
+    modifier: Modifier = Modifier,
+    activity: OnboardingMileageActivity? = null,
+    finishWhenDone: Boolean = false
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
     ) {
         LocalContext.current
@@ -135,9 +136,10 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutLocation(true)
-                activity?.setLocationEnabled(false)
-                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
+                activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, true)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                if (finishWhenDone) activity?.finish()
             },
         ) {
             Text("No thanks")
@@ -147,10 +149,10 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutLocation(false)
-                activity?.setLocationEnabled(false)
-                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
-                activity?.finish()
+                activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, false)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, true)
+                if (finishWhenDone) activity?.finish()
             },
         ) {
             Text("Maybe later")
@@ -160,10 +162,10 @@ fun GetLocationPermissionsNav(
 
         CustomButton(
             onClick = {
-                activity?.setOptOutLocation(false)
-                activity?.setLocationEnabled(true)
-                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
-                activity?.getLocationPermissions()
+                activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, false)
+                activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, false)
+                activity?.getBatteryPermission()
             },
         ) {
             HalfSpacer()
@@ -183,17 +185,17 @@ fun GetLocationPermissionsNav(
 @ExperimentalTextApi
 @Preview(showBackground = true)
 @Composable
-fun GetLocationPermissionsPreview() {
+fun GetBatteryPermissionPreview() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetLocationPermissionsScreen()
+                GetBatteryPermissionScreen()
                 PageIndicator(
                     modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
                     numPages = 4,
-                    selectedPage = 1
+                    selectedPage = 4
                 )
             }
         }
@@ -206,17 +208,17 @@ fun GetLocationPermissionsPreview() {
 @ExperimentalTextApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun GetLocationPermissionsPreviewNight() {
+fun GetBatteryPermissionPreviewNight() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetLocationPermissionsScreen()
+                GetBatteryPermissionScreen()
                 PageIndicator(
                     modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
                     numPages = 4,
-                    selectedPage = 1
+                    selectedPage = 4
                 )
             }
         }

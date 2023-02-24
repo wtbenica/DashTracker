@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Wesley T. Benica
+ * Copyright 2023 Wesley T. Benica
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,11 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
-import androidx.compose.material.icons.twotone.LocationOn
+import androidx.compose.material.icons.twotone.PinDrop
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -41,47 +40,50 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerI
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
-import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetLocationPermissionsScreen(
+fun GetBgLocationPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ): Unit =
     ScreenTemplate(
         modifier = modifier,
-        headerText = "Location and Activity Permissions",
+        headerText = "Background Location Permission",
         subtitleText = "Required for automatic mileage tracking",
         iconImage = {
             Icon(
-                imageVector = Icons.TwoTone.LocationOn,
-                contentDescription = "My Location",
-                modifier = Modifier.size(96.dp),
+                imageVector = Icons.TwoTone.PinDrop,
+                contentDescription = "Location symbol",
+                modifier = Modifier
+                    .size(96.dp),
                 tint = headerIconColor()
             )
         },
         mainContent = {
             CustomOutlinedCard {
                 Text(
-                    text = stringResource(id = R.string.dialog_location_permission),
+                    text = stringResource(R.string.dialog_bg_location_text),
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
                     fontFamily = FontFamilyFiraSans
                 )
             }
 
             val uriHandler = LocalUriHandler.current
-
             TextButton(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    contentColor = MaterialTheme.colorScheme.tertiary,
                 ),
-                onClick = { uriHandler.openUri("https://www.benica.dev/privacy") }
+                onClick = {
+                    uriHandler.openUri("https://www.benica.dev")
+                }
             ) {
                 Text("Privacy Policy")
             }
@@ -90,31 +92,25 @@ fun GetLocationPermissionsScreen(
 
             SecondaryCard {
                 val str = buildAnnotatedString {
-                    append("To grant location permissions, select ")
+                    append("To grant background location permission, select ")
 
                     withStyle(style = styleBold) {
                         append("OK")
                     }
 
-                    append(" then allow location access ")
+                    append(" then ")
 
                     withStyle(style = styleBold) {
-                        append("While using the app")
+                        append("Allow all the time")
                     }
 
-                    append(", then ")
-
-                    withStyle(style = styleBold) {
-                        append("Allow")
-                    }
-
-                    append(" physical activity access.")
+                    append(", then return to DashTracker.")
                 }
                 Text(str, modifier = Modifier.padding(24.dp))
             }
         },
         navContent = {
-            GetLocationPermissionsNav(activity = activity)
+            GetBgLocationPermissionNav(activity = activity)
         }
     )
 
@@ -123,21 +119,21 @@ fun GetLocationPermissionsScreen(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetLocationPermissionsNav(
+fun GetBgLocationPermissionNav(
+    modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
     ) {
-        LocalContext.current
         FillSpacer()
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutLocation(true)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, true)
                 activity?.setLocationEnabled(false)
-                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, false)
             },
         ) {
             Text("No thanks")
@@ -147,10 +143,9 @@ fun GetLocationPermissionsNav(
 
         CustomTextButton(
             onClick = {
-                activity?.setOptOutLocation(false)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
                 activity?.setLocationEnabled(false)
-                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
-                activity?.finish()
+                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, true)
             },
         ) {
             Text("Maybe later")
@@ -160,10 +155,10 @@ fun GetLocationPermissionsNav(
 
         CustomButton(
             onClick = {
-                activity?.setOptOutLocation(false)
+                activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
                 activity?.setLocationEnabled(true)
-                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
-                activity?.getLocationPermissions()
+                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, false)
+                activity?.getBgPermission()
             },
         ) {
             HalfSpacer()
@@ -177,23 +172,24 @@ fun GetLocationPermissionsNav(
     }
 }
 
+
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Preview(showBackground = true)
 @Composable
-fun GetLocationPermissionsPreview() {
+fun GetBgLocationPermissionPreview() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetLocationPermissionsScreen()
+                GetBgLocationPermissionScreen()
                 PageIndicator(
                     modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
                     numPages = 4,
-                    selectedPage = 1
+                    selectedPage = 2
                 )
             }
         }
@@ -206,17 +202,17 @@ fun GetLocationPermissionsPreview() {
 @ExperimentalTextApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun GetLocationPermissionsPreviewNight() {
+fun GetBgLocationPermissionPreviewNight() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
             Column {
-                GetLocationPermissionsScreen()
+                GetBgLocationPermissionScreen()
                 PageIndicator(
                     modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
                     numPages = 4,
-                    selectedPage = 1
+                    selectedPage = 2
                 )
             }
         }

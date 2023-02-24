@@ -20,7 +20,6 @@ import android.graphics.Typeface.*
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -38,7 +37,6 @@ import com.wtb.dashTracker.extensions.getAttributeColor
 import com.wtb.dashTracker.extensions.getIntNotZero
 import com.wtb.dashTracker.extensions.getLongNotZero
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.parcelize.Parcelize
 
@@ -285,7 +283,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                 setOnClickListener {
                     dismiss()
                     negAction?.invoke()
-                    Log.d(TAG, "No button pressed | ${requestKey}")
+
                     if (confirmId == null) {
                         parentFragmentManager.setFragmentResult(
                             requestKey,

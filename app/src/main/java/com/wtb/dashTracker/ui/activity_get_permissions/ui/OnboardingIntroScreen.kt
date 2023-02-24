@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
-import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
@@ -43,7 +42,8 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.iconColor
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -83,9 +83,7 @@ fun OnboardingIntroScreen(
                     ContentCard(
                         titleText = it,
                         icon = icons[i],
-                        iconTint = iconColor(activity as? Context),
-                        iconDescription = "Punch Clock",
-                        context = activity
+                        iconDescription = "Punch Clock"
                     )
                 }
 
@@ -142,7 +140,9 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
                     activity?.setOptOutLocation(false)
                     activity?.setLocationEnabled(false)
                     activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, true)
                     activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, true)
+                    activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, true)
                 },
             ) {
                 Text("Maybe later")

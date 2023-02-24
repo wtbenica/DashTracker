@@ -40,6 +40,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialScreenCallback
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialSettings
 import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreen
@@ -47,6 +48,7 @@ import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreenCallback
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
+import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SKIP_WELCOME_SCREEN
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -60,13 +62,13 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        debugLog("onCreate ${this::class.simpleName}")
         actionBar?.hide()
 
         setContent {
             DashTrackerTheme(darkTheme = permissionsHelper.uiModeIsDarkMode) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
                     Column(
                         modifier = Modifier
@@ -76,9 +78,21 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
                         navController = rememberAnimatedNavController()
 
                         Column(modifier = Modifier.fillMaxSize()) {
+                            val startScreen = if (
+                                permissionsHelper.sharedPrefs.getBoolean(
+                                    PREF_SKIP_WELCOME_SCREEN,
+                                    false
+                                )
+                            ) {
+                                permissionsHelper.setBooleanPref(PREF_SKIP_WELCOME_SCREEN, false)
+                                WelcomeActivityScreen.SETTINGS
+                            } else {
+                                WelcomeActivityScreen.WELCOME
+                            }
+
                             AnimatedNavHost(
                                 navController = navController!!,
-                                startDestination = WelcomeActivityScreen.WELCOME.name,
+                                startDestination = startScreen.name,
                                 modifier = Modifier.weight(1f),
                                 enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
                                 exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
@@ -99,6 +113,12 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
         }
     }
 
+    override fun onDestroy() {
+        debugLog("onDestroy ${this::class.simpleName}")
+
+        super.onDestroy()
+    }
+
     override fun nextScreen() {
         navController?.navigate(WelcomeActivityScreen.SETTINGS.name)
     }
@@ -111,7 +131,9 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
 
     companion object {
         @Composable
-        fun headerIconColor(): Color = MaterialTheme.colorScheme.onTertiaryContainer
+        fun headerIconColor(): Color = MaterialTheme.colorScheme.inversePrimary
+
+
     }
 }
 

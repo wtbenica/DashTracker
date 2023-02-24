@@ -69,7 +69,7 @@ fun GetNotificationPermissionScreen(
             )
         },
         mainContent = {
-            CustomOutlinedCard(context = activity) {
+            CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_notification_permission),
                     fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),

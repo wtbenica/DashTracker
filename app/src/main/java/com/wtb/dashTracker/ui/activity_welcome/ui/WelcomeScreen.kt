@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui
 
-import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +41,6 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_welcome.ui.SelectedCard.*
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import com.wtb.dashTracker.ui.theme.iconColor
 
 interface WelcomeScreenCallback {
     fun nextScreen()
@@ -67,7 +65,6 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                 SingleExpandableCard(
                     text = stringResource(R.string.welcome_screen_item_track_income),
                     icon = Icons.TwoTone.MonetizationOn,
-                    iconTint = iconColor(callback as? Context),
                     iconDescription = stringResource(R.string.content_desc_welcome_screen_wallet_icon),
                     isExpanded = expandedCard == INCOME,
                     callback = {
@@ -77,8 +74,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                             } else {
                                 INCOME
                             }
-                    },
-                    context = callback as? Context
+                    }
                 ) {
                     Column {
                         stringArrayResource(id = R.array.track_income).forEach {
@@ -92,7 +88,6 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                 SingleExpandableCard(
                     text = stringResource(R.string.welcome_screen_item_track_expenses),
                     icon = Icons.TwoTone.Wallet,
-                    iconTint = iconColor(callback as? Context),
                     iconDescription = stringResource(R.string.content_desc_welcome_screen_wallet_icon),
                     isExpanded = expandedCard == EXPENSES,
                     callback = {
@@ -102,8 +97,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                             } else {
                                 EXPENSES
                             }
-                    },
-                    context = callback as? Context
+                    }
                 ) {
                     Column {
                         stringArrayResource(id = R.array.track_expense).forEach {
@@ -117,7 +111,6 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                 SingleExpandableCard(
                     text = stringResource(R.string.welcome_screen_item_track_mileage),
                     icon = Icons.TwoTone.DirectionsCar,
-                    iconTint = iconColor(callback as? Context),
                     iconDescription = stringResource(R.string.content_desc_welcome_screen_car_icon),
                     isExpanded = expandedCard == MILEAGE,
                     callback = {
@@ -127,8 +120,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
                             } else {
                                 MILEAGE
                             }
-                    },
-                    context = callback as? Context
+                    }
                 ) {
                     Column {
                         stringArrayResource(id = R.array.track_mileage).forEach {

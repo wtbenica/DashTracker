@@ -20,7 +20,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,6 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
-import com.wtb.dashTracker.ui.activity_main.TAG
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmResetDialog
@@ -177,7 +175,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                 ConfirmDialog.DELETE.key,
                 this@EditDataModelDialog
             ) { _, bundle ->
-                Log.d(TAG, "Received delete confirmation")
                 val result = bundle.getBoolean(ARG_IS_CONFIRMED)
                 if (result) {
                     onDeleteItem()
@@ -188,7 +185,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                 ConfirmDialog.RESET.key,
                 this@EditDataModelDialog
             ) { _, bundle ->
-                Log.d(TAG, "Received reset confirmation")
                 val result = bundle.getBoolean(ARG_IS_CONFIRMED)
                 if (result) {
                     updateUI()
@@ -199,7 +195,6 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
                 ConfirmDialog.SAVE.key,
                 this@EditDataModelDialog
             ) { _, bundle ->
-                Log.d(TAG, "Received save confirmation")
                 val isDelete = bundle.getBoolean(ARG_IS_CONFIRMED_2)
                 if (isDelete) {
                     saveOnExit = false
