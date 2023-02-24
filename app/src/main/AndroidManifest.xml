@@ -38,14 +38,12 @@
         <activity
             android:name=".ui.activity_welcome.WelcomeActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Base.DasherCompanion" />
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.activity_get_permissions.OnboardingMileageActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Base.DasherCompanion" />
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.activity_settings.SettingsActivity"
