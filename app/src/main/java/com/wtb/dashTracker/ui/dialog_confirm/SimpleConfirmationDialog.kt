@@ -256,20 +256,13 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                 dismiss()
                 posAction2?.invoke()
 
-                if (confirmId == null) {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(ARG_IS_CONFIRMED_2 to true)
-                    )
-                } else {
-                    parentFragmentManager.setFragmentResult(
-                        requestKey,
-                        bundleOf(
-                            ARG_IS_CONFIRMED_2 to true,
-                            ARG_EXTRA_ITEM_ID to confirmId
-                        )
-                    )
+                val bundle = bundleOf(ARG_IS_CONFIRMED_2 to true).apply {
+                    confirmId?.let {
+                        putLong(ARG_EXTRA_ITEM_ID, it)
+                    }
                 }
+
+                parentFragmentManager.setFragmentResult(requestKey, bundle)
             }
 
             setAsDefault(pos2ButtonIsDefault)
@@ -284,20 +277,13 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
                     dismiss()
                     negAction?.invoke()
 
-                    if (confirmId == null) {
-                        parentFragmentManager.setFragmentResult(
-                            requestKey,
-                            bundleOf(ARG_IS_CONFIRMED to false)
-                        )
-                    } else {
-                        parentFragmentManager.setFragmentResult(
-                            requestKey,
-                            bundleOf(
-                                ARG_IS_CONFIRMED to false,
-                                ARG_EXTRA_ITEM_ID to confirmId
-                            )
-                        )
+                    val bundle = bundleOf(ARG_IS_CONFIRMED to false).apply {
+                        confirmId?.let {
+                            putLong(ARG_EXTRA_ITEM_ID, it)
+                        }
                     }
+
+                    parentFragmentManager.setFragmentResult(requestKey, bundle)
                 }
             }
         } else {
