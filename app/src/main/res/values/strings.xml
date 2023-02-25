@@ -169,19 +169,23 @@
     <string-array name="list_whats_new_mileage_tracking">
         <item>Spend less time entering mileage information</item>
         <item>Get a real-time estimate of your expenses while you\'re dashing</item>
-        <item>We do not sell or share your location data, nor can we access it ourselves</item>
+        <item>Keep control of your data</item>
     </string-array>
 
-    <string name="dialog_location_permission">DashTracker needs permission to access your location
-        and physical activity (on foot, in car, still or moving).
-
+    <string name="dialog_location_permission">DashTracker uses your location data to calculate
+        your mileage, and uses your physical activity data to determine when you are driving.
         \n\nDashTracker will only access your location and physical activity while mileage tracking
         is active.
+        \n\nYour data is only stored on your phone, so we do not sell, share, or have access to it.
     </string>
 
-    <string name="dialog_bg_location_text">DashTracker needs permission to access your location
+    <string name="dialog_bg_location_text">DashTracker will continue to access your location
         while it is running in the background. Without this permission, DashTracker cannot
-        provide accurate mileage tracking.</string>
+        provide accurate mileage tracking.
+        \n\nDashTracker will only access your location and physical activity while mileage tracking
+        is active.
+        \n\nYour data is only stored on your phone, so we do not sell, share, or have access to it.
+    </string>
 
     <string name="dialog_notification_permission">You can have DashTracker show a notification when
         mileage tracking is active while the app is running in the background.
