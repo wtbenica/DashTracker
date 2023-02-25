@@ -19,7 +19,7 @@
     <dimen name="margin_wide">30dp</dimen>
     <dimen name="margin_default">20dp</dimen>
     <dimen name="margin_half">10dp</dimen>
-    <dimen name="margin_narrow">dp</dimen>
+    <dimen name="margin_narrow">5dp</dimen>
     <dimen name="margin_skinny">2dp</dimen>
 
 <!--    <dimen name="margin_extra_wide">64dp</dimen>-->
