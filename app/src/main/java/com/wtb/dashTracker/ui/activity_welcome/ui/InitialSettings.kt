@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.activity_welcome.ui
 import android.content.SharedPreferences
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
@@ -27,6 +28,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -35,11 +37,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.cardShape
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
@@ -78,79 +82,91 @@ fun InitialSettings(activity: WelcomeActivity? = null) {
                         fontWeight = FontWeight.Bold
                     )
 
-                    FillSpacer()
-                }
-            ) {
-                var expanded by remember { mutableStateOf(false) }
+                    WideSpacer()
 
-                val mode = stringResource(
-                    (permissionsHelper?.uiMode ?: PermissionsHelper.UiMode.SYSTEM).displayName
-                )
-                var selectedTheme by remember { mutableStateOf(mode) }
+                    var expanded by remember { mutableStateOf(false) }
 
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = {
-                        expanded = !expanded
-                    },
-                ) {
-                    TextField(
-                        value = selectedTheme,
-                        onValueChange = { },
-                        modifier = Modifier
-                            .menuAnchor(),
-                        readOnly = true,
-                        textStyle = TextStyle(
-                            fontSize = fontSizeDimensionResource(id = textSizeBody),
-                            fontFamily = FontFamilyFiraSans,
-                        ),
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                        }
+                    val mode = stringResource(
+                        (permissionsHelper?.uiMode ?: PermissionsHelper.UiMode.SYSTEM).displayName
                     )
+                    var selectedTheme by remember { mutableStateOf(mode) }
 
-                    ExposedDropdownMenu(
+                    val focusManager = LocalFocusManager.current
+
+                    ExposedDropdownMenuBox(
                         expanded = expanded,
-                        onDismissRequest = {
-                            expanded = false
+                        onExpandedChange = {
+                            expanded = it
+                            debugLog("Expanded: $expanded")
                         },
-                        modifier = Modifier
-                            .fillMaxWidth(1f)
+                        modifier = Modifier.wrapContentWidth()
                     ) {
-                        PermissionsHelper.UiMode.values().forEach {
-                            val uiModeText = stringResource(it.displayName)
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = uiModeText,
-                                        fontSize = fontSizeDimensionResource(id = textSizeBody),
-                                        fontFamily = FontFamilyFiraSans,
-                                    )
-                                },
-                                onClick = {
-                                    selectedTheme = uiModeText
-                                    expanded = false
+                        OutlinedTextField(
+                            value = selectedTheme,
+                            onValueChange = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .width(IntrinsicSize.Min),
+                            readOnly = true,
+                            textStyle = TextStyle(
+                                fontSize = fontSizeDimensionResource(id = textSizeBody),
+                                fontFamily = FontFamilyFiraSans,
+                            ),
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                            },
+                            shape = cardShape,
+                            colors = TextFieldDefaults.textFieldColors(
+                                focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
+                                unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary
+                            )
+                        )
 
-                                    permissionsHelper?.apply {
-                                        val prev = uiModeIsDarkMode
-                                        updateUiMode(uiModeByDisplayName(selectedTheme)) {
-                                            if (prev != uiModeIsDarkMode) {
-                                                setBooleanPref(
-                                                    activity.PREF_SKIP_WELCOME_SCREEN,
-                                                    true
-                                                )
-                                                activity.finish()
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = {
+                                expanded = false
+                                focusManager.clearFocus(true)
+                            },
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.onTertiaryContainer)
+                        ) {
+                            PermissionsHelper.UiMode.values().forEach {
+                                val uiModeText = stringResource(it.displayName)
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = uiModeText,
+                                            fontSize = fontSizeDimensionResource(id = textSizeBody),
+                                            fontFamily = FontFamilyFiraSans,
+                                        )
+                                    },
+                                    onClick = {
+                                        selectedTheme = uiModeText
+                                        expanded = false
+                                        focusManager.clearFocus()
+
+                                        permissionsHelper?.apply {
+                                            val prev = uiModeIsDarkMode
+                                            updateUiMode(uiModeByDisplayName(selectedTheme)) {
+                                                if (prev != uiModeIsDarkMode) {
+                                                    setBooleanPref(
+                                                        activity.PREF_SKIP_WELCOME_SCREEN,
+                                                        true
+                                                    )
+                                                    activity.finish()
+                                                }
                                             }
                                         }
-                                    }
-                                }
-                            )
+                                    },
+                                )
+                            }
                         }
                     }
                 }
-            }
+            )
 
-            HalfSpacer()
+            WideSpacer()
 
             SettingsCard(
                 headerContent = {
@@ -186,7 +202,7 @@ fun InitialSettings(activity: WelcomeActivity? = null) {
                 )
             }
 
-            HalfSpacer()
+            WideSpacer()
 
             SettingsCard(
                 headerContent = {
@@ -242,7 +258,7 @@ fun csc(): SwitchColors {
 @Composable
 fun SettingsCard(
     headerContent: @Composable (RowScope.() -> Unit),
-    body: @Composable (ColumnScope.() -> Unit)
+    body: @Composable (ColumnScope.() -> Unit)? = null
 ) {
     CustomOutlinedCard(padding = 0.dp) {
         Column {
@@ -252,21 +268,27 @@ fun SettingsCard(
             ) {
                 Row(
                     modifier = Modifier
-                        .height(dimensionResource(id = R.dimen.min_touch_target))
-                        .padding(horizontal = dimensionResource(id = R.dimen.margin_wide)),
+                        .defaultMinSize(minHeight = dimensionResource(id = R.dimen.min_touch_target))
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.margin_wide),
+                            vertical = body?.let { 0.dp }
+                                ?: dimensionResource(id = R.dimen.margin_default)
+                        ),
                     verticalAlignment = Alignment.CenterVertically,
                     content = headerContent
                 )
             }
 
-            Column(
-                modifier = Modifier
-                    .padding(
-                        vertical = dimensionResource(id = R.dimen.margin_default),
-                        horizontal = dimensionResource(id = R.dimen.margin_wide)
-                    )
-            ) {
-                body()
+            body?.let {
+                Column(
+                    modifier = Modifier
+                        .padding(
+                            vertical = dimensionResource(id = R.dimen.margin_default),
+                            horizontal = dimensionResource(id = R.dimen.margin_wide)
+                        )
+                ) {
+                    body()
+                }
             }
         }
     }

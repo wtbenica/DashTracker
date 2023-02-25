@@ -83,7 +83,7 @@ fun OnboardingIntroScreen(
                     ContentCard(
                         titleText = it,
                         icon = icons[i],
-                        iconDescription = "Punch Clock"
+                        iconDescription = "Punch Clock",
                     )
                 }
 
@@ -91,7 +91,7 @@ fun OnboardingIntroScreen(
 
             SecondaryCard {
                 val str = buildAnnotatedString {
-                    append("To grant permissions, select ")
+                    append("To choose which permissions to grant, select ")
 
                     withStyle(style = styleBold) {
                         append("I'm in.")
