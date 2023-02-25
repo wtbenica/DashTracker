@@ -38,9 +38,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/margin_half"
                 android:layout_marginHorizontal="@dimen/margin_default"
-                android:layout_marginVertical="@dimen/margin_half"
-                android:paddingHorizontal="@dimen/margin_default">
+                android:paddingHorizontal="@dimen/margin_wide">
 
                 <TextView
                     android:layout_width="0dp"
@@ -48,7 +48,7 @@
                     android:layout_weight="1"
                     android:text="@string/adb_current_dash"
                     android:textAlignment="textStart"
-                    android:textSize="@dimen/text_size_large" />
+                    android:textSize="@dimen/text_size_xlarge" />
 
                 <TextView
                     android:id="@+id/lbl_started"
@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textAlignment="textEnd"
-                    android:textSize="@dimen/text_size_large"
+                    android:textSize="@dimen/text_size_xlarge"
                     tools:text="3:33p - " />
             </LinearLayout>
 
@@ -70,7 +70,7 @@
                 android:background="@drawable/bg_active_dash_bar_details"
                 android:columnCount="5"
                 android:paddingHorizontal="@dimen/margin_skinny"
-                android:paddingVertical="@dimen/margin_default"
+                android:paddingVertical="@dimen/margin_wide"
                 android:rowCount="2">
 
                 <View
