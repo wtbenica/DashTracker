@@ -118,7 +118,7 @@ fun ScreenTemplate(
             WideSpacer()
         }
 
-        Spacer(modifier = Modifier.size(64.dp))
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_wide)))
 
         Column(
             modifier = Modifier
@@ -133,7 +133,7 @@ fun ScreenTemplate(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(top = 16.dp)
+                    .padding(top = dimensionResource(id = R.dimen.margin_default))
             ) {
                 it()
             }

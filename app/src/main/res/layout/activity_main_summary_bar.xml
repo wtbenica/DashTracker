@@ -23,8 +23,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:columnCount="5"
-    android:paddingHorizontal="@dimen/margin_wide"
-    android:paddingVertical="@dimen/margin_half"
+    android:paddingHorizontal="@dimen/margin_default"
+    android:paddingBottom="@dimen/margin_half"
+    android:paddingTop="@dimen/margin_default"
     android:rowCount="3">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -48,8 +49,8 @@
         android:layout_rowSpan="3"
         android:layout_rowWeight="1"
         android:layout_column="2"
-        android:layout_marginStart="@dimen/margin_half"
-        android:layout_marginEnd="@dimen/margin_half"
+        android:layout_marginStart="@dimen/margin_default"
+        android:layout_marginEnd="@dimen/margin_default"
         android:background="?attr/colorActiveDashBarBg" />
 
     <androidx.appcompat.widget.AppCompatTextView

@@ -230,10 +230,6 @@ class SettingsActivity : AuthenticatedActivity() {
 
             (activity as SettingsActivity).uiModePref?.apply {
                 value = permissionsHelper.getUiModeDisplayName()
-//                value = sharedPrefs.getString(
-//                    requireContext().UI_MODE_PREF,
-//                    resources.getString(R.string.pref_theme_option_use_device_theme)
-//                )
             }
         }
     }

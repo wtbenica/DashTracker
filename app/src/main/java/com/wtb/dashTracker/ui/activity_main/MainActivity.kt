@@ -181,6 +181,8 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     // State
     private lateinit var activeDash: ActiveDash
     private var showingWelcomeScreen = false
+
+    // TODO: This is in permissionsHelper, no?
     private val trackingEnabled: Boolean
         get() {
             val hasPermissions = this.hasPermissions(*REQUIRED_PERMISSIONS)
