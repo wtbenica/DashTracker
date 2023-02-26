@@ -232,7 +232,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        debugLog("onCreate ${this::class.simpleName}")
+
         fun initBiometrics() {
             val biometricManager = BiometricManager.from(this)
             when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
@@ -471,7 +471,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         fun onFirstRun() {
-            debugLog("onFirstRun")
             expectedExit = true
             showingWelcomeScreen = true
             startActivity((Intent(this, WelcomeActivity::class.java)))
@@ -498,21 +497,9 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     }
 
     override fun onPause() {
-        debugLog("onPause ${this::class.simpleName}")
         activeDash.unbindLocationService()
 
         super.onPause()
-    }
-
-    override fun onStop() {
-        debugLog("onStop ${this::class.simpleName}")
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        debugLog("onDestroy ${this::class.simpleName}")
-
-        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
