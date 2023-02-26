@@ -59,14 +59,18 @@ class ActiveDashBar @JvmOverloads constructor(
                 }
             }
             TRACKING_ACTIVE -> {
+                if (binding.activeDashDetails.visibility == GONE) {
+                    binding.activeDashDetails.expand()
+                }
                 if (binding.root.visibility == GONE) {
-                    binding.activeDashDetails.visibility = VISIBLE
                     binding.root.expand()
                 }
             }
             else -> {
+                if (binding.activeDashDetails.visibility == VISIBLE) {
+                    binding.activeDashDetails.collapse()
+                }
                 if (binding.root.visibility == GONE) {
-                    binding.activeDashDetails.visibility = GONE
                     binding.root.expand()
                 }
             }
