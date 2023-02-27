@@ -156,8 +156,6 @@ class LocationService : Service() {
                 tripId.value!!
             }
         }
-//
-//        return this.tripId.value ?: newTripId
     }
 
     /**

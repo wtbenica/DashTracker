@@ -40,7 +40,6 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialScreenCallback
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialSettings
 import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreen
@@ -62,7 +61,6 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        debugLog("onCreate ${this::class.simpleName}")
         actionBar?.hide()
 
         setContent {
@@ -111,12 +109,6 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        debugLog("onDestroy ${this::class.simpleName}")
-
-        super.onDestroy()
     }
 
     override fun nextScreen() {

@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
@@ -97,7 +96,6 @@ fun InitialSettings(activity: WelcomeActivity? = null) {
                         expanded = expanded,
                         onExpandedChange = {
                             expanded = it
-                            debugLog("Expanded: $expanded")
                         },
                         modifier = Modifier.wrapContentWidth()
                     ) {
