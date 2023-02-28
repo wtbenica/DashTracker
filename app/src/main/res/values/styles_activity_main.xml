@@ -57,10 +57,10 @@
 
     <style name="BottomNavTextActive" parent="ActiveDashTextView.Label">
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/text_size_med</item>
+        <item name="android:textSize">@dimen/text_size_sm</item>
     </style>
 
     <style name="BottomNavTextInactive" parent="ActiveDashTextView.Label">
-        <item name="android:textSize">@dimen/text_size_med</item>
+        <item name="android:textSize">@dimen/text_size_sm</item>
     </style>
 </resources>

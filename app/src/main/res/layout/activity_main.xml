@@ -90,7 +90,6 @@
             android:contentDescription="@string/content_desc_fab_start_new_dash"
             android:src="@drawable/anim_play_to_stop"
             app:backgroundTint="?attr/colorFab"
-            app:borderWidth="@dimen/margin_skinny"
             app:elevation="@dimen/margin_skinny"
             app:layout_anchor="@id/bottom_app_bar"
             app:maxImageSize="@dimen/min_touch_target"
@@ -122,6 +121,7 @@
                 app:itemTextAppearanceActive="@style/BottomNavTextActive"
                 app:itemTextAppearanceInactive="@style/BottomNavTextInactive"
                 app:itemTextColor="?attr/colorBottomNavItemText"
+                app:itemIconSize="@dimen/margin_wide"
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/bottom_nav_menu" />
         </com.google.android.material.bottomappbar.BottomAppBar>
