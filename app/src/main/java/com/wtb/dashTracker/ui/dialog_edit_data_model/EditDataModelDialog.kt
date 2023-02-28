@@ -33,7 +33,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.DataModel
 import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
@@ -86,7 +85,10 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
         saveValues()
     }
 
-    // TODO: should the name here be changed?
+    /**
+     * Clear fields - set fields to default values: today's date/time, text fields empty, etc.
+     *
+     */
     protected abstract fun clearFields()
     protected abstract fun isEmpty(): Boolean
     private fun isNotEmpty(): Boolean = !isEmpty()
@@ -236,29 +238,23 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     }
 
     /**
-     * Sets fragment result. If item is not a [DashEntry], deletes item.
+     * Sets [saveOnExit] to false then dismisses dialog. calls [deleteItem], deletes item.
      */
     private fun onDeleteItem() {
         saveOnExit = false
-
-        // This is used by MainActivity and EntryListFragment to stop tracking before trying to
-        // delete the active dash entry
-        parentFragmentManager.setFragmentResult(
-            REQUEST_KEY_DATA_MODEL_DIALOG, bundleOf(
-                ARG_MODIFICATION_STATE to ModificationState.DELETED.name,
-                ARG_MODIFIED_ID to item?.id
-            )
-        )
-
         dismiss()
-
-        // Don't delete if it's a DashEntry in case it is the active entry & tracking is enabled.
-        // deleting it here can create an SQL constraint exception when a location is inserted.
-        if (item !is DashEntry) {
-            item?.let { viewModel.delete(it) }
-        }
+        deleteItem()
     }
 
+    protected open fun deleteItem() {
+        item?.let { viewModel.delete(it) }
+    }
+
+    /**
+     * Set on reset pressed - calls [updateUI] if confirmed. Either sets fields to last saved values,
+     * or calls [clearFields] if and only if, somehow, [item] is null.
+     *
+     */
     protected fun ImageButton.setOnResetPressed() {
         setOnClickListener {
             ConfirmResetDialog.newInstance().show(childFragmentManager, null)
