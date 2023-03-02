@@ -39,12 +39,22 @@
     </style>
 
     <style name="SummaryBarItem.Header">
+        <item name="android:textSize">@dimen/text_size_sm</item>
+        <item name="android:textColor">?attr/colorTextPrimaryDisabled</item>
+    </style>
+
+    <style name="SummaryBarItem.PrimaryHeader">
         <item name="android:textSize">?attr/textSizeSummaryBarHeader</item>
         <item name="android:textColor">?attr/colorTextPrimaryDisabled</item>
+        <item name="android:background">@drawable/summary_bar_header_bg</item>
+        <item name="android:padding">@dimen/margin_skinny</item>
+        <item name="android:layout_marginBottom">@dimen/margin_half</item>
+        <item name="android:layout_marginTop">@dimen/margin_half</item>
     </style>
 
     <style name="SummaryBarItem.Value">
         <item name="android:textSize">?attr/textSizeSummaryBarValue</item>
+        <item name="android:layout_marginBottom">@dimen/margin_half</item>
     </style>
 
     <style name="WidgetTheme">
