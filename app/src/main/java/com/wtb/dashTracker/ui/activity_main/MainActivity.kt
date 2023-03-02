@@ -30,8 +30,7 @@ import android.os.*
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import android.view.View.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -154,39 +153,11 @@ class MainActivity : AuthenticatedActivity(),
     IncomeFragmentCallback,
     ActiveDashBarCallback,
     ListItemFragment.ListItemFragmentCallback {
-    private var isTesting: Boolean = false
-
     private val viewModel: MainActivityViewModel by viewModels()
 
-    // IncomeFragmentCallback
     private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
-
     override val deductionType: StateFlow<DeductionType>
         get() = deductionTypeViewModel.deductionType
-
-    override fun hideStuff() {
-        isShowingOrHiding = true
-        with(binding) {
-            appBarLayout.setExpanded(false, true)
-            bottomAppBar.performHide(true)
-            fab.hide()
-        }
-    }
-
-    var isShowingOrHiding = false
-
-    override fun showStuff() {
-        isShowingOrHiding = true
-        with(binding) {
-            appBarLayout.setExpanded(true, true)
-            bottomAppBar.performShow(true)
-            fab.show()
-        }
-    }
-
-    override fun setDeductionType(dType: DeductionType) {
-        deductionTypeViewModel.setDeductionType(dType)
-    }
 
     // Bindings
     internal lateinit var binding: ActivityMainBinding
@@ -195,6 +166,17 @@ class MainActivity : AuthenticatedActivity(),
     // State
     private lateinit var activeDash: ActiveDash
     private var showingWelcomeScreen = false
+
+    /**
+     * Flag that prevents [EndDashDialog] from being shown if the active entry was deleted, as
+     * opposed to when it was stopped
+     */
+    private var activeEntryDeleted: Boolean = false
+
+    /**
+     * Flag to differentiate user-input scrolling vs programmatic scrolling
+     */
+    internal var isShowingOrHidingToolbars: Boolean = false
 
     // TODO: This is in permissionsHelper, no?
     private val trackingEnabled: Boolean
@@ -423,12 +405,11 @@ class MainActivity : AuthenticatedActivity(),
                 var t = false
                 val currFrag: Fragment? =
                     supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)?.childFragmentManager?.fragments?.last()
+
                 if (currFrag is ScrollableFragment) {
                     t = currFrag.isAtTop
-                    debugLog("isAtTop? $t")
-                } else {
-                    debugLog(currFrag?.let { currFrag::class.simpleName } ?: "no name for fragment")
                 }
+
                 return t
             }
 
@@ -445,19 +426,32 @@ class MainActivity : AuthenticatedActivity(),
                 adb.initialize(this@MainActivity)
 
                 appBarLayout.addOnOffsetChangedListener { appBar: AppBarLayout, offset: Int ->
-                    val onedp = resources.displayMetrics.density.roundToInt()
+                    val oneDpAsPx = resources.displayMetrics.density.roundToInt()
+                    val appBarIsHidden = appBar.height - oneDpAsPx + offset == 0
+                    val forceShowBottomAppBar =
+                        offset == 0 && bottomAppBar.isScrolledDown && isRecyclerViewAtTop()
 
-                    if (!isShowingOrHiding) {
-                        if (offset == 0 && bottomAppBar.isScrolledDown && isRecyclerViewAtTop()) {
+                    when {
+                        !isShowingOrHidingToolbars && forceShowBottomAppBar -> {
+                            isShowingOrHidingToolbars = true
                             with(binding) {
-                                debugLog("displacement 0: Showing bottomAppBar")
-                                bottomAppBar.performShow()
-                                fab.show()
+                                bottomAppBar.performShow(true)
+                                CoroutineScope(Dispatchers.Default).launch {
+//                                    var i = 0
+//                                    while (!bottomAppBar.isScrolledUp) {
+//                                        debugLog("BAB scrolling ${i++}")
+//                                    }
+                                    runOnUiThread {
+                                        fab.show()
+                                    }
+                                }
                             }
                         }
-                    } else if (appBar.height - onedp + offset == 0) {
-                        debugLog("displacement is 1f, setting showing or hiding to false")
-                        isShowingOrHiding = false
+                        isShowingOrHidingToolbars -> {
+                            if (appBarIsHidden) {
+                                isShowingOrHidingToolbars = false
+                            }
+                        }
                     }
                 }
             }
@@ -643,8 +637,6 @@ class MainActivity : AuthenticatedActivity(),
         activeDash.stopDash(entryId)
     }
 
-    var activeEntryDeleted: Boolean = false
-
     /**
      * Clear active entry - if the active entry id is [id], sets [activeEntryDeleted] to true, so
      * that the [EndDashDialog] isn't triggered, and calls [MainActivityViewModel.loadActiveEntry]
@@ -652,7 +644,7 @@ class MainActivity : AuthenticatedActivity(),
      *
      * @param id
      */
-    fun clearActiveEntry(id: Long) {
+    internal fun clearActiveEntry(id: Long) {
         if (activeDash.activeEntry?.entry?.entryId == id) {
             activeEntryDeleted = true
             viewModel.loadActiveEntry(null)
@@ -677,6 +669,30 @@ class MainActivity : AuthenticatedActivity(),
         exitProcess(0)
     }
 
+    // IncomeFragmentCallback
+    override fun setDeductionType(dType: DeductionType) {
+        deductionTypeViewModel.setDeductionType(dType)
+    }
+
+    // ListItemFragmentCallback overrides
+    override fun hideToolbarsAndFab() {
+        isShowingOrHidingToolbars = true
+        with(binding) {
+            fab.hide()
+            appBarLayout.setExpanded(false, true)
+            bottomAppBar.performHide(true)
+        }
+    }
+
+    override fun showToolbarsAndFab() {
+        isShowingOrHidingToolbars = true
+        with(binding) {
+            bottomAppBar.performShow(true)
+            appBarLayout.setExpanded(true, true)
+            fab.show()
+        }
+    }
+
     // AuthenticatedActivity overrides
     override val onAuthentication: () -> Unit
         get() {
@@ -687,11 +703,11 @@ class MainActivity : AuthenticatedActivity(),
             }
 
             val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
-            intent.removeExtra(EXTRA_END_DASH)
-            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1L)
-            intent.removeExtra(EXTRA_TRIP_ID)
+            intent?.removeExtra(EXTRA_END_DASH)
+            val tripId = intent?.getLongExtra(EXTRA_TRIP_ID, -1L)
+            intent?.removeExtra(EXTRA_TRIP_ID)
 
-            return if (endDashExtra == true) {
+            return if (endDashExtra == true && tripId != null) {
                 onEndDashIntent(tripId)
             } else {
                 ::onUnlock
@@ -857,6 +873,12 @@ class MainActivity : AuthenticatedActivity(),
 
         // Location Service
         private var locationService: LocationService? = null
+            set(value) {
+                field = value
+                field?.let {
+                    updateLocationServiceNotificationData(activeEntryId, it)
+                }
+            }
 
         private var locationServiceConnection: ServiceConnection? = null
 
@@ -893,6 +915,7 @@ class MainActivity : AuthenticatedActivity(),
             locationService.let {
                 if (it != null) {
                     it.stop()
+                    unbindLocationService()
                 } else {
                     stopOnBind = true
                 }
@@ -974,9 +997,8 @@ class MainActivity : AuthenticatedActivity(),
             return locationService?.let {
                 updateLocationServiceNotificationData(tripId, it)
                 it.start(tripId, saveLocation)
-            } ?: run { ->
-                debugLog("Can't start location service. No service bound.")
-                null as Nothing?
+            } ?: run {
+                null
             }
         }
 
@@ -1078,6 +1100,7 @@ class MainActivity : AuthenticatedActivity(),
                         stopOnBind = false
                         startOnBind = false
                         startOnBindId = null
+                        unbindLocationService()
                     } else if (startOnBind && locationServiceState != TRACKING_ACTIVE) {
                         (activeEntryId ?: startOnBindId)?.let { startLocationService(it) }
                         startOnBind = false
@@ -1164,6 +1187,8 @@ class MainActivity : AuthenticatedActivity(),
                 )
             }
     }
+
+    private var isTesting: Boolean = false
 }
 
 interface ScrollableFragment {

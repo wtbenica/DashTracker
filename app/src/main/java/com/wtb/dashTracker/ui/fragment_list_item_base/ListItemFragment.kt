@@ -64,11 +64,15 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             updatePadding(bottom = height + getDimen(R.dimen.margin_default).toInt())
 
             this.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                with((requireActivity() as MainActivity).binding.fab) {
-                    if (scrollY < oldScrollY && !isOrWillBeShown) {
-                        show()
-                    } else if (scrollY > oldScrollY && !isOrWillBeHidden) {
-                        hide()
+                with((requireActivity() as MainActivity)) {
+                    if (!isShowingOrHidingToolbars) {
+                        with(binding.fab) {
+                            if (scrollY < oldScrollY && !isOrWillBeShown) {
+                                show()
+                            } else if (scrollY > oldScrollY && !isOrWillBeHidden) {
+                                hide()
+                            }
+                        }
                     }
                 }
             }
@@ -265,16 +269,16 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     }
 
     protected open fun onItemExpanded() {
-        (requireContext() as ListItemFragmentCallback).hideStuff()
+        (requireContext() as ListItemFragmentCallback).hideToolbarsAndFab()
     }
 
     protected open fun onItemClosed() {
-        (requireContext() as ListItemFragmentCallback).showStuff()
+        (requireContext() as ListItemFragmentCallback).showToolbarsAndFab()
     }
 
     interface ListItemFragmentCallback {
-        fun hideStuff()
-        fun showStuff()
+        fun hideToolbarsAndFab()
+        fun showToolbarsAndFab()
     }
 }
 
