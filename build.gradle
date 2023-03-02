@@ -17,14 +17,15 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        compose_version = '1.4.0-alpha05'
-        compose_compiler_version = '1.4.0'
+        appcompat_version = '1.6.1'
+        compose_version = '1.4.0-beta02'
+        compose_compiler_version = '1.4.3'
         room_version = '2.5.0'
         nav_version = '2.5.3'
         // as tempting as it may be, don't upgrade material_version to 1.7.0 bc fab disappears
         material_version = "1.6.1"
         play_services_location_version = '21.0.1'
-        lifecycle_version = '2.6.0-alpha05'
+        lifecycle_version = '2.6.0-rc01'
         core_version = '1.9.0'
     }
     repositories {
@@ -33,7 +34,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10'
         classpath "com.google.android.gms:oss-licenses-plugin:0.10.6"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
 
