@@ -26,7 +26,7 @@ buildscript {
         material_version = "1.6.1"
         play_services_location_version = '21.0.1'
         lifecycle_version = '2.6.0-rc01'
-        core_version = '1.9.0'
+        core_version = '1.10.0-beta01'
     }
     repositories {
         google()
