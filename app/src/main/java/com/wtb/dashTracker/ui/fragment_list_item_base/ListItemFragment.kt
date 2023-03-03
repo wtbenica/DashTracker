@@ -245,10 +245,6 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                             requireContext().theme
                         )
                     )
-
-                    val elev = resources.getDimension(R.dimen.margin_skinny)
-
-                    bgCard.cardElevation = elev
                 }
             } else {
                 backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
@@ -262,8 +258,6 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                         )
                     )
                 }
-
-                bgCard.cardElevation = 0f
             }
         }
     }
