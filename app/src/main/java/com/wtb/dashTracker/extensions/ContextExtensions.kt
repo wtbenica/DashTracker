@@ -95,7 +95,7 @@ fun Context.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
         )
 
 @ColorInt
-fun Context.getAttributeColor(@AttrRes attr: Int): Int {
+fun Context.getAttrColor(@AttrRes attr: Int): Int {
     val tv = TypedValue()
     theme.resolveAttribute(attr, tv, true)
     return tv.data

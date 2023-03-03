@@ -245,13 +245,11 @@ class WeeklyListFragment : IncomeListItemFragment() {
                     getCurrencyString(basePayAdjust)
                 detailsBinding.listItemWeeklyAdjust.setTextColor(
                     if (this.item.weekly.basePayAdjustment == null) {
-                        MainActivity.getAttrColor(requireContext(), R.attr.colorAlert)
+                        requireContext().getAttrColor(R.attr.colorAlert)
                     } else {
-                        MainActivity.getAttrColor(requireContext(), R.attr.colorTextPrimary)
+                        requireContext().getAttrColor(R.attr.colorTextPrimary)
                     }
                 )
-
-
 
                 detailsBinding.listItemWeeklyAdjust.setVisibleIfTrue(showBPAs)
                 detailsBinding.labelBasePayAdjust.setVisibleIfTrue(showBPAs)

@@ -29,13 +29,11 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.util.Log
-import android.util.TypedValue
 import android.view.*
 import android.view.View.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -67,6 +65,7 @@ import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
+import com.wtb.dashTracker.extensions.getAttrColor
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
@@ -812,8 +811,7 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Monitors [locationService] and expands/collapses active entry bar, updates pause/resume
-         * button and start/stop FAB.
+         * Updates [locationServiceState] from [LocationService.serviceState]
          */
         fun initLocSvcObserver() {
             CoroutineScope(Dispatchers.Default).launch {
@@ -922,6 +920,9 @@ class MainActivity : AuthenticatedActivity(),
             }
         }
 
+        /**
+         * Animate fab icon and adb visibility depending on [state].
+         */
         private fun updateUi(state: ServiceState) {
             fun toggleFabToPlay() {
                 binding.fab.apply {
@@ -945,7 +946,7 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
-            binding.adb.updateServiceState(state)
+            binding.adb.updateVisibilities(state)
 
             when (state) {
                 STOPPED -> toggleFabToPlay()
@@ -962,6 +963,8 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
+            // stopOnBind is set true when a new active entry comes in, and trackingEnabled is
+            // false.
             if (!locationServiceBound && !startingService && (trackingEnabled || stopOnBind)) {
                 startingService = true
                 val locationServiceIntent =
@@ -997,8 +1000,6 @@ class MainActivity : AuthenticatedActivity(),
             return locationService?.let {
                 updateLocationServiceNotificationData(tripId, it)
                 it.start(tripId, saveLocation)
-            } ?: run {
-                null
             }
         }
 
@@ -1074,7 +1075,7 @@ class MainActivity : AuthenticatedActivity(),
         /**
          * Returns a [ServiceConnection] that, in [ServiceConnection.onServiceConnected] saves the
          * service binding to [locationService], initiates observers on it, and loads the
-         * [activeEntry] if the [LocationService] is already started. It will stop the service is
+         * [activeEntry] if the [LocationService] is already started. It will stop the service if
          * [stopOnBind] is set to true.
          *
          * @param onBind any actions to perform once the [LocationService] is bound
@@ -1144,20 +1145,11 @@ class MainActivity : AuthenticatedActivity(),
             }
 
         @ColorInt
-        internal fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)
+        internal fun getColorFab(context: Context) = context.getAttrColor(R.attr.colorFab)
 
         @ColorInt
         internal fun getColorFabDisabled(context: Context) =
-            getAttrColor(context, R.attr.colorFabDisabled)
-
-        @ColorInt
-        internal fun getAttrColor(context: Context, @AttrRes id: Int): Int {
-            val tv = TypedValue()
-            val arr = context.obtainStyledAttributes(tv.data, intArrayOf(id))
-            @ColorInt val color = arr.getColor(0, 0)
-            arr.recycle()
-            return color
-        }
+            context.getAttrColor(R.attr.colorFabDisabled)
 
         private val convertPacksImport = listOf(
             DashEntry.getConvertPackImport(),

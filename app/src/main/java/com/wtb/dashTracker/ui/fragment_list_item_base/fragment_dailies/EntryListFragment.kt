@@ -244,9 +244,9 @@ class EntryListFragment : IncomeListItemFragment() {
                     getString(R.string.add_comma, this.item.entry.date.dayOfWeek.name.capitalize())
                 binding.listItemEntryDayOfWeek.setTextColor(
                     if (this.item.entry.date.endOfWeek == LocalDate.now().endOfWeek) {
-                        requireContext().getAttributeColor(R.attr.textColorListItemEntryDayThisWeek)
+                        requireContext().getAttrColor(R.attr.textColorListItemEntryDayThisWeek)
                     } else {
-                        requireContext().getAttributeColor(R.attr.textColorListItemEntryDay)
+                        requireContext().getAttrColor(R.attr.textColorListItemEntryDay)
                     }
                 )
 
@@ -261,7 +261,7 @@ class EntryListFragment : IncomeListItemFragment() {
 
                 detailsBinding.listItemEntryHours.apply {
                     setTextColor(
-                        context.getAttributeColor(
+                        context.getAttrColor(
                             if (this@EntryHolder.item.entry.startTime == null ||
                                 this@EntryHolder.item.entry.endTime == null
                             ) {
@@ -281,7 +281,7 @@ class EntryListFragment : IncomeListItemFragment() {
                             this@EntryHolder.item.entry.totalHours
                         )
                     setTextColor(
-                        context.getAttributeColor(
+                        context.getAttrColor(
                             if (this@EntryHolder.item.entry.startTime == null ||
                                 this@EntryHolder.item.entry.endTime == null
                             ) {

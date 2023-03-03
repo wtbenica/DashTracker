@@ -40,11 +40,11 @@ import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartCpmBinding
 import com.wtb.dashTracker.extensions.dtfShortDateThisYear
+import com.wtb.dashTracker.extensions.getAttrColor
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.views.WeeklyLineChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.lang.Integer.min
@@ -79,7 +79,7 @@ class CpmChart(
     fun WeeklyLineChart.style() {
         fun XAxis.style() {
             typeface = ResourcesCompat.getFont(context, R.font.lalezar)
-            textColor = getAttrColor(context, R.attr.colorTextPrimary)
+            textColor = context.getAttrColor(R.attr.colorTextPrimary)
             textSize = context.getDimen(R.dimen.text_size_sm)
             position = XAxis.XAxisPosition.BOTTOM_INSIDE
             labelRotationAngle = 90f
@@ -106,7 +106,7 @@ class CpmChart(
             setCenterAxisLabels(true)
             setDrawTopYLabelEntry(false)
             typeface = ResourcesCompat.getFont(context, R.font.lalezar)
-            textColor = getAttrColor(context, R.attr.colorTextPrimary)
+            textColor = context.getAttrColor(R.attr.colorTextPrimary)
             textSize = context.getDimen(R.dimen.text_size_sm)
             this.axisMinimum = 0f
             setDrawBorders(true)
@@ -122,7 +122,7 @@ class CpmChart(
         setBackgroundColor(Color.TRANSPARENT)
 
         setDrawGridBackground(true)
-        setGridBackgroundColor(getAttrColor(context, R.attr.colorChartBackground))
+        setGridBackgroundColor(context.getAttrColor(R.attr.colorChartBackground))
         description.isEnabled = false
         legend.isEnabled = false
         legend.typeface = ResourcesCompat.getFont(context, R.font.lalezar)
@@ -185,7 +185,7 @@ class CpmChart(
                     return context.getCurrencyString(value)
                 }
             }
-            valueTextColor = getAttrColor(context, R.attr.colorTextPrimary)
+            valueTextColor = context.getAttrColor(R.attr.colorTextPrimary)
             mode = LineDataSet.Mode.CUBIC_BEZIER
             setDrawCircles(false)
             setDrawIcons(false)

@@ -51,7 +51,13 @@ class ActiveDashBar @JvmOverloads constructor(
         callback = cb
     }
 
-    fun updateServiceState(serviceState: ServiceState) {
+    /**
+     * shows/hides active dash bar and tracking details according to [serviceState].
+     * [STOPPED] -> hide both
+     * [TRACKING_ACTIVE] -> show both
+     * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
+     */
+    fun updateVisibilities(serviceState: ServiceState) {
         when (serviceState) {
             STOPPED -> {
                 if (binding.root.visibility == VISIBLE) {
