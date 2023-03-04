@@ -292,7 +292,7 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
         }
     }
 
-    fun Button.setAsDefault(isDefault: Boolean) {
+    private fun Button.setAsDefault(isDefault: Boolean) {
         setTypeface(typeface, if (isDefault) BOLD else NORMAL)
         setTextColor(
             context.getAttrColor(

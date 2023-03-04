@@ -26,8 +26,7 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
 import dev.benica.mileagetracker.LocationService.ServiceState
-import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
-import dev.benica.mileagetracker.LocationService.ServiceState.TRACKING_ACTIVE
+import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi

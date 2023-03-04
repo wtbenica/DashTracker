@@ -61,7 +61,7 @@ import kotlin.math.roundToInt
 abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryBinding>() {
 
     abstract val titleText: String
-    open protected fun onFirstRun() {
+    protected open fun onFirstRun() {
         updateTotalMileageFields()
     }
 
@@ -76,7 +76,7 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
     override val itemType: String
         get() = "Entry"
 
-    protected var startTimeChanged: Boolean = false
+    private var startTimeChanged: Boolean = false
 
     private val distance: Int
         get() = fullEntry?.trackedDistance?.roundToInt() ?: 0
@@ -87,7 +87,7 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
     private val currEndOdo: Int?
         get() = binding.fragEntryEndMileage.text.toIntOrNull()
 
-    protected val totalMileageMatchesTrackedMileage: Boolean
+    private val totalMileageMatchesTrackedMileage: Boolean
         get() {
             val end = currEndOdo
             val start = currStartOdo

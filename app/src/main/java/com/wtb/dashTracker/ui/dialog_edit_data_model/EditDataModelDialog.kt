@@ -63,7 +63,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
     /**
      * if delete button is pressed, gets assigned false
      */
-    protected var saveOnExit = true
+    protected var saveOnExit: Boolean = true
 
     protected abstract fun getViewBinding(inflater: LayoutInflater): B
     protected abstract fun updateUI()
@@ -78,7 +78,7 @@ abstract class EditDataModelDialog<M : DataModel, B : ViewBinding> : FullWidthDi
      */
     protected fun save(showToast: Boolean = true) {
         if (showToast) {
-            Toast.makeText(context, "${itemType} saved", Toast.LENGTH_SHORT)
+            Toast.makeText(context, "$itemType saved", Toast.LENGTH_SHORT)
                 .show()
         }
 
