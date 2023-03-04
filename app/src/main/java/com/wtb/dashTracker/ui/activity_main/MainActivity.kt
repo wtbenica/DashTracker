@@ -785,8 +785,6 @@ class MainActivity : AuthenticatedActivity(),
                         }
                     }
                 }
-            } else {
-                startLocationService(id)
             }
         }
 
