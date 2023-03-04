@@ -436,10 +436,6 @@ class MainActivity : AuthenticatedActivity(),
                             with(binding) {
                                 bottomAppBar.performShow(true)
                                 CoroutineScope(Dispatchers.Default).launch {
-//                                    var i = 0
-//                                    while (!bottomAppBar.isScrolledUp) {
-//                                        debugLog("BAB scrolling ${i++}")
-//                                    }
                                     runOnUiThread {
                                         fab.show()
                                     }
@@ -771,6 +767,8 @@ class MainActivity : AuthenticatedActivity(),
 
             val id = activeEntryId
             if (id == null) {
+                // TODO: Is this ever possible? sure active entry id is nullable, but is there ever
+                //  a situation where resumeOrStartNewTrip would be called when it is null?
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
                         val newEntry = DashEntry()
@@ -1084,12 +1082,6 @@ class MainActivity : AuthenticatedActivity(),
         private fun getLocationServiceConnection(onBind: (() -> Unit)? = null): ServiceConnection =
             object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                    fun syncActiveEntryId() {
-                        locationService?.tripId?.value?.let {
-                            viewModel.loadActiveEntry(it)
-                        }
-                    }
-
                     val binder = service as LocationService.LocalBinder
                     locationService = binder.service
                     locationServiceBound = true
@@ -1107,7 +1099,9 @@ class MainActivity : AuthenticatedActivity(),
                         startOnBind = false
                         startOnBindId = null
                     } else {
-                        syncActiveEntryId()
+                        locationService?.tripId?.value?.let {
+                            viewModel.loadActiveEntry(it)
+                        }
                     }
 
                     onBind?.invoke()
