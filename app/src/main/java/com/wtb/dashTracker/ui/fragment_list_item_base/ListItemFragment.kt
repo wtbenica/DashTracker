@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.*
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -224,17 +225,11 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         protected fun setVisibilityFromPayloads(payloads: List<Any>?) {
-            val listItemDetailsVisibility = (payloads?.let {
-                if (it.isNotEmpty() && it[0] in listOf(
-                        VISIBLE,
-                        GONE
-                    )
-                ) it[0] else null
-            } ?: GONE) as Int
+            val showDetails = payloads?.getOrNull(0) == VISIBLE
 
-            collapseArea.forEach { it.visibility = listItemDetailsVisibility }
+            collapseArea.forEach { it.setVisibleIfTrue(showDetails) }
 
-            if (listItemDetailsVisibility == VISIBLE) {
+            if (showDetails) {
                 backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
                 if (backgroundArea.background is RippleDrawable) {
                     (backgroundArea.background as RippleDrawable).setDrawable(

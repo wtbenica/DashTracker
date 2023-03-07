@@ -19,6 +19,7 @@ package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry
 import android.os.Bundle
 import android.provider.ContactsContract.Directory.PACKAGE_NAME
 import android.view.LayoutInflater
+import android.view.View
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -32,6 +33,7 @@ import com.wtb.dashTracker.databinding.DialogFragStartDashBinding
 import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.dtfFullDate
 import com.wtb.dashTracker.extensions.dtfTime
+import com.wtb.dashTracker.extensions.focusAndShowKeyboard
 import com.wtb.dashTracker.extensions.toFloatOrNull
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_DAY
@@ -74,9 +76,9 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
             fragStartDashDate.apply {
                 setOnClickListener {
                     ConfirmationDialogDatePicker.newInstance(
-                        R.id.frag_entry_date,
-                        this.tag as LocalDate? ?: LocalDate.now(),
-                        getString(R.string.lbl_date)
+                        textViewId = R.id.frag_entry_date,
+                        currentText = this.tag as LocalDate? ?: LocalDate.now(),
+                        headerText = getString(R.string.lbl_date)
                     ).show(childFragmentManager, "entry_date_picker")
                 }
             }
@@ -156,12 +158,18 @@ class StartDashDialog : EditDataModelDialog<DashEntry, DialogFragStartDashBindin
 
     override fun isEmpty(): Boolean {
         val isTodaysDate = binding.fragStartDashDate.tag == LocalDate.now()
-        val startChanged: Boolean = with (binding.fragStartDashStartTime.tag) {
+        val startChanged: Boolean = with(binding.fragStartDashStartTime.tag) {
             this != null && ((this as LocalTime) == item?.startTime)
         }
         return isTodaysDate &&
                 !startChanged &&
                 binding.fragStartDashStartMileage.text.isBlank()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.fragStartDashStartMileage.focusAndShowKeyboard()
     }
 
     override fun setDialogListeners() {

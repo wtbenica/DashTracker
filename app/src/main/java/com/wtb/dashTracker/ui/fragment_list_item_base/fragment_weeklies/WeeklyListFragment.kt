@@ -251,8 +251,8 @@ class WeeklyListFragment : IncomeListItemFragment() {
                     }
                 )
 
-                detailsBinding.listItemWeeklyAdjust.setVisibleIfTrue(showBPAs)
-                detailsBinding.labelBasePayAdjust.setVisibleIfTrue(showBPAs)
+                detailsBinding.listItemWeeklyAdjust.revealIfTrue(showBPAs)
+                detailsBinding.labelBasePayAdjust.revealIfTrue(showBPAs)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
                 detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
                 detailsBinding.listItemWeeklyHours.text = getFloatString(this.item.hours)

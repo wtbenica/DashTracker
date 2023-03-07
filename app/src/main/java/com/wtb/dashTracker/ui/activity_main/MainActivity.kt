@@ -435,11 +435,7 @@ class MainActivity : AuthenticatedActivity(),
                             isShowingOrHidingToolbars = true
                             with(binding) {
                                 bottomAppBar.performShow(true)
-                                CoroutineScope(Dispatchers.Default).launch {
-                                    runOnUiThread {
-                                        fab.show()
-                                    }
-                                }
+                                fab.show()
                             }
                         }
                         isShowingOrHidingToolbars -> {
@@ -673,17 +669,17 @@ class MainActivity : AuthenticatedActivity(),
     override fun hideToolbarsAndFab() {
         isShowingOrHidingToolbars = true
         with(binding) {
-            fab.hide()
             appBarLayout.setExpanded(false, true)
             bottomAppBar.performHide(true)
+            fab.hide()
         }
     }
 
     override fun showToolbarsAndFab() {
         isShowingOrHidingToolbars = true
         with(binding) {
-            bottomAppBar.performShow(true)
             appBarLayout.setExpanded(true, true)
+            bottomAppBar.performShow(true)
             fab.show()
         }
     }

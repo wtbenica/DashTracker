@@ -52,14 +52,6 @@
                 tools:text="$2081.25" />
 
             <TextView
-                android:id="@+id/list_item_subtitle"
-                style="@style/ListItemHeaderTextView.Subtitle"
-                android:layout_marginEnd="@dimen/margin_half"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_title"
-                tools:text="" />
-
-            <TextView
                 android:id="@+id/list_item_subtitle_2_label"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_marginEnd="@dimen/margin_half"

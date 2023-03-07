@@ -20,9 +20,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
@@ -101,9 +100,9 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
             fragExpenseDate.apply {
                 setOnClickListener {
                     ConfirmationDialogDatePicker.newInstance(
-                        R.id.frag_expense_date,
-                        this.tag as LocalDate? ?: LocalDate.now(),
-                        getString(R.string.lbl_date)
+                        textViewId = R.id.frag_expense_date,
+                        currentText = this.tag as LocalDate? ?: LocalDate.now(),
+                        headerText = getString(R.string.lbl_date)
                     ).show(childFragmentManager, "expense_date_picker")
                 }
             }
@@ -129,13 +128,14 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                         id: Long
                     ) {
                         val purpose = parent?.getItemAtPosition(position) as ExpensePurpose?
-                        if (purpose?.purposeId == GAS.id) {
-                            fragExpensePrice.visibility = VISIBLE
-                            fragExpensePriceLbl.visibility = VISIBLE
-                        } else {
+                        fragExpensePriceLbl.revealIfTrue(purpose?.purposeId == GAS.id)
+                        fragExpensePrice.expandToIfTrue(
+                            shouldExpand = purpose?.purposeId == GAS.id,
+                            toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),
+                            toWidth = WRAP_CONTENT
+                        )
+                        if (purpose?.purposeId != GAS.id) {
                             fragExpensePrice.text.clear()
-                            fragExpensePrice.visibility = GONE
-                            fragExpensePriceLbl.visibility = GONE
                         }
                     }
 
@@ -144,18 +144,6 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                     }
 
                 }
-
-//            fragExpenseBtnSave.apply {
-//                setOnSavePressed()
-//            }
-//
-//            fragExpenseBtnDelete.apply {
-//                setOnDeletePressed()
-//            }
-//
-//            fragExpenseBtnReset.apply {
-//                setOnResetPressed()
-//            }
         }
 
     // TODO: add this and make a setLocalTime also

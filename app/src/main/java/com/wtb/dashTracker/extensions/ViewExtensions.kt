@@ -18,13 +18,17 @@ package com.wtb.dashTracker.extensions
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.ViewTreeObserver
 import android.view.animation.Animation
 import android.view.animation.Transformation
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
@@ -47,7 +51,7 @@ fun View.setVisibleIfTrue(boolean: Boolean) {
     visibility = if (boolean) VISIBLE else GONE
 }
 
-fun View.revealIfTrue(boolean: Boolean) {
+fun View.revealIfTrue(boolean: Boolean = true) {
     if (boolean && !isVisible) {
         expand()
     } else if (!boolean && isVisible) {
@@ -55,14 +59,14 @@ fun View.revealIfTrue(boolean: Boolean) {
     }
 }
 
-fun View.toggleExpand(
-    onCompleteCollapse: (() -> Unit)? = null,
-    onCompleteExpand: (() -> Unit)? = null
-) {
-    if (isVisible) {
-        collapse(onCompleteCollapse)
-    } else {
-        expand(onCompleteExpand)
+fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toWidth: Int? = null) {
+    if (shouldExpand && !isVisible) {
+        expandTo(
+            targetHeight = toHeight,
+            targetWidth = toWidth
+        )
+    } else if (!shouldExpand && isVisible) {
+        collapse()
     }
 }
 
@@ -95,6 +99,71 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
     startAnimation(animation)
 }
 
+fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_PARENT) {
+    val mTargetHeight = targetHeight ?: WRAP_CONTENT
+    val mTargetWidth = targetWidth ?: MATCH_PARENT
+
+    if (!isVisible) {
+        val specWidth: Int
+        val specWidthMode: Int
+        if (mTargetWidth == MATCH_PARENT) {
+            specWidth = (parent as View).width
+            specWidthMode = View.MeasureSpec.EXACTLY
+        } else if (mTargetWidth == WRAP_CONTENT) {
+            specWidth = 0
+            specWidthMode = View.MeasureSpec.UNSPECIFIED
+        } else {
+            specWidth = mTargetWidth
+            specWidthMode = View.MeasureSpec.EXACTLY
+        }
+
+        val specHeight: Int
+        val specHeightMode: Int
+        if (mTargetHeight == MATCH_PARENT) {
+            specHeight = (parent as View).width
+            specHeightMode = View.MeasureSpec.EXACTLY
+        } else if (mTargetHeight == WRAP_CONTENT) {
+            specHeight = 0
+            specHeightMode = View.MeasureSpec.UNSPECIFIED
+        } else {
+            specHeight = mTargetHeight
+            specHeightMode = View.MeasureSpec.EXACTLY
+        }
+
+        val widthMeasureSpec =
+            View.MeasureSpec.makeMeasureSpec(specWidth, specWidthMode)
+        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(specHeight, specHeightMode)
+        measure(widthMeasureSpec, heightMeasureSpec)
+        val toHeight = measuredHeight
+        val toWidth = measuredWidth
+
+        layoutParams.height = max(1, layoutParams.height)
+        visibility = VISIBLE
+
+        val animation = object : Animation() {
+            override fun willChangeBounds(): Boolean = true
+
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+                layoutParams.height = if (interpolatedTime >= 1f) {
+                    toHeight
+                } else {
+                    (toHeight * interpolatedTime).toInt()
+                }
+                layoutParams.width = if (interpolatedTime >= 1f) {
+                    toWidth
+                } else {
+                    (toWidth * interpolatedTime).toInt()
+                }
+                requestLayout()
+            }
+        }.apply {
+            duration = (toHeight / context.resources.displayMetrics.density).toLong()
+        }
+
+        startAnimation(animation)
+    }
+}
+
 fun View.collapse(onComplete: (() -> Unit)? = null) {
     val initHeight = measuredHeight
 
@@ -116,6 +185,34 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
     }
 
     startAnimation(animation)
+}
+
+fun View.focusAndShowKeyboard() {
+    fun showKeyboard() {
+        if (isFocused) {
+            post {
+                val ime =
+                    context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                ime.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
+    }
+
+    requestFocus()
+    if (hasWindowFocus()) {
+        showKeyboard()
+    } else {
+        viewTreeObserver.addOnWindowFocusChangeListener(
+            object : ViewTreeObserver.OnWindowFocusChangeListener {
+                override fun onWindowFocusChanged(hasFocus: Boolean) {
+                    if (hasFocus) {
+                        showKeyboard()
+                        viewTreeObserver.removeOnWindowFocusChangeListener(this)
+                    }
+                }
+            }
+        )
+    }
 }
 
 fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
@@ -171,3 +268,15 @@ fun MaterialButton.rotateUp() {
 
     startAnimation(animation)
 }
+
+fun View.toggleExpand(
+    onCompleteCollapse: (() -> Unit)? = null,
+    onCompleteExpand: (() -> Unit)? = null
+) {
+    if (isVisible) {
+        collapse(onCompleteCollapse)
+    } else {
+        expand(onCompleteExpand)
+    }
+}
+
