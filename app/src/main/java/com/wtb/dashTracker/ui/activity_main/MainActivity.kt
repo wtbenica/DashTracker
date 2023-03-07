@@ -178,6 +178,9 @@ class MainActivity : AuthenticatedActivity(),
     internal var isShowingOrHidingToolbars: Boolean = false
 
     // TODO: This is in permissionsHelper, no?
+    /**
+     * Has [REQUIRED_PERMISSIONS] && pref [LOCATION_ENABLED] is true
+     */
     private val trackingEnabled: Boolean
         get() {
             val hasPermissions = this.hasPermissions(*REQUIRED_PERMISSIONS)
@@ -185,6 +188,7 @@ class MainActivity : AuthenticatedActivity(),
 
             return hasPermissions && isEnabled
         }
+    private var trackingEnabledPrevious: Boolean = false
 
     // Launchers
     /**
@@ -435,7 +439,11 @@ class MainActivity : AuthenticatedActivity(),
                             isShowingOrHidingToolbars = true
                             with(binding) {
                                 bottomAppBar.performShow(true)
-                                fab.show()
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    runOnUiThread {
+                                        fab.show()
+                                    }
+                                }
                             }
                         }
                         isShowingOrHidingToolbars -> {
@@ -836,27 +844,38 @@ class MainActivity : AuthenticatedActivity(),
             val beforeId = before?.entry?.entryId
             val afterId = after?.entry?.entryId
 
-            val serviceState = when {
-                afterId == null -> {
+            val mTrackingEnabled = trackingEnabled
+
+            val serviceState =
+                if (afterId == null) { // stopping or stopped
                     if (beforeId != null) {
                         stopDash(beforeId)
                     }
+
                     STOPPED
-                }
-                trackingEnabled -> {
-                    if (!locationServiceBound) {
+                } else { // starting or continuing
+                    if (beforeId == null && !locationServiceBound) {
                         startTracking()
                     }
-                    TRACKING_ACTIVE
-                }
-                else -> {
-                    if (!locationServiceBound && beforeId != null) {
-                        stopOnBind = true
-                        bindLocationService()
+
+                    if (mTrackingEnabled) {
+                        if (!trackingEnabledPrevious) {
+                            // tracking has been enabled
+                            resumeOrStartNewTrip()
+                        }
+
+                        TRACKING_ACTIVE
+                    } else {
+                        if (locationServiceBound || trackingEnabledPrevious) {
+                            // either location service hasn't been stopped or tracking was disabled
+                            stopTracking()
+                        }
+
+                        TRACKING_INACTIVE
                     }
-                    TRACKING_INACTIVE
                 }
-            }
+
+            trackingEnabledPrevious = mTrackingEnabled
 
             updateUi(serviceState)
         }
@@ -908,6 +927,7 @@ class MainActivity : AuthenticatedActivity(),
                     unbindLocationService()
                 } else {
                     stopOnBind = true
+                    bindLocationService()
                 }
             }
         }
@@ -949,9 +969,7 @@ class MainActivity : AuthenticatedActivity(),
         internal fun bindLocationService() {
             fun onBind() {
                 activeEntryId?.let { id ->
-                    if (locationServiceState != TRACKING_ACTIVE) {
-                        startLocationService(id)
-                    }
+                    startLocationService(id)
                 }
             }
 
