@@ -117,7 +117,7 @@
                 android:paddingEnd="80dp"
                 app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"
                 app:itemBackground="@drawable/ripple_bottom_nav"
-                app:itemIconSize="@dimen/margin_wide"
+                app:itemIconSize="24dp"
                 app:itemIconTint="?attr/colorBottomNavItem"
                 app:itemTextAppearanceActive="@style/BottomNavTextActive"
                 app:itemTextAppearanceInactive="@style/BottomNavTextInactive"
