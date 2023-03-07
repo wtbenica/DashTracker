@@ -17,7 +17,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DialogFragmentWrapper">
+    style="@style/DialogFragmentWrapper"
+    android:paddingVertical="@dimen/margin_default">
 
     <androidx.cardview.widget.CardView style="@style/DialogFragCard">
 
@@ -30,414 +31,420 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_entry_table_card"
-                style="@style/DialogContentCard">
+                style="@style/DialogContentCard"
+                android:layout_weight="1">
 
-                <LinearLayout
-                    style="@style/DialogContent"
-                    android:orientation="vertical">
+                <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/frag_entry_date"
-                        style="@style/DialogHeaderTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="fill_horizontal"
-                        android:background="@null"
-                        android:gravity="center_vertical"
-                        android:minHeight="@dimen/min_touch_target"
-                        android:textColor="?attr/colorTextPrimary"
-                        android:textSize="@dimen/text_size_xlarge"
-                        android:autoSizeMaxTextSize="@dimen/text_size_xlarge"
-                        android:autoSizeTextType="uniform"
-                        android:textStyle="bold"
-                        tools:text="Mon Nov 23, 2021" />
+                    <LinearLayout
+                        style="@style/DialogContent"
 
-                    <android.widget.Space
-                        android:layout_width="0dp"
-                        android:layout_height="@dimen/margin_half" />
+                        android:orientation="vertical">
 
-                    <GridLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:columnCount="3"
-                        android:rowCount="14">
-
-                        <!-- Row 0 -->
                         <TextView
+                            android:id="@+id/frag_entry_date"
                             style="@style/DialogHeaderTextView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="fill_horizontal"
+                            android:autoSizeMaxTextSize="@dimen/text_size_xlarge"
+                            android:autoSizeTextType="uniform"
+                            android:background="@null"
+                            android:gravity="center_vertical"
+                            android:minHeight="@dimen/min_touch_target"
+                            android:textColor="?attr/colorTextPrimary"
+                            android:textSize="@dimen/text_size_xlarge"
+                            android:textStyle="bold"
+                            tools:text="Mon Nov 23, 2021" />
+
+                        <android.widget.Space
                             android:layout_width="0dp"
-                            android:layout_row="0"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:labelFor="@id/frag_entry_start_mileage"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_start_time" />
+                            android:layout_height="@dimen/margin_half" />
 
-                        <!-- THis is the horizontal center gap-->
-                        <View
-                            android:layout_width="@dimen/margin_default"
-                            android:layout_height="0dp"
-                            android:layout_row="0"
-                            android:layout_column="1" />
+                        <GridLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:columnCount="3"
+                            android:rowCount="14">
 
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="0"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:focusable="false"
-                            android:labelFor="@id/frag_entry_end_time"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_end_time" />
+                            <!-- Row 0 -->
+                            <TextView
+                                style="@style/DialogHeaderTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="0"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                android:labelFor="@id/frag_entry_start_mileage"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_start_time" />
 
-                        <!--    Row 1   -->
-                        <TextView
-                            android:id="@+id/frag_entry_start_time"
-                            style="@style/DialogValueTextView"
-
-                            android:layout_width="0dp"
-                            android:layout_row="1"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            tools:text="11:23a" />
-
-                        <TextView
-                            android:id="@+id/frag_entry_end_time"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="1"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            tools:text="3:31p" />
-
-                        <!-- Row 2 -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_row="2"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:layout_gravity="center_vertical"
-                            android:background="@drawable/dialog_frag_bottom_row_bg"
-                            android:orientation="horizontal">
+                            <!-- THis is the horizontal center gap-->
+                            <View
+                                android:layout_width="@dimen/margin_default"
+                                android:layout_height="0dp"
+                                android:layout_row="0"
+                                android:layout_column="1" />
 
                             <TextView
                                 style="@style/DialogHeaderTextView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@null"
-                                android:paddingStart="@dimen/margin_default"
-                                android:paddingEnd="0dp"
-                                android:text="Total"
-                                android:textColor="?attr/colorTextPrimary" />
+                                android:layout_width="0dp"
+                                android:layout_row="0"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                android:focusable="false"
+                                android:labelFor="@id/frag_entry_end_time"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_end_time" />
+
+                            <!--    Row 1   -->
+                            <TextView
+                                android:id="@+id/frag_entry_start_time"
+                                style="@style/DialogValueTextView"
+
+                                android:layout_width="0dp"
+                                android:layout_row="1"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                tools:text="11:23a" />
 
                             <TextView
-                                android:id="@+id/frag_entry_total_hours"
+                                android:id="@+id/frag_entry_end_time"
+                                style="@style/DialogValueTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="1"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                tools:text="3:31p" />
+
+                            <!-- Row 2 -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_row="2"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                android:layout_gravity="center_vertical"
+                                android:background="@drawable/dialog_frag_bottom_row_bg"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    style="@style/DialogHeaderTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@null"
+                                    android:paddingStart="@dimen/margin_default"
+                                    android:paddingEnd="0dp"
+                                    android:text="Total"
+                                    android:textColor="?attr/colorTextPrimary" />
+
+                                <TextView
+                                    android:id="@+id/frag_entry_total_hours"
+                                    style="@style/DialogHeaderTextView"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="0dp"
+                                    android:layout_marginTop="0dp"
+                                    android:layout_marginBottom="0dp"
+                                    android:layout_weight="1"
+                                    android:background="@null"
+                                    android:paddingVertical="@dimen/margin_narrow"
+                                    android:paddingStart="0dp"
+                                    android:paddingEnd="@dimen/margin_default"
+                                    android:textAlignment="textEnd"
+                                    android:textColor="?attr/colorTextPrimary"
+                                    tools:text="4h 15m" />
+                            </LinearLayout>
+
+                            <androidx.appcompat.widget.AppCompatCheckBox
+                                android:id="@+id/frag_entry_check_ends_next_day"
+                                android:layout_row="2"
+                                android:layout_column="2"
+                                android:layout_gravity="end"
+                                android:paddingStart="0dp"
+                                android:paddingEnd="@dimen/margin_default"
+                                android:text="@string/lbl_ends_on_following_day"
+                                android:textColor="?attr/colorDialogWidget"
+                                android:textSize="@dimen/text_size_sm"
+                                app:buttonTint="?attr/colorDialogWidget" />
+
+                            <!--                        Row 3-->
+                            <android.widget.Space
+                                android:layout_width="0dp"
+                                android:layout_height="28dp"
+                                android:layout_row="3"
+                                android:layout_column="0"
+                                android:layout_columnSpan="3" />
+
+                            <!--                        Row 4-->
+                            <TextView
+                                style="@style/DialogHeaderTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="4"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                android:labelFor="@id/frag_entry_start_mileage"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_start_mileage" />
+
+                            <TextView
+                                style="@style/DialogHeaderTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="4"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                android:focusable="false"
+                                android:labelFor="@id/frag_entry_end_mileage"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_end_mileage" />
+
+                            <!--Row 5 -->
+                            <EditText
+                                android:id="@+id/frag_entry_start_mileage"
+                                style="@style/DialogValueTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="5"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                android:importantForAutofill="no"
+                                android:inputType="number"
+                                tools:text="125343" />
+
+                            <EditText
+                                android:id="@+id/frag_entry_end_mileage"
+                                style="@style/DialogValueTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="5"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                android:importantForAutofill="no"
+                                android:inputType="number" />
+
+                            <!--    Row 6   -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/frag_entry_checkbox_use_tracked_mileage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/min_touch_target"
+                                android:layout_row="6"
+                                android:layout_column="0"
+                                android:layout_columnSpan="3"
+                                android:layout_gravity="end"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_use_tracked_mileage"
+                                android:textColor="?attr/colorDialogWidget"
+                                android:textSize="@dimen/text_size_sm"
+                                android:visibility="gone"
+                                app:backgroundTint="@android:color/transparent"
+                                app:icon="@drawable/ic_swap_24"
+                                app:iconTint="?attr/colorDialogWidget"
+                                app:rippleColor="?attr/colorDialogItemOutline"
+                                app:strokeColor="?attr/colorDialogButtonStroke"
+                                app:strokeWidth="?attr/dialogContentButtonStrokeWidth"
+                                tools:visibility="visible" />
+
+                            <!-- Row 6 -->
+                            <!-- This space 'replaces' frag_entry_checkbox_use_tracked_mileage when necessary -->
+                            <android.widget.Space
+                                android:id="@+id/frag_entry_space"
+                                android:layout_width="0dp"
+                                android:layout_height="@dimen/margin_half"
+                                android:layout_row="6"
+                                android:layout_column="0"
+                                android:layout_columnSpan="3"
+                                android:visibility="gone" />
+
+                            <!--    Row 7   -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_row="7"
+                                android:layout_column="0"
+                                android:layout_columnSpan="3"
+                                android:background="@drawable/dialog_frag_bottom_row_bg">
+
+                                <TextView
+                                    style="@style/DialogHeaderTextView"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_columnWeight="1"
+                                    android:layout_margin="0dp"
+                                    android:layout_marginTop="0dp"
+                                    android:layout_marginBottom="0dp"
+                                    android:layout_weight="1"
+                                    android:background="@android:color/transparent"
+                                    android:focusable="false"
+                                    android:labelFor="@id/frag_entry_end_mileage"
+                                    android:paddingVertical="@dimen/margin_narrow"
+                                    android:paddingStart="@dimen/margin_default"
+                                    android:paddingEnd="0dp"
+                                    android:text="@string/lbl_total_mileage"
+                                    android:textAlignment="textStart"
+                                    android:textColor="?attr/colorTextPrimary" />
+
+                                <TextView
+                                    android:id="@+id/frag_entry_total_mileage"
+                                    style="@style/DialogValueTextView"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_columnWeight="1"
+                                    android:layout_gravity="end|fill_horizontal|center_vertical"
+                                    android:layout_margin="0dp"
+                                    android:layout_marginTop="0dp"
+                                    android:layout_marginEnd="0dp"
+                                    android:layout_marginBottom="0dp"
+                                    android:layout_weight="1"
+                                    android:background="@android:color/transparent"
+                                    android:focusable="false"
+                                    android:importantForAutofill="no"
+                                    android:paddingVertical="@dimen/margin_narrow"
+                                    android:textAlignment="textEnd"
+                                    tools:text="54" />
+                            </LinearLayout>
+                            <!-- Row 8 -->
+                            <android.widget.Space
+                                android:layout_width="0dp"
+                                android:layout_height="28dp"
+                                android:layout_row="8"
+                                android:layout_column="0"
+                                android:layout_columnSpan="3" />
+
+                            <!--Row 9 -->
+                            <TextView
+                                style="@style/DialogHeaderTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="9"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                android:focusable="false"
+                                android:labelFor="@id/frag_entry_pay"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_pay" />
+
+                            <EditText
+                                android:id="@+id/frag_entry_pay"
+                                style="@style/DialogValueTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="9"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                android:importantForAutofill="no"
+                                android:inputType="numberDecimal" />
+
+                            <!--    Row 10   -->
+                            <TextView
+                                style="@style/DialogHeaderTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="10"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                android:focusable="false"
+                                android:labelFor="@id/frag_entry_pay_other"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_other_pay" />
+
+                            <EditText
+                                android:id="@+id/frag_entry_pay_other"
+                                style="@style/DialogValueTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="10"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                android:importantForAutofill="no"
+                                android:inputType="numberDecimal" />
+
+                            <!--    Row 11  -->
+                            <TextView
+                                style="@style/DialogHeaderTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="11"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                android:focusable="false"
+                                android:labelFor="@id/frag_entry_cash_tips"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_cash_tips" />
+
+                            <EditText
+                                android:id="@+id/frag_entry_cash_tips"
+                                style="@style/DialogValueTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="11"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                android:importantForAutofill="no"
+                                android:inputType="numberDecimal" />
+
+                            <!--    Row 12  -->
+                            <TextView
+                                style="@style/DialogHeaderTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="12"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
+                                android:focusable="false"
+                                android:labelFor="@id/frag_entry_num_deliveries"
+                                android:paddingHorizontal="@dimen/margin_default"
+                                android:text="@string/lbl_num_deliveries" />
+
+                            <EditText
+                                android:id="@+id/frag_entry_num_deliveries"
+                                style="@style/DialogValueTextView"
+                                android:layout_width="0dp"
+                                android:layout_row="12"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                android:layout_marginBottom="@dimen/margin_half"
+                                android:importantForAutofill="no"
+                                android:inputType="number"
+                                tools:text="7" />
+
+                            <!-- Row 13 -->
+                            <View
+                                android:layout_height="0dp"
+                                android:layout_row="13"
+                                android:layout_rowWeight="1"
+                                android:layout_column="0"
+                                android:layout_columnSpan="3"
+                                android:background="@drawable/dialog_frag_bottom_row_bg" />
+
+                            <TextView
                                 style="@style/DialogHeaderTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_row="13"
+                                android:layout_column="0"
+                                android:layout_columnWeight="1"
                                 android:layout_margin="0dp"
                                 android:layout_marginTop="0dp"
                                 android:layout_marginBottom="0dp"
-                                android:layout_weight="1"
-                                android:background="@null"
+                                android:background="@android:color/transparent"
+                                android:paddingHorizontal="@dimen/margin_default"
                                 android:paddingVertical="@dimen/margin_narrow"
-                                android:paddingStart="0dp"
-                                android:paddingEnd="@dimen/margin_default"
+                                android:text="@string/lbl_total_earned"
+                                android:textAlignment="textStart"
+                                android:textColor="?attr/colorTextPrimary" />
+
+                            <TextView
+                                android:id="@+id/frag_entry_total_earned"
+                                style="@style/DialogValueTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_row="13"
+                                android:layout_column="2"
+                                android:layout_columnWeight="1"
+                                android:layout_margin="0dp"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginBottom="0dp"
+                                android:autoSizeTextType="uniform"
+                                android:background="@android:color/transparent"
+                                android:paddingVertical="@dimen/margin_narrow"
                                 android:textAlignment="textEnd"
-                                android:textColor="?attr/colorTextPrimary"
-                                tools:text="4h 15m" />
-                        </LinearLayout>
-
-                        <androidx.appcompat.widget.AppCompatCheckBox
-                            android:id="@+id/frag_entry_check_ends_next_day"
-                            android:layout_row="2"
-                            android:layout_column="2"
-                            android:layout_gravity="end"
-                            android:paddingStart="0dp"
-                            android:paddingEnd="@dimen/margin_default"
-                            android:text="@string/lbl_ends_on_following_day"
-                            android:textColor="?attr/colorDialogWidget"
-                            android:textSize="@dimen/text_size_sm"
-                            app:buttonTint="?attr/colorDialogWidget" />
-
-                        <!--                        Row 3-->
-                        <android.widget.Space
-                            android:layout_width="0dp"
-                            android:layout_height="28dp"
-                            android:layout_row="3"
-                            android:layout_column="0"
-                            android:layout_columnSpan="3" />
-
-                        <!--                        Row 4-->
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="4"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:labelFor="@id/frag_entry_start_mileage"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_start_mileage" />
-
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="4"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:focusable="false"
-                            android:labelFor="@id/frag_entry_end_mileage"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_end_mileage" />
-
-                        <!--Row 5 -->
-                        <EditText
-                            android:id="@+id/frag_entry_start_mileage"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="5"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:importantForAutofill="no"
-                            android:inputType="number"
-                            tools:text="125343" />
-
-                        <EditText
-                            android:id="@+id/frag_entry_end_mileage"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="5"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:importantForAutofill="no"
-                            android:inputType="number" />
-
-                        <!--    Row 6   -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/frag_entry_checkbox_use_tracked_mileage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="@dimen/min_touch_target"
-                            android:layout_row="6"
-                            android:layout_column="0"
-                            android:layout_columnSpan="3"
-                            android:layout_gravity="end"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_use_tracked_mileage"
-                            android:textColor="?attr/colorDialogWidget"
-                            android:textSize="@dimen/text_size_sm"
-                            android:visibility="gone"
-                            app:backgroundTint="@android:color/transparent"
-                            app:icon="@drawable/ic_swap_24"
-                            app:iconTint="?attr/colorDialogWidget"
-                            app:rippleColor="?attr/colorDialogItemOutline"
-                            app:strokeColor="?attr/colorDialogButtonStroke"
-                            app:strokeWidth="?attr/dialogContentButtonStrokeWidth"
-                            tools:visibility="visible" />
-
-                        <!-- Row 6 -->
-                        <!-- This space 'replaces' frag_entry_checkbox_use_tracked_mileage when necessary -->
-                        <android.widget.Space
-                            android:id="@+id/frag_entry_space"
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/margin_half"
-                            android:layout_row="6"
-                            android:layout_column="0"
-                            android:layout_columnSpan="3"
-                            android:visibility="gone" />
-
-                        <!--    Row 7   -->
-                        <View
-                            android:layout_height="0dp"
-                            android:layout_row="7"
-                            android:layout_rowWeight="1"
-                            android:layout_column="0"
-                            android:layout_columnSpan="3"
-                            android:background="@drawable/dialog_frag_bottom_row_bg" />
-
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_row="7"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:layout_margin="0dp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginBottom="0dp"
-                            android:background="@android:color/transparent"
-                            android:focusable="false"
-                            android:labelFor="@id/frag_entry_end_mileage"
-                            android:paddingVertical="@dimen/margin_narrow"
-                            android:paddingStart="@dimen/margin_default"
-                            android:paddingEnd="0dp"
-                            android:text="@string/lbl_total_mileage"
-                            android:textAlignment="textStart"
-                            android:textColor="?attr/colorTextPrimary" />
-
-                        <TextView
-                            android:id="@+id/frag_entry_total_mileage"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_row="7"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:layout_gravity="end|fill"
-                            android:layout_margin="0dp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginEnd="0dp"
-                            android:layout_marginBottom="0dp"
-                            android:background="@android:color/transparent"
-                            android:focusable="false"
-                            android:importantForAutofill="no"
-                            android:paddingVertical="@dimen/margin_narrow"
-                            android:textAlignment="textEnd"
-                            tools:text="54" />
-
-                        <!-- Row 8 -->
-                        <android.widget.Space
-                            android:layout_width="0dp"
-                            android:layout_height="28dp"
-                            android:layout_row="8"
-                            android:layout_column="0"
-                            android:layout_columnSpan="3" />
-
-                        <!--Row 9 -->
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="9"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:focusable="false"
-                            android:labelFor="@id/frag_entry_pay"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_pay" />
-
-                        <EditText
-                            android:id="@+id/frag_entry_pay"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="9"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:importantForAutofill="no"
-                            android:inputType="numberDecimal" />
-
-                        <!--    Row 10   -->
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="10"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:focusable="false"
-                            android:labelFor="@id/frag_entry_pay_other"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_other_pay" />
-
-                        <EditText
-                            android:id="@+id/frag_entry_pay_other"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="10"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:importantForAutofill="no"
-                            android:inputType="numberDecimal" />
-
-                        <!--    Row 11  -->
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="11"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:focusable="false"
-                            android:labelFor="@id/frag_entry_cash_tips"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_cash_tips" />
-
-                        <EditText
-                            android:id="@+id/frag_entry_cash_tips"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="11"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:importantForAutofill="no"
-                            android:inputType="numberDecimal" />
-
-                        <!--    Row 12  -->
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="12"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:focusable="false"
-                            android:labelFor="@id/frag_entry_num_deliveries"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:text="@string/lbl_num_deliveries" />
-
-                        <EditText
-                            android:id="@+id/frag_entry_num_deliveries"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_row="12"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:layout_marginBottom="@dimen/margin_half"
-                            android:importantForAutofill="no"
-                            android:inputType="number"
-                            tools:text="7" />
-
-                        <!-- Row 13 -->
-                        <View
-                            android:layout_height="0dp"
-                            android:layout_row="13"
-                            android:layout_rowWeight="1"
-                            android:layout_column="0"
-                            android:layout_columnSpan="3"
-                            android:background="@drawable/dialog_frag_bottom_row_bg" />
-
-                        <TextView
-                            style="@style/DialogHeaderTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_row="13"
-                            android:layout_column="0"
-                            android:layout_columnWeight="1"
-                            android:layout_margin="0dp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginBottom="0dp"
-                            android:background="@android:color/transparent"
-                            android:paddingHorizontal="@dimen/margin_default"
-                            android:paddingVertical="@dimen/margin_narrow"
-                            android:text="@string/lbl_total_earned"
-                            android:textAlignment="textStart"
-                            android:textColor="?attr/colorTextPrimary" />
-
-                        <TextView
-                            android:id="@+id/frag_entry_total_earned"
-                            style="@style/DialogValueTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_row="13"
-                            android:layout_column="2"
-                            android:layout_columnWeight="1"
-                            android:layout_margin="0dp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginBottom="0dp"
-                            android:autoSizeTextType="uniform"
-                            android:background="@android:color/transparent"
-                            android:paddingVertical="@dimen/margin_narrow"
-                            android:textAlignment="textEnd"
-                            tools:text="$8.25" />
-                    </GridLayout>
-                </LinearLayout>
+                                tools:text="$8.25" />
+                        </GridLayout>
+                    </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
             </androidx.cardview.widget.CardView>
+
             <include
                 android:id="@+id/bottom_button_bar"
                 layout="@layout/dialog_list_item_buttons" />
