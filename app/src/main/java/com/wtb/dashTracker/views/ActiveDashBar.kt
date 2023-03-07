@@ -26,8 +26,7 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
 import dev.benica.mileagetracker.LocationService.ServiceState
-import dev.benica.mileagetracker.LocationService.ServiceState.STOPPED
-import dev.benica.mileagetracker.LocationService.ServiceState.TRACKING_ACTIVE
+import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -51,7 +50,13 @@ class ActiveDashBar @JvmOverloads constructor(
         callback = cb
     }
 
-    fun updateServiceState(serviceState: ServiceState) {
+    /**
+     * shows/hides active dash bar and tracking details according to [serviceState].
+     * [STOPPED] -> hide both
+     * [TRACKING_ACTIVE] -> show both
+     * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
+     */
+    fun updateVisibilities(serviceState: ServiceState) {
         when (serviceState) {
             STOPPED -> {
                 if (binding.root.visibility == VISIBLE) {
@@ -59,15 +64,19 @@ class ActiveDashBar @JvmOverloads constructor(
                 }
             }
             TRACKING_ACTIVE -> {
+                if (binding.activeDashDetails.visibility == GONE) {
+                    binding.activeDashDetails.expand()
+                }
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
-                    binding.activeDashDetails.visibility = VISIBLE
                 }
             }
             else -> {
+                if (binding.activeDashDetails.visibility == VISIBLE) {
+                    binding.activeDashDetails.collapse()
+                }
                 if (binding.root.visibility == GONE) {
                     binding.root.expand()
-                    binding.activeDashDetails.visibility = GONE
                 }
             }
         }

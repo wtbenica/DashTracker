@@ -37,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmExpenseBreakdownBinding
-import com.wtb.dashTracker.extensions.getAttributeColor
+import com.wtb.dashTracker.extensions.getAttrColor
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
@@ -84,7 +84,7 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
 
                     Divider(
                         thickness = 1.dp,
-                        color = Color(context.getAttributeColor(R.attr.colorSecondaryDark))
+                        color = Color(context.getAttrColor(R.attr.colorSecondaryDark))
                     )
 
                     yearly.expenses?.let {

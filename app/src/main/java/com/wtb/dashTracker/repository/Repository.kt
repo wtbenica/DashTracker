@@ -18,6 +18,7 @@ package com.wtb.dashTracker.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.paging.Pager
@@ -28,6 +29,7 @@ import com.wtb.dashTracker.database.DashDatabase
 import com.wtb.dashTracker.database.daos.*
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
+import com.wtb.dashTracker.ui.activity_main.errorLog
 import dev.benica.csvutil.CSVUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -297,6 +299,9 @@ class Repository private constructor(private val context: Context) {
      * argument, null, will not make any changes to the corresponding table. An empty list will
      * delete all records from the table.
      */
+    // TODO: This needs some error checking for SQLiteConstraintException. E.g. there are existing
+    //  expenses, but the imported file has an empty expenses, existing expenses are never cleared,
+    //  but purposes are, which causes constraint exception
     fun insertOrReplace(
         entries: List<DashEntry>? = null,
         weeklies: List<Weekly>? = null,
@@ -338,8 +343,13 @@ class Repository private constructor(private val context: Context) {
                 expenseDao.clear()
                 expenseDao.upsertAllSus(expenses)
             } else if (purposes != null) {
-                expensePurposeDao.clear()
-                expensePurposeDao.upsertAllSus(purposes)
+                // TODO: This was a quick fix. didn't think about unintended consequences
+                try {
+                    expensePurposeDao.clear()
+                    expensePurposeDao.upsertAllSus(purposes)
+                } catch (e: SQLiteConstraintException) {
+                    errorLog(e.toString())
+                }
             }
         }
     }

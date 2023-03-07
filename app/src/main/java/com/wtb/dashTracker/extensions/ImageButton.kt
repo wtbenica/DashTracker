@@ -17,13 +17,14 @@
 package com.wtb.dashTracker.extensions
 
 import android.graphics.drawable.AnimatedVectorDrawable
+import android.view.View
 import android.widget.ImageButton
 import androidx.annotation.DrawableRes
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 /**
  * Toggle button animated vector drawable - plays animation then switches animation drawables,
- * alternating on each call. Sets [View.tag] to keep track of current drawable.
+ * alternating on each call. Sets [View.getTag] and [View.setTag] to keep track of current drawable.
  *
  * @param initialDrawable - the first animation to play
  * @param otherDrawable - the second animation to play
@@ -36,14 +37,14 @@ fun ImageButton.toggleButtonAnimatedVectorDrawable(
     run {
         // If tag is already set to [initialDrawable], switches image resource to [otherDrawable]
         // Otherwise, image resource is set to [initialDrawable]
-        when (tag ?: otherDrawable) {
+        tag = when (tag ?: otherDrawable) {
             initialDrawable -> {
                 setImageResource(otherDrawable)
-                tag = otherDrawable
+                otherDrawable
             }
             else -> {
                 setImageResource(initialDrawable)
-                tag = initialDrawable
+                initialDrawable
             }
         }
         when (val d = drawable) {

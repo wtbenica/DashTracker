@@ -319,10 +319,10 @@ class WeeklyDialog : EditDataModelDialog<Weekly, DialogFragWeeklyBinding>() {
  * prev year + same year -> "Sep 27 - Oct 1, 2022"
  */
 fun getDateRange(start: LocalDate, end: LocalDate): String {
-    return when {
-        start.year == end.year -> {
-            when {
-                start.month == end.month -> {
+    return when (start.year) {
+        end.year -> {
+            when (start.month) {
+                end.month -> {
                     // November 14-20, 2022
                     "${start.format(dtfDateThisYear)}-${end.dayOfMonth}, ${end.year}"
                 }

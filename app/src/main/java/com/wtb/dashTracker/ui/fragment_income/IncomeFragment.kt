@@ -32,17 +32,24 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragIncomeBinding
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment.Companion.REQ_KEY_INCOME_LIST_ITEM_SELECTED
+import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment.IncomeListItemFragmentCallback
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies.WeeklyListFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.YearlyListFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.YearlyListFragment.YearlyListFragmentCallback
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -58,13 +65,31 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class IncomeFragment : Fragment(), IncomeListItemFragment.IncomeListItemFragmentCallback,
-    WeeklyListFragment.WeeklyListFragmentCallback,
-    EntryListFragment.EntryListFragmentCallback,
-    YearlyListFragment.YearlyListFragmentCallback {
+class IncomeFragment : Fragment(),
+    IncomeListItemFragmentCallback,
+    WeeklyListFragmentCallback,
+    EntryListFragmentCallback,
+    YearlyListFragmentCallback,
+    ScrollableFragment {
+
+    // Public variables
+    override val isAtTop: Boolean
+        get() = currentFragment?.isAtTop ?: false
+
+    // Private variables
     private lateinit var callback: IncomeFragmentCallback
     private var cpmButtonText: String? = null
     private lateinit var binding: FragIncomeBinding
+
+    /**
+     * Fragments - stores references to each fragment of the tablayout
+     */
+    private val fragments: MutableMap<Int, ListItemFragment> = mutableMapOf()
+
+    /**
+     * Current fragment - set by OnTabSelected using [fragments] and [TabLayout.Tab.position]
+     */
+    private var currentFragment: ScrollableFragment? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -97,12 +122,22 @@ class IncomeFragment : Fragment(), IncomeListItemFragment.IncomeListItemFragment
         val viewPager = binding.fragIncomeViewPager
         viewPager.adapter = IncomePagerAdapter(this)
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = when (position) {
-                1 -> getString(R.string.frag_title_weekly_list)
-                2 -> getString(R.string.frag_title_yearly_list)
-                else -> getString(R.string.frag_title_daily_list)
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                currentFragment = fragments[tab!!.position]
             }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // Do nothing
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // Do nothing
+            }
+        })
+
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = (IncomePages.values().getOrNull(position) ?: IncomePages.DAILY).tabLabel
         }.attach()
 
         binding.topStuff.apply {
@@ -170,27 +205,14 @@ class IncomeFragment : Fragment(), IncomeListItemFragment.IncomeListItemFragment
         binding.selectCpm.text = cpmButtonText
     }
 
-    @ExperimentalCoroutinesApi
-    inner class IncomePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = NUM_PAGES
-
-        override fun createFragment(position: Int): Fragment =
-            when (position) {
-                1 -> WeeklyListFragment()
-                2 -> YearlyListFragment()
-                else -> EntryListFragment()
-            }
-    }
-
-    interface IncomeFragmentCallback {
-        fun setDeductionType(dType: DeductionType)
-        val deductionType: StateFlow<DeductionType>
-        fun hideStuff()
-        fun showStuff()
-    }
-
     companion object {
-        private const val NUM_PAGES = 3
+        private val NUM_PAGES = IncomePages.values().size
+
+        enum class IncomePages(val tabLabel: String, val fragment: () -> IncomeListItemFragment) {
+            DAILY("Daily", { EntryListFragment() }),
+            WEEKLY("Weekly", { WeeklyListFragment() }),
+            YEARLY("Yearly", { YearlyListFragment() })
+        }
 
         @JvmStatic
         fun newInstance(): IncomeFragment = IncomeFragment()
@@ -200,5 +222,21 @@ class IncomeFragment : Fragment(), IncomeListItemFragment.IncomeListItemFragment
         if (binding.filterBoxCollapsableArea.isVisible) {
             hideOptionsMenu()
         }
+    }
+
+    @ExperimentalCoroutinesApi
+    inner class IncomePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+        override fun getItemCount(): Int = NUM_PAGES
+        override fun createFragment(position: Int): Fragment =
+            (IncomePages.values().getOrNull(position)?.fragment?.invoke()
+                ?: EntryListFragment())
+                .also {
+                    fragments[position] = it
+                }
+    }
+
+    interface IncomeFragmentCallback {
+        fun setDeductionType(dType: DeductionType)
+        val deductionType: StateFlow<DeductionType>
     }
 }

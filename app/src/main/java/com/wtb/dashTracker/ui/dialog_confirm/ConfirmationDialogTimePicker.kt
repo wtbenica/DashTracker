@@ -19,11 +19,11 @@ package com.wtb.dashTracker.ui.dialog_confirm
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
 import com.wtb.dashTracker.databinding.DialogFragConfirmTimePickerBinding
+import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalTime
@@ -50,7 +51,12 @@ class ConfirmationDialogTimePicker : FullWidthDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arguments?.let {
             headerText = it.getString(ARG_TIME_PICKER_HEADER_TEXT)
-            currentText = it.getSerializable(ARG_TIME_CURRENT_TEXT) as LocalTime?
+            currentText = if (SDK_INT >= TIRAMISU) {
+                it.getSerializable(ARG_TIME_CURRENT_TEXT, LocalTime::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.getSerializable(ARG_TIME_CURRENT_TEXT) as LocalTime?
+            }
             textViewId = it.getInt(ARG_TIME_TEXTVIEW)
         }
 
@@ -67,12 +73,8 @@ class ConfirmationDialogTimePicker : FullWidthDialogFragment() {
         binding = DialogFragConfirmTimePickerBinding.inflate(inflater)
 
         binding.dialogTimePickerToolbar.apply {
-            if (headerText?.isEmpty() == true) {
-                visibility = GONE
-            } else {
-                visibility = VISIBLE
-                title = headerText
-            }
+            setVisibleIfTrue(headerText?.isNotEmpty() == true)
+            headerText?.let { title = it }
         }
 
         binding.dialogTimePickerTimePicker.apply {

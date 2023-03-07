@@ -10,7 +10,6 @@ import android.location.Location
 import android.os.*
 import android.util.Log
 import com.google.android.gms.location.*
-import com.google.android.gms.location.ActivityTransition.ACTIVITY_TRANSITION_ENTER
 import com.wtb.notificationutil.NotificationUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -39,7 +38,6 @@ class LocationService : Service() {
     private val _tripId = MutableStateFlow<Long?>(null)
     private var serviceRunningInForeground = false
     private var configurationChange = false
-    private var activityTransitionReceiverRegistered = false
     private var activityUpdateReceiverRegistered = false
 
     private val _isStarted = MutableStateFlow(false)
@@ -156,8 +154,6 @@ class LocationService : Service() {
                 tripId.value!!
             }
         }
-//
-//        return this.tripId.value ?: newTripId
     }
 
     /**
@@ -229,7 +225,7 @@ class LocationService : Service() {
     private var currentLocation: Location? = null
 
     // Activity Detection
-    private val userActivity = ActivityTransitionUtils(this)
+    private val userActivity = ActivityUpdateUtils(this)
 
     private fun getLocationCallback(onComplete: (loc: Location, tripId: Long, still: Int, inCar: Int, onFoot: Int, unknown: Int) -> Unit) =
         object : LocationCallback() {
@@ -321,10 +317,6 @@ class LocationService : Service() {
             unregisterReceiver(activityUpdateReceiver)
         }
 
-        if (activityTransitionReceiverRegistered) {
-            unregisterReceiver(activityTransitionReceiver)
-        }
-
         serviceScope.cancel()
         super.onDestroy()
     }
@@ -394,41 +386,8 @@ class LocationService : Service() {
             _isStill.value = still > 50
             _inVehicle.value = car > 50
             _onFoot.value = foot > 50
-
-//            if (unknown < 10 && (car > 70 || foot > 70 || still > 70)) {
-//                unregisterReceiver(this)
-//                activityUpdateReceiverRegistered = false
-//                userActivity.removeActivityUpdates()
-//
-//                registerReceiver(
-//                    activityTransitionReceiver,
-//                    IntentFilter(ActivityTransitionReceiver.ACT_TRANS_INTENT)
-//                )
-//                userActivity.registerForActivityTransitionUpdates()
-//                activityTransitionReceiverRegistered = true
-//            }
         }
     }
-
-    private val activityTransitionReceiver = ActivityTransitionReceiver().apply {
-        action = { event ->
-            when (event.activityType) {
-                DetectedActivity.STILL -> {
-                    _isStill.value = event.transitionType == ACTIVITY_TRANSITION_ENTER
-                }
-                DetectedActivity.IN_VEHICLE -> {
-                    _inVehicle.value = event.transitionType == ACTIVITY_TRANSITION_ENTER
-                }
-                DetectedActivity.ON_FOOT -> {
-                    _onFoot.value = event.transitionType == ACTIVITY_TRANSITION_ENTER
-                }
-                else -> {
-                    // Do nothing
-                }
-            }
-        }
-    }
-
     inner class LocalBinder : Binder() {
         val service: LocationService
             get() = this@LocationService

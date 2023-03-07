@@ -53,7 +53,6 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.*
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
@@ -93,7 +92,6 @@ class OnboardingMileageActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        debugLog("onCreate ${this::class.simpleName}")
         actionBar?.hide()
 
         @Suppress("DEPRECATION")
@@ -364,7 +362,6 @@ class OnboardingMileageActivity : ComponentActivity() {
 
     @SuppressLint("ApplySharedPref")
     override fun onDestroy() {
-        debugLog("onDestroy ${this::class.simpleName}")
 
         permissionsHelper.sharedPrefs.edit()
             .putBoolean(ASK_AGAIN_LOCATION, false)

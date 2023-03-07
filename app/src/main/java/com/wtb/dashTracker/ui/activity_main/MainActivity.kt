@@ -29,14 +29,11 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.util.Log
-import android.util.TypedValue
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import android.view.View.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -61,12 +58,14 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
+import com.wtb.dashTracker.extensions.getAttrColor
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
 import com.wtb.dashTracker.repository.DeductionType
@@ -81,7 +80,9 @@ import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFICATION_STATE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.REQUEST_KEY_DATA_MODEL_DIALOG
+import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EndDashDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog
@@ -92,12 +93,15 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialo
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
+import com.wtb.dashTracker.ui.fragment_income.IncomeFragment.IncomeFragmentCallback
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
 import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasPermissions
 import com.wtb.dashTracker.views.ActiveDashBar
+import com.wtb.dashTracker.views.ActiveDashBar.ActiveDashBarCallback
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -112,6 +116,7 @@ import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 
 private const val APP = "GT_"
@@ -142,37 +147,16 @@ internal fun Any.errorLog(message: String) {
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
-    IncomeFragment.IncomeFragmentCallback, ActiveDashBar.ActiveDashBarCallback {
-    private var isTesting: Boolean = false
-
+class MainActivity : AuthenticatedActivity(),
+    ExpenseListFragmentCallback,
+    IncomeFragmentCallback,
+    ActiveDashBarCallback,
+    ListItemFragment.ListItemFragmentCallback {
     private val viewModel: MainActivityViewModel by viewModels()
 
-    // IncomeFragmentCallback
     private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
-
     override val deductionType: StateFlow<DeductionType>
         get() = deductionTypeViewModel.deductionType
-
-    override fun hideStuff() {
-        binding.apply {
-            appBarLayout.setExpanded(false, true)
-            bottomAppBar.performHide()
-            fab.hide()
-        }
-    }
-
-    override fun showStuff() {
-        binding.apply {
-            appBarLayout.setExpanded(true, true)
-            bottomAppBar.performShow(true)
-            fab.show()
-        }
-    }
-
-    override fun setDeductionType(dType: DeductionType) {
-        deductionTypeViewModel.setDeductionType(dType)
-    }
 
     // Bindings
     internal lateinit var binding: ActivityMainBinding
@@ -181,6 +165,22 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     // State
     private lateinit var activeDash: ActiveDash
     private var showingWelcomeScreen = false
+
+    /**
+     * Flag that prevents [EndDashDialog] from being shown if the active entry was deleted, as
+     * opposed to when it was stopped
+     */
+    private var activeEntryDeleted: Boolean = false
+
+    /**
+     * Flag to differentiate user-input scrolling vs programmatic scrolling
+     */
+    internal var isShowingOrHidingToolbars: Boolean = false
+
+    // TODO: This is in permissionsHelper, no?
+    /**
+     * Has [REQUIRED_PERMISSIONS] && pref [LOCATION_ENABLED] is true
+     */
     private val trackingEnabled: Boolean
         get() {
             val hasPermissions = this.hasPermissions(*REQUIRED_PERMISSIONS)
@@ -188,6 +188,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
             return hasPermissions && isEnabled
         }
+    private var trackingEnabledPrevious: Boolean = false
 
     // Launchers
     /**
@@ -230,7 +231,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        debugLog("onCreate ${this::class.simpleName}")
+
         fun initBiometrics() {
             val biometricManager = BiometricManager.from(this)
             when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
@@ -377,16 +378,21 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 }
             }
 
+            /**
+             * Checks [ARG_MODIFICATION_STATE] result from an [EntryDialog]. If it is
+             * [ModificationState.DELETED], calls [clearActiveEntry] before
+             * [MainActivityViewModel.deleteEntry]
+             */
             supportFragmentManager.setFragmentResultListener(
                 REQUEST_KEY_DATA_MODEL_DIALOG,
                 this
             ) { _, bundle ->
-                val modifyState = bundle.getString(EditDataModelDialog.ARG_MODIFICATION_STATE)
-                    ?.let { EditDataModelDialog.ModificationState.valueOf(it) }
+                val modifyState = bundle.getString(ARG_MODIFICATION_STATE)
+                    ?.let { ModificationState.valueOf(it) }
 
                 val id = bundle.getLong(EditDataModelDialog.ARG_MODIFIED_ID, -1L)
 
-                if (modifyState == EditDataModelDialog.ModificationState.DELETED && id != -1L) {
+                if (modifyState == ModificationState.DELETED && id != -1L) {
                     clearActiveEntry(id)
                     viewModel.deleteEntry(id)
                 }
@@ -398,16 +404,56 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
          * [ActiveDashBar].
          */
         fun initMainActivityBinding() {
-            binding = ActivityMainBinding.inflate(layoutInflater)
+            fun isRecyclerViewAtTop(): Boolean {
+                var t = false
+                val currFrag: Fragment? =
+                    supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)?.childFragmentManager?.fragments?.last()
 
-            binding.fab.setOnClickListener {
-                if (binding.fab.tag == null || binding.fab.tag == R.drawable.anim_stop_to_play) {
-                    showStartDashDialog()
-                } else {
-                    viewModel.loadActiveEntry(null)
+                if (currFrag is ScrollableFragment) {
+                    t = currFrag.isAtTop
+                }
+
+                return t
+            }
+
+            binding = ActivityMainBinding.inflate(layoutInflater).apply {
+
+                fab.setOnClickListener {
+                    if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
+                        showStartDashDialog()
+                    } else {
+                        viewModel.loadActiveEntry(null)
+                    }
+                }
+
+                adb.initialize(this@MainActivity)
+
+                appBarLayout.addOnOffsetChangedListener { appBar: AppBarLayout, offset: Int ->
+                    val oneDpAsPx = resources.displayMetrics.density.roundToInt()
+                    val appBarIsHidden = appBar.height - oneDpAsPx + offset == 0
+                    val forceShowBottomAppBar =
+                        offset == 0 && bottomAppBar.isScrolledDown && isRecyclerViewAtTop()
+
+                    when {
+                        !isShowingOrHidingToolbars && forceShowBottomAppBar -> {
+                            isShowingOrHidingToolbars = true
+                            with(binding) {
+                                bottomAppBar.performShow(true)
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    runOnUiThread {
+                                        fab.show()
+                                    }
+                                }
+                            }
+                        }
+                        isShowingOrHidingToolbars -> {
+                            if (appBarIsHidden) {
+                                isShowingOrHidingToolbars = false
+                            }
+                        }
+                    }
                 }
             }
-            binding.adb.initialize(this)
         }
 
         installSplashScreen()
@@ -469,7 +515,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         fun onFirstRun() {
-            debugLog("onFirstRun")
             expectedExit = true
             showingWelcomeScreen = true
             startActivity((Intent(this, WelcomeActivity::class.java)))
@@ -496,21 +541,9 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
     }
 
     override fun onPause() {
-        debugLog("onPause ${this::class.simpleName}")
         activeDash.unbindLocationService()
 
         super.onPause()
-    }
-
-    override fun onStop() {
-        debugLog("onStop ${this::class.simpleName}")
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        debugLog("onDestroy ${this::class.simpleName}")
-
-        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
@@ -603,9 +636,14 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         activeDash.stopDash(entryId)
     }
 
-    var activeEntryDeleted: Boolean = false
-
-    fun clearActiveEntry(id: Long) {
+    /**
+     * Clear active entry - if the active entry id is [id], sets [activeEntryDeleted] to true, so
+     * that the [EndDashDialog] isn't triggered, and calls [MainActivityViewModel.loadActiveEntry]
+     * with null as the argument.
+     *
+     * @param id
+     */
+    internal fun clearActiveEntry(id: Long) {
         if (activeDash.activeEntry?.entry?.entryId == id) {
             activeEntryDeleted = true
             viewModel.loadActiveEntry(null)
@@ -630,6 +668,30 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         exitProcess(0)
     }
 
+    // IncomeFragmentCallback
+    override fun setDeductionType(dType: DeductionType) {
+        deductionTypeViewModel.setDeductionType(dType)
+    }
+
+    // ListItemFragmentCallback overrides
+    override fun hideToolbarsAndFab() {
+        isShowingOrHidingToolbars = true
+        with(binding) {
+            appBarLayout.setExpanded(false, true)
+            bottomAppBar.performHide(true)
+            fab.hide()
+        }
+    }
+
+    override fun showToolbarsAndFab() {
+        isShowingOrHidingToolbars = true
+        with(binding) {
+            appBarLayout.setExpanded(true, true)
+            bottomAppBar.performShow(true)
+            fab.show()
+        }
+    }
+
     // AuthenticatedActivity overrides
     override val onAuthentication: () -> Unit
         get() {
@@ -640,11 +702,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             }
 
             val endDashExtra = intent?.getBooleanExtra(EXTRA_END_DASH, false)
-            intent.removeExtra(EXTRA_END_DASH)
-            val tripId = intent.getLongExtra(EXTRA_TRIP_ID, -1L)
-            intent.removeExtra(EXTRA_TRIP_ID)
+            intent?.removeExtra(EXTRA_END_DASH)
+            val tripId = intent?.getLongExtra(EXTRA_TRIP_ID, -1L)
+            intent?.removeExtra(EXTRA_TRIP_ID)
 
-            return if (endDashExtra == true) {
+            return if (endDashExtra == true && tripId != null) {
                 onEndDashIntent(tripId)
             } else {
                 ::onUnlock
@@ -653,7 +715,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
     override val onAuthFailed: (() -> Unit)? = null
 
-    override val onAuthError: (() -> Unit)? = ::reauthenticate
+    override val onAuthError: () -> Unit = ::reauthenticate
 
     // TODO: This might should be moved to AuthenticatedActivity
     /**
@@ -680,9 +742,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
 
         val activeEntryId = sharedPrefs.getLong(ACTIVE_ENTRY_ID, -1L)
 
-        if (activeEntryId != -1L && !activeDash.locationServiceBound) {
-            viewModel.loadActiveEntry(activeEntryId)
-        }
+        viewModel.loadActiveEntry(activeEntryId)
     }
 
     /**
@@ -710,9 +770,9 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             bindLocationService()
 
             val id = activeEntryId
-            if (id != null) {
-                startLocationService(id)
-            } else {
+            if (id == null) {
+                // TODO: Is this ever possible? sure active entry id is nullable, but is there ever
+                //  a situation where resumeOrStartNewTrip would be called when it is null?
                 CoroutineScope(Dispatchers.Default).launch {
                     withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
                         val newEntry = DashEntry()
@@ -751,8 +811,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         }
 
         /**
-         * Monitors [locationService] and expands/collapses active entry bar, updates pause/resume
-         * button and start/stop FAB.
+         * Updates [locationServiceState] from [LocationService.serviceState]
          */
         fun initLocSvcObserver() {
             CoroutineScope(Dispatchers.Default).launch {
@@ -785,25 +844,50 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             val beforeId = before?.entry?.entryId
             val afterId = after?.entry?.entryId
 
-            if (beforeId != afterId || (!locationServiceBound && after != null)) {
-                val serviceState = if (after != null) {
-                    if (!locationServiceBound) {
+            val mTrackingEnabled = trackingEnabled
+
+            val serviceState =
+                if (afterId == null) { // stopping or stopped
+                    if (beforeId != null) {
+                        stopDash(beforeId)
+                    }
+
+                    STOPPED
+                } else { // starting or continuing
+                    if (beforeId == null && !locationServiceBound) {
                         startTracking()
                     }
-                    if (trackingEnabled)
+
+                    if (mTrackingEnabled) {
+                        if (!trackingEnabledPrevious) {
+                            // tracking has been enabled
+                            resumeOrStartNewTrip()
+                        }
+
                         TRACKING_ACTIVE
-                    else
+                    } else {
+                        if (locationServiceBound || trackingEnabledPrevious) {
+                            // either location service hasn't been stopped or tracking was disabled
+                            stopTracking()
+                        }
+
                         TRACKING_INACTIVE
-                } else {
-                    stopDash(beforeId)
-                    STOPPED
+                    }
                 }
-                updateUi(serviceState)
-            }
+
+            trackingEnabledPrevious = mTrackingEnabled
+
+            updateUi(serviceState)
         }
 
         // Location Service
         private var locationService: LocationService? = null
+            set(value) {
+                field = value
+                field?.let {
+                    updateLocationServiceNotificationData(activeEntryId, it)
+                }
+            }
 
         private var locationServiceConnection: ServiceConnection? = null
 
@@ -840,12 +924,17 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             locationService.let {
                 if (it != null) {
                     it.stop()
+                    unbindLocationService()
                 } else {
                     stopOnBind = true
+                    bindLocationService()
                 }
             }
         }
 
+        /**
+         * Animate fab icon and adb visibility depending on [state].
+         */
         private fun updateUi(state: ServiceState) {
             fun toggleFabToPlay() {
                 binding.fab.apply {
@@ -869,7 +958,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 }
             }
 
-            binding.adb.updateServiceState(state)
+            binding.adb.updateVisibilities(state)
 
             when (state) {
                 STOPPED -> toggleFabToPlay()
@@ -880,13 +969,13 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         internal fun bindLocationService() {
             fun onBind() {
                 activeEntryId?.let { id ->
-                    if (locationServiceState != TRACKING_ACTIVE) {
-                        startLocationService(id)
-                    }
+                    startLocationService(id)
                 }
             }
 
-            if (!locationServiceBound && !startingService && trackingEnabled) {
+            // stopOnBind is set true when a new active entry comes in, and trackingEnabled is
+            // false.
+            if (!locationServiceBound && !startingService && (trackingEnabled || stopOnBind)) {
                 startingService = true
                 val locationServiceIntent =
                     Intent(applicationContext, LocationService::class.java)
@@ -917,83 +1006,86 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             startOnBind = true
             startOnBindId = tripId
             startingService = false
-            /**
-             * Updates [locationService]'s ongoing notification data
-             *
-             * @param tripId the id of the active trip
-             */
-            fun updateLocationServiceNotificationData(tripId: Long? = activeEntryId) {
-                fun getOpenActivityAction(context: Context): NotificationCompat.Action {
-                    fun getLaunchActivityPendingIntent(): PendingIntent? {
-                        val launchActivityIntent = Intent(context, MainActivity::class.java)
-                            .putExtra(EXTRA_END_DASH, false)
-                            .putExtra(EXTRA_TRIP_ID, tripId ?: -1L)
 
-                        return PendingIntent.getActivity(
-                            context,
-                            0,
-                            launchActivityIntent,
-                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                        )
-                    }
+            return locationService?.let {
+                updateLocationServiceNotificationData(tripId, it)
+                it.start(tripId, saveLocation)
+            }
+        }
 
-                    return NotificationCompat.Action(
-                        R.drawable.ic_launch,
-                        getString(R.string.notification_button_open_app),
-                        getLaunchActivityPendingIntent()
+        /**
+         * Updates [locationService]'s ongoing notification data
+         *
+         * @param tripId the id of the active trip
+         */
+        private fun updateLocationServiceNotificationData(
+            tripId: Long? = activeEntryId,
+            locationService: LocationService
+        ) {
+            fun getOpenActivityAction(context: Context): NotificationCompat.Action {
+                fun getLaunchActivityPendingIntent(): PendingIntent? {
+                    val launchActivityIntent = Intent(context, MainActivity::class.java)
+                        .putExtra(EXTRA_END_DASH, false)
+                        .putExtra(EXTRA_TRIP_ID, tripId ?: -1L)
+
+                    return PendingIntent.getActivity(
+                        context,
+                        0,
+                        launchActivityIntent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 }
 
-                fun getStopServiceAction(ctx: Context): NotificationCompat.Action {
-                    fun getEndDashPendingIntent(id: Long?): PendingIntent? {
-                        val intent = Intent(ctx, MainActivity::class.java)
-                            .putExtra(EXTRA_END_DASH, true)
-                            .putExtra(EXTRA_TRIP_ID, id ?: -1L)
-
-                        return PendingIntent.getActivity(
-                            ctx,
-                            1,
-                            intent,
-                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                        )
-                    }
-
-                    return NotificationCompat.Action(
-                        R.drawable.ic_cancel,
-                        getString(R.string.notification_button_stop),
-                        getEndDashPendingIntent(tripId)
-                    )
-                }
-
-                val locServiceOngoingNotificationData =
-                    NotificationUtils.NotificationData(
-                        contentTitle = R.string.app_name,
-                        bigContentTitle = R.string.app_name,
-                        icon = R.mipmap.icon_c,
-                        actions = listOf(
-                            ::getOpenActivityAction,
-                            ::getStopServiceAction
-                        )
-                    )
-
-                locationService?.apply {
-                    initialize(
-                        notificationData = locServiceOngoingNotificationData,
-                        notificationChannel = notificationChannel,
-                        notificationText = { getString(R.string.notification_text_tracking_on) }
-                    )
-                }
+                return NotificationCompat.Action(
+                    R.drawable.ic_launch,
+                    getString(R.string.notification_button_open_app),
+                    getLaunchActivityPendingIntent()
+                )
             }
 
-            updateLocationServiceNotificationData(tripId)
+            fun getStopServiceAction(ctx: Context): NotificationCompat.Action {
+                fun getEndDashPendingIntent(id: Long?): PendingIntent? {
+                    val intent = Intent(ctx, MainActivity::class.java)
+                        .putExtra(EXTRA_END_DASH, true)
+                        .putExtra(EXTRA_TRIP_ID, id ?: -1L)
 
-            return locationService?.start(tripId, saveLocation)
+                    return PendingIntent.getActivity(
+                        ctx,
+                        1,
+                        intent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                }
+
+                return NotificationCompat.Action(
+                    R.drawable.ic_cancel,
+                    getString(R.string.notification_button_stop),
+                    getEndDashPendingIntent(tripId)
+                )
+            }
+
+            val locServiceOngoingNotificationData =
+                NotificationUtils.NotificationData(
+                    contentTitle = R.string.app_name,
+                    bigContentTitle = R.string.app_name,
+                    icon = R.mipmap.icon_c,
+                    actions = listOf(
+                        ::getOpenActivityAction,
+                        ::getStopServiceAction
+                    )
+                )
+
+            locationService.initialize(
+                notificationData = locServiceOngoingNotificationData,
+                notificationChannel = notificationChannel,
+                notificationText = { getString(R.string.notification_text_tracking_on) }
+            )
         }
 
         /**
          * Returns a [ServiceConnection] that, in [ServiceConnection.onServiceConnected] saves the
          * service binding to [locationService], initiates observers on it, and loads the
-         * [activeEntry] if the [LocationService] is already started. It will stop the service is
+         * [activeEntry] if the [LocationService] is already started. It will stop the service if
          * [stopOnBind] is set to true.
          *
          * @param onBind any actions to perform once the [LocationService] is bound
@@ -1002,12 +1094,6 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
         private fun getLocationServiceConnection(onBind: (() -> Unit)? = null): ServiceConnection =
             object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                    fun syncActiveEntryId() {
-                        locationService?.tripId?.value?.let {
-                            viewModel.loadActiveEntry(it)
-                        }
-                    }
-
                     val binder = service as LocationService.LocalBinder
                     locationService = binder.service
                     locationServiceBound = true
@@ -1019,12 +1105,15 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                         stopOnBind = false
                         startOnBind = false
                         startOnBindId = null
+                        unbindLocationService()
                     } else if (startOnBind && locationServiceState != TRACKING_ACTIVE) {
                         (activeEntryId ?: startOnBindId)?.let { startLocationService(it) }
                         startOnBind = false
                         startOnBindId = null
                     } else {
-                        syncActiveEntryId()
+                        locationService?.tripId?.value?.let {
+                            viewModel.loadActiveEntry(it)
+                        }
                     }
 
                     onBind?.invoke()
@@ -1062,20 +1151,11 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             }
 
         @ColorInt
-        internal fun getColorFab(context: Context) = getAttrColor(context, R.attr.colorFab)
+        internal fun getColorFab(context: Context) = context.getAttrColor(R.attr.colorFab)
 
         @ColorInt
         internal fun getColorFabDisabled(context: Context) =
-            getAttrColor(context, R.attr.colorFabDisabled)
-
-        @ColorInt
-        internal fun getAttrColor(context: Context, @AttrRes id: Int): Int {
-            val tv = TypedValue()
-            val arr = context.obtainStyledAttributes(tv.data, intArrayOf(id))
-            @ColorInt val color = arr.getColor(0, 0)
-            arr.recycle()
-            return color
-        }
+            context.getAttrColor(R.attr.colorFabDisabled)
 
         private val convertPacksImport = listOf(
             DashEntry.getConvertPackImport(),
@@ -1085,8 +1165,7 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
             LocationData.getConvertPackImport()
         )
 
-        // Not sure why, but this doesn't work when it's a fun and passed as a lambda, but it does
-        // work when it's a val
+        // This doesn't work when it's a fun but it does work when it's a val
         private val saveLocation: (Location, Long, Int, Int, Int, Int) -> Unit =
             { loc: Location,
               entryId: Long,
@@ -1106,6 +1185,12 @@ class MainActivity : AuthenticatedActivity(), ExpenseListFragmentCallback,
                 )
             }
     }
+
+    private var isTesting: Boolean = false
+}
+
+interface ScrollableFragment {
+    val isAtTop: Boolean
 }
 
 /**

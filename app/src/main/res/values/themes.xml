@@ -237,11 +237,11 @@
         <item name="textColorListItemEntryDayThisWeek">?attr/colorPrimaryDark</item>
         <item name="textColorListItemEntryDay">?attr/colorTextPrimary</item>
 
-        <item name="dimenListItemElevationElevated">0dp</item>
-        <item name="dimenListItemElevationLowered">0dp</item>
+        <item name="dimenListItemElevationElevated">16dp</item>
+        <item name="dimenListItemElevationLowered">4dp</item>
 
         <!-- list_item_details -->
-        <item name="colorListItemDetails">?attr/colorOnSecondary</item>
+        <item name="colorListItemDetails">?attr/colorUIBackground</item>
         <item name="colorListItemDetailsBorder">?attr/colorPrimaryVariant</item>
         <item name="colorListItemDetailsToolbar">?attr/colorOnSecondary</item>
         <item name="colorRowHeaderPayText">?attr/colorOnPrimaryVariant</item>

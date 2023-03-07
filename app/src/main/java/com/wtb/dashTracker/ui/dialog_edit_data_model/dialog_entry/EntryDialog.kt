@@ -21,6 +21,7 @@ import android.widget.ImageButton
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.core.os.bundleOf
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.dtfFullDate
 import com.wtb.dashTracker.extensions.dtfTime
@@ -28,6 +29,7 @@ import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.toCurrencyString
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
+import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -103,9 +105,6 @@ class EntryDialog : BaseEntryDialog() {
         }
     }
 
-    // TODO: This erases everything, whereas other dialogs it resets. decide what it should do,
-    //  also considering how it is used in updateUI here. I don't think it's used this way anywhere
-    //  else. Why would I want to clear fields when it receives a null item?
     override fun clearFields() {
         binding.apply {
             fragEntryDate.text = LocalDate.now().format(dtfFullDate)
@@ -137,13 +136,29 @@ class EntryDialog : BaseEntryDialog() {
                 binding.fragEntryNumDeliveries.text.isNullOrBlank()
     }
 
+    /**
+     * Delete item - defers deleting item to parent [MainActivity] or [EntryListFragment] in case
+     * it is the active entry, in which case tracking can be stopped before entry is deleted
+     *
+     */
+    override fun deleteItem() {
+        parentFragmentManager.setFragmentResult(
+            REQUEST_KEY_DATA_MODEL_DIALOG, bundleOf(
+                ARG_MODIFICATION_STATE to ModificationState.DELETED.name,
+                ARG_MODIFIED_ID to item?.id
+            )
+        )
+    }
+
+    /**
+     * Set on delete pressed - always confirms before deleting, whether dialog is 'empty' or not
+     */
     override fun ImageButton.setOnDeletePressed() {
         setOnClickListener {
             ConfirmDeleteDialog.newInstance(fullEntry?.entry?.entryId)
                 .show(childFragmentManager, "delete_entry")
         }
     }
-
 
     companion object {
         fun newInstance(entryId: Long): EntryDialog =

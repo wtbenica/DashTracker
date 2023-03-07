@@ -90,7 +90,6 @@
             android:contentDescription="@string/content_desc_fab_start_new_dash"
             android:src="@drawable/anim_play_to_stop"
             app:backgroundTint="?attr/colorFab"
-            app:borderWidth="@dimen/margin_skinny"
             app:elevation="@dimen/margin_skinny"
             app:layout_anchor="@id/bottom_app_bar"
             app:maxImageSize="@dimen/min_touch_target"
@@ -103,8 +102,8 @@
             android:layout_gravity="bottom"
             app:backgroundTint="?attr/colorBottomNavBar"
             app:fabAlignmentMode="end"
-            app:fabCradleMargin="0dp"
-            app:fabCradleRoundedCornerRadius="?attr/listItemCornerRadius"
+            app:fabCradleMargin="@dimen/margin_skinny"
+            app:fabCradleRoundedCornerRadius="@dimen/margin_default"
             app:fabCradleVerticalOffset="0dp"
             app:hideOnScroll="true">
 
@@ -118,6 +117,7 @@
                 android:paddingEnd="80dp"
                 app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicatorStyle"
                 app:itemBackground="@drawable/ripple_bottom_nav"
+                app:itemIconSize="@dimen/margin_wide"
                 app:itemIconTint="?attr/colorBottomNavItem"
                 app:itemTextAppearanceActive="@style/BottomNavTextActive"
                 app:itemTextAppearanceInactive="@style/BottomNavTextInactive"

@@ -55,9 +55,9 @@
 
     <style name="ListItemHeaderIncompleteIndicator">
         <item name="android:layout_width">@dimen/margin_half</item>
-        <item name="android:layout_height">@dimen/margin_half</item>
-        <item name="android:layout_marginBottom">@dimen/margin_half</item>
+        <item name="android:layout_height">@dimen/margin_default</item>
         <item name="android:layout_gravity">start|bottom</item>
+        <item name="android:gravity">top</item>
         <item name="android:src">@drawable/ic_circle</item>
         <item name="android:tint">@color/alert</item>
     </style>

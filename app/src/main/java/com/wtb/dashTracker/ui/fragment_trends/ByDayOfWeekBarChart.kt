@@ -40,10 +40,10 @@ import com.wtb.dashTracker.database.daos.TransactionDao
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartByDayOfWeekBinding
+import com.wtb.dashTracker.extensions.getAttrColor
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getFloatString
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.MainActivity.Companion.getAttrColor
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
@@ -98,7 +98,7 @@ class ByDayOfWeekBarChart(
         fun XAxis.style() {
             setDrawBorders(true)
             typeface = ResourcesCompat.getFont(context, R.font.lalezar)
-            textColor = getAttrColor(context, R.attr.colorTextPrimary)
+            textColor = context.getAttrColor(R.attr.colorTextPrimary)
             textSize = context.getDimen(R.dimen.text_size_sm)
             position = XAxis.XAxisPosition.BOTTOM
             setDrawBorders(true)
@@ -126,7 +126,7 @@ class ByDayOfWeekBarChart(
 
         legend.isEnabled = true
         legend.typeface = ResourcesCompat.getFont(context, R.font.lalezar)
-        legend.textColor = getAttrColor(context, R.attr.colorTextPrimary)
+        legend.textColor = context.getAttrColor(R.attr.colorTextPrimary)
         legend.textSize = 14f
 
         isDragEnabled = false
@@ -138,7 +138,7 @@ class ByDayOfWeekBarChart(
         axisRight.isEnabled = false
         setDrawValueAboveBar(false)
         setDrawGridBackground(true)
-        setGridBackgroundColor(getAttrColor(context, R.attr.colorChartBackground))
+        setGridBackgroundColor(context.getAttrColor(R.attr.colorChartBackground))
     }
 
     override val filterTable: ViewGroup
@@ -231,7 +231,7 @@ class ByDayOfWeekBarChart(
 
     private fun BarDataSet.style(@AttrRes barColor: Int = R.attr.colorBarChartDatasetDefault) {
         valueTypeface = ResourcesCompat.getFont(context, R.font.lalezar)
-        color = getAttrColor(context, barColor)
+        color = context.getAttrColor(barColor)
         valueTextSize = context.getDimen(R.dimen.text_size_sm)
         valueFormatter = object : ValueFormatter() {
             override fun getBarLabel(barEntry: BarEntry?): String {

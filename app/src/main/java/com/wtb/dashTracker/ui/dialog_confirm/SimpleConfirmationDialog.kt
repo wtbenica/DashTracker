@@ -33,7 +33,7 @@ import androidx.core.os.bundleOf
 import androidx.viewbinding.ViewBinding
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.extensions.getAttributeColor
+import com.wtb.dashTracker.extensions.getAttrColor
 import com.wtb.dashTracker.extensions.getIntNotZero
 import com.wtb.dashTracker.extensions.getLongNotZero
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
@@ -292,10 +292,10 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
         }
     }
 
-    fun Button.setAsDefault(isDefault: Boolean) {
+    private fun Button.setAsDefault(isDefault: Boolean) {
         setTypeface(typeface, if (isDefault) BOLD else NORMAL)
         setTextColor(
-            context.getAttributeColor(
+            context.getAttrColor(
                 if (isDefault) R.attr.textColorDialogButtonDefault else R.attr.colorDialogText
             )
         )

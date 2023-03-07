@@ -19,7 +19,8 @@ package com.wtb.dashTracker.ui.dialog_confirm
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
 import com.wtb.dashTracker.databinding.DialogFragConfirmDatePickerBinding
+import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -48,7 +50,7 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arguments?.let {
             headerText = it.getString(ARG_DATE_PICKER_HEADER_TEXT)
-            currentText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            currentText = if (SDK_INT >= TIRAMISU) {
                 it.getSerializable(ARG_DATE_CURRENT_TEXT, LocalDate::class.java)
             } else {
                 @Suppress("DEPRECATION")
@@ -72,12 +74,8 @@ class ConfirmationDialogDatePicker : FullWidthDialogFragment() {
         binding = DialogFragConfirmDatePickerBinding.inflate(inflater)
 
         binding.dialogDatePickerToolbar.apply {
-            if (headerText?.isEmpty() == true) {
-                visibility = View.GONE
-            } else {
-                visibility = View.VISIBLE
-                title = headerText
-            }
+            setVisibleIfTrue(headerText?.isNotEmpty() == true)
+            headerText?.let { title = it }
         }
 
         binding.dialogDatePickerDatePicker.apply {

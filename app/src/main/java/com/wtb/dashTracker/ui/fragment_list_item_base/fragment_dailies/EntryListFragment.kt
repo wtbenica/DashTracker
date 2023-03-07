@@ -20,8 +20,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
@@ -168,24 +166,14 @@ class EntryListFragment : IncomeListItemFragment() {
             }
 
             override fun bind(item: FullEntry, payloads: List<Any>?) {
-                fun showExpenseFields() {
-                    binding.listItemSubtitle2Label.visibility = VISIBLE
-                    binding.listItemSubtitle2.visibility = VISIBLE
-                    detailsBinding.listItemEntryCpmHeader.visibility = VISIBLE
-                    detailsBinding.listItemEntryCpmDeductionType.visibility = VISIBLE
-                    detailsBinding.listItemEntryCpm.visibility = VISIBLE
-                    detailsBinding.listItemEntryExpensesHeader.visibility = VISIBLE
-                    detailsBinding.listItemEntryExpenses.visibility = VISIBLE
-                }
-
-                fun hideExpenseFields() {
-                    binding.listItemSubtitle2Label.visibility = GONE
-                    binding.listItemSubtitle2.visibility = GONE
-                    detailsBinding.listItemEntryCpmHeader.visibility = GONE
-                    detailsBinding.listItemEntryCpmDeductionType.visibility = GONE
-                    detailsBinding.listItemEntryCpm.visibility = GONE
-                    detailsBinding.listItemEntryExpensesHeader.visibility = GONE
-                    detailsBinding.listItemEntryExpenses.visibility = GONE
+                fun updateExpenseFieldsVisibility(show: Boolean) {
+                    binding.listItemSubtitle2Label.revealIfTrue(show)
+                    binding.listItemSubtitle2.revealIfTrue(show)
+                    detailsBinding.listItemEntryCpmHeader.revealIfTrue(show)
+                    detailsBinding.listItemEntryCpmDeductionType.revealIfTrue(show)
+                    detailsBinding.listItemEntryCpm.revealIfTrue(show)
+                    detailsBinding.listItemEntryExpensesHeader.revealIfTrue(show)
+                    detailsBinding.listItemEntryExpenses.revealIfTrue(show)
                 }
 
                 fun updateMissingAlerts() {
@@ -206,9 +194,9 @@ class EntryListFragment : IncomeListItemFragment() {
                         val costPerMile = cpm ?: 0f
                         (context as MainActivity).runOnUiThread {
                             when (deductionType) {
-                                DeductionType.NONE -> hideExpenseFields()
+                                DeductionType.NONE -> updateExpenseFieldsVisibility(false)
                                 else -> {
-                                    showExpenseFields()
+                                    updateExpenseFieldsVisibility(true)
 
                                     detailsBinding.listItemEntryCpmDeductionType.text =
                                         deductionType.fullDesc
@@ -244,9 +232,9 @@ class EntryListFragment : IncomeListItemFragment() {
                     getString(R.string.add_comma, this.item.entry.date.dayOfWeek.name.capitalize())
                 binding.listItemEntryDayOfWeek.setTextColor(
                     if (this.item.entry.date.endOfWeek == LocalDate.now().endOfWeek) {
-                        requireContext().getAttributeColor(R.attr.textColorListItemEntryDayThisWeek)
+                        requireContext().getAttrColor(R.attr.textColorListItemEntryDayThisWeek)
                     } else {
-                        requireContext().getAttributeColor(R.attr.textColorListItemEntryDay)
+                        requireContext().getAttrColor(R.attr.textColorListItemEntryDay)
                     }
                 )
 
@@ -261,7 +249,7 @@ class EntryListFragment : IncomeListItemFragment() {
 
                 detailsBinding.listItemEntryHours.apply {
                     setTextColor(
-                        context.getAttributeColor(
+                        context.getAttrColor(
                             if (this@EntryHolder.item.entry.startTime == null ||
                                 this@EntryHolder.item.entry.endTime == null
                             ) {
@@ -281,7 +269,7 @@ class EntryListFragment : IncomeListItemFragment() {
                             this@EntryHolder.item.entry.totalHours
                         )
                     setTextColor(
-                        context.getAttributeColor(
+                        context.getAttrColor(
                             if (this@EntryHolder.item.entry.startTime == null ||
                                 this@EntryHolder.item.entry.endTime == null
                             ) {

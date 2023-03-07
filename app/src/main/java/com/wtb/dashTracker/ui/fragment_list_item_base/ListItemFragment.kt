@@ -33,17 +33,23 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.*
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragItemListBinding
+import com.wtb.dashTracker.extensions.getDimen
+import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-abstract class ListItemFragment : Fragment() {
+abstract class ListItemFragment : Fragment(), ScrollableFragment {
     protected lateinit var binding: FragItemListBinding
     protected val recyclerView: RecyclerView
         get() = binding.itemListRecyclerView
+
+    override val isAtTop: Boolean
+        get() = (recyclerView.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() == 0
 
 
     override fun onCreateView(
@@ -54,14 +60,21 @@ abstract class ListItemFragment : Fragment() {
         binding.itemListRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
 
-            val height = (requireActivity() as MainActivity).binding.bottomAppBar.measuredHeight
-            updatePadding(bottom = height + 16)
+            val height: Int =
+                (requireActivity() as MainActivity).binding.bottomAppBar.measuredHeight
+            updatePadding(bottom = height + getDimen(R.dimen.margin_default).toInt())
 
             this.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                if (scrollY < oldScrollY) {
-                    (requireActivity() as MainActivity).binding.fab.show()
-                } else if (scrollY > oldScrollY) {
-                    (requireActivity() as MainActivity).binding.fab.hide()
+                with((requireActivity() as MainActivity)) {
+                    if (!isShowingOrHidingToolbars) {
+                        with(binding.fab) {
+                            if (scrollY < oldScrollY && !isOrWillBeShown) {
+                                show()
+                            } else if (scrollY > oldScrollY && !isOrWillBeHidden) {
+                                hide()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -212,17 +225,11 @@ abstract class ListItemFragment : Fragment() {
         }
 
         protected fun setVisibilityFromPayloads(payloads: List<Any>?) {
-            val listItemDetailsVisibility = (payloads?.let {
-                if (it.isNotEmpty() && it[0] in listOf(
-                        VISIBLE,
-                        GONE
-                    )
-                ) it[0] else null
-            } ?: GONE) as Int
+            val showDetails = payloads?.getOrNull(0) == VISIBLE
 
-            collapseArea.forEach { it.visibility = listItemDetailsVisibility }
+            collapseArea.forEach { it.setVisibleIfTrue(showDetails) }
 
-            if (listItemDetailsVisibility == VISIBLE) {
+            if (showDetails) {
                 backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
                 if (backgroundArea.background is RippleDrawable) {
                     (backgroundArea.background as RippleDrawable).setDrawable(
@@ -233,10 +240,6 @@ abstract class ListItemFragment : Fragment() {
                             requireContext().theme
                         )
                     )
-
-                    val elev = resources.getDimension(R.dimen.margin_skinny)
-
-                    bgCard.cardElevation = elev
                 }
             } else {
                 backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
@@ -250,18 +253,21 @@ abstract class ListItemFragment : Fragment() {
                         )
                     )
                 }
-
-                bgCard.cardElevation = 0f
             }
         }
     }
 
     protected open fun onItemExpanded() {
-        (requireContext() as MainActivity).hideStuff()
+        (requireContext() as ListItemFragmentCallback).hideToolbarsAndFab()
     }
 
     protected open fun onItemClosed() {
-        (requireContext() as MainActivity).showStuff()
+        (requireContext() as ListItemFragmentCallback).showToolbarsAndFab()
+    }
+
+    interface ListItemFragmentCallback {
+        fun hideToolbarsAndFab()
+        fun showToolbarsAndFab()
     }
 }
 

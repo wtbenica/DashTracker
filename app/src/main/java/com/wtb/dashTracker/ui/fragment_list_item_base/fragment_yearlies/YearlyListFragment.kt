@@ -126,41 +126,30 @@ class YearlyListFragment : IncomeListItemFragment() {
 
             override fun bind(item: Yearly, payloads: List<Any>?) {
                 fun updateExpenseFields(item: Yearly) {
-                    fun showExpenseFields(hasMultipleStdDeductions: Boolean = false) {
-                        binding.listItemSubtitle2Label.visibility = VISIBLE
-                        binding.listItemSubtitle2.visibility = VISIBLE
+                    fun updateExpenseFields(
+                        show: Boolean = true,
+                        hasMultipleStdDeductions: Boolean = false
+                    ) {
+                        binding.listItemSubtitle2Label.revealIfTrue(show)
+                        binding.listItemSubtitle2.revealIfTrue(show)
 
-                        detailsBinding.listItemYearlyExpensesHeader.visibility = VISIBLE
-                        detailsBinding.listItemYearlyExpenseDetailsButton.visibility = VISIBLE
-                        detailsBinding.listItemYearlyExpenseDetailsButtonFrame.visibility = VISIBLE
-                        detailsBinding.listItemYearlyExpenses.visibility = VISIBLE
-
-                        if (hasMultipleStdDeductions) {
-                            detailsBinding.mileageBreakdownCard.visibility = VISIBLE
-                            detailsBinding.listItemYearlyCpmHeader.visibility = GONE
-                            detailsBinding.listItemYearlyCpmDeductionType.visibility = GONE
-                            detailsBinding.listItemYearlyCpm.visibility = GONE
-                        } else {
-                            detailsBinding.mileageBreakdownCard.visibility = GONE
-                            detailsBinding.listItemYearlyCpmHeader.visibility = VISIBLE
-                            detailsBinding.listItemYearlyCpmDeductionType.visibility = VISIBLE
-                            detailsBinding.listItemYearlyCpm.visibility = VISIBLE
+                        detailsBinding.listItemYearlyExpensesHeader.revealIfTrue(show)
+                        detailsBinding.listItemYearlyExpenseDetailsButtonFrame.apply {
+                            if (show) {
+                                val target =
+                                    resources.getDimension(R.dimen.min_touch_target).toInt()
+                                expandTo(targetHeight = target, targetWidth = target)
+                            } else {
+                                collapse()
+                            }
                         }
-                    }
+                        detailsBinding.listItemYearlyExpenseDetailsButton.revealIfTrue(show)
+                        detailsBinding.listItemYearlyExpenses.revealIfTrue(show)
 
-                    fun hideExpenseFields() {
-                        binding.listItemSubtitle2Label.visibility = GONE
-                        binding.listItemSubtitle2.visibility = GONE
-
-                        detailsBinding.listItemYearlyExpensesHeader.visibility = GONE
-                        detailsBinding.listItemYearlyExpenseDetailsButton.visibility = GONE
-                        detailsBinding.listItemYearlyExpenseDetailsButtonFrame.visibility = GONE
-                        detailsBinding.listItemYearlyExpenses.visibility = GONE
-
-                        detailsBinding.mileageBreakdownCard.visibility = GONE
-                        detailsBinding.listItemYearlyCpmHeader.visibility = GONE
-                        detailsBinding.listItemYearlyCpmDeductionType.visibility = GONE
-                        detailsBinding.listItemYearlyCpm.visibility = GONE
+                        detailsBinding.mileageBreakdownCard.revealIfTrue(show && hasMultipleStdDeductions)
+                        detailsBinding.listItemYearlyCpmHeader.revealIfTrue(show && !hasMultipleStdDeductions)
+                        detailsBinding.listItemYearlyCpmDeductionType.revealIfTrue(show && !hasMultipleStdDeductions)
+                        detailsBinding.listItemYearlyCpm.revealIfTrue(show && !hasMultipleStdDeductions)
                     }
 
                     fun getCalculatedExpenses(costPerMile: Float): Float =
@@ -219,11 +208,11 @@ class YearlyListFragment : IncomeListItemFragment() {
                                 detailsBinding.mileageBreakdownCard.visibility = GONE
 
                                 when (deductionType) {
-                                    DeductionType.NONE -> hideExpenseFields()
+                                    DeductionType.NONE -> updateExpenseFields(false)
                                     DeductionType.IRS_STD -> {
                                         val hasMultipleStdDeductions = cpm != null && cpm.size > 1
 
-                                        showExpenseFields(hasMultipleStdDeductions = hasMultipleStdDeductions)
+                                        updateExpenseFields(hasMultipleStdDeductions = hasMultipleStdDeductions)
 
                                         if (hasMultipleStdDeductions) {
                                             val initChildren = 3
@@ -276,7 +265,7 @@ class YearlyListFragment : IncomeListItemFragment() {
                                             getCurrencyString(getHourly(0f))
                                     }
                                     else -> {
-                                        showExpenseFields()
+                                        updateExpenseFields()
 
                                         val costPerMile: Float = cpm?.get(12) ?: 0f
 
