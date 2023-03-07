@@ -40,7 +40,6 @@
 
                     <LinearLayout
                         style="@style/DialogContent"
-
                         android:orientation="vertical">
 
                         <TextView
@@ -59,15 +58,11 @@
                             android:textStyle="bold"
                             tools:text="Mon Nov 23, 2021" />
 
-                        <android.widget.Space
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/margin_half" />
-
                         <GridLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:columnCount="3"
-                            android:rowCount="14">
+                            android:paddingHorizontal="@dimen/margin_half">
 
                             <!-- Row 0 -->
                             <TextView
@@ -102,11 +97,11 @@
                             <TextView
                                 android:id="@+id/frag_entry_start_time"
                                 style="@style/DialogValueTextView"
-
                                 android:layout_width="0dp"
                                 android:layout_row="1"
                                 android:layout_column="0"
                                 android:layout_columnWeight="1"
+                                android:layout_marginBottom="0dp"
                                 tools:text="11:23a" />
 
                             <TextView
@@ -116,6 +111,7 @@
                                 android:layout_row="1"
                                 android:layout_column="2"
                                 android:layout_columnWeight="1"
+                                android:layout_marginBottom="0dp"
                                 tools:text="3:31p" />
 
                             <!-- Row 2 -->
@@ -159,24 +155,31 @@
                             <androidx.appcompat.widget.AppCompatCheckBox
                                 android:id="@+id/frag_entry_check_ends_next_day"
                                 android:layout_row="2"
-                                android:layout_column="2"
+                                android:layout_column="1"
+                                android:layout_columnSpan="2"
                                 android:layout_gravity="end"
                                 android:paddingStart="0dp"
-                                android:paddingEnd="@dimen/margin_default"
+                                android:paddingEnd="0dp"
                                 android:text="@string/lbl_ends_on_following_day"
                                 android:textColor="?attr/colorDialogWidget"
                                 android:textSize="@dimen/text_size_sm"
                                 app:buttonTint="?attr/colorDialogWidget" />
+                        </GridLayout>
 
-                            <!--                        Row 3-->
-                            <android.widget.Space
-                                android:layout_width="0dp"
-                                android:layout_height="28dp"
-                                android:layout_row="3"
-                                android:layout_column="0"
-                                android:layout_columnSpan="3" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_marginTop="@dimen/margin_half"
+                            android:layout_marginBottom="@dimen/margin_half"
+                            android:background="@drawable/dialog_frag_entry_divider" />
 
-                            <!--                        Row 4-->
+                        <GridLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:columnCount="3"
+                            android:paddingHorizontal="@dimen/margin_half">
+
+                            <!-- Row 4-->
                             <TextView
                                 style="@style/DialogHeaderTextView"
                                 android:layout_width="0dp"
@@ -186,6 +189,13 @@
                                 android:labelFor="@id/frag_entry_start_mileage"
                                 android:paddingHorizontal="@dimen/margin_default"
                                 android:text="@string/lbl_start_mileage" />
+
+                            <!-- THis is the horizontal center gap-->
+                            <View
+                                android:layout_width="@dimen/margin_default"
+                                android:layout_height="0dp"
+                                android:layout_row="0"
+                                android:layout_column="1" />
 
                             <TextView
                                 style="@style/DialogHeaderTextView"
@@ -206,6 +216,7 @@
                                 android:layout_row="5"
                                 android:layout_column="0"
                                 android:layout_columnWeight="1"
+                                android:layout_marginBottom="0dp"
                                 android:importantForAutofill="no"
                                 android:inputType="number"
                                 tools:text="125343" />
@@ -217,6 +228,7 @@
                                 android:layout_row="5"
                                 android:layout_column="2"
                                 android:layout_columnWeight="1"
+                                android:layout_marginBottom="0dp"
                                 android:importantForAutofill="no"
                                 android:inputType="number" />
 
@@ -229,7 +241,7 @@
                                 android:layout_column="0"
                                 android:layout_columnSpan="3"
                                 android:layout_gravity="end"
-                                android:paddingHorizontal="@dimen/margin_default"
+                                android:paddingHorizontal="0dp"
                                 android:text="@string/lbl_use_tracked_mileage"
                                 android:textColor="?attr/colorDialogWidget"
                                 android:textSize="@dimen/text_size_sm"
@@ -260,6 +272,7 @@
                                 android:layout_row="7"
                                 android:layout_column="0"
                                 android:layout_columnSpan="3"
+                                android:layout_marginBottom="@dimen/margin_narrow"
                                 android:background="@drawable/dialog_frag_bottom_row_bg">
 
                                 <TextView
@@ -300,13 +313,27 @@
                                     android:textAlignment="textEnd"
                                     tools:text="54" />
                             </LinearLayout>
-                            <!-- Row 8 -->
-                            <android.widget.Space
-                                android:layout_width="0dp"
-                                android:layout_height="28dp"
-                                android:layout_row="8"
-                                android:layout_column="0"
-                                android:layout_columnSpan="3" />
+                        </GridLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_marginTop="@dimen/margin_half"
+                            android:layout_marginBottom="@dimen/margin_half"
+                            android:background="@drawable/dialog_frag_entry_divider" />
+
+                        <GridLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:columnCount="3"
+                            android:paddingHorizontal="@dimen/margin_half">
+
+                            <!-- THis is the horizontal center gap-->
+                            <View
+                                android:layout_width="@dimen/margin_default"
+                                android:layout_height="0dp"
+                                android:layout_row="0"
+                                android:layout_column="1" />
 
                             <!--Row 9 -->
                             <TextView
