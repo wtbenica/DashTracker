@@ -435,7 +435,11 @@ class MainActivity : AuthenticatedActivity(),
                             isShowingOrHidingToolbars = true
                             with(binding) {
                                 bottomAppBar.performShow(true)
-                                fab.show()
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    runOnUiThread {
+                                        fab.show()
+                                    }
+                                }
                             }
                         }
                         isShowingOrHidingToolbars -> {
