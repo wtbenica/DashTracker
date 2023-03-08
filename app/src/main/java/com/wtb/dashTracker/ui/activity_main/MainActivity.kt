@@ -65,9 +65,7 @@ import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
-import com.wtb.dashTracker.extensions.getAttrColor
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
@@ -306,9 +304,18 @@ class MainActivity : AuthenticatedActivity(),
                 navView.setupWithNavController(it)
                 it.addOnDestinationChangedListener { _, destination, _ ->
                     when (destination.id) {
-                        R.id.navigation_income -> binding.appBarLayout.setExpanded(true)
-                        R.id.navigation_expenses -> binding.appBarLayout.setExpanded(true)
-                        R.id.navigation_insights -> binding.appBarLayout.setExpanded(false)
+                        R.id.navigation_income -> {
+                            binding.appBarLayout.setExpanded(true)
+                            binding.fab.show()
+                        }
+                        R.id.navigation_expenses -> {
+                            binding.appBarLayout.setExpanded(true)
+                            binding.fab.show()
+                        }
+                        R.id.navigation_insights -> {
+                            binding.appBarLayout.setExpanded(false)
+                            binding.fab.hide()
+                        }
                     }
                 }
             }

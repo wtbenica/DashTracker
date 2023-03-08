@@ -20,12 +20,12 @@
     tools:keep="@menu/bottom_nav_menu">
     <item
         android:id="@+id/navigation_income"
-        android:icon="@drawable/ic_income"
+        android:icon="@drawable/baseline_monetization_on_24"
         android:title="@string/frag_title_income" />
 
     <item
         android:id="@+id/navigation_expenses"
-        android:icon="@drawable/ic_expense"
+        android:icon="@drawable/baseline_wallet_24"
         android:title="@string/frag_title_expenses" />
 
     <item

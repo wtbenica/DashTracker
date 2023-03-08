@@ -183,9 +183,9 @@
         <item name="colorBottomNavBar">?attr/colorUi</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorTextPrimaryDisabled</item>
+        <item name="colorBottomNavEnabled">?attr/colorTextPrimary</item>
         <item name="colorBottomNavTextEnabled">?attr/colorBottomNavEnabled</item>
-        <item name="colorBottomNavDisabled">?attr/colorPrimaryDark</item>
+        <item name="colorBottomNavDisabled">?attr/colorTextPrimaryDisabled</item>
         <item name="colorBottomNavTextDisabled">?attr/colorBottomNavDisabled</item>
         <item name="colorBottomNavItemIndicator">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavRipple">?attr/colorPrimaryVariant</item>

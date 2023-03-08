@@ -40,6 +40,6 @@
     <dimen name="text_size_xs">12sp</dimen>
 
     <dimen name="fragment_padding_for_bottom_nav">72dp</dimen>
-    <dimen name="chart_fragment_bottom_padding">86dp</dimen>
+    <dimen name="chart_fragment_bottom_padding">72dp</dimen>
     <dimen name="bg_edit_text_border">1dp</dimen>
 </resources>
