@@ -67,11 +67,11 @@
         <item name="colorBottomNavBar">?attr/colorUi</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorAccent</item>
-        <item name="colorBottomNavTextEnabled">?attr/colorAccent</item>
-        <item name="colorBottomNavDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorBottomNavTextDisabled">?attr/colorPrimaryFaded</item>
-        <item name="colorBottomNavItemIndicator">?attr/colorPrimaryVariant</item>
+        <item name="colorBottomNavEnabled">?attr/colorPrimary</item>
+        <item name="colorBottomNavTextEnabled">?attr/colorBottomNavEnabled</item>
+        <item name="colorBottomNavDisabled">?attr/colorAccent</item>
+        <item name="colorBottomNavTextDisabled">?attr/colorBottomNavDisabled</item>
+        <item name="colorBottomNavItemIndicator">?attr/colorAccent</item>
         <item name="colorBottomNavRipple">?attr/colorPrimaryVariant</item>
         <item name="colorPopupBackground">?attr/colorSecondaryDark</item>
         <item name="colorDropdownRipple">?attr/colorSecondary</item>

@@ -32,7 +32,10 @@
                 android:id="@+id/frag_confirm_card"
                 style="@style/DialogContentCard.ConfirmDialog">
 
-                <androidx.constraintlayout.widget.ConstraintLayout style="@style/DialogContent.Confirmation">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    style="@style/DialogContent.Confirmation"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp">
 
                     <androidx.compose.ui.platform.ComposeView
                         android:id="@+id/mileage_breakdown_table"

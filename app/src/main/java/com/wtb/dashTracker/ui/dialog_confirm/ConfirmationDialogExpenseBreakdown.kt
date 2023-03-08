@@ -43,6 +43,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.Yearly
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
+import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 // TODO: selecting a purpose to edit and then cancelling deletes the purpose
@@ -70,43 +71,45 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
         binding.expenseBreakdownTable.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Bottom
+                DashTrackerTheme {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        HeaderText(text = "Category")
-                        HeaderText(text = "Business", textAlign = TextAlign.End)
-                        HeaderText(text = "Total", textAlign = TextAlign.End)
-                    }
+                        Row(
+                            modifier = Modifier,
+                            verticalAlignment = Bottom
+                        ) {
+                            HeaderText(text = "Category")
+                            HeaderText(text = "Business", textAlign = TextAlign.End)
+                            HeaderText(text = "Total", textAlign = TextAlign.End)
+                        }
 
-                    Divider(
-                        thickness = 1.dp,
-                        color = Color(context.getAttrColor(R.attr.colorSecondaryDark))
-                    )
+                        Divider(
+                            thickness = 1.dp,
+                            color = Color(context.getAttrColor(R.attr.colorSecondaryDark))
+                        )
 
-                    yearly.expenses?.let {
-                        it.toSortedMap { a, b ->
-                            val first: Float? = it[a]
-                            val second: Float? = it[b]
-                            when {
-                                first == null && second == null -> {
-                                    (b.name ?: "").compareTo(a.name ?: "")
+                        yearly.expenses?.let {
+                            it.toSortedMap { a, b ->
+                                val first: Float? = it[a]
+                                val second: Float? = it[b]
+                                when {
+                                    first == null && second == null -> {
+                                        (b.name ?: "").compareTo(a.name ?: "")
+                                    }
+                                    first == null -> -1
+                                    second == null -> 1
+                                    else -> second.compareTo(first)
                                 }
-                                first == null -> -1
-                                second == null -> 1
-                                else -> second.compareTo(first)
-                            }
-                        }.forEach {
-                            Row(
-                                modifier = Modifier,
-                                verticalAlignment = Bottom
-                            ) {
-                                HeaderText(text = it.key.name ?: "")
-                                ValueText(text = getCurrencyString(it.value * yearly.businessMileagePercent))
-                                ValueText(text = getCurrencyString(it.value))
+                            }.forEach {
+                                Row(
+                                    modifier = Modifier,
+                                    verticalAlignment = Bottom
+                                ) {
+                                    HeaderText(text = it.key.name ?: "")
+                                    ValueText(text = getCurrencyString(it.value * yearly.businessMileagePercent))
+                                    ValueText(text = getCurrencyString(it.value))
+                                }
                             }
                         }
                     }

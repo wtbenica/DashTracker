@@ -65,9 +65,7 @@ import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.databinding.ActivityMainBinding
-import com.wtb.dashTracker.extensions.getAttrColor
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.toggleButtonAnimatedVectorDrawable
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
@@ -163,7 +161,7 @@ class MainActivity : AuthenticatedActivity(),
     private lateinit var mAdView: AdView
 
     // State
-    private lateinit var activeDash: ActiveDash
+    private val activeDash: ActiveDash = ActiveDash()
     private var showingWelcomeScreen = false
 
     /**
@@ -189,6 +187,8 @@ class MainActivity : AuthenticatedActivity(),
             return hasPermissions && isEnabled
         }
     private var trackingEnabledPrevious: Boolean = false
+    private val isTracking: Boolean
+        get() = activeDash.activeEntry != null
 
     // Launchers
     /**
@@ -306,9 +306,24 @@ class MainActivity : AuthenticatedActivity(),
                 navView.setupWithNavController(it)
                 it.addOnDestinationChangedListener { _, destination, _ ->
                     when (destination.id) {
-                        R.id.navigation_income -> binding.appBarLayout.setExpanded(true)
-                        R.id.navigation_expenses -> binding.appBarLayout.setExpanded(true)
-                        R.id.navigation_insights -> binding.appBarLayout.setExpanded(false)
+                        R.id.navigation_income -> {
+                            binding.summaryBar.root.revealIfTrue(true)
+                            binding.adb.isShowing = true
+                            binding.adb.revealIfTrue(isTracking)
+                            binding.fab.show()
+                        }
+                        R.id.navigation_expenses -> {
+                            binding.summaryBar.root.revealIfTrue(false)
+                            binding.adb.isShowing = true
+                            binding.adb.revealIfTrue(isTracking)
+                            binding.fab.show()
+                        }
+                        R.id.navigation_insights -> {
+                            binding.summaryBar.root.revealIfTrue(false)
+                            binding.adb.isShowing = false
+                            binding.adb.revealIfTrue(false)
+                            binding.fab.hide()
+                        }
                     }
                 }
             }
@@ -459,9 +474,10 @@ class MainActivity : AuthenticatedActivity(),
         installSplashScreen()
 
         Repository.initialize(this)
+        supportActionBar?.title = "DashTracker"
 
         initMainActivityBinding()
-        setSupportActionBar(binding.toolbar)
+//        setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
 
         initBiometrics()
@@ -469,7 +485,6 @@ class MainActivity : AuthenticatedActivity(),
         initBottomNavBar()
         initObservers()
 
-        activeDash = ActiveDash()
         activeDash.initLocSvcObserver()
 
         setStartDashDialogResultListener()

@@ -33,11 +33,13 @@
             <TextView
                 android:id="@+id/chart_holder_title"
                 style="@style/ListItemHeaderTextView.Title"
-                android:layout_marginStart="?attr/textSizeItemHeader"
-                android:layout_marginTop="?attr/textSizeItemHeader"
+                android:layout_marginStart="?attr/dimenDialogHeaderMarginStart"
+                android:textAppearance="@style/DTActionBarTitleTextAppearance"
+                android:textSize="@dimen/text_size_xlarge"
+                app:layout_constraintBottom_toBottomOf="@id/btn_show_filters"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/lbl_cost_per_mile"/>
+                app:layout_constraintTop_toTopOf="@id/btn_show_filters"
+                tools:text="@string/lbl_cost_per_mile" />
 
             <ImageButton
                 android:id="@+id/btn_show_filters"
@@ -53,11 +55,11 @@
                 android:id="@+id/cpm_bottom"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@drawable/bg_list_item_subtable_full"
-                android:layout_marginTop="@dimen/margin_default"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginHorizontal="?attr/listItemThinBorder"
+                android:layout_marginTop="@dimen/margin_narrow"
                 android:layout_marginBottom="?attr/listItemThinBorder"
+                android:background="@drawable/bg_list_item_subtable_full"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btn_show_filters" />

@@ -45,7 +45,7 @@
     </style>
 
     <!-- Base application theme. -->
-    <style name="Base" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base" parent="Theme.Material3.DayNight">
         <!-- Primary brand color. -->
         <item name="colorPrimaryDark">@color/dark</item>
         <item name="colorPrimary">@color/regular</item>
@@ -67,8 +67,8 @@
 
         <item name="defaultCornerRadius">@dimen/margin_default</item>
 
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="windowActionBarOverlay">true</item>
+<!--        <item name="android:windowActionBarOverlay">true</item>-->
+<!--        <item name="windowActionBarOverlay">true</item>-->
 
         <!-- View Styles -->
         <item name="android:actionBarWidgetTheme">@style/WidgetTheme</item>
@@ -183,9 +183,9 @@
         <item name="colorBottomNavBar">?attr/colorUi</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
-        <item name="colorBottomNavEnabled">?attr/colorTextPrimaryDisabled</item>
+        <item name="colorBottomNavEnabled">?attr/colorTextPrimary</item>
         <item name="colorBottomNavTextEnabled">?attr/colorBottomNavEnabled</item>
-        <item name="colorBottomNavDisabled">?attr/colorPrimaryDark</item>
+        <item name="colorBottomNavDisabled">?attr/colorTextPrimaryDisabled</item>
         <item name="colorBottomNavTextDisabled">?attr/colorBottomNavDisabled</item>
         <item name="colorBottomNavItemIndicator">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavRipple">?attr/colorPrimaryVariant</item>
