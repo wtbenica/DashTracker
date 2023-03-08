@@ -30,7 +30,7 @@
         <item name="android:layout_margin">0dp</item>
     </style>
 
-    <style name="DTActionBarStyle" parent="Widget.Material3.Toolbar">
+    <style name="DTActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid">
         <item name="titleTextStyle">@style/DTActionBarTitleTextAppearance</item>
         <item name="android:background">?attr/colorActionBar</item>
     </style>

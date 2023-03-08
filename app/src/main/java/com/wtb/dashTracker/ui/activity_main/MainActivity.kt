@@ -161,7 +161,7 @@ class MainActivity : AuthenticatedActivity(),
     private lateinit var mAdView: AdView
 
     // State
-    private lateinit var activeDash: ActiveDash
+    private val activeDash: ActiveDash = ActiveDash()
     private var showingWelcomeScreen = false
 
     /**
@@ -187,6 +187,8 @@ class MainActivity : AuthenticatedActivity(),
             return hasPermissions && isEnabled
         }
     private var trackingEnabledPrevious: Boolean = false
+    private val isTracking: Boolean
+        get() = activeDash.activeEntry != null
 
     // Launchers
     /**
@@ -305,15 +307,21 @@ class MainActivity : AuthenticatedActivity(),
                 it.addOnDestinationChangedListener { _, destination, _ ->
                     when (destination.id) {
                         R.id.navigation_income -> {
-                            binding.appBarLayout.setExpanded(true)
+                            binding.summaryBar.root.revealIfTrue(true)
+                            binding.adb.isShowing = true
+                            binding.adb.revealIfTrue(isTracking)
                             binding.fab.show()
                         }
                         R.id.navigation_expenses -> {
-                            binding.appBarLayout.setExpanded(true)
+                            binding.summaryBar.root.revealIfTrue(false)
+                            binding.adb.isShowing = true
+                            binding.adb.revealIfTrue(isTracking)
                             binding.fab.show()
                         }
                         R.id.navigation_insights -> {
-                            binding.appBarLayout.setExpanded(false)
+                            binding.summaryBar.root.revealIfTrue(false)
+                            binding.adb.isShowing = false
+                            binding.adb.revealIfTrue(false)
                             binding.fab.hide()
                         }
                     }
@@ -466,9 +474,10 @@ class MainActivity : AuthenticatedActivity(),
         installSplashScreen()
 
         Repository.initialize(this)
+        supportActionBar?.title = "DashTracker"
 
         initMainActivityBinding()
-        setSupportActionBar(binding.toolbar)
+//        setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
 
         initBiometrics()
@@ -476,7 +485,6 @@ class MainActivity : AuthenticatedActivity(),
         initBottomNavBar()
         initObservers()
 
-        activeDash = ActiveDash()
         activeDash.initLocSvcObserver()
 
         setStartDashDialogResultListener()

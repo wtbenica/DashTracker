@@ -45,7 +45,7 @@
     </style>
 
     <!-- Base application theme. -->
-    <style name="Base" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base" parent="Theme.Material3.DayNight">
         <!-- Primary brand color. -->
         <item name="colorPrimaryDark">@color/dark</item>
         <item name="colorPrimary">@color/regular</item>
@@ -67,8 +67,8 @@
 
         <item name="defaultCornerRadius">@dimen/margin_default</item>
 
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="windowActionBarOverlay">true</item>
+<!--        <item name="android:windowActionBarOverlay">true</item>-->
+<!--        <item name="windowActionBarOverlay">true</item>-->
 
         <!-- View Styles -->
         <item name="android:actionBarWidgetTheme">@style/WidgetTheme</item>

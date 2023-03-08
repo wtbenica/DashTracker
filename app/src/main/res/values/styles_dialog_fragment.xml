@@ -37,9 +37,9 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-<!--    <style name="DialogFragLayout.Confirmation">-->
-<!--        <item name="android:paddingBottom">?attr/dimenDialogContentMarginHorizontal</item>-->
-<!--    </style>-->
+    <!--    <style name="DialogFragLayout.Confirmation">-->
+    <!--        <item name="android:paddingBottom">?attr/dimenDialogContentMarginHorizontal</item>-->
+    <!--    </style>-->
 
     <style name="DialogToolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:layout_width">match_parent</item>
@@ -71,7 +71,10 @@
     </style>
 
     <style name="DialogContent.Confirmation">
-        <item name="android:padding">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingStart">0dp</item>
     </style>
 
     <style name="DialogFragSpinnerStyle">
