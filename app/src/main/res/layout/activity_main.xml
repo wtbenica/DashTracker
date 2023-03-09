@@ -57,12 +57,6 @@
                 app:cardElevation="0dp"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 tools:visibility="visible" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?attr/colorOptionsMenuStroke"
-                app:layout_scrollFlags="noScroll" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.fragment.app.FragmentContainerView

@@ -22,6 +22,16 @@
     android:orientation="vertical"
     tools:context=".ui.fragment_income.IncomeFragment">
 
+    <View
+        android:id="@+id/divider_1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="?attr/colorOptionsMenuStroke" />
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_stuff"
         android:layout_width="match_parent"
@@ -30,7 +40,7 @@
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/divider_1">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/frag_income_tab_layout"

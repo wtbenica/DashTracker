@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
@@ -50,7 +49,7 @@ import com.wtb.dashTracker.databinding.ListItemHolderBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
-import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
+import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.MonthlyExpenseListViewModel
@@ -65,7 +64,7 @@ import java.util.*
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class MonthlyExpenseListFragment : IncomeListItemFragment() {
+class MonthlyExpenseListFragment : ExpenseListItemFragment() {
 
     private val viewModel: MonthlyExpenseListViewModel by viewModels()
     private var purposes: List<ExpensePurpose>? = null
@@ -76,11 +75,6 @@ class MonthlyExpenseListFragment : IncomeListItemFragment() {
 
         val entryAdapter = MonthlyExpenseAdapter()
         recyclerView.adapter = entryAdapter
-
-        callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
-            deductionType = it
-            entryAdapter.notifyDataSetChanged()
-        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

@@ -51,11 +51,15 @@ fun View.setVisibleIfTrue(boolean: Boolean) {
     visibility = if (boolean) VISIBLE else GONE
 }
 
-fun View.revealIfTrue(boolean: Boolean = true) {
-    if (boolean && !isVisible) {
-        expand()
-    } else if (!boolean && isVisible) {
-        collapse()
+fun View.revealIfTrue(shouldShow: Boolean = true, onComplete: (() -> Unit)? = null) {
+    if (shouldShow && !isVisible) {
+        expand {
+            onComplete?.invoke()
+        }
+    } else if (!shouldShow && isVisible) {
+        collapse {
+            onComplete?.invoke()
+        }
     }
 }
 

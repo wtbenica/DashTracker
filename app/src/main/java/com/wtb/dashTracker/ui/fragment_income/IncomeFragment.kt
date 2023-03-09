@@ -77,9 +77,10 @@ class IncomeFragment : Fragment(),
         get() = currentFragment?.isAtTop ?: false
 
     // Private variables
+    private lateinit var binding: FragIncomeBinding
+
     private lateinit var callback: IncomeFragmentCallback
     private var cpmButtonText: String? = null
-    private lateinit var binding: FragIncomeBinding
 
     /**
      * Fragments - stores references to each fragment of the tablayout
@@ -102,7 +103,7 @@ class IncomeFragment : Fragment(),
         childFragmentManager.setFragmentResultListener(
             REQ_KEY_INCOME_LIST_ITEM_SELECTED,
             this
-        ) { string, bundle ->
+        ) { _, _ ->
             hideOptionsMenu()
         }
     }
@@ -227,6 +228,7 @@ class IncomeFragment : Fragment(),
     @ExperimentalCoroutinesApi
     inner class IncomePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = NUM_PAGES
+
         override fun createFragment(position: Int): Fragment =
             (IncomePages.values().getOrNull(position)?.fragment?.invoke()
                 ?: EntryListFragment())

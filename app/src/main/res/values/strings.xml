@@ -327,4 +327,5 @@
     <string name="lbl_work_costs">Work Costs</string>
     <string name="lbl_work_miles">Work Miles</string>
     <string name="lbl_total_miles">Total Miles</string>
+    <string name="frag_title_monthly_list">Monthly</string>
 </resources>

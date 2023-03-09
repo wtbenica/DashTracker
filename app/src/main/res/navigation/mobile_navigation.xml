@@ -68,7 +68,7 @@
 
     <fragment
         android:id="@+id/navigation_expenses"
-        android:name="com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment"
+        android:name="com.wtb.dashTracker.ui.fragment_expenses.ExpenseFragment"
         android:label="@string/frag_title_expenses"
         tools:layout="@layout/frag_item_list">
 

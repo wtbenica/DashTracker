@@ -89,7 +89,6 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialo
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.RESULT_START_DASH_CONFIRM_START
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
-import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment.ExpenseListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment.IncomeFragmentCallback
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
@@ -114,7 +113,6 @@ import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 
 private const val APP = "GT_"
@@ -146,7 +144,6 @@ internal fun Any.errorLog(message: String) {
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class MainActivity : AuthenticatedActivity(),
-    ExpenseListFragmentCallback,
     IncomeFragmentCallback,
     ActiveDashBarCallback,
     ListItemFragment.ListItemFragmentCallback {
@@ -307,22 +304,29 @@ class MainActivity : AuthenticatedActivity(),
                 it.addOnDestinationChangedListener { _, destination, _ ->
                     when (destination.id) {
                         R.id.navigation_income -> {
-                            binding.summaryBar.root.revealIfTrue(true)
-                            binding.adb.isShowing = true
-                            binding.adb.revealIfTrue(isTracking)
-                            binding.fab.show()
+                            runOnUiThread {
+                                binding.appBarLayout.revealIfTrue(true)
+                                binding.summaryBar.root.revealIfTrue(true)
+                                binding.adb.isShowing = true
+                                binding.adb.revealIfTrue(isTracking)
+                                binding.fab.show()
+                            }
                         }
                         R.id.navigation_expenses -> {
-                            binding.summaryBar.root.revealIfTrue(false)
-                            binding.adb.isShowing = true
-                            binding.adb.revealIfTrue(isTracking)
-                            binding.fab.show()
+                            runOnUiThread {
+                                binding.appBarLayout.revealIfTrue(true)
+                                binding.summaryBar.root.revealIfTrue(false)
+                                binding.adb.isShowing = isTracking
+                                binding.adb.revealIfTrue(isTracking)
+                                binding.fab.show()
+                            }
                         }
                         R.id.navigation_insights -> {
-                            binding.summaryBar.root.revealIfTrue(false)
-                            binding.adb.isShowing = false
-                            binding.adb.revealIfTrue(false)
-                            binding.fab.hide()
+                            runOnUiThread {
+                                binding.appBarLayout.revealIfTrue(false)
+                                binding.fab.hide()
+                                binding.root.invalidate()
+                            }
                         }
                     }
                 }
@@ -444,8 +448,7 @@ class MainActivity : AuthenticatedActivity(),
                 adb.initialize(this@MainActivity)
 
                 appBarLayout.addOnOffsetChangedListener { appBar: AppBarLayout, offset: Int ->
-                    val oneDpAsPx = resources.displayMetrics.density.roundToInt()
-                    val appBarIsHidden = appBar.height - oneDpAsPx + offset == 0
+                    val appBarIsHidden = appBar.height + offset == 0
                     val forceShowBottomAppBar =
                         offset == 0 && bottomAppBar.isScrolledDown && isRecyclerViewAtTop()
 
@@ -477,7 +480,6 @@ class MainActivity : AuthenticatedActivity(),
         supportActionBar?.title = "DashTracker"
 
         initMainActivityBinding()
-//        setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
 
         initBiometrics()
@@ -730,13 +732,13 @@ class MainActivity : AuthenticatedActivity(),
 
     override val onAuthFailed: (() -> Unit)? = null
 
-    override val onAuthError: () -> Unit = ::reauthenticate
+    override val onAuthError: () -> Unit = ::reAuthenticate
 
     // TODO: This might should be moved to AuthenticatedActivity
     /**
      * If there's an auth error, this is used to call authenticate again with the same parameters
      */
-    private fun reauthenticate() {
+    private fun reAuthenticate() {
         authenticate(
             onAuthentication,
             onAuthFailed,
@@ -1143,7 +1145,8 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     companion object {
-        private val prefix: String = "${BuildConfig.APPLICATION_ID}.${this::class.simpleName}"
+        private val prefix: String =
+            "${BuildConfig.APPLICATION_ID}.${this::class.simpleName}"
 
         private const val LOC_SVC_CHANNEL_ID = "location_practice_0"
         private const val LOC_SVC_CHANNEL_NAME = "Mileage Tracking"

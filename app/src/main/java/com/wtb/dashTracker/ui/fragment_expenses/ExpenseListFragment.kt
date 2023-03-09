@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_expenses
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -43,7 +42,6 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
-import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,15 +50,9 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class ExpenseListFragment : ListItemFragment() {
+class ExpenseListFragment : ExpenseListItemFragment() {
 
     private val viewModel: ExpenseListViewModel by viewModels()
-    private var callback: ExpenseListFragmentCallback? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = context as ExpenseListFragmentCallback
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,17 +94,8 @@ class ExpenseListFragment : ListItemFragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        callback = null
-    }
-
-    interface ExpenseListFragmentCallback
-
     @ExperimentalAnimationApi
-    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense>(
-        DIFF_CALLBACK
-    ) {
+    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense>(DIFF_CALLBACK) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullExpense> =
             when (viewType) {
                 0 -> GasExpenseHolder(parent)

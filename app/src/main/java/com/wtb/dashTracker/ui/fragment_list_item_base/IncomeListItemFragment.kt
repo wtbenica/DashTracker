@@ -32,6 +32,9 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+/**
+ * Contains controls for income fragment options menu
+ */
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
