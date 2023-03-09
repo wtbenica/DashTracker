@@ -171,7 +171,7 @@ class ExpenseListFragment : ListItemFragment() {
 
                 binding.listItemTitle.text = this.item.expense.date.formatted
                 binding.listItemTitle2.text =
-                    getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
+                    getStringOrElse(R.string.currency_fmt, "-", this.item.expense.amount)
                 binding.listItemSubtitle.text = this.item.purpose.name
                 binding.listItemPrice.text =
                     getStringOrElse(
@@ -223,7 +223,7 @@ class ExpenseListFragment : ListItemFragment() {
 
                 binding.listItemTitle.text = this.item.expense.date.formatted
                 binding.listItemTitle2.text =
-                    getStringOrElse(R.string.currency_unit, "-", this.item.expense.amount)
+                    getStringOrElse(R.string.currency_fmt, "-", this.item.expense.amount)
                 binding.listItemSubtitle.text = this.item.purpose.name
 
                 setVisibilityFromPayloads(payloads)

@@ -66,7 +66,7 @@ fun Context.getCurrencyString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())
         getString(R.string.blank_currency)
     else
-        getStringOrElse(R.string.currency_unit, "-", value)
+        getStringOrElse(R.string.currency_fmt, "-", value)
 
 /**
  * @return '-' if [value] is null, 0, NaN, or Infinite, else [value] formatted as '$%.2f'

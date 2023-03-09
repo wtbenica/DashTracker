@@ -36,7 +36,7 @@ fun Fragment.getCurrencyString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())
         getString(R.string.blank_currency)
     else
-        getStringOrElse(R.string.currency_unit, "-", value)
+        getStringOrElse(R.string.currency_fmt, "-", value)
 
 fun Fragment.getCpmString(value: Float?): String =
     if (value == null || value == 0f || value.isNaN() || value.isInfinite())

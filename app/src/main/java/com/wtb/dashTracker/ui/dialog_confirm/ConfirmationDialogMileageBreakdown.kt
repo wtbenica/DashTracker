@@ -140,7 +140,9 @@ private fun MileageBreakdown(yearly: Yearly) {
             verticalAlignment = Bottom
         ) {
             HeaderText(text = "Total miles")
-            ValueText(text = stringResource(R.string.odometer_fmt, yearly.totalMiles))
+            ValueText(
+                text = stringResource(R.string.odometer_fmt, yearly.totalMiles)
+            )
         }
     }
 }

@@ -116,7 +116,7 @@ class HourlyBarChart(
             setDrawBorders(true)
             valueFormatter = object : ValueFormatter() {
                 override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                    return context.getString(R.string.currency_unit, value)
+                    return context.getString(R.string.currency_fmt, value)
                 }
             }
         }
