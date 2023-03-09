@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.SecondaryCard
@@ -61,7 +62,8 @@ fun RowScope.ValueText(
     text: String,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.End,
-    padding: Dp = 16.dp
+    padding: Dp = 16.dp,
+    textSize: TextUnit = 18.sp
 ) {
     Text(
         text = text,
@@ -69,7 +71,7 @@ fun RowScope.ValueText(
             .padding(all = padding)
             .weight(weight = 1f, fill = true),
         color = MaterialTheme.colorScheme.onPrimary,
-        fontSize = 18.sp,
+        fontSize = textSize,
         fontWeight = FontWeight.Bold,
         fontFamily = FontFamilyOswald,
         textAlign = textAlign,

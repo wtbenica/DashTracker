@@ -322,4 +322,9 @@
     <string name="toast_base_entry_dialog_start_mileage_set_to">Start mileage set to %d</string>
     <string name="add_comma">"%s, "</string>
     <string name="prefs_skip_welcome_screen">prefs_skip_welcome_screen</string>
+    <string name="percent_int">%d%%</string>
+    <string name="lbl_pct_work_miles">% Work Miles</string>
+    <string name="lbl_work_costs">Work Costs</string>
+    <string name="lbl_work_miles">Work Miles</string>
+    <string name="lbl_total_miles">Total Miles</string>
 </resources>
