@@ -42,6 +42,7 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
@@ -160,6 +161,7 @@ class MainActivity : AuthenticatedActivity(),
     // State
     private val activeDash: ActiveDash = ActiveDash()
     private var showingWelcomeScreen = false
+    private var currDestination: Int = R.id.navigation_income
 
     /**
      * Flag that prevents [EndDashDialog] from being shown if the active entry was deleted, as
@@ -302,32 +304,30 @@ class MainActivity : AuthenticatedActivity(),
                 setupActionBarWithNavController(it, appBarConfiguration)
                 navView.setupWithNavController(it)
                 it.addOnDestinationChangedListener { _, destination, _ ->
-                    when (destination.id) {
-                        R.id.navigation_income -> {
-                            runOnUiThread {
-                                binding.appBarLayout.revealIfTrue(true)
-                                binding.summaryBar.root.revealIfTrue(true)
-                                binding.adb.isShowing = true
-                                binding.adb.revealIfTrue(isTracking)
+                    currDestination = destination.id
+                    runOnUiThread {
+                        when (destination.id) {
+                            R.id.navigation_income -> {
+                                binding.appBarLayout.revealIfTrue(true, true) {
+                                    binding.summaryBar.root.revealIfTrue(true)
+                                }
                                 binding.fab.show()
                             }
-                        }
-                        R.id.navigation_expenses -> {
-                            runOnUiThread {
-                                binding.appBarLayout.revealIfTrue(true)
-                                binding.summaryBar.root.revealIfTrue(false)
-                                binding.adb.isShowing = isTracking
-                                binding.adb.revealIfTrue(isTracking)
+                            R.id.navigation_expenses -> {
+                                binding.appBarLayout.revealIfTrue(isTracking, true) {
+                                    binding.summaryBar.root.revealIfTrue(false)
+                                }
                                 binding.fab.show()
                             }
-                        }
-                        R.id.navigation_insights -> {
-                            runOnUiThread {
-                                binding.appBarLayout.revealIfTrue(false)
+                            R.id.navigation_insights -> {
+                                binding.appBarLayout.revealIfTrue(false, true) {
+                                    binding.summaryBar.root.revealIfTrue(false)
+                                }
                                 binding.fab.hide()
-                                binding.root.invalidate()
                             }
                         }
+
+                        updateToolbarsAndFab()
                     }
                 }
             }
@@ -623,7 +623,8 @@ class MainActivity : AuthenticatedActivity(),
             R.id.action_new_expense -> {
                 CoroutineScope(Dispatchers.Default).launch {
                     val id = viewModel.upsertAsync(Expense(isNew = true))
-                    ExpenseDialog.newInstance(id).show(supportFragmentManager, "new_expense_dialog")
+                    ExpenseDialog.newInstance(id)
+                        .show(supportFragmentManager, "new_expense_dialog")
                 }
                 true
             }
@@ -706,6 +707,23 @@ class MainActivity : AuthenticatedActivity(),
             appBarLayout.setExpanded(true, true)
             bottomAppBar.performShow(true)
             fab.show()
+        }
+        updateToolbarsAndFab()
+    }
+
+    private fun updateToolbarsAndFab() {
+        val lps =
+            binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
+        val appBarBehavior = lps.behavior as AppBarLayout.Behavior?
+
+        appBarBehavior?.topAndBottomOffset = 0
+        binding.apply {
+            appBarLayout.invalidate()
+            bottomAppBar.invalidate()
+            fab.invalidate()
+            appBarLayout.requestLayout()
+            bottomAppBar.requestLayout()
+            fab.requestLayout()
         }
     }
 
@@ -796,7 +814,8 @@ class MainActivity : AuthenticatedActivity(),
                         val newEntryId = viewModel.insertSus(newEntry)
                         newEntryId
                     }.let { newTripId ->
-                        val currentTripFromService = startLocationService(newTripId) ?: newTripId
+                        val currentTripFromService =
+                            startLocationService(newTripId) ?: newTripId
 
                         if (currentTripFromService != newTripId) {
                             viewModel.loadActiveEntry(currentTripFromService)
@@ -979,7 +998,10 @@ class MainActivity : AuthenticatedActivity(),
 
             when (state) {
                 STOPPED -> toggleFabToPlay()
-                else -> toggleFabToStop()
+                TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED -> {
+                    binding.appBarLayout.revealIfTrue(currDestination != R.id.navigation_insights)
+                    toggleFabToStop()
+                }
             }
         }
 

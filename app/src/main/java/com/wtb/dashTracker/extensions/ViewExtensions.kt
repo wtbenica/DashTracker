@@ -51,7 +51,11 @@ fun View.setVisibleIfTrue(boolean: Boolean) {
     visibility = if (boolean) VISIBLE else GONE
 }
 
-fun View.revealIfTrue(shouldShow: Boolean = true, onComplete: (() -> Unit)? = null) {
+fun View.revealIfTrue(
+    shouldShow: Boolean = true,
+    doAnyways: Boolean = false,
+    onComplete: (() -> Unit)? = null
+) {
     if (shouldShow && !isVisible) {
         expand {
             onComplete?.invoke()
@@ -60,6 +64,8 @@ fun View.revealIfTrue(shouldShow: Boolean = true, onComplete: (() -> Unit)? = nu
         collapse {
             onComplete?.invoke()
         }
+    } else if (doAnyways) {
+        onComplete?.invoke()
     }
 }
 
@@ -89,11 +95,15 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             layoutParams.height = if (interpolatedTime >= 1f) {
-                onComplete?.invoke()
                 WRAP_CONTENT
             } else {
                 (targetHeight * interpolatedTime).toInt()
             }
+
+            if (interpolatedTime >= 1f) {
+                onComplete?.invoke()
+            }
+
             requestLayout()
         }
     }.apply {
@@ -283,4 +293,3 @@ fun View.toggleExpand(
         expand(onCompleteExpand)
     }
 }
-

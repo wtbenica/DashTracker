@@ -39,7 +39,6 @@ class ActiveDashBar @JvmOverloads constructor(
     private var binding: ActivityMainActiveDashBarBinding
     private var callback: ActiveDashBarCallback? = null
     private var activeEntry: FullEntry? = null
-    internal var isShowing: Boolean = false
 
     init {
         val view: View = inflate(context, R.layout.activity_main_active_dash_bar, this)
@@ -65,23 +64,19 @@ class ActiveDashBar @JvmOverloads constructor(
                 }
             }
             TRACKING_ACTIVE -> {
-                if (isShowing) {
-                    if (binding.activeDashDetails.visibility == GONE) {
-                        binding.activeDashDetails.expand()
-                    }
-                    if (binding.root.visibility == GONE) {
-                        binding.root.expand()
-                    }
+                if (binding.activeDashDetails.visibility == GONE) {
+                    binding.activeDashDetails.expand()
+                }
+                if (binding.root.visibility == GONE) {
+                    binding.root.expand()
                 }
             }
             else -> {
-                if (isShowing) {
-                    if (binding.activeDashDetails.visibility == VISIBLE) {
-                        binding.activeDashDetails.collapse()
-                    }
-                    if (binding.root.visibility == GONE) {
-                        binding.root.expand()
-                    }
+                if (binding.activeDashDetails.visibility == VISIBLE) {
+                    binding.activeDashDetails.collapse()
+                }
+                if (binding.root.visibility == GONE) {
+                    binding.root.expand()
                 }
             }
         }
