@@ -117,7 +117,7 @@ fun PrivacyPolicyLink() {
             contentColor = MaterialTheme.colorScheme.tertiary,
         ),
         onClick = {
-            uriHandler.openUri("https://www.benica.dev")
+            uriHandler.openUri("https://www.benica.dev/privacy")
         }
     ) {
         Text("Privacy Policy")
