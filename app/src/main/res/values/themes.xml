@@ -175,7 +175,7 @@
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBar">?attr/colorTextSecondary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBarHighlight">?attr/colorSecondaryVariant</item>
+        <item name="colorSummaryBarHighlight">?attr/colorSecondaryFaded</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
         <item name="colorFab">?attr/colorSecondaryFaded</item>
         <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
@@ -202,7 +202,7 @@
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondary</item>
-        <item name="colorTabText">?attr/colorTextPrimary</item>
+        <item name="colorTabText">?attr/colorTextPrimaryDisabled</item>
         <item name="colorTabLayoutBg">?attr/colorTextSecondary</item>
 
         <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>

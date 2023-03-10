@@ -161,7 +161,7 @@ class MainActivity : AuthenticatedActivity(),
     // State
     private val activeDash: ActiveDash = ActiveDash()
     private var showingWelcomeScreen = false
-    private var currDestination: Int = R.id.navigation_income
+    private var currDestination: Int = R.id.navigation_insights
 
     /**
      * Flag that prevents [EndDashDialog] from being shown if the active entry was deleted, as

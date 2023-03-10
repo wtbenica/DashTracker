@@ -33,9 +33,6 @@ import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import com.wtb.dashTracker.ui.fragment_expenses.fragment_monthly_expenses.MonthlyExpenseListFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment.EntryListFragmentCallback
-import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies.WeeklyListFragment.WeeklyListFragmentCallback
-import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.YearlyListFragment.YearlyListFragmentCallback
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
@@ -48,9 +45,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class ExpenseFragment : Fragment(),
-    WeeklyListFragmentCallback,
-    EntryListFragmentCallback,
-    YearlyListFragmentCallback,
     ScrollableFragment {
 
     // Public variables

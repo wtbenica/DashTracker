@@ -24,12 +24,12 @@
 
     <View
         android:id="@+id/divider_1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="?attr/colorOptionsMenuStroke" />
+        android:background="?attr/colorOptionsMenuStroke"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
