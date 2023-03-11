@@ -37,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmMileageBreakdownBinding
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.Monthly
@@ -87,7 +86,6 @@ private fun MileageBreakdown(yearly: Yearly) {
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
-        debugLog("${yearly.businessMileagePercent}")
         Row(
             modifier = Modifier,
             verticalAlignment = Bottom
@@ -128,7 +126,6 @@ private fun MileageBreakdown(yearly: Yearly) {
                 modifier = Modifier.weight(.3f),
             )
             val text = stringResource(R.string.odometer_fmt, yearly.nonBusinessMiles)
-            debugLog("showing this $text")
             ValueText(
                 text = text,
                 modifier = Modifier.weight(.3f),

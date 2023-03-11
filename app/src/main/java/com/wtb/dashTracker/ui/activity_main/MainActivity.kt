@@ -308,16 +308,13 @@ class MainActivity : AuthenticatedActivity(),
                     runOnUiThread {
                         when (destination.id) {
                             R.id.navigation_income -> {
-                                debugLog("destination | income | $isTracking")
                                 binding.summaryBar.root.revealIfTrue(
                                     shouldShow = true,
                                     doAnyways = true,
-                                    lineNumber = 311,
                                 ) {
                                     binding.appBarLayout.revealIfTrue(
                                         shouldShow = true,
                                         doAnyways = true,
-                                        lineNumber = 316,
                                     ) {
                                         updateToolbarsAndFab()
                                     }
@@ -325,16 +322,13 @@ class MainActivity : AuthenticatedActivity(),
                                 binding.fab.show()
                             }
                             R.id.navigation_expenses -> {
-                                debugLog("destination | expense | $isTracking")
                                 binding.summaryBar.root.revealIfTrue(
                                     shouldShow = !isTracking,
-                                    doAnyways = true,
-                                    lineNumber = 328
+                                    doAnyways = true
                                 ) {
                                     binding.appBarLayout.revealIfTrue(
                                         shouldShow = isTracking,
-                                        doAnyways = true,
-                                        lineNumber = 333
+                                        doAnyways = true
                                     ) {
                                         updateToolbarsAndFab()
                                     }
@@ -342,16 +336,13 @@ class MainActivity : AuthenticatedActivity(),
                                 binding.fab.show()
                             }
                             R.id.navigation_insights -> {
-                                debugLog("destination | trend")
                                 binding.summaryBar.root.revealIfTrue(
                                     shouldShow = true,
-                                    doAnyways = true,
-                                    lineNumber = 345
+                                    doAnyways = true
                                 ) {
                                     binding.appBarLayout.revealIfTrue(
                                         shouldShow = false,
-                                        doAnyways = true,
-                                        lineNumber = 350
+                                        doAnyways = true
                                     ) {
                                         updateToolbarsAndFab()
                                     }
@@ -528,7 +519,6 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         if (intent.getBooleanExtra(EXTRA_SETTINGS_RESTART_APP, false)) {
-            debugLog("Restart from settings")
             isAuthenticated = true
             expectedExit = true
             val intent = Intent(this, SettingsActivity::class.java).apply {
@@ -661,7 +651,6 @@ class MainActivity : AuthenticatedActivity(),
                 true
             }
             R.id.action_settings -> {
-                debugLog("Open settings from menu")
                 expectedExit = true
                 val intent = Intent(this, SettingsActivity::class.java).apply {
                     putExtra(INTENT_EXTRA_PRE_AUTH, true)
@@ -949,25 +938,15 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
-            debugLog("updateUi | ${serviceState.name}")
-
             fun mOnComplete() {
-                debugLog("mOnComplete | $serviceState")
                 when (serviceState) {
                     STOPPED -> {
-//                        binding.appBarLayout.revealIfTrue(
-//                            shouldShow = currDestination != R.id.navigation_insights,
-//                            doAnyways = true,
-//                            lineNumber = 1034,
-//                            onComplete = onComplete
-//                        )
                         toggleFabToPlay()
                     }
                     TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED -> {
                         binding.appBarLayout.revealIfTrue(
                             shouldShow = currDestination != R.id.navigation_insights,
                             doAnyways = true,
-                            lineNumber = 1034,
                             onComplete = onComplete
                         )
                         toggleFabToStop()

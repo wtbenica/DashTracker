@@ -33,7 +33,6 @@ import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
@@ -62,52 +61,14 @@ val Int.asLayoutHeight: String
 fun View.revealIfTrue(
     shouldShow: Boolean = true,
     doAnyways: Boolean = false,
-    lineNumber: Int? = null,
     onComplete: (() -> Unit)? = null
 ) {
-    val isCollapsed = layoutParams.height == 0 && !isVisible
-    val isAndShouldBeCollapsed = !shouldShow && isCollapsed
-    val isExpanded = layoutParams.height == WRAP_CONTENT && isVisible
-    val isAndShouldBeExpanded = shouldShow && isExpanded
-
-    val className = when (this::class.simpleName) {
-        "GridLayout" -> "Summary Bar"
-        "AppBarLayout" -> "App Bar"
-        else -> this::class.java.simpleName
-    }
-    val s =
-        "${lineNumber?.let { "$it " } ?: ""}${if (shouldShow) "Revealing " else "Collapsing "}$className. It is ${
-            when {
-                isCollapsed && isExpanded -> "both collapsed and expended"
-                isCollapsed -> "collapsed"
-                isExpanded -> "expanded"
-                else -> "neither collapsed nor expanded"
-            }
-        }. Height: $height. TargetHeight: $targetHeight. LayoutHeight: ${layoutParams.height.asLayoutHeight}. Visible? $isVisible"
-
     if (shouldShow && !isVisible) {
-//        debugLog(
-//            "$s | expanding ${this::class.simpleName}",
-//            className != "MaterialTextView" && lineNumber != 1034
-//        )
         expand { onComplete?.invoke() }
     } else if (!shouldShow && isVisible) {
-//        debugLog(
-//            "$s | collapsing ${this::class.simpleName}",
-//            className != "MaterialTextView" && lineNumber != 1034
-//        )
         collapse { onComplete?.invoke() }
     } else if (doAnyways) {
-//        debugLog(
-//            "$s | else ${this::class.simpleName}",
-//            className != "MaterialTextView" && lineNumber != 1034
-//        )
         onComplete?.invoke()
-    } else {
-        debugLog(
-            "$s | elsiest else ${this::class.simpleName}",
-            className != "MaterialTextView" && lineNumber != 1034
-        )
     }
 }
 
@@ -123,7 +84,6 @@ fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toW
 }
 
 fun View.expand(onComplete: (() -> Unit)? = null) {
-//    debugLog("expand ${this::class.simpleName}", this::class.simpleName != "MaterialTextView")
     layoutParams.height = max(1, layoutParams.height)
     visibility = VISIBLE
 
@@ -138,10 +98,6 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
             }
 
             if (interpolatedTime >= 1f) {
-//                debugLog(
-//                    "expand | onComplete()",
-//                    this@expand::class.simpleName != "MaterialTextView"
-//                )
                 onComplete?.invoke()
             }
 
@@ -239,34 +195,18 @@ fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_P
 
 fun View.collapse(onComplete: (() -> Unit)? = null) {
     val initHeight = measuredHeight
-//    debugLog(
-//        "Calling collapse! ${this::class.simpleName}",
-//        this::class.simpleName != "MaterialTextView"
-//    )
     val animation = object : Animation() {
         var onCompleteCalled = false
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             layoutParams.height = if (interpolatedTime >= 1f) {
-//                this@collapse.debugLog(
-//                    "collapse ended | interpol time >= 1f | $interpolatedTime",
-//                    (this@collapse::class.simpleName != "MaterialTextView") && !onCompleteCalled
-//                )
                 visibility = GONE
                 0
             } else {
-//                this@collapse.debugLog(
-//                    "collapse continue | interpol time $interpolatedTime",
-//                    this@collapse::class.simpleName != "MaterialTextView"
-//                )
                 initHeight - (initHeight * interpolatedTime).toInt()
             }
 
             if (interpolatedTime >= 1f && !onCompleteCalled) {
-//                this@collapse.debugLog(
-//                    "collapse | onComplete() | ${this@collapse::class.simpleName}",
-//                    this@collapse::class.simpleName != "MaterialTextView"
-//                )
                 onComplete?.invoke()
                 onCompleteCalled = true
             }
@@ -279,12 +219,10 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
     }.apply {
         duration = (initHeight / context.resources.displayMetrics.density).toLong()
         if (duration == 0L) {
-//            this@collapse.debugLog("collapse duration is zero", this@collapse::class.simpleName != "MaterialTextView")
             visibility = GONE
             onComplete?.invoke()
         }
     }
-//    debugLog("starting collapse animation", this::class.simpleName != "MaterialTextView")
     clearAnimation()
     startAnimation(animation)
 }

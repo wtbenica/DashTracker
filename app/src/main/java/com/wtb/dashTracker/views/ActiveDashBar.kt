@@ -25,7 +25,6 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,7 +57,6 @@ class ActiveDashBar @JvmOverloads constructor(
      * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
      */
     fun updateVisibilities(serviceState: ServiceState, onComplete: (() -> Unit)? = null) {
-        debugLog("updateVisibilities | ${serviceState.name}")
         when (serviceState) {
             STOPPED -> {
                 if (binding.root.visibility == VISIBLE) {
