@@ -123,8 +123,8 @@ internal val Any.TAG: String
 private var IS_TESTING = false
 
 private const val DEBUGGING = true
-internal fun Any.debugLog(message: String) {
-    if (DEBUGGING) Log.d(TAG, message)
+internal fun Any.debugLog(message: String, condition: Boolean = true) {
+    if (DEBUGGING && condition) Log.d(TAG, message)
 }
 
 internal fun Any.errorLog(message: String) {
@@ -308,26 +308,57 @@ class MainActivity : AuthenticatedActivity(),
                     runOnUiThread {
                         when (destination.id) {
                             R.id.navigation_income -> {
-                                binding.appBarLayout.revealIfTrue(true, true) {
-                                    binding.summaryBar.root.revealIfTrue(true)
+                                debugLog("destination | income")
+                                binding.summaryBar.root.revealIfTrue(
+                                    shouldShow = true,
+                                    doAnyways = true,
+                                    lineNumber = 311,
+                                ) {
+                                    binding.appBarLayout.revealIfTrue(
+                                        shouldShow = true,
+                                        doAnyways = true,
+                                        lineNumber = 316,
+                                    ) {
+                                        updateToolbarsAndFab()
+                                    }
                                 }
                                 binding.fab.show()
                             }
                             R.id.navigation_expenses -> {
-                                binding.appBarLayout.revealIfTrue(isTracking, true) {
-                                    binding.summaryBar.root.revealIfTrue(false)
+                                debugLog("destination | expense")
+                                binding.summaryBar.root.revealIfTrue(
+                                    shouldShow = !isTracking,
+                                    doAnyways = true,
+                                    lineNumber = 328
+                                ) {
+                                    binding.appBarLayout.revealIfTrue(
+                                        shouldShow = isTracking,
+                                        doAnyways = true,
+                                        lineNumber = 333
+                                    ) {
+                                        updateToolbarsAndFab()
+                                    }
                                 }
                                 binding.fab.show()
                             }
                             R.id.navigation_insights -> {
-                                binding.appBarLayout.revealIfTrue(false, true) {
-                                    binding.summaryBar.root.revealIfTrue(false)
+                                debugLog("destination | trend")
+                                binding.summaryBar.root.revealIfTrue(
+                                    shouldShow = true,
+                                    doAnyways = true,
+                                    lineNumber = 345
+                                ) {
+                                    binding.appBarLayout.revealIfTrue(
+                                        shouldShow = false,
+                                        doAnyways = true,
+                                        lineNumber = 350
+                                    ) {
+                                        updateToolbarsAndFab()
+                                    }
                                 }
                                 binding.fab.hide()
                             }
                         }
-
-                        updateToolbarsAndFab()
                     }
                 }
             }
@@ -497,6 +528,7 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         if (intent.getBooleanExtra(EXTRA_SETTINGS_RESTART_APP, false)) {
+            debugLog("Restart from settings")
             isAuthenticated = true
             expectedExit = true
             val intent = Intent(this, SettingsActivity::class.java).apply {
@@ -629,6 +661,7 @@ class MainActivity : AuthenticatedActivity(),
                 true
             }
             R.id.action_settings -> {
+                debugLog("Open settings from menu")
                 expectedExit = true
                 val intent = Intent(this, SettingsActivity::class.java).apply {
                     putExtra(INTENT_EXTRA_PRE_AUTH, true)
@@ -717,13 +750,12 @@ class MainActivity : AuthenticatedActivity(),
         val appBarBehavior = lps.behavior as AppBarLayout.Behavior?
 
         appBarBehavior?.topAndBottomOffset = 0
+
         binding.apply {
-            appBarLayout.invalidate()
-            bottomAppBar.invalidate()
-            fab.invalidate()
-            appBarLayout.requestLayout()
-            bottomAppBar.requestLayout()
-            fab.requestLayout()
+            listOf(appBarLayout, bottomAppBar, fab).forEach<View> {
+                it.invalidate()
+                it.requestLayout()
+            }
         }
     }
 
@@ -999,7 +1031,10 @@ class MainActivity : AuthenticatedActivity(),
             when (state) {
                 STOPPED -> toggleFabToPlay()
                 TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED -> {
-                    binding.appBarLayout.revealIfTrue(currDestination != R.id.navigation_insights)
+                    binding.appBarLayout.revealIfTrue(
+                        shouldShow = currDestination != R.id.navigation_insights,
+                        lineNumber = 1034
+                    )
                     toggleFabToStop()
                 }
             }
