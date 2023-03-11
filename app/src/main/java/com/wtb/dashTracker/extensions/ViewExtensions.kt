@@ -33,6 +33,7 @@ import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
@@ -63,6 +64,7 @@ fun View.revealIfTrue(
     doAnyways: Boolean = false,
     onComplete: (() -> Unit)? = null
 ) {
+    debugLog("revealIfTrue | $shouldShow | ${this::class.simpleName}", this::class.simpleName != "MaterialTextView")
     if (shouldShow && !isVisible) {
         expand { onComplete?.invoke() }
     } else if (!shouldShow && isVisible) {
@@ -189,6 +191,7 @@ fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_P
             duration = (toHeight / context.resources.displayMetrics.density).toLong()
         }
 
+        clearAnimation()
         startAnimation(animation)
     }
 }
@@ -223,6 +226,7 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             onComplete?.invoke()
         }
     }
+
     clearAnimation()
     startAnimation(animation)
 }
@@ -288,6 +292,7 @@ fun MaterialButton.rotateDown() {
         duration = 300L
     }
 
+    clearAnimation()
     startAnimation(animation)
 }
 
@@ -306,5 +311,6 @@ fun MaterialButton.rotateUp() {
         duration = 300L
     }
 
+    clearAnimation()
     startAnimation(animation)
 }
