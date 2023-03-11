@@ -25,6 +25,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,11 +57,14 @@ class ActiveDashBar @JvmOverloads constructor(
      * [TRACKING_ACTIVE] -> show both
      * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
      */
-    fun updateVisibilities(serviceState: ServiceState) {
+    fun updateVisibilities(serviceState: ServiceState, onComplete: (() -> Unit)? = null) {
+        debugLog("updateVisibilities | ${serviceState.name}")
         when (serviceState) {
             STOPPED -> {
                 if (binding.root.visibility == VISIBLE) {
-                    binding.root.collapse()
+                    binding.root.collapse { onComplete?.invoke() }
+                } else {
+                    onComplete?.invoke()
                 }
             }
             TRACKING_ACTIVE -> {
@@ -68,7 +72,9 @@ class ActiveDashBar @JvmOverloads constructor(
                     binding.activeDashDetails.expand()
                 }
                 if (binding.root.visibility == GONE) {
-                    binding.root.expand()
+                    binding.root.expand { onComplete?.invoke() }
+                }else {
+                    onComplete?.invoke()
                 }
             }
             else -> {
@@ -76,7 +82,9 @@ class ActiveDashBar @JvmOverloads constructor(
                     binding.activeDashDetails.collapse()
                 }
                 if (binding.root.visibility == GONE) {
-                    binding.root.expand()
+                    binding.root.expand { onComplete?.invoke() }
+                }else {
+                    onComplete?.invoke()
                 }
             }
         }

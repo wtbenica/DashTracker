@@ -308,7 +308,7 @@ class MainActivity : AuthenticatedActivity(),
                     runOnUiThread {
                         when (destination.id) {
                             R.id.navigation_income -> {
-                                debugLog("destination | income")
+                                debugLog("destination | income | $isTracking")
                                 binding.summaryBar.root.revealIfTrue(
                                     shouldShow = true,
                                     doAnyways = true,
@@ -325,7 +325,7 @@ class MainActivity : AuthenticatedActivity(),
                                 binding.fab.show()
                             }
                             R.id.navigation_expenses -> {
-                                debugLog("destination | expense")
+                                debugLog("destination | expense | $isTracking")
                                 binding.summaryBar.root.revealIfTrue(
                                     shouldShow = !isTracking,
                                     doAnyways = true,
@@ -907,6 +907,7 @@ class MainActivity : AuthenticatedActivity(),
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
+        internal var serviceState: ServiceState = STOPPED
 
         private fun onNewActiveEntry(before: FullEntry?, after: FullEntry?) {
             val beforeId = before?.entry?.entryId
@@ -914,38 +915,105 @@ class MainActivity : AuthenticatedActivity(),
 
             val mTrackingEnabled = trackingEnabled
 
-            val serviceState =
-                if (afterId == null) { // stopping or stopped
-                    if (beforeId != null) {
-                        stopDash(beforeId)
-                    }
-
-                    STOPPED
-                } else { // starting or continuing
-                    if (beforeId == null && !locationServiceBound) {
-                        startTracking()
-                    }
-
-                    if (mTrackingEnabled) {
-                        if (!trackingEnabledPrevious) {
-                            // tracking has been enabled
-                            resumeOrStartNewTrip()
-                        }
-
-                        TRACKING_ACTIVE
-                    } else {
-                        if (locationServiceBound || trackingEnabledPrevious) {
-                            // either location service hasn't been stopped or tracking was disabled
-                            stopTracking()
-                        }
-
-                        TRACKING_INACTIVE
-                    }
-                }
+            serviceState =
+                updateServiceState(afterId, beforeId, mTrackingEnabled)
 
             trackingEnabledPrevious = mTrackingEnabled
 
-            updateUi(serviceState)
+            updateUi()
+        }
+
+        /**
+         * Animate fab icon and adb visibility depending on [state].
+         */
+        fun updateUi(onComplete: (() -> Unit)? = null) {
+            fun toggleFabToPlay() {
+                binding.fab.apply {
+                    if (tag == R.drawable.anim_play_to_stop) {
+                        toggleButtonAnimatedVectorDrawable(
+                            initialDrawable = R.drawable.anim_stop_to_play,
+                            otherDrawable = R.drawable.anim_play_to_stop
+                        )
+                    }
+                }
+            }
+
+            fun toggleFabToStop() {
+                binding.fab.apply {
+                    if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                        toggleButtonAnimatedVectorDrawable(
+                            initialDrawable = R.drawable.anim_play_to_stop,
+                            otherDrawable = R.drawable.anim_stop_to_play
+                        )
+                    }
+                }
+            }
+
+            debugLog("updateUi | ${serviceState.name}")
+
+            fun mOnComplete() {
+                debugLog("mOnComplete | $serviceState")
+                when (serviceState) {
+                    STOPPED -> {
+//                        binding.appBarLayout.revealIfTrue(
+//                            shouldShow = currDestination != R.id.navigation_insights,
+//                            doAnyways = true,
+//                            lineNumber = 1034,
+//                            onComplete = onComplete
+//                        )
+                        toggleFabToPlay()
+                    }
+                    TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED -> {
+                        binding.appBarLayout.revealIfTrue(
+                            shouldShow = currDestination != R.id.navigation_insights,
+                            doAnyways = true,
+                            lineNumber = 1034,
+                            onComplete = onComplete
+                        )
+                        toggleFabToStop()
+                    }
+                }
+
+                binding.appBarLayout.apply {
+                    invalidate()
+                    requestLayout()
+                }
+
+            }
+
+            binding.adb.updateVisibilities(serviceState) { mOnComplete() }
+        }
+
+        private fun updateServiceState(
+            afterId: Long?,
+            beforeId: Long?,
+            mTrackingEnabled: Boolean
+        ): ServiceState = if (afterId == null) { // stopping or stopped
+            if (beforeId != null) {
+                stopDash(beforeId)
+            }
+
+            STOPPED
+        } else { // starting or continuing
+            if (beforeId == null && !locationServiceBound) {
+                startTracking()
+            }
+
+            if (mTrackingEnabled) {
+                if (!trackingEnabledPrevious) {
+                    // tracking has been enabled
+                    resumeOrStartNewTrip()
+                }
+
+                TRACKING_ACTIVE
+            } else {
+                if (locationServiceBound || trackingEnabledPrevious) {
+                    // either location service hasn't been stopped or tracking was disabled
+                    stopTracking()
+                }
+
+                TRACKING_INACTIVE
+            }
         }
 
         // Location Service
@@ -996,46 +1064,6 @@ class MainActivity : AuthenticatedActivity(),
                 } else {
                     stopOnBind = true
                     bindLocationService()
-                }
-            }
-        }
-
-        /**
-         * Animate fab icon and adb visibility depending on [state].
-         */
-        private fun updateUi(state: ServiceState) {
-            fun toggleFabToPlay() {
-                binding.fab.apply {
-                    if (tag == R.drawable.anim_play_to_stop) {
-                        toggleButtonAnimatedVectorDrawable(
-                            initialDrawable = R.drawable.anim_stop_to_play,
-                            otherDrawable = R.drawable.anim_play_to_stop
-                        )
-                    }
-                }
-            }
-
-            fun toggleFabToStop() {
-                binding.fab.apply {
-                    if (tag == null || tag == R.drawable.anim_stop_to_play) {
-                        toggleButtonAnimatedVectorDrawable(
-                            initialDrawable = R.drawable.anim_play_to_stop,
-                            otherDrawable = R.drawable.anim_stop_to_play
-                        )
-                    }
-                }
-            }
-
-            binding.adb.updateVisibilities(state)
-
-            when (state) {
-                STOPPED -> toggleFabToPlay()
-                TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED -> {
-                    binding.appBarLayout.revealIfTrue(
-                        shouldShow = currDestination != R.id.navigation_insights,
-                        lineNumber = 1034
-                    )
-                    toggleFabToStop()
                 }
             }
         }
