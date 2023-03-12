@@ -92,7 +92,7 @@ open class ExpandableLinearLayout @JvmOverloads constructor(
 
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?) =
+    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
         expandTo(targetHeight, targetWidth)
 
     override var isExpanding: Boolean = false
@@ -112,7 +112,7 @@ class ExpandableGridLayout @JvmOverloads constructor(
 
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?) =
+    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
         expandTo(targetHeight, targetWidth)
 
     override var isExpanding: Boolean = false
@@ -131,7 +131,7 @@ class ExpandableAppBarLayout @JvmOverloads constructor(
 
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?) =
+    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
         expandTo(targetHeight, targetWidth)
 
     override var isExpanding: Boolean = false
@@ -149,7 +149,7 @@ class ExpandableTableLayout @JvmOverloads constructor(
 
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?) =
+    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
         expandTo(targetHeight, targetWidth)
 
     override var isExpanding: Boolean = false
@@ -169,7 +169,7 @@ class ExpandableTextView @JvmOverloads constructor(
 
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?) =
+    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
         expandTo(targetHeight, targetWidth)
 
     override var isExpanding: Boolean = false
@@ -188,7 +188,7 @@ class ExpandableButton @JvmOverloads constructor(
 
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?) =
+    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
         expandTo(targetHeight, targetWidth)
 
     override var isExpanding: Boolean = false
@@ -207,7 +207,7 @@ class ExpandableCardView @JvmOverloads constructor(
 
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?) =
+    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
         expandTo(targetHeight, targetWidth)
 
     override var isExpanding: Boolean = false
@@ -226,7 +226,7 @@ class ExpandableImageView @JvmOverloads constructor(
 
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?) =
+    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
         expandTo(targetHeight, targetWidth)
 
     override var isExpanding: Boolean = false

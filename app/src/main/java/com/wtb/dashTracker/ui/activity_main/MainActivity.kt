@@ -339,7 +339,7 @@ class MainActivity : AuthenticatedActivity(),
                             }
                             R.id.navigation_insights -> {
                                 binding.summaryBar.root.revealIfTrue(
-                                    shouldShow = true,
+                                    shouldShow = !isTracking,
                                     doAnyways = true
                                 ) {
                                     binding.appBarLayout.revealIfTrue(
