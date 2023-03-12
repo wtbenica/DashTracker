@@ -353,7 +353,15 @@ class MainActivity : AuthenticatedActivity(),
                             }
                         }
 
-                        activeDash.updateUi()
+                        activeDash.apply {
+                            serviceState = updateActiveDashState(
+                                afterId = activeDash.activeEntry?.entry?.entryId,
+                                beforeId = activeDash.activeEntry?.entry?.entryId,
+                                trackingEnabled,
+                                destination.id == R.id.navigation_insights
+                            )
+                            updateUi()
+                        }
                     }
                 }
             }
@@ -737,12 +745,14 @@ class MainActivity : AuthenticatedActivity(),
         updateToolbarsFabAndBottomPadding()
     }
 
-    private fun updateToolbarsFabAndBottomPadding() {
+    private fun updateToolbarsFabAndBottomPadding(slideAppBarDown: Boolean = true) {
         val lps =
             binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
         val appBarBehavior = lps.behavior as AppBarLayout.Behavior?
 
-        appBarBehavior?.topAndBottomOffset = 0
+        if (slideAppBarDown) {
+            appBarBehavior?.topAndBottomOffset = 0
+        }
 
         binding.apply {
             listOf(appBarLayout, bottomAppBar, fab).forEach<View> {
@@ -919,7 +929,12 @@ class MainActivity : AuthenticatedActivity(),
             val mTrackingEnabled = trackingEnabled
 
             serviceState =
-                updateServiceState(afterId, beforeId, mTrackingEnabled)
+                updateActiveDashState(
+                    afterId = afterId,
+                    beforeId = beforeId,
+                    mTrackingEnabled = mTrackingEnabled,
+                    showMini = currDestination == R.id.navigation_insights
+                )
 
             trackingEnabledPrevious = mTrackingEnabled
 
@@ -969,7 +984,7 @@ class MainActivity : AuthenticatedActivity(),
                                 shouldShow = true,
                                 doAnyways = true
                             ) {
-                                updateToolbarsFabAndBottomPadding()
+                                updateToolbarsFabAndBottomPadding(false)
                             }
                         }
                         toggleFabToStop()
@@ -988,10 +1003,19 @@ class MainActivity : AuthenticatedActivity(),
             }
         }
 
-        private fun updateServiceState(
+        /**
+         * Stops or starts tracking based on incoming activeEntry
+         *
+         * @param afterId id of the new activeEntry
+         * @param beforeId id of the previous activeEntry
+         * @param mTrackingEnabled whether tracking is enabled
+         * @return the current [ADBState]
+         */
+        internal fun updateActiveDashState(
             afterId: Long?,
             beforeId: Long?,
-            mTrackingEnabled: Boolean
+            mTrackingEnabled: Boolean,
+            showMini: Boolean
         ): ADBState = if (afterId == null) { // stopping or stopped
             if (beforeId != null) {
                 stopDash(beforeId)
@@ -1009,7 +1033,7 @@ class MainActivity : AuthenticatedActivity(),
                     resumeOrStartNewTrip()
                 }
 
-                if (currDestination == R.id.navigation_insights) {
+                if (showMini) {
                     ADBState.TRACKING_COLLAPSED
                 } else {
                     ADBState.TRACKING_FULL
