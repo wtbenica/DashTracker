@@ -55,7 +55,7 @@
                 android:visibility="gone"
                 app:cardBackgroundColor="@android:color/transparent"
                 app:cardElevation="0dp"
-                app:layout_scrollFlags="scroll|enterAlways|snap"
+                app:layout_scrollFlags="noScroll"
                 tools:visibility="visible" />
         </com.wtb.dashTracker.views.ExpandableAppBarLayout>
 

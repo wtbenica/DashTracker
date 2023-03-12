@@ -196,7 +196,7 @@
 
         <!-- active_dash_bar -->
         <item name="colorActiveDashBarStroke">?attr/colorActiveDashBarBg</item>
-        <item name="colorActiveDashBarBg">?attr/colorSecondary</item>
+        <item name="colorActiveDashBarBg">?attr/colorSecondaryVariant</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
 

@@ -28,7 +28,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.extensions.expandTo
-import com.wtb.dashTracker.ui.activity_main.debugLog
 
 // TODO: There's got to be a better way of doing this
 interface ExpandableView {
@@ -118,20 +117,6 @@ class ExpandableGridLayout @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
-
-    override fun revealIfTrue(shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?) {
-        debugLog(
-            "revealIfTrue | Summary Bar | should? ${if (shouldShow) "Expand" else "Collapse"}  | will? ${
-                when {
-                    shouldShow && (!mIsVisible || isCollapsing) -> "Expand"
-                    !shouldShow && (mIsVisible || isExpanding) -> "Collapse"
-                    else -> "Do Nothing"
-                }
-            }", this::class.simpleName != "ExpandableTextView"
-        )
-
-        super.revealIfTrue(shouldShow, doAnyways, onComplete)
-    }
 }
 
 class ExpandableAppBarLayout @JvmOverloads constructor(
@@ -151,20 +136,6 @@ class ExpandableAppBarLayout @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
-
-    override fun revealIfTrue(shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?) {
-        debugLog(
-            "revealIfTrue | ${this::class.simpleName} | should? ${if (shouldShow) "Expand" else "Collapse"}  | will? ${
-                when {
-                    shouldShow && (!mIsVisible || isCollapsing) -> "Expand"
-                    !shouldShow && (mIsVisible || isExpanding) -> "Collapse"
-                    else -> "Do Nothing"
-                }
-            }", this::class.simpleName != "ExpandableTextView"
-        )
-
-        super.revealIfTrue(shouldShow, doAnyways, onComplete)
-    }
 }
 
 class ExpandableTableLayout @JvmOverloads constructor(

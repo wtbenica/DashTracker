@@ -45,6 +45,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -100,6 +101,7 @@ import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasPermissions
 import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.dashTracker.views.ActiveDashBar.ActiveDashBarCallback
+import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -316,7 +318,7 @@ class MainActivity : AuthenticatedActivity(),
                                         shouldShow = true,
                                         doAnyways = true,
                                     ) {
-                                        updateToolbarsAndFab()
+                                        updateToolbarsFabAndBottomPadding()
                                     }
                                 }
                                 binding.fab.show()
@@ -326,16 +328,11 @@ class MainActivity : AuthenticatedActivity(),
                                     shouldShow = !isTracking,
                                     doAnyways = true
                                 ) {
-                                    binding.adb.revealIfTrue(
+                                    binding.appBarLayout.revealIfTrue(
                                         shouldShow = isTracking,
                                         doAnyways = true
                                     ) {
-                                        binding.appBarLayout.revealIfTrue(
-                                            shouldShow = isTracking,
-                                            doAnyways = true
-                                        ) {
-                                            updateToolbarsAndFab()
-                                        }
+                                        updateToolbarsFabAndBottomPadding()
                                     }
                                 }
                                 binding.fab.show()
@@ -346,15 +343,17 @@ class MainActivity : AuthenticatedActivity(),
                                     doAnyways = true
                                 ) {
                                     binding.appBarLayout.revealIfTrue(
-                                        shouldShow = false,
+                                        shouldShow = isTracking,
                                         doAnyways = true
                                     ) {
-                                        updateToolbarsAndFab()
+                                        updateToolbarsFabAndBottomPadding()
                                     }
                                 }
                                 binding.fab.hide()
                             }
                         }
+
+                        activeDash.updateUi()
                     }
                 }
             }
@@ -735,10 +734,10 @@ class MainActivity : AuthenticatedActivity(),
             bottomAppBar.performShow(true)
             fab.show()
         }
-        updateToolbarsAndFab()
+        updateToolbarsFabAndBottomPadding()
     }
 
-    private fun updateToolbarsAndFab() {
+    private fun updateToolbarsFabAndBottomPadding() {
         val lps =
             binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
         val appBarBehavior = lps.behavior as AppBarLayout.Behavior?
@@ -750,6 +749,16 @@ class MainActivity : AuthenticatedActivity(),
                 it.invalidate()
                 it.requestLayout()
             }
+
+            val newPadding = if (currDestination == R.id.navigation_insights) {
+                bottomAppBar.height + resources.getDimension(R.dimen.margin_half).toInt()
+            } else {
+                0
+            }
+
+            navHostFragmentActivityMain.updatePadding(
+                bottom = newPadding
+            )
         }
     }
 
@@ -901,7 +910,7 @@ class MainActivity : AuthenticatedActivity(),
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
-        internal var serviceState: ServiceState = STOPPED
+        internal var serviceState: ADBState = ADBState.INACTIVE
 
         private fun onNewActiveEntry(before: FullEntry?, after: FullEntry?) {
             val beforeId = before?.entry?.entryId
@@ -920,43 +929,48 @@ class MainActivity : AuthenticatedActivity(),
         /**
          * Animate fab icon and adb visibility depending on [serviceState].
          */
-        private fun updateUi() {
-            fun toggleFabToPlay() {
-                binding.fab.apply {
-                    if (tag == R.drawable.anim_play_to_stop) {
-                        toggleButtonAnimatedVectorDrawable(
-                            initialDrawable = R.drawable.anim_stop_to_play,
-                            otherDrawable = R.drawable.anim_play_to_stop
-                        )
+        internal fun updateUi() {
+            fun updateFabIconAndSummaryBarVisibility() {
+                fun toggleFabToPlay() {
+                    binding.fab.apply {
+                        if (tag == R.drawable.anim_play_to_stop) {
+                            toggleButtonAnimatedVectorDrawable(
+                                initialDrawable = R.drawable.anim_stop_to_play,
+                                otherDrawable = R.drawable.anim_play_to_stop
+                            )
+                        }
                     }
                 }
-            }
 
-            fun toggleFabToStop() {
-                binding.fab.apply {
-                    if (tag == null || tag == R.drawable.anim_stop_to_play) {
-                        toggleButtonAnimatedVectorDrawable(
-                            initialDrawable = R.drawable.anim_play_to_stop,
-                            otherDrawable = R.drawable.anim_stop_to_play
-                        )
+                fun toggleFabToStop() {
+                    binding.fab.apply {
+                        if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                            toggleButtonAnimatedVectorDrawable(
+                                initialDrawable = R.drawable.anim_play_to_stop,
+                                otherDrawable = R.drawable.anim_stop_to_play
+                            )
+                        }
                     }
                 }
-            }
 
-            fun mOnComplete() {
                 when (serviceState) {
-                    STOPPED -> {
+                    ADBState.INACTIVE -> {
                         toggleFabToPlay()
+                        updateToolbarsFabAndBottomPadding()
                     }
-                    TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED -> {
+                    ADBState.TRACKING_COLLAPSED,
+                    ADBState.NOT_TRACKING,
+                    ADBState.TRACKING_FULL -> {
                         binding.summaryBar.root.revealIfTrue(
                             shouldShow = currDestination == R.id.navigation_income,
                             doAnyways = true
                         ) {
                             binding.appBarLayout.revealIfTrue(
-                                shouldShow = currDestination != R.id.navigation_insights,
+                                shouldShow = true,
                                 doAnyways = true
-                            )
+                            ) {
+                                updateToolbarsFabAndBottomPadding()
+                            }
                         }
                         toggleFabToStop()
                     }
@@ -969,19 +983,21 @@ class MainActivity : AuthenticatedActivity(),
 
             }
 
-            binding.adb.updateVisibilities(serviceState) { mOnComplete() }
+            binding.adb.onServiceStateUpdated(serviceState) {
+                updateFabIconAndSummaryBarVisibility()
+            }
         }
 
         private fun updateServiceState(
             afterId: Long?,
             beforeId: Long?,
             mTrackingEnabled: Boolean
-        ): ServiceState = if (afterId == null) { // stopping or stopped
+        ): ADBState = if (afterId == null) { // stopping or stopped
             if (beforeId != null) {
                 stopDash(beforeId)
             }
 
-            STOPPED
+            ADBState.INACTIVE
         } else { // starting or continuing
             if (beforeId == null && !locationServiceBound) {
                 startTracking()
@@ -993,14 +1009,18 @@ class MainActivity : AuthenticatedActivity(),
                     resumeOrStartNewTrip()
                 }
 
-                TRACKING_ACTIVE
+                if (currDestination == R.id.navigation_insights) {
+                    ADBState.TRACKING_COLLAPSED
+                } else {
+                    ADBState.TRACKING_FULL
+                }
             } else {
                 if (locationServiceBound || trackingEnabledPrevious) {
                     // either location service hasn't been stopped or tracking was disabled
                     stopTracking()
                 }
 
-                TRACKING_INACTIVE
+                ADBState.NOT_TRACKING
             }
         }
 
@@ -1282,7 +1302,7 @@ class MainActivity : AuthenticatedActivity(),
         shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
     ) {
         binding.appBarLayout.revealIfTrue(
-            shouldShow = shouldShow && currDestination != R.id.navigation_insights,
+            shouldShow = shouldShow,
             doAnyways = doAnyways
         ) {
             onComplete?.invoke()

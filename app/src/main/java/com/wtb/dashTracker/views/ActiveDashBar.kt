@@ -26,7 +26,7 @@ import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
 import com.wtb.dashTracker.extensions.getHoursRangeString
-import dev.benica.mileagetracker.LocationService.ServiceState
+import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -57,15 +57,14 @@ class ActiveDashBar @JvmOverloads constructor(
      * [TRACKING_ACTIVE] -> show both
      * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
      */
-    fun updateVisibilities(serviceState: ServiceState, onComplete: (() -> Unit)? = null) {
-//        TODO("update this to use ADBState, so that a collapsed version can be used for insights")
+    fun onServiceStateUpdated(serviceState: ADBState, onComplete: (() -> Unit)? = null) {
         when (serviceState) {
-            STOPPED -> {
+            INACTIVE -> { // Always collapse
                 binding.root.revealIfTrue(false, true) {
                     onComplete?.invoke()
                 }
             }
-            TRACKING_ACTIVE -> {
+            TRACKING_FULL -> { // Always show expanded details
                 binding.activeDashDetails.revealIfTrue(true, true) {
                     binding.root.revealIfTrue(true, true) {
                         callback?.revealAppBarLayout(true) {
@@ -74,7 +73,8 @@ class ActiveDashBar @JvmOverloads constructor(
                     }
                 }
             }
-            else -> { // TRACKING_INACTIVE, PAUSED
+            TRACKING_COLLAPSED,
+            NOT_TRACKING -> { // Show collapsed
                 binding.activeDashDetails.revealIfTrue(false, true) {
                     binding.root.revealIfTrue(true, true) {
                         callback?.revealAppBarLayout(true) {
@@ -107,16 +107,6 @@ class ActiveDashBar @JvmOverloads constructor(
         }
     }
 
-//    override val mIsVisible: Boolean
-//        get() = isVisible
-//
-//    override fun mExpand(onComplete: (() -> Unit)?): Unit = expand(onComplete)
-//
-//    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse(onComplete)
-//
-//    override var isExpanding: Boolean = false
-//    override var isCollapsing: Boolean = false
-
     interface ActiveDashBarCallback {
         fun revealAppBarLayout(
             shouldShow: Boolean,
@@ -127,7 +117,7 @@ class ActiveDashBar @JvmOverloads constructor(
 
     companion object {
         enum class ADBState {
-            TRACKING_FULL, TRACKING_COLLAPSED, NOT_TRACKING
+            TRACKING_FULL, TRACKING_COLLAPSED, NOT_TRACKING, INACTIVE
         }
     }
 }
