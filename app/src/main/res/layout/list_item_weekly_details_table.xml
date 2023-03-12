@@ -37,20 +37,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.wtb.dashTracker.views.ExpandableTextView
                     style="@style/PayTableHeaderStyle"
                     android:text="@string/lbl_pay" />
 
-                <TextView
+                <com.wtb.dashTracker.views.ExpandableTextView
                     android:id="@+id/label_base_pay_adjust"
                     style="@style/PayTableHeaderStyle"
                     android:text="@string/lbl_adjust" />
 
-                <TextView
+                <com.wtb.dashTracker.views.ExpandableTextView
                     style="@style/PayTableHeaderStyle"
                     android:text="@string/lbl_cash_tips" />
 
-                <TextView
+                <com.wtb.dashTracker.views.ExpandableTextView
                     style="@style/PayTableHeaderStyle"
                     android:text="@string/lbl_other_pay" />
             </TableRow>
@@ -59,22 +59,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <com.wtb.dashTracker.views.ExpandableTextView
                     android:id="@+id/list_item_regular_pay"
                     style="@style/PayTableValueStyle"
                     tools:text="$73.25" />
 
-                <TextView
+                <com.wtb.dashTracker.views.ExpandableTextView
                     android:id="@+id/list_item_weekly_adjust"
                     style="@style/PayTableValueStyle"
                     tools:text="$13.58" />
 
-                <TextView
+                <com.wtb.dashTracker.views.ExpandableTextView
                     android:id="@+id/list_item_cash_tips"
                     style="@style/PayTableValueStyle"
                     tools:text="$8.00" />
 
-                <TextView
+                <com.wtb.dashTracker.views.ExpandableTextView
                     android:id="@+id/list_item_other_pay"
                     style="@style/PayTableValueStyle"
                     tools:text="-" />
@@ -88,13 +88,13 @@
             android:columnCount="3">
 
             <!-- Row 0 -->
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 style="@style/HeaderStyle"
                 android:layout_row="0"
                 android:layout_column="0"
                 android:text="@string/header_hours" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_hours"
                 style="@style/ValueStyle"
                 android:layout_row="0"
@@ -102,13 +102,13 @@
                 tools:text="2.93h" />
 
             <!-- Row 1 -->
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 style="@style/HeaderStyle"
                 android:layout_row="1"
                 android:layout_column="0"
                 android:text="@string/header_mileage" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_miles"
                 style="@style/ValueStyle"
                 android:layout_row="1"
@@ -116,14 +116,14 @@
                 tools:text="380" />
 
             <!-- Row 2 -->
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_cpm_header"
                 style="@style/HeaderStyle"
                 android:layout_row="2"
                 android:layout_column="0"
                 android:text="@string/lbl_cost_per_mile" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_cpm_deduction_type"
                 style="@style/SecondaryValueStyle"
                 android:layout_row="2"
@@ -131,7 +131,7 @@
                 android:layout_columnWeight="1"
                 tools:text="Gas Only" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_cpm"
                 style="@style/ValueStyle"
                 android:layout_row="2"
@@ -139,14 +139,14 @@
                 tools:text="$0.18" />
 
             <!-- Row 3 -->
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_expenses_header"
                 style="@style/HeaderStyle"
                 android:layout_row="3"
                 android:layout_column="0"
                 android:text="@string/lbl_net_expenses" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_expenses"
                 style="@style/ValueStyle"
                 android:layout_row="3"
@@ -154,32 +154,32 @@
                 tools:text="$56.18" />
 
             <!-- Row 4 -->
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 style="@style/HeaderStyle"
                 android:layout_column="0"
                 android:text="@string/units_pay_rate" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_hourly"
                 style="@style/ValueStyle"
                 android:layout_column="2"
                 tools:text="$22.41/hr" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 style="@style/HeaderStyle"
                 android:text="@string/units_avg_delivery" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_avg_del"
                 style="@style/ValueStyle"
                 android:layout_column="2"
                 tools:text="$9.25/del" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 style="@style/HeaderStyle"
                 android:text="@string/units_del_per_hr" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_weekly_hourly_dels"
                 style="@style/ValueStyle"
                 android:layout_column="2"

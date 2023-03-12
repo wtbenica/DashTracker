@@ -34,7 +34,7 @@
             android:id="@+id/list_item_header"
             style="@style/ListItemHeader">
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_header_title_emphasis"
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Sunday, " />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_title"
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_height="0dp"
@@ -53,7 +53,7 @@
                 app:layout_constraintTop_toTopOf="@id/list_item_header_title_emphasis"
                 tools:text="November 21, 2021" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_title_2"
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_height="0dp"
@@ -63,7 +63,7 @@
                 app:layout_constraintTop_toTopOf="@id/list_item_header_title_emphasis"
                 tools:text="$81.25" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_subtitle"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +84,7 @@
                 app:layout_constraintTop_toTopOf="@id/list_item_header_title_emphasis"
                 tools:visibility="visible" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_subtitle_2_label"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_marginEnd="@dimen/margin_half"
@@ -93,7 +93,7 @@
                 app:layout_constraintTop_toTopOf="@id/list_item_subtitle_2"
                 tools:text="@string/list_item_label_net" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_subtitle_2"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 app:layout_constraintBottom_toBottomOf="parent"

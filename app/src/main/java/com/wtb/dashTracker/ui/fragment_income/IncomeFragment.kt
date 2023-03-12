@@ -36,8 +36,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragIncomeBinding
-import com.wtb.dashTracker.extensions.collapse
-import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
@@ -194,13 +192,13 @@ class IncomeFragment : Fragment(),
     }
 
     private fun showOptionsMenu() {
-        binding.filterBoxCollapsableArea.expand()
+        binding.filterBoxCollapsableArea.revealIfTrue(true)
         binding.expandArrow.setImageResource(R.drawable.ic_arrow_collapse)
         binding.selectCpm.visibility = GONE
     }
 
     private fun hideOptionsMenu() {
-        binding.filterBoxCollapsableArea.collapse()
+        binding.filterBoxCollapsableArea.revealIfTrue(false)
         binding.expandArrow.setImageResource(R.drawable.ic_arrow_expand)
         binding.selectCpm.visibility = VISIBLE
         binding.selectCpm.text = cpmButtonText

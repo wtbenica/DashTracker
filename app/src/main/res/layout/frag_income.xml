@@ -109,7 +109,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout">
 
-            <LinearLayout
+            <com.wtb.dashTracker.views.ExpandableLinearLayout
                 android:id="@+id/filter_box_collapsable_area"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -155,7 +155,7 @@
                         style="@style/MaterialToggleButton"
                         android:text="@string/expense_purpose_standard" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
-            </LinearLayout>
+            </com.wtb.dashTracker.views.ExpandableLinearLayout>
 
             <View
                 android:id="@+id/divider_2"

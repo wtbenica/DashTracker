@@ -42,7 +42,7 @@
                     android:rowCount="11">
 
                     <!--    Row 0   -->
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         style="@style/DialogHeaderTextView.SideLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
                         android:labelFor="@id/frag_expense_date"
                         android:text="@string/lbl_date" />
 
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/frag_expense_date"
                         style="@style/DialogValueTextView"
                         android:layout_width="0dp"
@@ -64,7 +64,7 @@
                         tools:text="Mon Nov 23, 2021" />
 
                     <!--    Row 1   -->
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         style="@style/DialogHeaderTextView.SideLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                         tools:listitem="@layout/dialog_frag_expense_purpose_spinner_item" />
 
                     <!--    Row 2   -->
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         style="@style/DialogHeaderTextView.SideLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
                         android:inputType="numberDecimal" />
 
                     <!--    Row 3   -->
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/frag_expense_price_lbl"
                         style="@style/DialogHeaderTextView.SideLabel"
                         android:layout_width="wrap_content"

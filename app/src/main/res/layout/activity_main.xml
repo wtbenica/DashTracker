@@ -31,7 +31,7 @@
         android:visibility="invisible"
         tools:visibility="visible">
 
-        <com.google.android.material.appbar.AppBarLayout
+        <com.wtb.dashTracker.views.ExpandableAppBarLayout
             android:id="@+id/app_bar_layout"
             style="@style/SummaryBar"
             android:layout_width="match_parent"
@@ -57,7 +57,7 @@
                 app:cardElevation="0dp"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
                 tools:visibility="visible" />
-        </com.google.android.material.appbar.AppBarLayout>
+        </com.wtb.dashTracker.views.ExpandableAppBarLayout>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_fragment_activity_main"

@@ -103,7 +103,7 @@ class YearlyListFragment : IncomeListItemFragment() {
             private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
 
             private val detailsBinding: ListItemYearlyDetailsTableBinding =
-                ListItemYearlyDetailsTableBinding.bind(itemView).apply {
+                binding.listItemDetailsTableCard.apply {
                     listItemYearlyExpenseDetailsButton.setOnClickListener { v ->
                         ConfirmationDialogExpenseBreakdown(item).show(childFragmentManager, null)
                     }
@@ -135,13 +135,9 @@ class YearlyListFragment : IncomeListItemFragment() {
 
                         detailsBinding.listItemYearlyExpensesHeader.revealIfTrue(show)
                         detailsBinding.listItemYearlyExpenseDetailsButtonFrame.apply {
-                            if (show) {
-                                val target =
-                                    resources.getDimension(R.dimen.min_touch_target).toInt()
-                                expandTo(targetHeight = target, targetWidth = target)
-                            } else {
-                                collapse()
-                            }
+                            val target =
+                                resources.getDimension(R.dimen.min_touch_target).toInt()
+                            expandToIfTrue(shouldExpand = show, toHeight = target, toWidth = target)
                         }
                         detailsBinding.listItemYearlyExpenseDetailsButton.revealIfTrue(show)
                         detailsBinding.listItemYearlyExpenses.revealIfTrue(show)

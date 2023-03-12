@@ -19,12 +19,13 @@ package com.wtb.dashTracker.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.FrameLayout
 import androidx.annotation.AttrRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
-import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.getElapsedHours
+import com.wtb.dashTracker.extensions.getHoursRangeString
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,7 +35,7 @@ class ActiveDashBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : ExpandableLinearLayout(context, attrs, defStyleAttr) {
 
     private var binding: ActivityMainActiveDashBarBinding
     private var callback: ActiveDashBarCallback? = null
@@ -57,32 +58,29 @@ class ActiveDashBar @JvmOverloads constructor(
      * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
      */
     fun updateVisibilities(serviceState: ServiceState, onComplete: (() -> Unit)? = null) {
+//        TODO("update this to use ADBState, so that a collapsed version can be used for insights")
         when (serviceState) {
             STOPPED -> {
-                if (binding.root.visibility == VISIBLE) {
-                    binding.root.collapse { onComplete?.invoke() }
-                } else {
+                binding.root.revealIfTrue(false, true) {
                     onComplete?.invoke()
                 }
             }
             TRACKING_ACTIVE -> {
-                if (binding.activeDashDetails.visibility == GONE) {
-                    binding.activeDashDetails.expand()
-                }
-                if (binding.root.visibility == GONE) {
-                    binding.root.expand { onComplete?.invoke() }
-                }else {
-                    onComplete?.invoke()
+                binding.activeDashDetails.revealIfTrue(true, true) {
+                    binding.root.revealIfTrue(true, true) {
+                        callback?.revealAppBarLayout(true) {
+                            onComplete?.invoke()
+                        } ?: onComplete?.invoke()
+                    }
                 }
             }
-            else -> {
-                if (binding.activeDashDetails.visibility == VISIBLE) {
-                    binding.activeDashDetails.collapse()
-                }
-                if (binding.root.visibility == GONE) {
-                    binding.root.expand { onComplete?.invoke() }
-                }else {
-                    onComplete?.invoke()
+            else -> { // TRACKING_INACTIVE, PAUSED
+                binding.activeDashDetails.revealIfTrue(false, true) {
+                    binding.root.revealIfTrue(true, true) {
+                        callback?.revealAppBarLayout(true) {
+                            onComplete?.invoke()
+                        } ?: onComplete?.invoke()
+                    }
                 }
             }
         }
@@ -109,5 +107,27 @@ class ActiveDashBar @JvmOverloads constructor(
         }
     }
 
-    interface ActiveDashBarCallback
+//    override val mIsVisible: Boolean
+//        get() = isVisible
+//
+//    override fun mExpand(onComplete: (() -> Unit)?): Unit = expand(onComplete)
+//
+//    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse(onComplete)
+//
+//    override var isExpanding: Boolean = false
+//    override var isCollapsing: Boolean = false
+
+    interface ActiveDashBarCallback {
+        fun revealAppBarLayout(
+            shouldShow: Boolean,
+            doAnyways: Boolean = true,
+            onComplete: (() -> Unit)? = null
+        )
+    }
+
+    companion object {
+        enum class ADBState {
+            TRACKING_FULL, TRACKING_COLLAPSED, NOT_TRACKING
+        }
+    }
 }

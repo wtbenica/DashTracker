@@ -348,22 +348,43 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
     protected fun updateTotalMileageFields() {
         item?.let { entry ->
-            val distance: Float =
-                entry.mileage ?: fullEntry?.trackedDistance?.toFloat() ?: 0f
-            val calculatedEnd: Float = (entry.startOdometer ?: 0f) + distance
-            val endOdometer: Float = entry.endOdometer ?: calculatedEnd
+            val trackedDistance = fullEntry?.trackedDistance?.toFloat()
+            val distance: Float? =
+                entry.mileage ?: trackedDistance
 
-            binding.fragEntryEndMileage.setText(getString(R.string.odometer_fmt, endOdometer))
+            val startOdometer = entry.startOdometer ?: if (distance != null) 0f else null
+            val endOdometer = entry.endOdometer ?: if (distance != null) trackedDistance else null
 
-            binding.fragEntryTotalMileage.text = getString(R.string.odometer_fmt, distance)
+            binding.fragEntryStartMileage.setText(
+                getStringOrElse(
+                    R.string.odometer_fmt,
+                    "",
+                    startOdometer
+                )
+            )
+            binding.fragEntryEndMileage.setText(
+                getStringOrElse(
+                    R.string.odometer_fmt,
+                    "",
+                    endOdometer
+                )
+            )
+            binding.fragEntryTotalMileage.text =
+                getStringOrElse(R.string.odometer_fmt, "", distance)
+
+//            binding.fragEntryTotalMileageRow.revealIfTrue(distance != null)
 
             setUpdateMileageButtonVisibility()
         }
     }
 
     protected fun setUpdateMileageButtonVisibility() {
-        binding.fragEntryCheckboxUseTrackedMileage.revealIfTrue(!totalMileageMatchesTrackedMileage)
+        binding.apply {
+            fragEntryTotalMileageRow.revealIfTrue(fragEntryStartMileage.text.isNotBlank() && fragEntryEndMileage.text.isNotBlank())
 
-        binding.fragEntrySpace.setVisibleIfTrue(totalMileageMatchesTrackedMileage)
+            fragEntryCheckboxUseTrackedMileage.revealIfTrue(!totalMileageMatchesTrackedMileage)
+
+            fragEntrySpace.setVisibleIfTrue(totalMileageMatchesTrackedMileage)
+        }
     }
 }

@@ -47,13 +47,12 @@
             android:layout_gravity="bottom"
             app:cardCornerRadius="?attr/listItemCornerRadius">
 
-            <TableLayout
+            <com.wtb.dashTracker.views.ExpandableTableLayout
                 android:id="@+id/table_filters"
                 style="@style/ChartTunerTable"
                 tools:visibility="visible">
 
-                <TableRow
-                    android:layout_marginBottom="@dimen/margin_default">
+                <TableRow android:layout_marginBottom="@dimen/margin_default">
 
                     <TextView
                         android:id="@+id/label_num_weeks_hourly_trends"
@@ -141,6 +140,7 @@
                 </TableRow>
 
                 <TableRow>
+
                     <TextView
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
@@ -174,7 +174,7 @@
                             android:text="@string/expense_purpose_standard" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </TableRow>
-            </TableLayout>
+            </com.wtb.dashTracker.views.ExpandableTableLayout>
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 </merge>

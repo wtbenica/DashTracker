@@ -20,7 +20,6 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +45,7 @@ import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
+import com.wtb.dashTracker.views.ExpandableTableLayout
 import com.wtb.dashTracker.views.WeeklyBarChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -208,17 +208,9 @@ class HourlyBarChart(
         }
     }
 
-    override val filterTable: ViewGroup
+    override val filterTable: ExpandableTableLayout
         get() = binding.tableFilters
 
-    //    override fun hideFilters(onComplete: (() -> Unit)?) {
-//        binding.tableFilters.collapse(onComplete)
-//    }
-//
-//    override fun showFilters(onComplete: (() -> Unit)?) {
-//        binding.tableFilters.expand(onComplete)
-//    }
-//
     override fun update(
         cpmListDaily: List<NewCpm>?,
         cpmListWeekly: List<NewCpm>?,

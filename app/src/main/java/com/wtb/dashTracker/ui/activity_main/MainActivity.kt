@@ -326,11 +326,16 @@ class MainActivity : AuthenticatedActivity(),
                                     shouldShow = !isTracking,
                                     doAnyways = true
                                 ) {
-                                    binding.appBarLayout.revealIfTrue(
+                                    binding.adb.revealIfTrue(
                                         shouldShow = isTracking,
                                         doAnyways = true
                                     ) {
-                                        updateToolbarsAndFab()
+                                        binding.appBarLayout.revealIfTrue(
+                                            shouldShow = isTracking,
+                                            doAnyways = true
+                                        ) {
+                                            updateToolbarsAndFab()
+                                        }
                                     }
                                 }
                                 binding.fab.show()
@@ -913,9 +918,9 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Animate fab icon and adb visibility depending on [state].
+         * Animate fab icon and adb visibility depending on [serviceState].
          */
-        fun updateUi(onComplete: (() -> Unit)? = null) {
+        private fun updateUi() {
             fun toggleFabToPlay() {
                 binding.fab.apply {
                     if (tag == R.drawable.anim_play_to_stop) {
@@ -944,11 +949,15 @@ class MainActivity : AuthenticatedActivity(),
                         toggleFabToPlay()
                     }
                     TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED -> {
-                        binding.appBarLayout.revealIfTrue(
-                            shouldShow = currDestination != R.id.navigation_insights,
-                            doAnyways = true,
-                            onComplete = onComplete
-                        )
+                        binding.summaryBar.root.revealIfTrue(
+                            shouldShow = currDestination == R.id.navigation_income,
+                            doAnyways = true
+                        ) {
+                            binding.appBarLayout.revealIfTrue(
+                                shouldShow = currDestination != R.id.navigation_insights,
+                                doAnyways = true
+                            )
+                        }
                         toggleFabToStop()
                     }
                 }
@@ -1269,6 +1278,16 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     private var isTesting: Boolean = false
+    override fun revealAppBarLayout(
+        shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
+    ) {
+        binding.appBarLayout.revealIfTrue(
+            shouldShow = shouldShow && currDestination != R.id.navigation_insights,
+            doAnyways = doAnyways
+        ) {
+            onComplete?.invoke()
+        }
+    }
 }
 
 interface ScrollableFragment {

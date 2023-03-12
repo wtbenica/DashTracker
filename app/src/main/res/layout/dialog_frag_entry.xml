@@ -236,7 +236,7 @@
                                 android:inputType="number" />
 
                             <!--    Row 2   -->
-                            <androidx.appcompat.widget.AppCompatButton
+                            <com.wtb.dashTracker.views.ExpandableButton
                                 android:id="@+id/frag_entry_checkbox_use_tracked_mileage"
                                 style="@style/Widget.Material3.Button.TextButton"
                                 android:layout_width="wrap_content"
@@ -272,7 +272,8 @@
                                 tools:visibility="gone" />
 
                             <!--    Row 3   -->
-                            <LinearLayout
+                            <com.wtb.dashTracker.views.ExpandableLinearLayout
+                                android:id="@+id/frag_entry_total_mileage_row"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_row="3"
@@ -314,7 +315,7 @@
                                     android:paddingVertical="@dimen/margin_narrow"
                                     android:textAlignment="textEnd"
                                     tools:text="54" />
-                            </LinearLayout>
+                            </com.wtb.dashTracker.views.ExpandableLinearLayout>
                         </GridLayout>
 
                         <View

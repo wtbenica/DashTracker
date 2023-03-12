@@ -32,7 +32,7 @@
             android:id="@+id/list_item_header"
             style="@style/ListItemHeader">
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_title"
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_marginEnd="@dimen/margin_half"
@@ -40,7 +40,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="2021" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_title_2"
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_width="0dp"
@@ -51,7 +51,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="$2081.25" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_subtitle_2_label"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_marginEnd="@dimen/margin_half"
@@ -59,7 +59,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2" />
 
-            <TextView
+            <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_subtitle_2"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -77,6 +77,7 @@
             tools:visibility="visible">
 
             <include
+                android:id="@+id/list_item_details_table_card"
                 style="@style/DetailsTableCard"
                 layout="@layout/list_item_yearly_details_table"
                 android:layout_width="0dp"
@@ -84,7 +85,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/list_item_btn_edit"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/list_item_header" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/list_item_btn_edit"

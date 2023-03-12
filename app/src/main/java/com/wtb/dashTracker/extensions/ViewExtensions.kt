@@ -33,7 +33,6 @@ import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
@@ -48,42 +47,16 @@ fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     return x in left..right && y in top..bottom
 }
 
-fun View.setVisibleIfTrue(boolean: Boolean) {
-    visibility = if (boolean) VISIBLE else GONE
-}
-
-val Int.asLayoutHeight: String
-    get() = when (this) {
-        WRAP_CONTENT -> "WRAP_CONTENT"
-        MATCH_PARENT -> "MATCH_PARENT"
-        else -> this.toString()
+private val View.targetHeight: Int
+    get() {
+        val matchParentMeasureSpec =
+            View.MeasureSpec.makeMeasureSpec((parent as View).width, View.MeasureSpec.EXACTLY)
+        val wrapContentMeasureSpec =
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        measure(matchParentMeasureSpec, wrapContentMeasureSpec)
+        val targetHeight = measuredHeight
+        return targetHeight
     }
-
-fun View.revealIfTrue(
-    shouldShow: Boolean = true,
-    doAnyways: Boolean = false,
-    onComplete: (() -> Unit)? = null
-) {
-    debugLog("revealIfTrue | $shouldShow | ${this::class.simpleName}", this::class.simpleName != "MaterialTextView")
-    if (shouldShow && !isVisible) {
-        expand { onComplete?.invoke() }
-    } else if (!shouldShow && isVisible) {
-        collapse { onComplete?.invoke() }
-    } else if (doAnyways) {
-        onComplete?.invoke()
-    }
-}
-
-fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toWidth: Int? = null) {
-    if (shouldExpand && !isVisible) {
-        expandTo(
-            targetHeight = toHeight,
-            targetWidth = toWidth
-        )
-    } else if (!shouldExpand && isVisible) {
-        collapse()
-    }
-}
 
 fun View.expand(onComplete: (() -> Unit)? = null) {
     layoutParams.height = max(1, layoutParams.height)
@@ -117,17 +90,6 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
     clearAnimation()
     startAnimation(animation)
 }
-
-private val View.targetHeight: Int
-    get() {
-        val matchParentMeasureSpec =
-            View.MeasureSpec.makeMeasureSpec((parent as View).width, View.MeasureSpec.EXACTLY)
-        val wrapContentMeasureSpec =
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        measure(matchParentMeasureSpec, wrapContentMeasureSpec)
-        val targetHeight = measuredHeight
-        return targetHeight
-    }
 
 fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_PARENT) {
     val mTargetHeight = targetHeight ?: WRAP_CONTENT
@@ -196,6 +158,17 @@ fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_P
     }
 }
 
+fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toWidth: Int? = null) {
+    if (shouldExpand && !isVisible) {
+        expandTo(
+            targetHeight = toHeight,
+            targetWidth = toWidth
+        )
+    } else if (!shouldExpand && isVisible) {
+        collapse()
+    }
+}
+
 fun View.collapse(onComplete: (() -> Unit)? = null) {
     val initHeight = measuredHeight
     val animation = object : Animation() {
@@ -229,6 +202,10 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
 
     clearAnimation()
     startAnimation(animation)
+}
+
+fun View.setVisibleIfTrue(boolean: Boolean) {
+    visibility = if (boolean) VISIBLE else GONE
 }
 
 fun View.focusAndShowKeyboard() {
@@ -314,3 +291,4 @@ fun MaterialButton.rotateUp() {
     clearAnimation()
     startAnimation(animation)
 }
+

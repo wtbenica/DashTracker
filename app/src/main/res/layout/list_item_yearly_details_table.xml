@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.wtb.dashTracker.views.ExpandableCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -29,7 +29,7 @@
         android:background="@android:color/transparent"
         android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
+        <com.wtb.dashTracker.views.ExpandableCardView
             android:id="@+id/list_item_details_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,11 +51,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <TextView
+                        <com.wtb.dashTracker.views.ExpandableTextView
                             style="@style/PayTableHeaderStyle"
                             android:text="@string/lbl_reported_income" />
 
-                        <TextView
+                        <com.wtb.dashTracker.views.ExpandableTextView
                             style="@style/PayTableHeaderStyle"
                             android:text="@string/lbl_cash_tips" />
 
@@ -65,12 +65,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <TextView
+                        <com.wtb.dashTracker.views.ExpandableTextView
                             android:id="@+id/list_item_reported_income"
                             style="@style/PayTableValueStyle"
                             tools:text="$2073.25" />
 
-                        <TextView
+                        <com.wtb.dashTracker.views.ExpandableTextView
                             android:id="@+id/list_item_cash_tips"
                             style="@style/PayTableValueStyle"
                             tools:text="$8.00" />
@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content">
 
                     <!-- Row 0 -->
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         style="@style/HeaderStyle"
                         android:layout_row="0"
                         android:layout_column="0"
@@ -103,7 +103,7 @@
                     </FrameLayout>
 
 
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_mileage"
                         style="@style/ValueStyle"
                         android:layout_row="0"
@@ -111,7 +111,7 @@
                         tools:text="3,201" />
 
                     <!-- Row 1 -->
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_expenses_header"
                         style="@style/HeaderStyle"
                         android:layout_row="1"
@@ -124,13 +124,13 @@
                         android:layout_row="1"
                         android:layout_column="1">
 
-                        <ImageView
+                        <com.wtb.dashTracker.views.ExpandableImageView
                             android:id="@+id/list_item_yearly_expense_details_button"
                             style="@style/ExpandDetailsButton"
                             android:contentDescription="@string/content_desc_open_mileage_breakdown" />
                     </FrameLayout>
 
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_expenses"
                         style="@style/ValueStyle"
                         android:layout_row="1"
@@ -138,21 +138,21 @@
                         tools:text="$56.18" />
 
                     <!-- Row 2 -->
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_cpm_header"
                         style="@style/HeaderStyle"
                         android:layout_row="2"
                         android:layout_column="0"
                         android:text="@string/lbl_cost_per_mile" />
 
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_cpm_deduction_type"
                         style="@style/SecondaryValueStyle"
                         android:layout_row="2"
                         android:layout_column="2"
                         tools:text="Gas Only" />
 
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_cpm"
                         style="@style/ValueStyle"
                         android:layout_row="2"
@@ -160,13 +160,13 @@
                         tools:text="$0.18" />
 
                     <!-- Row 3 -->
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         style="@style/HeaderStyle"
                         android:layout_row="3"
                         android:layout_column="0"
                         android:text="@string/header_hours" />
 
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_hours"
                         style="@style/ValueStyle"
                         android:layout_row="3"
@@ -174,13 +174,13 @@
                         tools:text="2.93h" />
 
 
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         style="@style/HeaderStyle"
                         android:layout_row="4"
                         android:layout_column="0"
                         android:text="@string/units_pay_rate" />
 
-                    <TextView
+                    <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_hourly"
                         style="@style/ValueStyle"
                         android:layout_row="4"
@@ -188,16 +188,16 @@
                         tools:text="$22.41" />
                 </GridLayout>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.wtb.dashTracker.views.ExpandableCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.wtb.dashTracker.views.ExpandableCardView
             android:id="@+id/mileage_breakdown_card"
             android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/margin_default"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_default"
             app:cardBackgroundColor="@android:color/transparent">
 
             <include layout="@layout/yearly_mileage_grid" />
-        </androidx.cardview.widget.CardView>
+        </com.wtb.dashTracker.views.ExpandableCardView>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.wtb.dashTracker.views.ExpandableCardView>
