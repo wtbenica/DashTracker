@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.views
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -23,9 +24,9 @@ import androidx.annotation.AttrRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
+import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
-import com.wtb.dashTracker.extensions.getHoursRangeString
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,14 +38,24 @@ class ActiveDashBar @JvmOverloads constructor(
     @AttrRes defStyleAttr: Int = 0
 ) : ExpandableLinearLayout(context, attrs, defStyleAttr) {
 
-    private var binding: ActivityMainActiveDashBarBinding
+    private val binding: ActivityMainActiveDashBarBinding
     private var callback: ActiveDashBarCallback? = null
     private var activeEntry: FullEntry? = null
+    private val animator: ValueAnimator
 
     init {
         val view: View = inflate(context, R.layout.activity_main_active_dash_bar, this)
 
         binding = ActivityMainActiveDashBarBinding.bind(view)
+
+        animator = ValueAnimator.ofFloat(0.4f, 1f).apply {
+            duration = 1000
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = -1
+            addUpdateListener { animation ->
+                binding.trackingStatusOverlay.alpha = animation.animatedValue as Float
+            }
+        }
     }
 
     fun initialize(cb: ActiveDashBarCallback) {
@@ -63,6 +74,7 @@ class ActiveDashBar @JvmOverloads constructor(
                 binding.root.revealIfTrue(false, true) {
                     onComplete?.invoke()
                 }
+                animator.pause()
             }
             TRACKING_FULL -> { // Always show expanded details
                 binding.activeDashDetails.revealIfTrue(true, true) {
@@ -72,6 +84,7 @@ class ActiveDashBar @JvmOverloads constructor(
                         } ?: onComplete?.invoke()
                     }
                 }
+                startTrackingIndicator()
             }
             TRACKING_COLLAPSED,
             NOT_TRACKING -> { // Show collapsed
@@ -82,15 +95,33 @@ class ActiveDashBar @JvmOverloads constructor(
                         } ?: onComplete?.invoke()
                     }
                 }
+                stopTrackingIndicator()
             }
         }
+    }
+
+    private fun startTrackingIndicator() {
+        binding.trackingStatusText.apply {
+            text = context.getString(R.string.lbl_tracking_active)
+        }
+
+        if (!animator.isStarted || animator.isPaused) animator.start()
+    }
+
+    private fun stopTrackingIndicator() {
+        binding.trackingStatusText.apply {
+            text = "Inactive"
+        }
+        binding.trackingStatusOverlay.alpha = 1f
+
+        animator.pause()
     }
 
     fun updateEntry(fullEntry: FullEntry?, activeCpm: Float?) {
         fullEntry?.let { it ->
             activeEntry = it
 
-            binding.lblStarted.text = context.getHoursRangeString(it.entry.startTime, null)
+            binding.lblStarted.text = it.entry.startTime?.format(dtfTime)?.lowercase()
 
             binding.valMileage.text =
                 context.getString(R.string.mileage_fmt, it.trackedDistance ?: 0.0)

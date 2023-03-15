@@ -310,45 +310,12 @@ class MainActivity : AuthenticatedActivity(),
                     runOnUiThread {
                         when (destination.id) {
                             R.id.navigation_income -> {
-                                binding.summaryBar.root.revealIfTrue(
-                                    shouldShow = true,
-                                    doAnyways = true,
-                                ) {
-                                    binding.appBarLayout.revealIfTrue(
-                                        shouldShow = true,
-                                        doAnyways = true,
-                                    ) {
-                                        updateToolbarsFabAndBottomPadding()
-                                    }
-                                }
                                 binding.fab.show()
                             }
                             R.id.navigation_expenses -> {
-                                binding.summaryBar.root.revealIfTrue(
-                                    shouldShow = !isTracking,
-                                    doAnyways = true
-                                ) {
-                                    binding.appBarLayout.revealIfTrue(
-                                        shouldShow = isTracking,
-                                        doAnyways = true
-                                    ) {
-                                        updateToolbarsFabAndBottomPadding()
-                                    }
-                                }
                                 binding.fab.show()
                             }
                             R.id.navigation_insights -> {
-                                binding.summaryBar.root.revealIfTrue(
-                                    shouldShow = !isTracking,
-                                    doAnyways = true
-                                ) {
-                                    binding.appBarLayout.revealIfTrue(
-                                        shouldShow = isTracking,
-                                        doAnyways = true
-                                    ) {
-                                        updateToolbarsFabAndBottomPadding()
-                                    }
-                                }
                                 binding.fab.hide()
                             }
                         }
@@ -357,8 +324,7 @@ class MainActivity : AuthenticatedActivity(),
                             serviceState = updateActiveDashState(
                                 afterId = activeDash.activeEntry?.entry?.entryId,
                                 beforeId = activeDash.activeEntry?.entry?.entryId,
-                                trackingEnabled,
-                                destination.id == R.id.navigation_insights
+                                showMini = destination.id == R.id.navigation_insights
                             )
                             updateUi()
                         }
@@ -470,7 +436,6 @@ class MainActivity : AuthenticatedActivity(),
             }
 
             binding = ActivityMainBinding.inflate(layoutInflater).apply {
-
                 fab.setOnClickListener {
                     if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
                         showStartDashDialog()
@@ -742,24 +707,19 @@ class MainActivity : AuthenticatedActivity(),
             bottomAppBar.performShow(true)
             fab.show()
         }
-        updateToolbarsFabAndBottomPadding()
+        updateToolbarAndBottomPadding()
     }
 
-    private fun updateToolbarsFabAndBottomPadding(slideAppBarDown: Boolean = true) {
-        val lps =
-            binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
-        val appBarBehavior = lps.behavior as AppBarLayout.Behavior?
-
+    private fun updateToolbarAndBottomPadding(slideAppBarDown: Boolean = true) {
         if (slideAppBarDown) {
+            val lps =
+                binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
+            val appBarBehavior = lps.behavior as AppBarLayout.Behavior?
+
             appBarBehavior?.topAndBottomOffset = 0
         }
 
         binding.apply {
-            listOf(appBarLayout, bottomAppBar, fab).forEach<View> {
-                it.invalidate()
-                it.requestLayout()
-            }
-
             val newPadding = if (currDestination == R.id.navigation_insights) {
                 bottomAppBar.height + resources.getDimension(R.dimen.margin_half).toInt()
             } else {
@@ -926,17 +886,12 @@ class MainActivity : AuthenticatedActivity(),
             val beforeId = before?.entry?.entryId
             val afterId = after?.entry?.entryId
 
-            val mTrackingEnabled = trackingEnabled
-
             serviceState =
                 updateActiveDashState(
                     afterId = afterId,
                     beforeId = beforeId,
-                    mTrackingEnabled = mTrackingEnabled,
                     showMini = currDestination == R.id.navigation_insights
                 )
-
-            trackingEnabledPrevious = mTrackingEnabled
 
             updateUi()
         }
@@ -970,8 +925,18 @@ class MainActivity : AuthenticatedActivity(),
 
                 when (serviceState) {
                     ADBState.INACTIVE -> {
+                        binding.summaryBar.root.revealIfTrue(
+                            shouldShow = true,
+                            doAnyways = true
+                        ) {
+                            binding.appBarLayout.revealIfTrue(
+                                shouldShow = currDestination == R.id.navigation_income || isTracking,
+                                doAnyways = true
+                            ) {
+                                updateToolbarAndBottomPadding(slideAppBarDown = false)
+                            }
+                        }
                         toggleFabToPlay()
-                        updateToolbarsFabAndBottomPadding()
                     }
                     ADBState.TRACKING_COLLAPSED,
                     ADBState.NOT_TRACKING,
@@ -984,18 +949,12 @@ class MainActivity : AuthenticatedActivity(),
                                 shouldShow = true,
                                 doAnyways = true
                             ) {
-                                updateToolbarsFabAndBottomPadding(false)
+                                updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
                         toggleFabToStop()
                     }
                 }
-
-                binding.appBarLayout.apply {
-                    invalidate()
-                    requestLayout()
-                }
-
             }
 
             binding.adb.onServiceStateUpdated(serviceState) {
@@ -1014,38 +973,45 @@ class MainActivity : AuthenticatedActivity(),
         internal fun updateActiveDashState(
             afterId: Long?,
             beforeId: Long?,
-            mTrackingEnabled: Boolean,
             showMini: Boolean
-        ): ADBState = if (afterId == null) { // stopping or stopped
-            if (beforeId != null) {
-                stopDash(beforeId)
-            }
+        ): ADBState {
+            val mTrackingEnabled = trackingEnabled
 
-            ADBState.INACTIVE
-        } else { // starting or continuing
-            if (beforeId == null && !locationServiceBound) {
-                startTracking()
-            }
-
-            if (mTrackingEnabled) {
-                if (!trackingEnabledPrevious) {
-                    // tracking has been enabled
-                    resumeOrStartNewTrip()
+            val res = if (afterId == null) { // stopping or stopped
+                if (beforeId != null) {
+                    stopDash(beforeId)
                 }
 
-                if (showMini) {
-                    ADBState.TRACKING_COLLAPSED
+                ADBState.INACTIVE
+            } else { // starting or continuing
+                if (beforeId == null && !locationServiceBound) {
+                    startTracking()
+                }
+
+                if (mTrackingEnabled) {
+                    if (!trackingEnabledPrevious) {
+                        // tracking has been enabled
+                        resumeOrStartNewTrip()
+                    }
+
+                    if (showMini) {
+                        ADBState.TRACKING_COLLAPSED
+                    } else {
+                        ADBState.TRACKING_FULL
+                    }
                 } else {
-                    ADBState.TRACKING_FULL
-                }
-            } else {
-                if (locationServiceBound || trackingEnabledPrevious) {
-                    // either location service hasn't been stopped or tracking was disabled
-                    stopTracking()
-                }
+                    if (locationServiceBound || trackingEnabledPrevious) {
+                        // either location service hasn't been stopped or tracking was disabled
+                        stopTracking()
+                    }
 
-                ADBState.NOT_TRACKING
+                    ADBState.NOT_TRACKING
+                }
             }
+
+            trackingEnabledPrevious = mTrackingEnabled
+
+            return res
         }
 
         // Location Service

@@ -43,4 +43,6 @@
     <color name="nighttime_light">#CCEEEE</color>
 
     <color name="alert">#EE5522</color>
+    <color name="tracking_status">#60D050</color>
+    <color name="tracking_status_fill">#70E070</color>
 </resources>

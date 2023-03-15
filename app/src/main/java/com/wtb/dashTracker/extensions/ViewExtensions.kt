@@ -27,12 +27,14 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewTreeObserver
 import android.view.animation.Animation
+import android.view.animation.Animation.AnimationListener
 import android.view.animation.Transformation
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
@@ -62,7 +64,9 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
     layoutParams.height = max(1, layoutParams.height)
     visibility = VISIBLE
 
-    val animation = object : Animation() {
+    val expandAnimation = object : Animation() {
+        var onCompleteCalled = false
+
         override fun willChangeBounds(): Boolean = true
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
@@ -72,8 +76,9 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
                 (targetHeight * interpolatedTime).toInt()
             }
 
-            if (interpolatedTime >= 1f) {
+            if (interpolatedTime >= 1f && !onCompleteCalled) {
                 onComplete?.invoke()
+                onCompleteCalled = true
             }
 
             requestLayout()
@@ -81,14 +86,31 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
         }
     }.apply {
         duration = (targetHeight / context.resources.displayMetrics.density).toLong()
+
+        setAnimationListener(object : AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                debugLog("Expand! started")
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                debugLog("Expand! ended")
+                requestLayout()
+                invalidate()
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {
+                debugLog("Expand! repeat")
+            }
+
+        })
+
         if (duration == 0L) {
             visibility = VISIBLE
             onComplete?.invoke()
         }
     }
 
-    clearAnimation()
-    startAnimation(animation)
+    startAnimation(expandAnimation)
 }
 
 fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_PARENT) {
@@ -153,7 +175,6 @@ fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_P
             duration = (toHeight / context.resources.displayMetrics.density).toLong()
         }
 
-        clearAnimation()
         startAnimation(animation)
     }
 }
@@ -174,6 +195,8 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
     val animation = object : Animation() {
         var onCompleteCalled = false
 
+        override fun willChangeBounds(): Boolean = true
+
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             layoutParams.height = if (interpolatedTime >= 1f) {
                 visibility = GONE
@@ -190,17 +213,32 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             requestLayout()
             invalidate()
         }
-
-        override fun willChangeBounds(): Boolean = true
     }.apply {
         duration = (initHeight / context.resources.displayMetrics.density).toLong()
+
+        setAnimationListener(object: AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                debugLog("Collapse! started")
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                debugLog("Collapse! ended")
+                requestLayout()
+                invalidate()
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {
+                debugLog("Collapse! repeat")
+            }
+
+        })
+
         if (duration == 0L) {
             visibility = GONE
             onComplete?.invoke()
         }
     }
 
-    clearAnimation()
     startAnimation(animation)
 }
 
@@ -269,7 +307,6 @@ fun MaterialButton.rotateDown() {
         duration = 300L
     }
 
-    clearAnimation()
     startAnimation(animation)
 }
 
@@ -288,7 +325,6 @@ fun MaterialButton.rotateUp() {
         duration = 300L
     }
 
-    clearAnimation()
     startAnimation(animation)
 }
 
