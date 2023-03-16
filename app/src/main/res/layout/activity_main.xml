@@ -37,7 +37,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="@dimen/margin_half"
             app:liftOnScroll="false">
 
             <!--             Don't add vertical margins, it messes up the hiding on scroll -->

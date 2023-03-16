@@ -21,12 +21,15 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AttrRes
+import androidx.core.view.setPadding
+import androidx.core.view.updatePadding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
-import com.wtb.dashTracker.extensions.dtfTime
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
+import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.extensions.transitionBackgroundTo
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -71,28 +74,62 @@ class ActiveDashBar @JvmOverloads constructor(
     fun onServiceStateUpdated(serviceState: ADBState, onComplete: (() -> Unit)? = null) {
         when (serviceState) {
             INACTIVE -> { // Always collapse
-                binding.root.revealIfTrue(false, true) {
+                binding.root.revealIfTrue(shouldShow = false, doAnyways = true) {
                     onComplete?.invoke()
                 }
                 animator.pause()
             }
             TRACKING_FULL -> { // Always show expanded details
-                binding.activeDashDetails.revealIfTrue(true, true) {
-                    binding.root.revealIfTrue(true, true) {
-                        callback?.revealAppBarLayout(true) {
-                            onComplete?.invoke()
-                        } ?: onComplete?.invoke()
+                binding.activeDashDetails.revealIfTrue(shouldShow = true, doAnyways = true) {
+                    binding.apply {
+                        root.apply {
+                            revealIfTrue(shouldShow = true, doAnyways = true) {
+                                callback?.revealAppBarLayout(shouldShow = true) {
+                                    onComplete?.invoke()
+                                } ?: onComplete?.invoke()
+                            }
+                            val hor = resources.getDimension(R.dimen.margin_narrow).toInt()
+                            updatePadding(left = hor, top = hor, right = hor, bottom = hor)
+                            requestLayout()
+                        }
+
+                        val hor = resources.getDimension(R.dimen.margin_wide).toInt()
+                        listOf(adbTitleRow, trackingStatusRow).forEach {
+                            it.updatePadding(left = hor, right = hor)
+                        }
                     }
                 }
                 startTrackingIndicator()
             }
-            TRACKING_COLLAPSED,
-            NOT_TRACKING -> { // Show collapsed
-                binding.activeDashDetails.revealIfTrue(false, true) {
-                    binding.root.revealIfTrue(true, true) {
-                        callback?.revealAppBarLayout(true) {
-                            onComplete?.invoke()
-                        } ?: onComplete?.invoke()
+            TRACKING_COLLAPSED -> { // Show collapsed
+                binding.activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
+                    binding.apply {
+                        root.apply {
+                            revealIfTrue(shouldShow = true, doAnyways = true) {
+                                callback?.revealAppBarLayout(shouldShow = true) {
+                                    onComplete?.invoke()
+                                } ?: onComplete?.invoke()
+                            }
+                            setPadding(0)
+                            requestLayout()
+                        }
+
+                        val hor = resources.getDimension(R.dimen.margin_default).toInt()
+                        listOf(adbTitleRow, trackingStatusRow).forEach {
+                            it.updatePadding(left = hor, right = hor)
+                        }
+                    }
+                }
+            }
+            NOT_TRACKING -> { // Show collapsed and stop tracking indicator
+                binding.activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
+                    binding.root.apply {
+                        revealIfTrue(shouldShow = true, doAnyways = true) {
+                            callback?.revealAppBarLayout(shouldShow = true) {
+                                onComplete?.invoke()
+                            } ?: onComplete?.invoke()
+                        }
+                        transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                     }
                 }
                 stopTrackingIndicator()
@@ -101,6 +138,7 @@ class ActiveDashBar @JvmOverloads constructor(
     }
 
     private fun startTrackingIndicator() {
+        binding.trackingStatusRow.visibility = VISIBLE
         binding.trackingStatusText.apply {
             text = context.getString(R.string.lbl_tracking_active)
         }
@@ -109,9 +147,7 @@ class ActiveDashBar @JvmOverloads constructor(
     }
 
     private fun stopTrackingIndicator() {
-        binding.trackingStatusText.apply {
-            text = "Inactive"
-        }
+        binding.trackingStatusRow.visibility = GONE
         binding.trackingStatusOverlay.alpha = 1f
 
         animator.pause()
@@ -121,7 +157,8 @@ class ActiveDashBar @JvmOverloads constructor(
         fullEntry?.let { it ->
             activeEntry = it
 
-            binding.lblStarted.text = it.entry.startTime?.format(dtfTime)?.lowercase()
+            binding.valCpm.text =
+                context.getStringOrElse(R.string.cpm_unit, "$ - ", callback?.currentCpm)
 
             binding.valMileage.text =
                 context.getString(R.string.mileage_fmt, it.trackedDistance ?: 0.0)
@@ -139,6 +176,7 @@ class ActiveDashBar @JvmOverloads constructor(
     }
 
     interface ActiveDashBarCallback {
+        val currentCpm: Float?
         fun revealAppBarLayout(
             shouldShow: Boolean,
             doAnyways: Boolean = true,

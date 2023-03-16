@@ -18,19 +18,20 @@
 <com.wtb.dashTracker.views.ExpandableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/active_dash_bar_frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingVertical="@dimen/margin_half">
+    android:padding="@dimen/margin_skinny">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="?attr/activeDashCornerRadius">
 
         <LinearLayout
+            android:id="@+id/adb_card_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorActiveDashBarBg"
@@ -38,6 +39,7 @@
             android:padding="?attr/listItemThinBorder">
 
             <LinearLayout
+                android:id="@+id/adb_title_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/margin_wide">
@@ -51,24 +53,20 @@
                     android:textAlignment="textStart"
                     android:textSize="@dimen/text_size_xlarge" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_narrow"
-                    android:text="Started" />
 
                 <TextView
-                    android:id="@+id/lbl_started"
-                    style="@style/ActiveDashTextView"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/val_elapsed_time"
+                    style="@style/ActiveDashTextView.Value"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textAlignment="textEnd"
-                    android:textSize="@dimen/text_size_xlarge"
-                    tools:text="3:33p" />
+                    tools:text="4h 20m" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/tracking_status_row"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:backgroundTint="?attr/colorSecondary"
@@ -105,10 +103,10 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_active_dash_bar_details"
                 android:columnCount="5"
-                android:paddingVertical="@dimen/margin_narrow"
                 android:paddingHorizontal="@dimen/margin_skinny"
+                android:paddingVertical="@dimen/margin_narrow"
                 android:rowCount="6">
-\
+
                 <View
                     android:layout_width="1dp"
                     android:layout_height="0dp"
@@ -129,11 +127,11 @@
 
                 <!--    Row 0        -->
                 <TextView
-                    android:id="@+id/lbl_hrs"
+                    android:id="@+id/lbl_cpm"
                     style="@style/ActiveDashTextView.Label"
                     android:layout_row="2"
                     android:layout_column="0"
-                    android:text="@string/header_hours" />
+                    android:text="@string/header_cpm" />
 
                 <TextView
                     android:id="@+id/lbl_mileage"
@@ -151,11 +149,11 @@
 
                 <!-- Row 1 -->
                 <TextView
-                    android:id="@+id/val_elapsed_time"
+                    android:id="@+id/val_cpm"
                     style="@style/ActiveDashTextView.Value"
                     android:layout_row="3"
                     android:layout_column="0"
-                    tools:text="4h 20m" />
+                    tools:text="$0.27" />
 
                 <TextView
                     android:id="@+id/val_mileage"

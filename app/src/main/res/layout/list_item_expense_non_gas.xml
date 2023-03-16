@@ -24,8 +24,8 @@
         android:id="@+id/list_item_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_list_item"
-        tools:background="@drawable/bg_list_item_expanded">
+        android:background="?attr/colorListItem"
+        tools:background="?attr/colorListItemExpanded">
 
         <GridLayout
             android:layout_width="wrap_content"

@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
-import android.graphics.drawable.RippleDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +25,6 @@ import androidx.cardview.widget.CardView
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
@@ -35,14 +33,15 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
+import com.wtb.dashTracker.extensions.transitionBackgroundTo
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalAnimationApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
 @ExperimentalCoroutinesApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 abstract class ListItemFragment : Fragment(), ScrollableFragment {
     protected lateinit var binding: FragItemListBinding
     protected val recyclerView: RecyclerView
@@ -64,7 +63,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                 (requireActivity() as MainActivity).binding.bottomAppBar.measuredHeight
             updatePadding(bottom = height + getDimen(R.dimen.margin_default).toInt())
 
-            this.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            this.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
                 with((requireActivity() as MainActivity)) {
                     if (!isShowingOrHidingToolbars) {
                         with(binding.fab) {
@@ -230,29 +229,31 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             collapseArea.forEach { it.setVisibleIfTrue(showDetails) }
 
             if (showDetails) {
-                backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
-                if (backgroundArea.background is RippleDrawable) {
-                    (backgroundArea.background as RippleDrawable).setDrawable(
-                        0,
-                        ResourcesCompat.getDrawable(
-                            resources,
-                            R.drawable.bg_list_item_expanded,
-                            requireContext().theme
-                        )
-                    )
-                }
+                backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
+//                backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
+//                if (backgroundArea.background is RippleDrawable) {
+//                    (backgroundArea.background as RippleDrawable).setDrawable(
+//                        0,
+//                        ResourcesCompat.getDrawable(
+//                            resources,
+//                            R.drawable.bg_list_item_expanded,
+//                            requireContext().theme
+//                        )
+//                    )
+//                }
             } else {
-                backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
-                if (backgroundArea.background is RippleDrawable) {
-                    (backgroundArea.background as RippleDrawable).setDrawable(
-                        0,
-                        ResourcesCompat.getDrawable(
-                            resources,
-                            R.drawable.bg_list_item,
-                            requireContext().theme
-                        )
-                    )
-                }
+                backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
+//                backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
+//                if (backgroundArea.background is RippleDrawable) {
+//                    (backgroundArea.background as RippleDrawable).setDrawable(
+//                        0,
+//                        ResourcesCompat.getDrawable(
+//                            resources,
+//                            R.drawable.bg_list_item,
+//                            requireContext().theme
+//                        )
+//                    )
+//                }
             }
         }
     }

@@ -19,6 +19,8 @@ package com.wtb.dashTracker.extensions
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
@@ -34,6 +36,7 @@ import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
 
@@ -89,17 +92,16 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
 
         setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
-                debugLog("Expand! started")
+                // Do nothing
             }
 
             override fun onAnimationEnd(animation: Animation?) {
-                debugLog("Expand! ended")
                 requestLayout()
                 invalidate()
             }
 
             override fun onAnimationRepeat(animation: Animation?) {
-                debugLog("Expand! repeat")
+                // Do nothing
             }
 
         })
@@ -216,19 +218,18 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
     }.apply {
         duration = (initHeight / context.resources.displayMetrics.density).toLong()
 
-        setAnimationListener(object: AnimationListener {
+        setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
-                debugLog("Collapse! started")
+                // Do nothing
             }
 
             override fun onAnimationEnd(animation: Animation?) {
-                debugLog("Collapse! ended")
                 requestLayout()
                 invalidate()
             }
 
             override fun onAnimationRepeat(animation: Animation?) {
-                debugLog("Collapse! repeat")
+                // Do nothing
             }
 
         })
@@ -281,6 +282,37 @@ fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
     val colorTo = MaterialColors.getColor(this, to)
     val colorAnimation: ValueAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
     colorAnimation.duration = (initHeight / context.resources.displayMetrics.density).toLong()
+
+    colorAnimation.addUpdateListener {
+        if (it.animatedValue is Int) {
+            val color = it.animatedValue as Int
+            setBackgroundColor(color)
+        }
+    }
+
+    colorAnimation.start()
+}
+
+fun View.transitionBackgroundTo(@AttrRes to: Int) {
+    val initHeight = measuredHeight
+
+    val bgColor = when (background) {
+        is ColorDrawable -> (background as ColorDrawable?)?.color
+        is MaterialShapeDrawable -> (background as MaterialShapeDrawable?)?.fillColor?.defaultColor
+        else -> null
+    }
+    val colorFrom: Int = bgColor ?: Color.TRANSPARENT
+    val colorTo = MaterialColors.getColor(this, to)
+
+    val colorAnimation: ValueAnimator =
+        ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
+            duration = (initHeight / context.resources.displayMetrics.density).toLong()
+        }
+
+    debugLog(
+        message = "duration: ${colorAnimation.duration} | from: $bgColor $colorFrom | to: $colorTo",
+        condition = colorFrom != colorTo
+    )
 
     colorAnimation.addUpdateListener {
         if (it.animatedValue is Int) {

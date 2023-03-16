@@ -310,12 +310,15 @@ class MainActivity : AuthenticatedActivity(),
                     runOnUiThread {
                         when (destination.id) {
                             R.id.navigation_income -> {
+                                binding.appBarLayout.transitionBackgroundTo(R.attr.colorAppBarBg)
                                 binding.fab.show()
                             }
                             R.id.navigation_expenses -> {
+                                binding.appBarLayout.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                                 binding.fab.show()
                             }
                             R.id.navigation_insights -> {
+                                binding.appBarLayout.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                                 binding.fab.hide()
                             }
                         }
@@ -324,7 +327,7 @@ class MainActivity : AuthenticatedActivity(),
                             serviceState = updateActiveDashState(
                                 afterId = activeDash.activeEntry?.entry?.entryId,
                                 beforeId = activeDash.activeEntry?.entry?.entryId,
-                                showMini = destination.id == R.id.navigation_insights
+                                showMini = destination.id != R.id.navigation_income
                             )
                             updateUi()
                         }
@@ -785,6 +788,9 @@ class MainActivity : AuthenticatedActivity(),
         viewModel.loadActiveEntry(activeEntryId)
     }
 
+    override val currentCpm: Float?
+        get() = activeDash.activeCpm
+
     /**
      * Keeps track of the current dash and current pause state.
      *
@@ -890,7 +896,7 @@ class MainActivity : AuthenticatedActivity(),
                 updateActiveDashState(
                     afterId = afterId,
                     beforeId = beforeId,
-                    showMini = currDestination == R.id.navigation_insights
+                    showMini = currDestination != R.id.navigation_income
                 )
 
             updateUi()
@@ -967,7 +973,6 @@ class MainActivity : AuthenticatedActivity(),
          *
          * @param afterId id of the new activeEntry
          * @param beforeId id of the previous activeEntry
-         * @param mTrackingEnabled whether tracking is enabled
          * @return the current [ADBState]
          */
         internal fun updateActiveDashState(
