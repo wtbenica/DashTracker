@@ -51,20 +51,23 @@ class MonthlyExpenseListViewModel : ViewModel() {
 
     internal val monthlies: Flow<List<MonthlyExpenses>> =
         combine(allExpenses, allEntries) { expenses: List<FullExpense>, entries: List<DashEntry> ->
-            val s: MutableMap<LocalDate, MonthlyExpenses> =
-                expenses.fold(mutableMapOf<LocalDate, MonthlyExpenses>()) { acc, fullExpense ->
+            // Collect all expenses
+            val monthlyMap: MutableMap<LocalDate, MonthlyExpenses> =
+                expenses.fold(mutableMapOf()) { acc, fullExpense ->
                     val firstOfMonth = fullExpense.expense.date.withDayOfMonth(1)
                     acc.getOrPut(firstOfMonth) { MonthlyExpenses(firstOfMonth) }
                         .addExpense(fullExpense.purpose, fullExpense.expense.amount ?: 0f)
                     acc
                 }
 
+            // collect mileage from monthly expenses
             entries.forEach {
                 val firstOfMonth = it.date.withDayOfMonth(1)
-                val monthlyExpenses = s.getOrPut(firstOfMonth) { MonthlyExpenses(firstOfMonth) }
+                val monthlyExpenses = monthlyMap.getOrPut(firstOfMonth) { MonthlyExpenses(firstOfMonth) }
                 monthlyExpenses.addEntry(it)
             }
 
-            s.values.fix()
+            // get average between beginnings and ends of months;
+            monthlyMap.values.fix()
         }
 }

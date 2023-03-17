@@ -265,7 +265,7 @@ class MonthlyExpenses(val date: LocalDate) : ListItemType {
 
         endOdometer = entry.endOdometer?.let { endOdoIn ->
             endOdometer?.let { endOdo ->
-                if (endOdoIn < endOdo) {
+                if (endOdoIn > endOdo) {
                     endOdoIn
                 } else {
                     endOdo

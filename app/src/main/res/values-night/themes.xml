@@ -83,10 +83,8 @@
         <item name="colorActiveDashBarStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
-<!--        <item name="colorActiveDashTrackingIndicator">@color/tracking_status_fill</item>-->
-<!--        <item name="colorActiveDashTrackingIndicatorFill">@color/tracking_status</item>-->
-        <item name="colorActiveDashTrackingIndicator">?attr/colorSecondaryFaded</item>
-        <item name="colorActiveDashTrackingIndicatorFill">?attr/colorAccent</item>
+        <item name="colorActiveDashTrackingIndicator">@color/tracking_status_fill</item>
+        <item name="colorActiveDashTrackingIndicatorFill">@color/tracking_status_fill</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>

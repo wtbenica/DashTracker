@@ -85,7 +85,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/tracking_status_overlay"
+                    android:id="@+id/tracking_status_indicator"
                     android:layout_width="@dimen/margin_half"
                     android:layout_height="@dimen/margin_half"
                     android:layout_gravity="center_vertical"

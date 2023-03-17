@@ -51,12 +51,12 @@ class ActiveDashBar @JvmOverloads constructor(
 
         binding = ActivityMainActiveDashBarBinding.bind(view)
 
-        animator = ValueAnimator.ofFloat(0.4f, 1f).apply {
-            duration = 1000
+        animator = ValueAnimator.ofFloat(0.1f, 1f).apply {
+            duration = 400
             repeatMode = ValueAnimator.REVERSE
             repeatCount = -1
             addUpdateListener { animation ->
-                binding.trackingStatusOverlay.alpha = animation.animatedValue as Float
+                binding.trackingStatusIndicator.alpha = animation.animatedValue as Float
             }
         }
     }
@@ -148,7 +148,7 @@ class ActiveDashBar @JvmOverloads constructor(
 
     private fun stopTrackingIndicator() {
         binding.trackingStatusRow.visibility = GONE
-        binding.trackingStatusOverlay.alpha = 1f
+        binding.trackingStatusIndicator.alpha = 1f
 
         animator.pause()
     }
