@@ -68,7 +68,6 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
     visibility = VISIBLE
 
     val expandAnimation = object : Animation() {
-        var onCompleteCalled = false
 
         override fun willChangeBounds(): Boolean = true
 
@@ -77,11 +76,6 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
                 WRAP_CONTENT
             } else {
                 (targetHeight * interpolatedTime).toInt()
-            }
-
-            if (interpolatedTime >= 1f && !onCompleteCalled) {
-                onComplete?.invoke()
-                onCompleteCalled = true
             }
 
             requestLayout()
@@ -96,6 +90,8 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
             }
 
             override fun onAnimationEnd(animation: Animation?) {
+                onComplete?.invoke()
+
                 requestLayout()
                 invalidate()
             }
@@ -195,7 +191,6 @@ fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toW
 fun View.collapse(onComplete: (() -> Unit)? = null) {
     val initHeight = measuredHeight
     val animation = object : Animation() {
-        var onCompleteCalled = false
 
         override fun willChangeBounds(): Boolean = true
 
@@ -205,11 +200,6 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
                 0
             } else {
                 initHeight - (initHeight * interpolatedTime).toInt()
-            }
-
-            if (interpolatedTime >= 1f && !onCompleteCalled) {
-                onComplete?.invoke()
-                onCompleteCalled = true
             }
 
             requestLayout()
@@ -224,6 +214,8 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             }
 
             override fun onAnimationEnd(animation: Animation?) {
+                onComplete?.invoke()
+
                 requestLayout()
                 invalidate()
             }
