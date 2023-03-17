@@ -19,7 +19,6 @@ package com.wtb.dashTracker.extensions
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.MotionEvent
 import android.view.View
@@ -37,7 +36,6 @@ import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
@@ -72,14 +70,12 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
         override fun willChangeBounds(): Boolean = true
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            layoutParams.height = if (interpolatedTime >= 1f) {
-                WRAP_CONTENT
-            } else {
-                (targetHeight * interpolatedTime).toInt()
-            }
+            this@expand.apply {
+                layoutParams.height = (targetHeight * interpolatedTime).toInt()
 
-            requestLayout()
-            invalidate()
+                requestLayout()
+                invalidate()
+            }
         }
     }.apply {
         duration = (targetHeight / context.resources.displayMetrics.density).toLong()
@@ -90,10 +86,16 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
             }
 
             override fun onAnimationEnd(animation: Animation?) {
-                onComplete?.invoke()
+                this@expand.apply {
+                    clearAnimation()
 
-                requestLayout()
-                invalidate()
+                    layoutParams.height = WRAP_CONTENT
+
+                    this@expand.requestLayout()
+                    this@expand.invalidate()
+                }
+
+                onComplete?.invoke()
             }
 
             override fun onAnimationRepeat(animation: Animation?) {
@@ -191,19 +193,15 @@ fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toW
 fun View.collapse(onComplete: (() -> Unit)? = null) {
     val initHeight = measuredHeight
     val animation = object : Animation() {
-
         override fun willChangeBounds(): Boolean = true
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            layoutParams.height = if (interpolatedTime >= 1f) {
-                visibility = GONE
-                0
-            } else {
-                initHeight - (initHeight * interpolatedTime).toInt()
-            }
+            this@collapse.apply {
+                layoutParams.height = initHeight - (initHeight * interpolatedTime).toInt()
 
-            requestLayout()
-            invalidate()
+                requestLayout()
+                invalidate()
+            }
         }
     }.apply {
         duration = (initHeight / context.resources.displayMetrics.density).toLong()
@@ -214,10 +212,17 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             }
 
             override fun onAnimationEnd(animation: Animation?) {
-                onComplete?.invoke()
+                this@collapse.apply {
+                    clearAnimation()
 
-                requestLayout()
-                invalidate()
+                    visibility = GONE
+                    layoutParams.height = 0
+
+                    requestLayout()
+                    invalidate()
+                }
+
+                onComplete?.invoke()
             }
 
             override fun onAnimationRepeat(animation: Animation?) {
@@ -293,18 +298,13 @@ fun View.transitionBackgroundTo(@AttrRes to: Int) {
         is MaterialShapeDrawable -> (background as MaterialShapeDrawable?)?.fillColor?.defaultColor
         else -> null
     }
-    val colorFrom: Int = bgColor ?: Color.TRANSPARENT
     val colorTo = MaterialColors.getColor(this, to)
+    val colorFrom: Int = bgColor ?: colorTo
 
     val colorAnimation: ValueAnimator =
         ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
             duration = (initHeight / context.resources.displayMetrics.density).toLong()
         }
-
-    debugLog(
-        message = "duration: ${colorAnimation.duration} | from: $bgColor $colorFrom | to: $colorTo",
-        condition = colorFrom != colorTo
-    )
 
     colorAnimation.addUpdateListener {
         if (it.animatedValue is Int) {

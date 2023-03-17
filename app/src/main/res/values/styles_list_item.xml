@@ -79,11 +79,9 @@
 
     <style name="listItemDetailsPane">
         <item name="android:visibility">gone</item>
-<!--        <item name="android:paddingHorizontal">?attr/listItemThinBorder</item>-->
-<!--        <item name="android:paddingBottom">?attr/listItemThinBorder</item>-->
     </style>
 
-    <style name="DetailsTableCard">
+    <style name="DetailsTableCard" parent="DTCardViewStyle">
         <item name="android:layout_marginHorizontal">?attr/listItemThinBorder</item>
         <item name="android:layout_marginBottom">?attr/listItemThinBorder</item>
     </style>

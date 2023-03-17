@@ -29,7 +29,6 @@ import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
 import com.wtb.dashTracker.extensions.getStringOrElse
-import com.wtb.dashTracker.extensions.transitionBackgroundTo
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,16 +71,16 @@ class ActiveDashBar @JvmOverloads constructor(
      * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
      */
     fun onServiceStateUpdated(serviceState: ADBState, onComplete: (() -> Unit)? = null) {
-        when (serviceState) {
-            INACTIVE -> { // Always collapse
-                binding.root.revealIfTrue(shouldShow = false, doAnyways = true) {
-                    onComplete?.invoke()
+        binding.apply {
+            when (serviceState) {
+                INACTIVE -> { // Always collapse
+                    root.revealIfTrue(shouldShow = false, doAnyways = true) {
+                        onComplete?.invoke()
+                    }
+                    animator.pause()
                 }
-                animator.pause()
-            }
-            TRACKING_FULL -> { // Always show expanded details
-                binding.activeDashDetails.revealIfTrue(shouldShow = true, doAnyways = true) {
-                    binding.apply {
+                TRACKING_FULL -> { // Always show expanded details
+                    activeDashDetails.revealIfTrue(shouldShow = true, doAnyways = true) {
                         root.apply {
                             revealIfTrue(shouldShow = true, doAnyways = true) {
                                 callback?.revealAppBarLayout(shouldShow = true) {
@@ -98,12 +97,10 @@ class ActiveDashBar @JvmOverloads constructor(
                             it.updatePadding(left = hor, right = hor)
                         }
                     }
+                    startTrackingIndicator()
                 }
-                startTrackingIndicator()
-            }
-            TRACKING_COLLAPSED -> { // Show collapsed
-                binding.activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
-                    binding.apply {
+                TRACKING_COLLAPSED -> { // Show collapsed
+                    activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
                         root.apply {
                             revealIfTrue(shouldShow = true, doAnyways = true) {
                                 callback?.revealAppBarLayout(shouldShow = true) {
@@ -120,19 +117,18 @@ class ActiveDashBar @JvmOverloads constructor(
                         }
                     }
                 }
-            }
-            NOT_TRACKING -> { // Show collapsed and stop tracking indicator
-                binding.activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
-                    binding.root.apply {
-                        revealIfTrue(shouldShow = true, doAnyways = true) {
-                            callback?.revealAppBarLayout(shouldShow = true) {
-                                onComplete?.invoke()
-                            } ?: onComplete?.invoke()
+                TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
+                    activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
+                        root.apply {
+                            revealIfTrue(shouldShow = true, doAnyways = true) {
+                                callback?.revealAppBarLayout(shouldShow = true) {
+                                    onComplete?.invoke()
+                                } ?: onComplete?.invoke()
+                            }
                         }
-                        transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                     }
+                    stopTrackingIndicator()
                 }
-                stopTrackingIndicator()
             }
         }
     }
@@ -186,7 +182,7 @@ class ActiveDashBar @JvmOverloads constructor(
 
     companion object {
         enum class ADBState {
-            TRACKING_FULL, TRACKING_COLLAPSED, NOT_TRACKING, INACTIVE
+            TRACKING_FULL, TRACKING_COLLAPSED, TRACKING_DISABLED, INACTIVE
         }
     }
 }

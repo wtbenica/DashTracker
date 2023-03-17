@@ -310,15 +310,12 @@ class MainActivity : AuthenticatedActivity(),
                     runOnUiThread {
                         when (destination.id) {
                             R.id.navigation_income -> {
-                                binding.appBarLayout.transitionBackgroundTo(R.attr.colorAppBarBg)
                                 binding.fab.show()
                             }
                             R.id.navigation_expenses -> {
-                                binding.appBarLayout.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                                 binding.fab.show()
                             }
                             R.id.navigation_insights -> {
-                                binding.appBarLayout.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                                 binding.fab.hide()
                             }
                         }
@@ -944,17 +941,19 @@ class MainActivity : AuthenticatedActivity(),
                         }
                         toggleFabToPlay()
                     }
+                    ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
-                    ADBState.NOT_TRACKING,
                     ADBState.TRACKING_FULL -> {
                         binding.summaryBar.root.revealIfTrue(
                             shouldShow = currDestination == R.id.navigation_income,
                             doAnyways = true
                         ) {
-                            binding.appBarLayout.revealIfTrue(
-                                shouldShow = true,
-                                doAnyways = true
-                            ) {
+                            binding.appBarLayout.revealIfTrue(shouldShow = true, doAnyways = true) {
+                                if (currDestination == R.id.navigation_income) {
+                                    binding.adb.transitionBackgroundTo(R.attr.colorAppBarBg)
+                                } else {
+                                    binding.adb.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
+                                }
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
@@ -1010,7 +1009,7 @@ class MainActivity : AuthenticatedActivity(),
                         stopTracking()
                     }
 
-                    ADBState.NOT_TRACKING
+                    ADBState.TRACKING_DISABLED
                 }
             }
 

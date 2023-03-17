@@ -72,7 +72,6 @@
             android:id="@+id/list_item_details"
             style="@style/listItemDetailsPane"
             android:layout_width="match_parent"
-            android:background="@android:color/transparent"
             android:layout_height="wrap_content"
             tools:visibility="visible">
 

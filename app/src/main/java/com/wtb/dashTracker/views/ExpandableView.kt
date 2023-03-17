@@ -25,6 +25,7 @@ import android.widget.TableLayout
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import com.google.android.material.appbar.AppBarLayout
+import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.expand
 import com.wtb.dashTracker.extensions.expandTo
@@ -198,7 +199,7 @@ class ExpandableButton @JvmOverloads constructor(
 class ExpandableCardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = R.attr.cardViewStyle
 ) : CardView(context, attrs, defStyleAttr), ExpandableView {
     override val mIsVisible: Boolean
         get() = isVisible
