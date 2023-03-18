@@ -939,6 +939,7 @@ class MainActivity : AuthenticatedActivity(),
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
+
                         toggleFabToPlay()
                     }
                     ADBState.TRACKING_DISABLED,
@@ -957,6 +958,7 @@ class MainActivity : AuthenticatedActivity(),
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
+
                         toggleFabToStop()
                     }
                 }

@@ -62,53 +62,53 @@ private val View.targetHeight: Int
     }
 
 fun View.expand(onComplete: (() -> Unit)? = null) {
+    clearAnimation()
     layoutParams.height = max(1, layoutParams.height)
     visibility = VISIBLE
 
-    val expandAnimation = object : Animation() {
+    val expandAnimation =
+        object : Animation() {
+            override fun willChangeBounds(): Boolean = true
 
-        override fun willChangeBounds(): Boolean = true
-
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            this@expand.apply {
-                layoutParams.height = (targetHeight * interpolatedTime).toInt()
-
-                requestLayout()
-                invalidate()
-            }
-        }
-    }.apply {
-        duration = (targetHeight / context.resources.displayMetrics.density).toLong()
-
-        setAnimationListener(object : AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-                // Do nothing
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
                 this@expand.apply {
-                    clearAnimation()
+                    layoutParams.height = if (interpolatedTime < 1f) {
+                        (targetHeight * interpolatedTime).toInt()
+                    } else {
+                        onComplete?.invoke()
+                        WRAP_CONTENT
+                    }
 
-                    layoutParams.height = WRAP_CONTENT
+                    requestLayout()
+                }
+            }
+        }.apply {
+            duration = (targetHeight / context.resources.displayMetrics.density).toLong()
+            fillAfter = true
 
-                    this@expand.requestLayout()
-                    this@expand.invalidate()
+            setAnimationListener(object : AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+                    // Do nothing
                 }
 
+                override fun onAnimationEnd(animation: Animation?) {
+                    this@expand.apply {
+                        clearAnimation()
+                        requestLayout()
+                    }
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+                    // Do nothing
+                }
+
+            })
+
+            if (duration == 0L) {
+                layoutParams.height = WRAP_CONTENT
                 onComplete?.invoke()
             }
-
-            override fun onAnimationRepeat(animation: Animation?) {
-                // Do nothing
-            }
-
-        })
-
-        if (duration == 0L) {
-            visibility = VISIBLE
-            onComplete?.invoke()
         }
-    }
 
     startAnimation(expandAnimation)
 }
@@ -168,8 +168,8 @@ fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_P
                 } else {
                     (toWidth * interpolatedTime).toInt()
                 }
+
                 requestLayout()
-                invalidate()
             }
         }.apply {
             duration = (toHeight / context.resources.displayMetrics.density).toLong()
@@ -191,20 +191,28 @@ fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toW
 }
 
 fun View.collapse(onComplete: (() -> Unit)? = null) {
+    clearAnimation()
     val initHeight = measuredHeight
     val animation = object : Animation() {
         override fun willChangeBounds(): Boolean = true
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             this@collapse.apply {
-                layoutParams.height = initHeight - (initHeight * interpolatedTime).toInt()
+
+                layoutParams.height = if (interpolatedTime < 1f) {
+                    initHeight - (initHeight * interpolatedTime).toInt()
+                } else {
+                    visibility = GONE
+                    onComplete?.invoke()
+                    0
+                }
 
                 requestLayout()
-                invalidate()
             }
         }
     }.apply {
         duration = (initHeight / context.resources.displayMetrics.density).toLong()
+        fillAfter = true
 
         setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
@@ -214,15 +222,8 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             override fun onAnimationEnd(animation: Animation?) {
                 this@collapse.apply {
                     clearAnimation()
-
-                    visibility = GONE
-                    layoutParams.height = 0
-
                     requestLayout()
-                    invalidate()
                 }
-
-                onComplete?.invoke()
             }
 
             override fun onAnimationRepeat(animation: Animation?) {
@@ -232,6 +233,7 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
         })
 
         if (duration == 0L) {
+            layoutParams.height = 0
             visibility = GONE
             onComplete?.invoke()
         }
@@ -351,4 +353,3 @@ fun MaterialButton.rotateUp() {
 
     startAnimation(animation)
 }
-

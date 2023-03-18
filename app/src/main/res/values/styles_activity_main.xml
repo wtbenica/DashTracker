@@ -52,7 +52,6 @@
 
     <style name="SummaryBarItem.Value">
         <item name="android:textSize">?attr/textSizeSummaryBarValue</item>
-        <item name="android:paddingBottom">@dimen/margin_half</item>
     </style>
 
     <style name="WidgetTheme">

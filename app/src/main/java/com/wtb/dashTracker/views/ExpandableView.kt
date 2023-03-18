@@ -53,15 +53,15 @@ interface ExpandableView {
             isExpanding = true
             isCollapsing = false
             mExpand {
-                isExpanding = false
                 onComplete?.invoke()
+                isExpanding = false
             }
         } else if (!shouldShow && (mIsVisible || isExpanding)) {
             isCollapsing = true
             isExpanding = false
             mCollapse {
-                isCollapsing = false
                 onComplete?.invoke()
+                isCollapsing = false
             }
         } else if (doAnyways) {
             onComplete?.invoke()
