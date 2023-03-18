@@ -19,6 +19,7 @@ package com.wtb.dashTracker.extensions
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
@@ -27,12 +28,14 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewTreeObserver
 import android.view.animation.Animation
+import android.view.animation.Animation.AnimationListener
 import android.view.animation.Transformation
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.shape.MaterialShapeDrawable
 import java.lang.Integer.max
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
@@ -59,36 +62,55 @@ private val View.targetHeight: Int
     }
 
 fun View.expand(onComplete: (() -> Unit)? = null) {
+    clearAnimation()
     layoutParams.height = max(1, layoutParams.height)
     visibility = VISIBLE
 
-    val animation = object : Animation() {
-        override fun willChangeBounds(): Boolean = true
+    val expandAnimation =
+        object : Animation() {
+            override fun willChangeBounds(): Boolean = true
 
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            layoutParams.height = if (interpolatedTime >= 1f) {
-                WRAP_CONTENT
-            } else {
-                (targetHeight * interpolatedTime).toInt()
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+                this@expand.apply {
+                    layoutParams.height = if (interpolatedTime < 1f) {
+                        (targetHeight * interpolatedTime).toInt()
+                    } else {
+                        onComplete?.invoke()
+                        WRAP_CONTENT
+                    }
+
+                    requestLayout()
+                }
             }
+        }.apply {
+            duration = (targetHeight / context.resources.displayMetrics.density).toLong()
+            fillAfter = true
 
-            if (interpolatedTime >= 1f) {
+            setAnimationListener(object : AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+                    // Do nothing
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    this@expand.apply {
+                        clearAnimation()
+                        requestLayout()
+                    }
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+                    // Do nothing
+                }
+
+            })
+
+            if (duration == 0L) {
+                layoutParams.height = WRAP_CONTENT
                 onComplete?.invoke()
             }
-
-            requestLayout()
-            invalidate()
         }
-    }.apply {
-        duration = (targetHeight / context.resources.displayMetrics.density).toLong()
-        if (duration == 0L) {
-            visibility = VISIBLE
-            onComplete?.invoke()
-        }
-    }
 
-    clearAnimation()
-    startAnimation(animation)
+    startAnimation(expandAnimation)
 }
 
 fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_PARENT) {
@@ -146,14 +168,13 @@ fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_P
                 } else {
                     (toWidth * interpolatedTime).toInt()
                 }
+
                 requestLayout()
-                invalidate()
             }
         }.apply {
             duration = (toHeight / context.resources.displayMetrics.density).toLong()
         }
 
-        clearAnimation()
         startAnimation(animation)
     }
 }
@@ -170,37 +191,54 @@ fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toW
 }
 
 fun View.collapse(onComplete: (() -> Unit)? = null) {
+    clearAnimation()
     val initHeight = measuredHeight
     val animation = object : Animation() {
-        var onCompleteCalled = false
+        override fun willChangeBounds(): Boolean = true
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            layoutParams.height = if (interpolatedTime >= 1f) {
-                visibility = GONE
-                0
-            } else {
-                initHeight - (initHeight * interpolatedTime).toInt()
-            }
+            this@collapse.apply {
 
-            if (interpolatedTime >= 1f && !onCompleteCalled) {
-                onComplete?.invoke()
-                onCompleteCalled = true
-            }
+                layoutParams.height = if (interpolatedTime < 1f) {
+                    initHeight - (initHeight * interpolatedTime).toInt()
+                } else {
+                    visibility = GONE
+                    onComplete?.invoke()
+                    0
+                }
 
-            requestLayout()
-            invalidate()
+                requestLayout()
+            }
         }
-
-        override fun willChangeBounds(): Boolean = true
     }.apply {
         duration = (initHeight / context.resources.displayMetrics.density).toLong()
+        fillAfter = true
+
+        setAnimationListener(object : AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                // Do nothing
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                this@collapse.apply {
+                    clearAnimation()
+                    requestLayout()
+                }
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {
+                // Do nothing
+            }
+
+        })
+
         if (duration == 0L) {
+            layoutParams.height = 0
             visibility = GONE
             onComplete?.invoke()
         }
     }
 
-    clearAnimation()
     startAnimation(animation)
 }
 
@@ -254,6 +292,32 @@ fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
     colorAnimation.start()
 }
 
+fun View.transitionBackgroundTo(@AttrRes to: Int) {
+    val initHeight = measuredHeight
+
+    val bgColor = when (background) {
+        is ColorDrawable -> (background as ColorDrawable?)?.color
+        is MaterialShapeDrawable -> (background as MaterialShapeDrawable?)?.fillColor?.defaultColor
+        else -> null
+    }
+    val colorTo = MaterialColors.getColor(this, to)
+    val colorFrom: Int = bgColor ?: colorTo
+
+    val colorAnimation: ValueAnimator =
+        ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
+            duration = (initHeight / context.resources.displayMetrics.density).toLong()
+        }
+
+    colorAnimation.addUpdateListener {
+        if (it.animatedValue is Int) {
+            val color = it.animatedValue as Int
+            setBackgroundColor(color)
+        }
+    }
+
+    colorAnimation.start()
+}
+
 fun MaterialButton.rotateDown() {
     val initRotation = rotation
 
@@ -269,7 +333,6 @@ fun MaterialButton.rotateDown() {
         duration = 300L
     }
 
-    clearAnimation()
     startAnimation(animation)
 }
 
@@ -288,7 +351,5 @@ fun MaterialButton.rotateUp() {
         duration = 300L
     }
 
-    clearAnimation()
     startAnimation(animation)
 }
-

@@ -98,7 +98,7 @@
         <item name="textSizeBottomNavInactive">@dimen/text_size_sm</item>
 
         <!-- active dash -->
-        <item name="activeDashCornerRadius">@dimen/min_touch_target</item>
+        <item name="activeDashCornerRadius">?attr/listItemCornerRadius</item>
 
         <!-- list_item -->
         <item name="listItemCardStyle">@style/DTCardViewStyle.ListItem</item>
@@ -173,7 +173,7 @@
         <!-- activity_main.xml -->
         <item name="colorActionBar">?attr/colorPrimaryVariant</item>
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBar">?attr/colorTextSecondary</item>
+        <item name="colorAppBarBg">?attr/colorTextSecondary</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBarHighlight">?attr/colorSecondaryFaded</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
@@ -195,10 +195,12 @@
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- active_dash_bar -->
-        <item name="colorActiveDashBarStroke">?attr/colorActiveDashBarBg</item>
-        <item name="colorActiveDashBarBg">?attr/colorSecondary</item>
-        <item name="colorActiveDashBarDetailsStroke">?attr/colorActiveDashBarBg</item>
+        <item name="colorActiveDashBarStroke">?attr/colorSecondary</item>
+        <item name="colorActiveDashBarBg">?attr/colorSecondaryVariant</item>
+        <item name="colorActiveDashBarDetailsStroke">?attr/colorSecondary</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
+        <item name="colorActiveDashTrackingIndicator">@color/tracking_status_fill</item>
+        <item name="colorActiveDashTrackingIndicatorFill">@color/tracking_status_fill</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondary</item>

@@ -57,7 +57,7 @@
         <!-- activity_main.xml -->
         <item name="colorActionBar">?attr/colorPrimaryVariant</item>
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBar">?attr/colorTextSecondaryDisabled</item>
+        <item name="colorAppBarBg">?attr/colorTextSecondaryDisabled</item>
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBarHighlight">?attr/colorSecondaryVariant</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
@@ -83,6 +83,8 @@
         <item name="colorActiveDashBarStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
+        <item name="colorActiveDashTrackingIndicator">@color/tracking_status_fill</item>
+        <item name="colorActiveDashTrackingIndicatorFill">@color/tracking_status_fill</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>

@@ -48,7 +48,7 @@
     <!--    activity_main   -->
     <attr name="colorActionBar" format="reference" />
     <attr name="colorActionBarText" format="reference" />
-    <attr name="colorSummaryBar" format="reference" />
+    <attr name="colorAppBarBg" format="reference" />
     <attr name="colorSummaryBarItemText" format="reference" />
     <attr name="colorSummaryBarHighlight" format="reference" />
     <attr name="colorSummaryBarHighlightStroke" format="reference" />
@@ -80,6 +80,8 @@
     <attr name="colorActiveDashBarDetailsStroke" format="reference" />
     <attr name="colorActiveDashBarDetailsBg" format="reference" />
     <attr name="activeDashCornerRadius" format="reference" />
+    <attr name="colorActiveDashTrackingIndicator" format="reference|color" />
+    <attr name="colorActiveDashTrackingIndicatorFill" format="reference|color" />
 
     <!-- fragment_income -->
     <attr name="colorTabIndicator" format="reference" />

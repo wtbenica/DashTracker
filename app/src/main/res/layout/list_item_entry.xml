@@ -25,10 +25,10 @@
         android:id="@+id/list_item_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_list_item"
+        android:background="?attr/colorListItem"
         android:clipChildren="false"
         android:orientation="vertical"
-        tools:background="@drawable/bg_list_item_expanded">
+        app:background="?attr/colorListItemExpanded">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/list_item_header"

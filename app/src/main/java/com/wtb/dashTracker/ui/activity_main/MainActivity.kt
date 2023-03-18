@@ -45,6 +45,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -100,6 +101,7 @@ import com.wtb.dashTracker.util.REQUIRED_PERMISSIONS
 import com.wtb.dashTracker.util.hasPermissions
 import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.dashTracker.views.ActiveDashBar.ActiveDashBarCallback
+import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -308,52 +310,23 @@ class MainActivity : AuthenticatedActivity(),
                     runOnUiThread {
                         when (destination.id) {
                             R.id.navigation_income -> {
-                                binding.summaryBar.root.revealIfTrue(
-                                    shouldShow = true,
-                                    doAnyways = true,
-                                ) {
-                                    binding.appBarLayout.revealIfTrue(
-                                        shouldShow = true,
-                                        doAnyways = true,
-                                    ) {
-                                        updateToolbarsAndFab()
-                                    }
-                                }
                                 binding.fab.show()
                             }
                             R.id.navigation_expenses -> {
-                                binding.summaryBar.root.revealIfTrue(
-                                    shouldShow = !isTracking,
-                                    doAnyways = true
-                                ) {
-                                    binding.adb.revealIfTrue(
-                                        shouldShow = isTracking,
-                                        doAnyways = true
-                                    ) {
-                                        binding.appBarLayout.revealIfTrue(
-                                            shouldShow = isTracking,
-                                            doAnyways = true
-                                        ) {
-                                            updateToolbarsAndFab()
-                                        }
-                                    }
-                                }
                                 binding.fab.show()
                             }
                             R.id.navigation_insights -> {
-                                binding.summaryBar.root.revealIfTrue(
-                                    shouldShow = true,
-                                    doAnyways = true
-                                ) {
-                                    binding.appBarLayout.revealIfTrue(
-                                        shouldShow = false,
-                                        doAnyways = true
-                                    ) {
-                                        updateToolbarsAndFab()
-                                    }
-                                }
                                 binding.fab.hide()
                             }
+                        }
+
+                        activeDash.apply {
+                            serviceState = updateActiveDashState(
+                                afterId = activeDash.activeEntry?.entry?.entryId,
+                                beforeId = activeDash.activeEntry?.entry?.entryId,
+                                showMini = destination.id != R.id.navigation_income
+                            )
+                            updateUi()
                         }
                     }
                 }
@@ -463,7 +436,6 @@ class MainActivity : AuthenticatedActivity(),
             }
 
             binding = ActivityMainBinding.inflate(layoutInflater).apply {
-
                 fab.setOnClickListener {
                     if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
                         showStartDashDialog()
@@ -735,21 +707,28 @@ class MainActivity : AuthenticatedActivity(),
             bottomAppBar.performShow(true)
             fab.show()
         }
-        updateToolbarsAndFab()
+        updateToolbarAndBottomPadding()
     }
 
-    private fun updateToolbarsAndFab() {
-        val lps =
-            binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
-        val appBarBehavior = lps.behavior as AppBarLayout.Behavior?
+    private fun updateToolbarAndBottomPadding(slideAppBarDown: Boolean = true) {
+        if (slideAppBarDown) {
+            val lps =
+                binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
+            val appBarBehavior = lps.behavior as AppBarLayout.Behavior?
 
-        appBarBehavior?.topAndBottomOffset = 0
+            appBarBehavior?.topAndBottomOffset = 0
+        }
 
         binding.apply {
-            listOf(appBarLayout, bottomAppBar, fab).forEach<View> {
-                it.invalidate()
-                it.requestLayout()
+            val newPadding = if (currDestination == R.id.navigation_insights) {
+                bottomAppBar.height + resources.getDimension(R.dimen.margin_half).toInt()
+            } else {
+                0
             }
+
+            navHostFragmentActivityMain.updatePadding(
+                bottom = newPadding
+            )
         }
     }
 
@@ -805,6 +784,9 @@ class MainActivity : AuthenticatedActivity(),
 
         viewModel.loadActiveEntry(activeEntryId)
     }
+
+    override val currentCpm: Float?
+        get() = activeDash.activeCpm
 
     /**
      * Keeps track of the current dash and current pause state.
@@ -901,18 +883,18 @@ class MainActivity : AuthenticatedActivity(),
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
-        internal var serviceState: ServiceState = STOPPED
+        internal var serviceState: ADBState = ADBState.INACTIVE
 
         private fun onNewActiveEntry(before: FullEntry?, after: FullEntry?) {
             val beforeId = before?.entry?.entryId
             val afterId = after?.entry?.entryId
 
-            val mTrackingEnabled = trackingEnabled
-
             serviceState =
-                updateServiceState(afterId, beforeId, mTrackingEnabled)
-
-            trackingEnabledPrevious = mTrackingEnabled
+                updateActiveDashState(
+                    afterId = afterId,
+                    beforeId = beforeId,
+                    showMini = currDestination != R.id.navigation_income
+                )
 
             updateUi()
         }
@@ -920,88 +902,122 @@ class MainActivity : AuthenticatedActivity(),
         /**
          * Animate fab icon and adb visibility depending on [serviceState].
          */
-        private fun updateUi() {
-            fun toggleFabToPlay() {
-                binding.fab.apply {
-                    if (tag == R.drawable.anim_play_to_stop) {
-                        toggleButtonAnimatedVectorDrawable(
-                            initialDrawable = R.drawable.anim_stop_to_play,
-                            otherDrawable = R.drawable.anim_play_to_stop
-                        )
+        internal fun updateUi() {
+            fun updateFabIconAndSummaryBarVisibility() {
+                fun toggleFabToPlay() {
+                    binding.fab.apply {
+                        if (tag == R.drawable.anim_play_to_stop) {
+                            toggleButtonAnimatedVectorDrawable(
+                                initialDrawable = R.drawable.anim_stop_to_play,
+                                otherDrawable = R.drawable.anim_play_to_stop
+                            )
+                        }
                     }
                 }
-            }
 
-            fun toggleFabToStop() {
-                binding.fab.apply {
-                    if (tag == null || tag == R.drawable.anim_stop_to_play) {
-                        toggleButtonAnimatedVectorDrawable(
-                            initialDrawable = R.drawable.anim_play_to_stop,
-                            otherDrawable = R.drawable.anim_stop_to_play
-                        )
+                fun toggleFabToStop() {
+                    binding.fab.apply {
+                        if (tag == null || tag == R.drawable.anim_stop_to_play) {
+                            toggleButtonAnimatedVectorDrawable(
+                                initialDrawable = R.drawable.anim_play_to_stop,
+                                otherDrawable = R.drawable.anim_stop_to_play
+                            )
+                        }
                     }
                 }
-            }
 
-            fun mOnComplete() {
                 when (serviceState) {
-                    STOPPED -> {
+                    ADBState.INACTIVE -> {
+                        binding.summaryBar.root.revealIfTrue(
+                            shouldShow = true,
+                            doAnyways = true
+                        ) {
+                            binding.appBarLayout.revealIfTrue(
+                                shouldShow = currDestination == R.id.navigation_income || isTracking,
+                                doAnyways = true
+                            ) {
+                                updateToolbarAndBottomPadding(slideAppBarDown = false)
+                            }
+                        }
+
                         toggleFabToPlay()
                     }
-                    TRACKING_ACTIVE, TRACKING_INACTIVE, PAUSED -> {
+                    ADBState.TRACKING_DISABLED,
+                    ADBState.TRACKING_COLLAPSED,
+                    ADBState.TRACKING_FULL -> {
                         binding.summaryBar.root.revealIfTrue(
                             shouldShow = currDestination == R.id.navigation_income,
                             doAnyways = true
                         ) {
-                            binding.appBarLayout.revealIfTrue(
-                                shouldShow = currDestination != R.id.navigation_insights,
-                                doAnyways = true
-                            )
+                            binding.appBarLayout.revealIfTrue(shouldShow = true, doAnyways = true) {
+                                if (currDestination == R.id.navigation_income) {
+                                    binding.adb.transitionBackgroundTo(R.attr.colorAppBarBg)
+                                } else {
+                                    binding.adb.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
+                                }
+                                updateToolbarAndBottomPadding(slideAppBarDown = false)
+                            }
                         }
+
                         toggleFabToStop()
                     }
                 }
-
-                binding.appBarLayout.apply {
-                    invalidate()
-                    requestLayout()
-                }
-
             }
 
-            binding.adb.updateVisibilities(serviceState) { mOnComplete() }
+            binding.adb.onServiceStateUpdated(serviceState) {
+                updateFabIconAndSummaryBarVisibility()
+            }
         }
 
-        private fun updateServiceState(
+        /**
+         * Stops or starts tracking based on incoming activeEntry
+         *
+         * @param afterId id of the new activeEntry
+         * @param beforeId id of the previous activeEntry
+         * @return the current [ADBState]
+         */
+        internal fun updateActiveDashState(
             afterId: Long?,
             beforeId: Long?,
-            mTrackingEnabled: Boolean
-        ): ServiceState = if (afterId == null) { // stopping or stopped
-            if (beforeId != null) {
-                stopDash(beforeId)
-            }
+            showMini: Boolean
+        ): ADBState {
+            val mTrackingEnabled = trackingEnabled
 
-            STOPPED
-        } else { // starting or continuing
-            if (beforeId == null && !locationServiceBound) {
-                startTracking()
-            }
-
-            if (mTrackingEnabled) {
-                if (!trackingEnabledPrevious) {
-                    // tracking has been enabled
-                    resumeOrStartNewTrip()
+            val res = if (afterId == null) { // stopping or stopped
+                if (beforeId != null) {
+                    stopDash(beforeId)
                 }
 
-                TRACKING_ACTIVE
-            } else {
-                if (locationServiceBound || trackingEnabledPrevious) {
-                    // either location service hasn't been stopped or tracking was disabled
-                    stopTracking()
+                ADBState.INACTIVE
+            } else { // starting or continuing
+                if (beforeId == null && !locationServiceBound) {
+                    startTracking()
                 }
 
-                TRACKING_INACTIVE
+                if (mTrackingEnabled) {
+                    if (!trackingEnabledPrevious) {
+                        // tracking has been enabled
+                        resumeOrStartNewTrip()
+                    }
+
+                    if (showMini) {
+                        ADBState.TRACKING_COLLAPSED
+                    } else {
+                        ADBState.TRACKING_FULL
+                    }
+                } else {
+                    if (locationServiceBound || trackingEnabledPrevious) {
+                        // either location service hasn't been stopped or tracking was disabled
+                        stopTracking()
+                    }
+
+                    ADBState.TRACKING_DISABLED
+                }
             }
+
+            trackingEnabledPrevious = mTrackingEnabled
+
+            return res
         }
 
         // Location Service
@@ -1282,7 +1298,7 @@ class MainActivity : AuthenticatedActivity(),
         shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
     ) {
         binding.appBarLayout.revealIfTrue(
-            shouldShow = shouldShow && currDestination != R.id.navigation_insights,
+            shouldShow = shouldShow,
             doAnyways = doAnyways
         ) {
             onComplete?.invoke()

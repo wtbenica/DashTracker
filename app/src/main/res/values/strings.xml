@@ -100,12 +100,12 @@
 
     <!-- String Formats -->
     <string name="currency_fmt">$%.2f</string>
-    <string name="cpm_unit">$%.3f</string>
+    <string name="cpm_unit">$%.2f</string>
     <string name="gas_price_edit">%.3f</string>
     <string name="gas_price_display">$%.3f</string>
     <string name="blank_currency">$  -  </string>
     <string name="odometer_range" formatted="true">%1$.0f - %2$.0f</string>
-    <string name="odometer_range_int" formatted="true">%d - %d</string>
+    <string name="odometer_range_int" formatted="true">%1$d - %2$d</string>
     <string name="time_range" formatted="true">%1$s - %2$s</string>
     <string name="format_hours">%.2fh</string>
     <string name="float_fmt">%.2f</string>
@@ -328,4 +328,6 @@
     <string name="lbl_work_miles">Work Miles</string>
     <string name="lbl_total_miles">Total Miles</string>
     <string name="frag_title_monthly_list">Monthly</string>
+    <string name="lbl_tracking_active">Tracking Active</string>
+    <string name="header_cpm">Est. Cost Per Mile</string>
 </resources>

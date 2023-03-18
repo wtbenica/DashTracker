@@ -65,15 +65,15 @@ class EntryDialog : BaseEntryDialog() {
 
                     updateTotalHours()
 
-                    entry.startOdometer.let { so ->
-                        fragEntryStartMileage.setText(
-                            getStringOrElse(R.string.odometer_fmt, "", so)
-                        )
-                    }
-
                     entry.endOdometer.let { eo ->
                         fragEntryEndMileage.setText(
                             getStringOrElse(R.string.odometer_fmt, "", eo)
+                        )
+                    }
+
+                    entry.startOdometer.let { so ->
+                        fragEntryStartMileage.setText(
+                            getStringOrElse(R.string.odometer_fmt, "", so)
                         )
                     }
 
