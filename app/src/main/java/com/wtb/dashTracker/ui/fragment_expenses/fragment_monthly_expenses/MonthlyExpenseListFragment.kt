@@ -52,7 +52,6 @@ import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
-import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.MonthlyExpenseListViewModel
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -249,7 +248,7 @@ class MonthlyExpenses(val date: LocalDate) : ListItemType {
 
     fun addExpense(purpose: ExpensePurpose, amount: Float) {
         val current = _expenses.getOrDefault(purpose, 0f)
-        _expenses.put(purpose, current + amount)
+        _expenses[purpose] = current + amount
     }
 
     fun addEntry(entry: DashEntry) {
@@ -281,7 +280,7 @@ class MonthlyExpenses(val date: LocalDate) : ListItemType {
             acc + v
         } ?: 0f
 
-    fun getAmount(purpose: ExpensePurpose) = expenses.getOrDefault(purpose, 0f)
+    fun getAmount(purpose: ExpensePurpose): Float = expenses.getOrDefault(purpose, 0f)
 
     fun adjustEndStartOdometers(other: MonthlyExpenses?) {
         if (other != null && this.date.isPreviousMonth(other.date)) {
