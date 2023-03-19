@@ -31,6 +31,7 @@ class DTFloatingActionButton @JvmOverloads constructor(
 
     var currentState: FabState = FabState.DASH_INACTIVE
     fun updateIcon(currFragId: Int, isTracking: Boolean) {
+        var playAnimation = true
         currentState = when {
             currFragId == R.id.navigation_expenses -> {
                 when (currentState) {
@@ -41,7 +42,8 @@ class DTFloatingActionButton @JvmOverloads constructor(
                         setImageResource(R.drawable.anim_stop_to_plus)
                     }
                     FabState.EXPENSE_FRAG -> {
-                        // Do nothing
+                        setImageResource(R.drawable.anim_plus_to_play)
+                        playAnimation = false
                     }
                 }
 
@@ -56,7 +58,8 @@ class DTFloatingActionButton @JvmOverloads constructor(
                         setImageResource(R.drawable.anim_play_to_stop)
                     }
                     FabState.DASH_ACTIVE -> {
-                        // Do nothing
+                        setImageResource(R.drawable.anim_stop_to_play)
+                        playAnimation = false
                     }
                 }
 
@@ -71,7 +74,8 @@ class DTFloatingActionButton @JvmOverloads constructor(
                         setImageResource(R.drawable.anim_plus_to_play)
                     }
                     FabState.DASH_INACTIVE -> {
-                        // Do nothing
+                        setImageResource(R.drawable.anim_play_to_stop)
+                        playAnimation = false
                     }
                 }
 
@@ -79,9 +83,11 @@ class DTFloatingActionButton @JvmOverloads constructor(
             }
         }
 
-        when (val d = drawable) {
-            is AnimatedVectorDrawableCompat -> d.start()
-            is AnimatedVectorDrawable -> d.start()
+        if (playAnimation) {
+            when (val d = drawable) {
+                is AnimatedVectorDrawableCompat -> d.start()
+                is AnimatedVectorDrawable -> d.start()
+            }
         }
     }
 

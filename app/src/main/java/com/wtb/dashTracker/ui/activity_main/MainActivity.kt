@@ -327,6 +327,7 @@ class MainActivity : AuthenticatedActivity(),
                                 beforeId = activeDash.activeEntry?.entry?.entryId,
                                 showMini = destination.id != R.id.navigation_income
                             )
+
                             updateUi()
                         }
                     }
@@ -920,51 +921,7 @@ class MainActivity : AuthenticatedActivity(),
          * Animate fab icon and adb visibility depending on [serviceState].
          */
         internal fun updateUi() {
-            fun updateFabIconAndSummaryBarVisibility() {
-                fun toggleFabPlusToPlay() {
-                    binding.fab.apply {
-                        if (tag == R.drawable.anim_play_to_plus) {
-                            toggleButtonAnimatedVectorDrawable(
-                                initialDrawable = R.drawable.anim_plus_to_play,
-                                otherDrawable = R.drawable.anim_play_to_plus
-                            )
-                        }
-                    }
-                }
-
-                fun toggleFabPlayToPlus() {
-                    binding.fab.apply {
-                        if (tag == R.drawable.anim_plus_to_play) {
-                            toggleButtonAnimatedVectorDrawable(
-                                initialDrawable = R.drawable.anim_play_to_plus,
-                                otherDrawable = R.drawable.anim_plus_to_play
-                            )
-                        }
-                    }
-                }
-
-                fun toggleFabToPlay() {
-                    binding.fab.apply {
-                        if (tag == R.drawable.anim_play_to_stop) {
-                            toggleButtonAnimatedVectorDrawable(
-                                initialDrawable = R.drawable.anim_stop_to_play,
-                                otherDrawable = R.drawable.anim_play_to_stop
-                            )
-                        }
-                    }
-                }
-
-                fun toggleFabToStop() {
-                    binding.fab.apply {
-                        if (tag == null || tag == R.drawable.anim_stop_to_play) {
-                            toggleButtonAnimatedVectorDrawable(
-                                initialDrawable = R.drawable.anim_play_to_stop,
-                                otherDrawable = R.drawable.anim_stop_to_play
-                            )
-                        }
-                    }
-                }
-
+            fun updateSummaryBarVisibility() {
                 when (serviceState) {
                     ADBState.INACTIVE -> {
                         binding.summaryBar.root.revealIfTrue(
@@ -978,7 +935,6 @@ class MainActivity : AuthenticatedActivity(),
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
-                        //                        toggleFabToPlay()
                     }
                     ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
@@ -993,21 +949,21 @@ class MainActivity : AuthenticatedActivity(),
                                 } else {
                                     binding.adb.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                                 }
+
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
-                        //                        toggleFabToStop()
                     }
                 }
+            }
+
+            binding.adb.onServiceStateUpdated(serviceState) {
+                updateSummaryBarVisibility()
 
                 binding.fab.updateIcon(
                     currFragId = currDestination,
                     isTracking = serviceState != ADBState.INACTIVE
                 )
-            }
-
-            binding.adb.onServiceStateUpdated(serviceState) {
-                updateFabIconAndSummaryBarVisibility()
             }
         }
 

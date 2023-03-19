@@ -28,7 +28,7 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/chartsTabs"
-        style="@style/FragIncomeTabLayout"
+        style="@style/DTTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:tabMode="scrollable">

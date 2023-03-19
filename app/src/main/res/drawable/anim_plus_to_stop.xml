@@ -11,7 +11,7 @@
             <path
                 android:name="path_1"
                 android:pathData="M 6 11 C 5.45 11 5 11.45 5 12 C 5 12.55 5.45 13 6 13 C 7.667 13 9.333 13 11 13 C 11 14.667 11 16.333 11 18 C 11 18.55 11.45 19 12 19 C 12.55 19 13 18.55 13 18 L 13 13 L 18 13 L 18 13 C 18.55 13 19 12.55 19 12 C 19 11.45 18.55 11 18 11 L 13 11 L 13 6 C 13 5.45 12.55 5 12 5 C 11.45 5 11 5.45 11 6 C 11 7.667 11 9.333 11 11 L 6 11"
-                android:fillColor="#000000"/>
+                android:fillColor="#FFFFFF"/>
         </vector>
     </aapt:attr>
     <target android:name="path_1">
