@@ -102,6 +102,7 @@ import com.wtb.dashTracker.util.hasPermissions
 import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.dashTracker.views.ActiveDashBar.ActiveDashBarCallback
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState
+import com.wtb.dashTracker.views.DTFloatingActionButton
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -437,11 +438,26 @@ class MainActivity : AuthenticatedActivity(),
 
             binding = ActivityMainBinding.inflate(layoutInflater).apply {
                 fab.setOnClickListener {
-                    if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
-                        showStartDashDialog()
-                    } else {
-                        viewModel.loadActiveEntry(null)
+                    when (fab.currentState) {
+                        DTFloatingActionButton.Companion.FabState.DASH_INACTIVE -> {
+                            showStartDashDialog()
+                        }
+                        DTFloatingActionButton.Companion.FabState.DASH_ACTIVE -> {
+                            viewModel.loadActiveEntry(id = null)
+                        }
+                        DTFloatingActionButton.Companion.FabState.EXPENSE_FRAG -> {
+                            CoroutineScope(Dispatchers.Default).launch {
+                                val id = viewModel.upsertAsync(Expense(isNew = true))
+                                ExpenseDialog.newInstance(id)
+                                    .show(supportFragmentManager, "new_expense_dialog")
+                            }
+                        }
                     }
+//                    if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
+//                        showStartDashDialog()
+//                    } else {
+//                        viewModel.loadActiveEntry(null)
+//                    }
                 }
 
                 adb.initialize(this@MainActivity)
@@ -899,11 +915,34 @@ class MainActivity : AuthenticatedActivity(),
             updateUi()
         }
 
+
         /**
          * Animate fab icon and adb visibility depending on [serviceState].
          */
         internal fun updateUi() {
             fun updateFabIconAndSummaryBarVisibility() {
+                fun toggleFabPlusToPlay() {
+                    binding.fab.apply {
+                        if (tag == R.drawable.anim_play_to_plus) {
+                            toggleButtonAnimatedVectorDrawable(
+                                initialDrawable = R.drawable.anim_plus_to_play,
+                                otherDrawable = R.drawable.anim_play_to_plus
+                            )
+                        }
+                    }
+                }
+
+                fun toggleFabPlayToPlus() {
+                    binding.fab.apply {
+                        if (tag == R.drawable.anim_plus_to_play) {
+                            toggleButtonAnimatedVectorDrawable(
+                                initialDrawable = R.drawable.anim_play_to_plus,
+                                otherDrawable = R.drawable.anim_plus_to_play
+                            )
+                        }
+                    }
+                }
+
                 fun toggleFabToPlay() {
                     binding.fab.apply {
                         if (tag == R.drawable.anim_play_to_stop) {
@@ -939,8 +978,7 @@ class MainActivity : AuthenticatedActivity(),
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
-
-                        toggleFabToPlay()
+                        //                        toggleFabToPlay()
                     }
                     ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
@@ -958,10 +996,14 @@ class MainActivity : AuthenticatedActivity(),
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
-
-                        toggleFabToStop()
+                        //                        toggleFabToStop()
                     }
                 }
+
+                binding.fab.updateIcon(
+                    currFragId = currDestination,
+                    isTracking = serviceState != ADBState.INACTIVE
+                )
             }
 
             binding.adb.onServiceStateUpdated(serviceState) {
@@ -1315,3 +1357,4 @@ interface ScrollableFragment {
  * serve a purpose
  */
 interface DeductionCallback
+
