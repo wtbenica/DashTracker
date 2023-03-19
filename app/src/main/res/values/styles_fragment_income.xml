@@ -16,7 +16,7 @@
 
 <resources>
 
-    <style name="FragIncomeTabLayout" parent="Widget.Material3.TabLayout">
+    <style name="DTTabLayout" parent="Widget.Material3.TabLayout">
         <item name="tabIndicatorColor">?attr/colorTabIndicator</item>
         <item name="tabTextColor">?attr/colorTabText</item>
         <item name="tabIndicatorFullWidth">true</item>

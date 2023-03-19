@@ -121,7 +121,7 @@
                     android:id="@+id/frag_adjust_btn_dismiss"
                     style="@style/DialogImageButton"
                     android:contentDescription="@string/content_desc_reset"
-                    android:src="@drawable/round_close_24" />
+                    android:src="@drawable/ic_close" />
 
                 <ImageButton
                     android:id="@+id/frag_adjust_btn_cancel"

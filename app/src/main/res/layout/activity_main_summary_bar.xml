@@ -23,12 +23,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:columnCount="5"
-    android:paddingHorizontal="@dimen/margin_default"
+    android:paddingHorizontal="@dimen/margin_half"
     android:rowCount="7">
 
     <androidx.legacy.widget.Space
         android:layout_width="0dp"
-        android:layout_height="@dimen/margin_default"
+        android:layout_height="@dimen/margin_half"
         android:layout_row="0"
         android:layout_column="0"
         android:layout_columnWeight="1" />
@@ -47,8 +47,8 @@
         android:layout_rowSpan="5"
         android:layout_rowWeight="1"
         android:layout_column="2"
-        android:layout_marginStart="@dimen/margin_default"
-        android:layout_marginEnd="@dimen/margin_default"
+        android:layout_marginStart="@dimen/margin_half"
+        android:layout_marginEnd="@dimen/margin_half"
         android:background="?attr/colorActiveDashBarBg" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -81,7 +81,7 @@
         android:layout_row="3"
         android:layout_column="0"
         android:layout_columnWeight="1"
-        android:layout_marginStart="@dimen/margin_default"
+        android:layout_marginStart="@dimen/margin_half"
         android:text="@string/lbl_hourly" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -92,7 +92,7 @@
         android:layout_row="3"
         android:layout_column="1"
         android:layout_columnWeight="1"
-        android:layout_marginEnd="@dimen/margin_default"
+        android:layout_marginEnd="@dimen/margin_half"
         android:text="@string/lbl_total_earned" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -103,7 +103,7 @@
         android:layout_row="3"
         android:layout_column="3"
         android:layout_columnWeight="1"
-        android:layout_marginStart="@dimen/margin_default"
+        android:layout_marginStart="@dimen/margin_half"
         android:text="@string/lbl_hourly" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -114,7 +114,7 @@
         android:layout_row="3"
         android:layout_column="4"
         android:layout_columnWeight="1"
-        android:layout_marginEnd="@dimen/margin_default"
+        android:layout_marginEnd="@dimen/margin_half"
         android:text="@string/lbl_total_earned" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -125,7 +125,7 @@
         android:layout_row="4"
         android:layout_column="0"
         android:layout_columnWeight="1"
-        android:layout_marginStart="@dimen/margin_default"
+        android:layout_marginStart="@dimen/margin_half"
         tools:text="$18.25" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -136,7 +136,7 @@
         android:layout_row="4"
         android:layout_column="1"
         android:layout_columnWeight="1"
-        android:layout_marginEnd="@dimen/margin_default"
+        android:layout_marginEnd="@dimen/margin_half"
         tools:text="$356.25" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -147,7 +147,7 @@
         android:layout_row="4"
         android:layout_column="3"
         android:layout_columnWeight="1"
-        android:layout_marginStart="@dimen/margin_default"
+        android:layout_marginStart="@dimen/margin_half"
         tools:text="$21.26" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -158,7 +158,7 @@
         android:layout_row="4"
         android:layout_column="4"
         android:layout_columnWeight="1"
-        android:layout_marginEnd="@dimen/margin_default"
+        android:layout_marginEnd="@dimen/margin_half"
         tools:text="$451.11" />
 
     <androidx.legacy.widget.Space
@@ -170,7 +170,7 @@
 
     <androidx.legacy.widget.Space
         android:layout_width="0dp"
-        android:layout_height="@dimen/margin_default"
+        android:layout_height="@dimen/margin_half"
         android:layout_row="6"
         android:layout_column="0"
         android:layout_columnWeight="1" />
