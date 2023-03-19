@@ -128,7 +128,7 @@
                     android:id="@+id/frag_start_dash_btn_start"
                     style="@style/DialogImageButton"
                     android:contentDescription="@string/content_desc_start"
-                    android:src="@drawable/ic_play_arrow" />
+                    android:src="@drawable/ic_play_arrow_rounded" />
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
