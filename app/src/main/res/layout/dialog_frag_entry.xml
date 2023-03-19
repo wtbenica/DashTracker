@@ -32,7 +32,8 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_entry_table_card"
                 style="@style/DialogContentCard"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:layout_width="0dp">
 
                 <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
