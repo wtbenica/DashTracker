@@ -208,8 +208,8 @@ class ByDayOfWeekBarChart(
                     pmHours = (a.pmHours ?: 0f) + (d.nightHours ?: 0f),
                     amEarned = (a.amEarned ?: 0f) + (d.dayEarned ?: 0f),
                     pmEarned = (a.pmEarned ?: 0f) + (d.nightEarned ?: 0f),
-                    amDels = (a.amDels ?: 0f) + (d.dayDels ?: 0f),
-                    pmDels = (a.pmDels ?: 0f) + (d.nightDels ?: 0f),
+                    amDels = (a.amDels ?: 0f) + (d.dayDeliveries ?: 0f),
+                    pmDels = (a.pmDels ?: 0f) + (d.nightDeliveries ?: 0f),
                     amNumShifts = (a.amNumShifts ?: 0) + (if ((d.dayHours
                             ?: 0f) > 0f
                     ) 1 else 0),

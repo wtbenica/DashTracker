@@ -120,7 +120,7 @@ data class DashEntry(
         }
 
     val totalEarned: Float?
-        get() = pay?.let { p -> p + (otherPay ?: 0f) + (cashTips ?: 0f) }
+        get() = (pay ?: 0f) + (otherPay ?: 0f) + (cashTips ?: 0f)
 
     val dayEarned: Float?
         get() = dayHours?.let { dh -> hourly?.let { h -> h * dh } }
@@ -128,14 +128,14 @@ data class DashEntry(
     val nightEarned: Float?
         get() = nightHours?.let { dh -> hourly?.let { h -> h * dh } }
 
-    val dayDels: Float?
+    val dayDeliveries: Float?
         get() = dayHours?.let { dh ->
             totalHours?.let { th ->
                 numDeliveries?.let { nd -> nd * (dh / (if (th != 0f) th else 1f)) }
             }
         }
 
-    val nightDels: Float?
+    val nightDeliveries: Float?
         get() = nightHours?.let { nh ->
             totalHours?.let { th ->
                 numDeliveries?.let { nd -> nd * (nh / (if (th != 0f) th else 1f)) }
@@ -249,7 +249,6 @@ data class DashEntry(
             END_TIME("End Time", DashEntry::endTime),
             START_ODO("Start Odometer", DashEntry::startOdometer),
             END_ODO("End Odometer", DashEntry::endOdometer),
-
             @Suppress("DEPRECATION")
             MILEAGE("Total Mileage", DashEntry::totalMileage),
             BASE_PAY("Base Pay", DashEntry::pay),
