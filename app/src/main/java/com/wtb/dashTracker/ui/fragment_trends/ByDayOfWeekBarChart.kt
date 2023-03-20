@@ -70,7 +70,10 @@ class ByDayOfWeekBarChart(
         binding.chartBarDailyHourly.apply { style() }
 
     private val dailyStats: List<DailyStats>
-        get() = collectDailyStats()
+        get() {
+            val res = collectDailyStats()
+            return res
+        }
 
     @IdRes
     private var selectedGraph: Int = binding.graphSelector.checkedButtonId
@@ -173,9 +176,9 @@ class ByDayOfWeekBarChart(
                 label = context.getString(R.string.ante_meridiem),
                 barColor = R.attr.colorDayHeader
             ) { ds: DailyStats ->
-                amLambda(ds)?.let { hourly ->
+                amLambda(ds).let { hourly ->
                     ds.day?.value?.toFloat()
-                        ?.let { day -> BarEntry(8 - day - amPmBarOffset, hourly) }
+                        ?.let { day -> BarEntry(8 - day - amPmBarOffset, hourly ?: 0f) }
                 }
             }
 
@@ -184,9 +187,9 @@ class ByDayOfWeekBarChart(
                 label = context.getString(R.string.post_meridiem),
                 barColor = R.attr.colorNightHeader
             ) { ds ->
-                pmLambda(ds)?.let { hourly ->
+                pmLambda(ds).let { hourly ->
                     ds.day?.value?.toFloat()
-                        ?.let { day -> BarEntry(8 - day + amPmBarOffset, hourly) }
+                        ?.let { day -> BarEntry(8 - day + amPmBarOffset, hourly ?: 0f) }
                 }
             }
 
