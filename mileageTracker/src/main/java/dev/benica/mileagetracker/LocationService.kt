@@ -175,8 +175,8 @@ class LocationService : Service() {
     fun stop(id: Long? = null) {
         id?.let { if (it != tripId.value) return }
 
-        userActivity.removeActivityUpdates()
         if (activityUpdateReceiverRegistered) {
+            userActivity.removeActivityUpdates()
             unregisterReceiver(activityUpdateReceiver)
             activityUpdateReceiverRegistered = false
         }
