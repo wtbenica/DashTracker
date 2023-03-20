@@ -59,7 +59,7 @@
                         android:id="@+id/no_button"
                         style="@style/ConfirmDialogButton.Default"
                         android:contentDescription="@string/content_desc_close_dialog_window"
-                        android:src="@drawable/round_close_24"
+                        android:src="@drawable/ic_close"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/divider_hor"

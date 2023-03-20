@@ -102,6 +102,7 @@ import com.wtb.dashTracker.util.hasPermissions
 import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.dashTracker.views.ActiveDashBar.ActiveDashBarCallback
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState
+import com.wtb.dashTracker.views.DTFloatingActionButton
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -326,6 +327,7 @@ class MainActivity : AuthenticatedActivity(),
                                 beforeId = activeDash.activeEntry?.entry?.entryId,
                                 showMini = destination.id != R.id.navigation_income
                             )
+
                             updateUi()
                         }
                     }
@@ -437,11 +439,26 @@ class MainActivity : AuthenticatedActivity(),
 
             binding = ActivityMainBinding.inflate(layoutInflater).apply {
                 fab.setOnClickListener {
-                    if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
-                        showStartDashDialog()
-                    } else {
-                        viewModel.loadActiveEntry(null)
+                    when (fab.currentState) {
+                        DTFloatingActionButton.Companion.FabState.DASH_INACTIVE -> {
+                            showStartDashDialog()
+                        }
+                        DTFloatingActionButton.Companion.FabState.DASH_ACTIVE -> {
+                            viewModel.loadActiveEntry(id = null)
+                        }
+                        DTFloatingActionButton.Companion.FabState.EXPENSE_FRAG -> {
+                            CoroutineScope(Dispatchers.Default).launch {
+                                val id = viewModel.upsertAsync(Expense(isNew = true))
+                                ExpenseDialog.newInstance(id)
+                                    .show(supportFragmentManager, "new_expense_dialog")
+                            }
+                        }
                     }
+//                    if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
+//                        showStartDashDialog()
+//                    } else {
+//                        viewModel.loadActiveEntry(null)
+//                    }
                 }
 
                 adb.initialize(this@MainActivity)
@@ -899,33 +916,12 @@ class MainActivity : AuthenticatedActivity(),
             updateUi()
         }
 
+
         /**
          * Animate fab icon and adb visibility depending on [serviceState].
          */
         internal fun updateUi() {
-            fun updateFabIconAndSummaryBarVisibility() {
-                fun toggleFabToPlay() {
-                    binding.fab.apply {
-                        if (tag == R.drawable.anim_play_to_stop) {
-                            toggleButtonAnimatedVectorDrawable(
-                                initialDrawable = R.drawable.anim_stop_to_play,
-                                otherDrawable = R.drawable.anim_play_to_stop
-                            )
-                        }
-                    }
-                }
-
-                fun toggleFabToStop() {
-                    binding.fab.apply {
-                        if (tag == null || tag == R.drawable.anim_stop_to_play) {
-                            toggleButtonAnimatedVectorDrawable(
-                                initialDrawable = R.drawable.anim_play_to_stop,
-                                otherDrawable = R.drawable.anim_stop_to_play
-                            )
-                        }
-                    }
-                }
-
+            fun updateSummaryBarVisibility() {
                 when (serviceState) {
                     ADBState.INACTIVE -> {
                         binding.summaryBar.root.revealIfTrue(
@@ -939,8 +935,6 @@ class MainActivity : AuthenticatedActivity(),
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
-
-                        toggleFabToPlay()
                     }
                     ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
@@ -955,17 +949,21 @@ class MainActivity : AuthenticatedActivity(),
                                 } else {
                                     binding.adb.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                                 }
+
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
-
-                        toggleFabToStop()
                     }
                 }
             }
 
             binding.adb.onServiceStateUpdated(serviceState) {
-                updateFabIconAndSummaryBarVisibility()
+                updateSummaryBarVisibility()
+
+                binding.fab.updateIcon(
+                    currFragId = currDestination,
+                    isTracking = serviceState != ADBState.INACTIVE
+                )
             }
         }
 
@@ -1315,3 +1313,4 @@ interface ScrollableFragment {
  * serve a purpose
  */
 interface DeductionCallback
+

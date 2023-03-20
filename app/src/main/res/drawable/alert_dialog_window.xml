@@ -15,16 +15,17 @@
   -->
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-<item>
-    <shape>
-        <solid android:color="?attr/colorDialog" />
-        <corners android:radius="?attr/defaultCornerRadius" />
-        <padding android:top="@dimen/margin_narrow"
-            android:bottom="@dimen/margin_narrow"
-            android:left="@dimen/margin_narrow"
-            android:right="@dimen/margin_narrow" />
-    </shape>
-</item>
+    <item>
+        <shape>
+            <solid android:color="?attr/colorDialog" />
+            <corners android:radius="?attr/defaultCornerRadius" />
+            <padding
+                android:bottom="@dimen/margin_narrow"
+                android:left="@dimen/margin_narrow"
+                android:right="@dimen/margin_narrow"
+                android:top="@dimen/margin_narrow" />
+        </shape>
+    </item>
 
     <item>
         <shape>

@@ -16,14 +16,14 @@
 
 <resources>
 
-    <style name="FragIncomeTabLayout" parent="Widget.Material3.TabLayout">
+    <style name="DTTabLayout" parent="Widget.Material3.TabLayout">
         <item name="tabIndicatorColor">?attr/colorTabIndicator</item>
         <item name="tabTextColor">?attr/colorTabText</item>
         <item name="tabIndicatorFullWidth">true</item>
         <item name="tabIndicatorHeight">@dimen/margin_narrow</item>
         <item name="android:backgroundTint">?attr/colorTabLayoutBg</item>
         <item name="tabRippleColor">?attr/colorUIBackground</item>
-        <item name="tabBackground">@drawable/tab_background_something</item>
+        <item name="tabBackground">@drawable/bg_tab_item</item>
     </style>
 
 

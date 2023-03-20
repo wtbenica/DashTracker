@@ -57,8 +57,7 @@ private val View.targetHeight: Int
         val wrapContentMeasureSpec =
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         measure(matchParentMeasureSpec, wrapContentMeasureSpec)
-        val targetHeight = measuredHeight
-        return targetHeight
+        return measuredHeight
     }
 
 fun View.expand(onComplete: (() -> Unit)? = null) {

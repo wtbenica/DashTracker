@@ -69,7 +69,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:navGraph="@navigation/mobile_navigation" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <com.wtb.dashTracker.views.DTFloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

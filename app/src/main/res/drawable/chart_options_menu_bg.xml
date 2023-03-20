@@ -22,7 +22,7 @@
             <padding
                 android:left="@dimen/margin_skinny"
                 android:right="@dimen/margin_skinny"
-                android:top="@dimen/margin_half" />
+                android:top="@dimen/margin_narrow" />
         </shape>
     </item>
     <item>

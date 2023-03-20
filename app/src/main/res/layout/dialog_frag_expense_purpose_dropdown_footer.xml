@@ -35,7 +35,7 @@
         android:layout_width="@dimen/min_touch_target"
         android:layout_height="@dimen/min_touch_target"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/ic_add_circle"
         app:tint="?attr/colorTextPrimary"
         android:contentDescription="@string/content_desc_add_purpose" />
 

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies
+package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthly_expenses
 
 import androidx.lifecycle.ViewModel
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.repository.Repository
-import com.wtb.dashTracker.ui.fragment_expenses.fragment_monthly_expenses.MonthlyExpenses
-import com.wtb.dashTracker.ui.fragment_expenses.fragment_monthly_expenses.fix
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
