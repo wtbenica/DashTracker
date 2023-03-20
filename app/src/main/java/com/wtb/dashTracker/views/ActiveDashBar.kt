@@ -21,6 +21,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AttrRes
+import androidx.annotation.IdRes
 import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
 import com.wtb.dashTracker.R
@@ -29,6 +30,7 @@ import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
 import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,6 +60,10 @@ class ActiveDashBar @JvmOverloads constructor(
                 binding.trackingStatusIndicator.alpha = animation.animatedValue as Float
             }
         }
+
+        binding.btnStopActiveDash.setOnClickListener {
+            callback?.stopDash()
+        }
     }
 
     fun initialize(cb: ActiveDashBarCallback) {
@@ -70,23 +76,25 @@ class ActiveDashBar @JvmOverloads constructor(
      * [TRACKING_ACTIVE] -> show both
      * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
      */
-    fun onServiceStateUpdated(serviceState: ADBState, onComplete: (() -> Unit)? = null) {
+    fun onServiceStateUpdated(
+        serviceState: ADBState,
+        @IdRes currDestination: Int,
+        onComplete: (() -> Unit)? = null
+    ) {
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
-                    root.revealIfTrue(shouldShow = false, doAnyways = true) {
-                        onComplete?.invoke()
-                    }
+                    root.setVisibleIfTrue(false)
                     animator.pause()
+                    onComplete?.invoke()
                 }
                 TRACKING_FULL -> { // Always show expanded details
                     activeDashDetails.revealIfTrue(shouldShow = true, doAnyways = true) {
                         root.apply {
-                            revealIfTrue(shouldShow = true, doAnyways = true) {
-                                callback?.revealAppBarLayout(shouldShow = true) {
-                                    onComplete?.invoke()
-                                } ?: onComplete?.invoke()
-                            }
+                            setVisibleIfTrue(true)
+                            callback?.revealAppBarLayout(shouldShow = true)
+                            onComplete?.invoke()
+
                             val hor = resources.getDimension(R.dimen.margin_narrow).toInt()
                             updatePadding(left = hor, top = hor, right = hor, bottom = hor)
                             requestLayout()
@@ -97,16 +105,17 @@ class ActiveDashBar @JvmOverloads constructor(
                             it.updatePadding(left = hor, right = hor)
                         }
                     }
+
+                    btnStopActiveDash.visibility = GONE
+
                     startTrackingIndicator()
                 }
                 TRACKING_COLLAPSED -> { // Show collapsed
                     activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
                         root.apply {
-                            revealIfTrue(shouldShow = true, doAnyways = true) {
-                                callback?.revealAppBarLayout(shouldShow = true) {
-                                    onComplete?.invoke()
-                                } ?: onComplete?.invoke()
-                            }
+                            setVisibleIfTrue(true)
+                            callback?.revealAppBarLayout(true)
+                            onComplete?.invoke()
                             setPadding(0)
                             requestLayout()
                         }
@@ -115,19 +124,27 @@ class ActiveDashBar @JvmOverloads constructor(
                         listOf(adbTitleRow, trackingStatusRow).forEach {
                             it.updatePadding(left = hor, right = hor)
                         }
+
+                        btnStopActiveDash.visibility = VISIBLE
                     }
                 }
                 TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
                     activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
                         root.apply {
-                            revealIfTrue(shouldShow = true, doAnyways = true) {
-                                callback?.revealAppBarLayout(shouldShow = true) {
-                                    onComplete?.invoke()
-                                } ?: onComplete?.invoke()
-                            }
+                            setVisibleIfTrue(true)
+                            callback?.revealAppBarLayout(true)
+                            onComplete?.invoke()
+
+//                            revealIfTrue(shouldShow = true, doAnyways = true) {
+//                                callback?.revealAppBarLayout(shouldShow = true) {
+//                                    onComplete?.invoke()
+//                                } ?: onComplete?.invoke()
+//                            }
                         }
                     }
                     stopTrackingIndicator()
+
+                    btnStopActiveDash.setVisibleIfTrue(currDestination != R.id.navigation_income)
                 }
             }
         }
@@ -178,6 +195,8 @@ class ActiveDashBar @JvmOverloads constructor(
             doAnyways: Boolean = true,
             onComplete: (() -> Unit)? = null
         )
+
+        fun stopDash()
     }
 
     companion object {

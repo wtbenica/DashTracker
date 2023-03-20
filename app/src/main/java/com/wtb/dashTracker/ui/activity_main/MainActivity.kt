@@ -35,6 +35,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.ColorInt
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
@@ -164,6 +165,8 @@ class MainActivity : AuthenticatedActivity(),
     // State
     private val activeDash: ActiveDash = ActiveDash()
     private var showingWelcomeScreen = false
+
+    @IdRes
     private var currDestination: Int = R.id.navigation_insights
 
     /**
@@ -444,7 +447,7 @@ class MainActivity : AuthenticatedActivity(),
                             showStartDashDialog()
                         }
                         DTFloatingActionButton.Companion.FabState.DASH_ACTIVE -> {
-                            viewModel.loadActiveEntry(id = null)
+                            stopDash()
                         }
                         DTFloatingActionButton.Companion.FabState.EXPENSE_FRAG -> {
                             CoroutineScope(Dispatchers.Default).launch {
@@ -702,6 +705,22 @@ class MainActivity : AuthenticatedActivity(),
         exitProcess(0)
     }
 
+    // ActiveDashBarCallback
+    override fun stopDash() {
+        viewModel.loadActiveEntry(id = null)
+    }
+
+    override fun revealAppBarLayout(
+        shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
+    ) {
+        binding.appBarLayout.revealIfTrue(
+            shouldShow = shouldShow,
+            doAnyways = doAnyways
+        ) {
+            onComplete?.invoke()
+        }
+    }
+
     // IncomeFragmentCallback
     override fun setDeductionType(dType: DeductionType) {
         deductionTypeViewModel.setDeductionType(dType)
@@ -957,7 +976,7 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
-            binding.adb.onServiceStateUpdated(serviceState) {
+            binding.adb.onServiceStateUpdated(serviceState, currDestination) {
                 updateSummaryBarVisibility()
 
                 binding.fab.updateIcon(
@@ -1292,16 +1311,6 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     private var isTesting: Boolean = false
-    override fun revealAppBarLayout(
-        shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
-    ) {
-        binding.appBarLayout.revealIfTrue(
-            shouldShow = shouldShow,
-            doAnyways = doAnyways
-        ) {
-            onComplete?.invoke()
-        }
-    }
 }
 
 interface ScrollableFragment {
