@@ -95,7 +95,6 @@
     <attr name="colorGroupButtonTextDefault" format="reference|color" />
     <attr name="colorGroupButtonTextChecked" format="reference|color" />
     <attr name="colorGroupStroke" format="reference" />
-    <attr name="colorOptionsButton" format="reference" />
     <attr name="colorOptionsMenuStroke" format="reference" />
     <attr name="colorOptionsMenuRipple" format="reference" />
 
