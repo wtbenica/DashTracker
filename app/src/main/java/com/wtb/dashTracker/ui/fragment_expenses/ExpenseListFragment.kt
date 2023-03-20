@@ -60,6 +60,7 @@ class ExpenseListFragment : ExpenseListItemFragment() {
         setDialogListeners()
     }
 
+    // TODO: This can be moved to superclass to get rid of redundant showToolbarsAndFab
     private fun setDialogListeners() {
         childFragmentManager.setFragmentResultListener(
             ConfirmDialog.DELETE.key,
@@ -69,6 +70,7 @@ class ExpenseListFragment : ExpenseListItemFragment() {
             val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
             if (result) {
                 viewModel.deleteExpenseById(id)
+                (requireContext() as ListItemFragmentCallback).showToolbarsAndFab()
             }
         }
     }
