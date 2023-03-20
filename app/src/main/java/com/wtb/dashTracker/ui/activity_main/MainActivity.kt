@@ -35,6 +35,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.ColorInt
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
@@ -164,6 +165,8 @@ class MainActivity : AuthenticatedActivity(),
     // State
     private val activeDash: ActiveDash = ActiveDash()
     private var showingWelcomeScreen = false
+
+    @IdRes
     private var currDestination: Int = R.id.navigation_insights
 
     /**
@@ -957,7 +960,7 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
-            binding.adb.onServiceStateUpdated(serviceState) {
+            binding.adb.onServiceStateUpdated(serviceState, currDestination) {
                 updateSummaryBarVisibility()
 
                 binding.fab.updateIcon(

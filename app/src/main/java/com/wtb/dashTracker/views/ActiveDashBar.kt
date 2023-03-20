@@ -21,6 +21,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AttrRes
+import androidx.annotation.IdRes
 import androidx.core.view.setPadding
 import androidx.core.view.updatePadding
 import com.wtb.dashTracker.R
@@ -29,6 +30,7 @@ import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
 import com.wtb.dashTracker.extensions.getStringOrElse
+import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -70,7 +72,11 @@ class ActiveDashBar @JvmOverloads constructor(
      * [TRACKING_ACTIVE] -> show both
      * [TRACKING_INACTIVE] or [PAUSED] -> show adb, hide details
      */
-    fun onServiceStateUpdated(serviceState: ADBState, onComplete: (() -> Unit)? = null) {
+    fun onServiceStateUpdated(
+        serviceState: ADBState,
+        @IdRes currDestination: Int,
+        onComplete: (() -> Unit)? = null
+    ) {
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
@@ -97,6 +103,9 @@ class ActiveDashBar @JvmOverloads constructor(
                             it.updatePadding(left = hor, right = hor)
                         }
                     }
+
+                    btnStopActiveDash.visibility = GONE
+
                     startTrackingIndicator()
                 }
                 TRACKING_COLLAPSED -> { // Show collapsed
@@ -115,6 +124,8 @@ class ActiveDashBar @JvmOverloads constructor(
                         listOf(adbTitleRow, trackingStatusRow).forEach {
                             it.updatePadding(left = hor, right = hor)
                         }
+
+                        btnStopActiveDash.visibility = VISIBLE
                     }
                 }
                 TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
@@ -128,6 +139,8 @@ class ActiveDashBar @JvmOverloads constructor(
                         }
                     }
                     stopTrackingIndicator()
+
+                    btnStopActiveDash.setVisibleIfTrue(currDestination != R.id.navigation_income)
                 }
             }
         }
