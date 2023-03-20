@@ -447,7 +447,7 @@ class MainActivity : AuthenticatedActivity(),
                             showStartDashDialog()
                         }
                         DTFloatingActionButton.Companion.FabState.DASH_ACTIVE -> {
-                            viewModel.loadActiveEntry(id = null)
+                            stopDash()
                         }
                         DTFloatingActionButton.Companion.FabState.EXPENSE_FRAG -> {
                             CoroutineScope(Dispatchers.Default).launch {
@@ -703,6 +703,22 @@ class MainActivity : AuthenticatedActivity(),
             .putExtra(EXTRA_SETTINGS_RESTART_APP, true)
         startActivity(mainIntent)
         exitProcess(0)
+    }
+
+    // ActiveDashBarCallback
+    override fun stopDash() {
+        viewModel.loadActiveEntry(id = null)
+    }
+
+    override fun revealAppBarLayout(
+        shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
+    ) {
+        binding.appBarLayout.revealIfTrue(
+            shouldShow = shouldShow,
+            doAnyways = doAnyways
+        ) {
+            onComplete?.invoke()
+        }
     }
 
     // IncomeFragmentCallback
@@ -1295,16 +1311,6 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     private var isTesting: Boolean = false
-    override fun revealAppBarLayout(
-        shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
-    ) {
-        binding.appBarLayout.revealIfTrue(
-            shouldShow = shouldShow,
-            doAnyways = doAnyways
-        ) {
-            onComplete?.invoke()
-        }
-    }
 }
 
 interface ScrollableFragment {
