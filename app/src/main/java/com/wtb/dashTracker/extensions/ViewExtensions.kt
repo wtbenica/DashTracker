@@ -60,7 +60,7 @@ private val View.targetHeight: Int
         return measuredHeight
     }
 
-fun View.expand(onComplete: (() -> Unit)? = null) {
+fun View.reveal(onComplete: (() -> Unit)? = null) {
     clearAnimation()
     layoutParams.height = max(1, layoutParams.height)
     visibility = VISIBLE
@@ -70,7 +70,7 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
             override fun willChangeBounds(): Boolean = true
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                this@expand.apply {
+                this@reveal.apply {
                     layoutParams.height = if (interpolatedTime < 1f) {
                         (targetHeight * interpolatedTime).toInt()
                     } else {
@@ -82,7 +82,7 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
                 }
             }
         }.apply {
-            duration = (targetHeight / context.resources.displayMetrics.density).toLong()
+            duration = 200L
             fillAfter = true
 
             setAnimationListener(object : AnimationListener {
@@ -91,7 +91,7 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    this@expand.apply {
+                    this@reveal.apply {
                         clearAnimation()
                         requestLayout()
                     }
@@ -112,7 +112,7 @@ fun View.expand(onComplete: (() -> Unit)? = null) {
     startAnimation(expandAnimation)
 }
 
-fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_PARENT) {
+fun View.revealToHeight(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_PARENT) {
     val mTargetHeight = targetHeight ?: WRAP_CONTENT
     val mTargetWidth = targetWidth ?: MATCH_PARENT
 
@@ -171,16 +171,20 @@ fun View.expandTo(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_P
                 requestLayout()
             }
         }.apply {
-            duration = (toHeight / context.resources.displayMetrics.density).toLong()
+            duration = 200L
         }
 
         startAnimation(animation)
     }
 }
 
-fun View.expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toWidth: Int? = null) {
+fun View.revealToHeightIfTrue(
+    shouldExpand: Boolean = true,
+    toHeight: Int? = null,
+    toWidth: Int? = null
+) {
     if (shouldExpand && !isVisible) {
-        expandTo(
+        revealToHeight(
             targetHeight = toHeight,
             targetWidth = toWidth
         )
@@ -210,7 +214,7 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             }
         }
     }.apply {
-        duration = (initHeight / context.resources.displayMetrics.density).toLong()
+        duration = 200L
         fillAfter = true
 
         setAnimationListener(object : AnimationListener {
@@ -279,7 +283,7 @@ fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
     val colorFrom = MaterialColors.getColor(this, from)
     val colorTo = MaterialColors.getColor(this, to)
     val colorAnimation: ValueAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-    colorAnimation.duration = (initHeight / context.resources.displayMetrics.density).toLong()
+    colorAnimation.duration = 200L
 
     colorAnimation.addUpdateListener {
         if (it.animatedValue is Int) {
@@ -304,7 +308,7 @@ fun View.transitionBackgroundTo(@AttrRes to: Int) {
 
     val colorAnimation: ValueAnimator =
         ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
-            duration = (initHeight / context.resources.displayMetrics.density).toLong()
+            duration = 200L
         }
 
     colorAnimation.addUpdateListener {

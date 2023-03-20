@@ -722,9 +722,9 @@ class MainActivity : AuthenticatedActivity(),
         with(binding) {
             appBarLayout.setExpanded(true, true)
             bottomAppBar.performShow(true)
+            updateToolbarAndBottomPadding()
             fab.show()
         }
-        updateToolbarAndBottomPadding()
     }
 
     private fun updateToolbarAndBottomPadding(slideAppBarDown: Boolean = true) {

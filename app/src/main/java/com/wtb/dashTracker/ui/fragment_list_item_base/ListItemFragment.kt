@@ -230,30 +230,8 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
 
             if (showDetails) {
                 backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
-//                backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
-//                if (backgroundArea.background is RippleDrawable) {
-//                    (backgroundArea.background as RippleDrawable).setDrawable(
-//                        0,
-//                        ResourcesCompat.getDrawable(
-//                            resources,
-//                            R.drawable.bg_list_item_expanded,
-//                            requireContext().theme
-//                        )
-//                    )
-//                }
             } else {
                 backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
-//                backgroundArea.setBackgroundResource(R.drawable.ripple_list_item)
-//                if (backgroundArea.background is RippleDrawable) {
-//                    (backgroundArea.background as RippleDrawable).setDrawable(
-//                        0,
-//                        ResourcesCompat.getDrawable(
-//                            resources,
-//                            R.drawable.bg_list_item,
-//                            requireContext().theme
-//                        )
-//                    )
-//                }
             }
         }
     }

@@ -82,6 +82,7 @@ class EntryListFragment : IncomeListItemFragment() {
             if (result) {
                 (activity as MainActivity).clearActiveEntry(id)
                 viewModel.deleteEntryById(id)
+                (requireContext() as ListItemFragmentCallback).showToolbarsAndFab()
             }
         }
 

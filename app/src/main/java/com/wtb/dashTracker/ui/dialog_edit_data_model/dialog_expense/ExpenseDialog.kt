@@ -129,7 +129,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                     ) {
                         val purpose = parent?.getItemAtPosition(position) as ExpensePurpose?
                         fragExpensePriceLbl.revealIfTrue(purpose?.purposeId == GAS.id)
-                        fragExpensePrice.expandToIfTrue(
+                        fragExpensePrice.revealToHeightIfTrue(
                             shouldExpand = purpose?.purposeId == GAS.id,
                             toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),
                             toWidth = WRAP_CONTENT
@@ -137,6 +137,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                         if (purpose?.purposeId != GAS.id) {
                             fragExpensePrice.text.clear()
                         }
+                        updateSaveButtonIsEnabled()
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -255,8 +256,10 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     private fun updateSaveButtonIsEnabled() {
-        if (binding.fragExpenseAmount.text == null || binding.fragExpenseAmount.text.isEmpty() ||
-            ((binding.fragExpensePurpose.selectedItem as ExpensePurpose?)?.purposeId == GAS.id && (binding.fragExpensePrice.text == null || binding.fragExpensePrice.text.isEmpty()))
+        if (binding.fragExpenseAmount.text == null ||
+            binding.fragExpenseAmount.text.isEmpty() ||
+            ((binding.fragExpensePurpose.selectedItem as ExpensePurpose?)?.purposeId == GAS.id &&
+                    (binding.fragExpensePrice.text == null || binding.fragExpensePrice.text.isEmpty()))
         ) {
             buttonBinding.fragEntryBtnSave.alpha = 0.7f
             buttonBinding.fragEntryBtnSave.isClickable = false

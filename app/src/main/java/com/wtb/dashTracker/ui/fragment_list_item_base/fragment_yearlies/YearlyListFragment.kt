@@ -137,7 +137,7 @@ class YearlyListFragment : IncomeListItemFragment() {
                         detailsBinding.listItemYearlyExpenseDetailsButtonFrame.apply {
                             val target =
                                 resources.getDimension(R.dimen.min_touch_target).toInt()
-                            expandToIfTrue(shouldExpand = show, toHeight = target, toWidth = target)
+                            revealToHeightIfTrue(shouldExpand = show, toHeight = target, toWidth = target)
                         }
                         detailsBinding.listItemYearlyExpenseDetailsButton.revealIfTrue(show)
                         detailsBinding.listItemYearlyExpenses.revealIfTrue(show)
