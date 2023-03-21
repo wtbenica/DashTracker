@@ -53,6 +53,10 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     override val isAtTop: Boolean
         get() = (recyclerView.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() == 0
 
+    private val allItemsAreShowing: Boolean
+        get() = (recyclerView.layoutManager as? LinearLayoutManager)?.let {
+            it.findLastCompletelyVisibleItemPosition() + 1 == it.itemCount
+        } == true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -240,7 +244,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     }
 
     protected open fun onItemExpanded() {
-        listItemFragmentCallback.hideToolbarsAndFab()
+        listItemFragmentCallback.hideToolbarsAndFab(hideToolbar = !allItemsAreShowing)
     }
 
     protected open fun onItemClosed() {
@@ -248,8 +252,8 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     }
 
     interface ListItemFragmentCallback {
-        fun hideToolbarsAndFab()
-        fun showToolbarsAndFab()
+        fun hideToolbarsAndFab(hideToolbar: Boolean = true, hideFab: Boolean = true)
+        fun showToolbarsAndFab(showToolbar: Boolean = true, showFab: Boolean = true)
     }
 }
 
