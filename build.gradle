@@ -25,7 +25,7 @@ buildscript {
         // as tempting as it may be, don't upgrade material_version beyond 1.7.0-alpha03 bc fab disappears
         material_version = '1.7.0-alpha02'
         play_services_location_version = '21.0.1'
-        lifecycle_version = '2.6.0-rc01'
+        lifecycle_version = '2.6.0'
         core_version = '1.10.0-beta01'
     }
     repositories {
