@@ -31,7 +31,6 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -82,7 +81,6 @@ class ActiveDashBar @JvmOverloads constructor(
         @IdRes currDestination: Int,
         onComplete: (() -> Unit)? = null
     ) {
-        debugLog("onServiceStateUpdated ${serviceState.name}")
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
