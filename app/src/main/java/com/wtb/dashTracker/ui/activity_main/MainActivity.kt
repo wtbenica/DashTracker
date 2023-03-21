@@ -330,8 +330,6 @@ class MainActivity : AuthenticatedActivity(),
                                 beforeId = activeDash.activeEntry?.entry?.entryId,
                                 showMini = destination.id != R.id.navigation_income
                             )
-
-                            updateUi()
                         }
                     }
                 }
@@ -457,11 +455,6 @@ class MainActivity : AuthenticatedActivity(),
                             }
                         }
                     }
-//                    if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
-//                        showStartDashDialog()
-//                    } else {
-//                        viewModel.loadActiveEntry(null)
-//                    }
                 }
 
                 adb.initialize(this@MainActivity)
@@ -920,8 +913,14 @@ class MainActivity : AuthenticatedActivity(),
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
         internal var serviceState: ADBState = ADBState.INACTIVE
+            set(value) {
+                debugLog("Setting service state | ${field.name} -> ${value.name}")
+                field = value
+                updateUi()
+            }
 
         private fun onNewActiveEntry(before: FullEntry?, after: FullEntry?) {
+            debugLog("onNewActiveEntry")
             val beforeId = before?.entry?.entryId
             val afterId = after?.entry?.entryId
 
@@ -931,8 +930,6 @@ class MainActivity : AuthenticatedActivity(),
                     beforeId = beforeId,
                     showMini = currDestination != R.id.navigation_income
                 )
-
-            updateUi()
         }
 
 
@@ -941,6 +938,7 @@ class MainActivity : AuthenticatedActivity(),
          */
         internal fun updateUi() {
             fun updateSummaryBarVisibility() {
+                debugLog("updateSummaryBarVisibility")
                 when (serviceState) {
                     ADBState.INACTIVE -> {
                         binding.summaryBar.root.revealIfTrue(
@@ -958,6 +956,7 @@ class MainActivity : AuthenticatedActivity(),
                     ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
                     ADBState.TRACKING_FULL -> {
+                        debugLog("Reveal summaryBar? ${currDestination == R.id.navigation_income} $serviceState")
                         binding.summaryBar.root.revealIfTrue(
                             shouldShow = currDestination == R.id.navigation_income,
                             doAnyways = true
