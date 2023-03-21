@@ -55,6 +55,8 @@ val dtfShortDate: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
  */
 val dtfTime: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mma")
 
+val dtfDateTimeMini: DateTimeFormatter = DateTimeFormatter.ofPattern("MMMM d h:mma")
+
 /**
  * format: 01/01/2022 01:12:23
  */

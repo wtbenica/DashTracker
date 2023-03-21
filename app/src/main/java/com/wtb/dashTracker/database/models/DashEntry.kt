@@ -67,19 +67,52 @@ data class DashEntry(
     override val id: Long
         get() = entryId
 
-    val isIncomplete: Boolean
-        get() = startTime == null || endTime == null || pay == null || mileage == null || numDeliveries == null
+    internal val isIncomplete: Boolean
+        get() {
+            return startTime == null ||
+                    endTime == null ||
+                    pay == null ||
+                    mileage == null ||
+                    numDeliveries == null ||
+                    mismatchedTimes ||
+                    mismatchedOdometers
+        }
+
+    internal val mismatchedTimes: Boolean
+        get() = endDateTime?.let { end ->
+            startDateTime?.let { start -> end.isBefore(start) }
+        } == true
+
+    internal val mismatchedOdometers: Boolean
+        get() = endOdometer?.let { eo ->
+            startOdometer?.let { so -> eo < so }
+        } == true
 
     val startDateTime: LocalDateTime?
-        get() = startTime?.let { st -> LocalDateTime.of(date, LocalTime.of(st.hour, st.minute)) }
+        get() = startTime?.let { st ->
+            LocalDateTime.of(date, LocalTime.of(st.hour, st.minute))
+        }
 
-    private val endDateTime
-        get() = endTime?.let { et -> LocalDateTime.of(endDate, LocalTime.of(et.hour, et.minute)) }
+    val endDateTime: LocalDateTime?
+        get() = endTime?.let { et ->
+            LocalDateTime.of(endDate, LocalTime.of(et.hour, et.minute))
+        }
 
+    //    val totalHours: Float?
+//        get() = startDateTime?.let { st ->
+//            endDateTime?.let { et ->
+//                Duration.between(st, et).toMinutes().toFloat() / 60
+//            }
+//        }
+//
     val totalHours: Float?
-        get() = startDateTime?.let { st ->
-            endDateTime?.let { et ->
-                Duration.between(st, et).toMinutes().toFloat() / 60
+        get() = if (mismatchedTimes) {
+            null
+        } else {
+            startDateTime?.let { st ->
+                endDateTime?.let { et ->
+                    Duration.between(st, et).toMinutes().toFloat() / 60
+                }
             }
         }
 
@@ -169,7 +202,13 @@ data class DashEntry(
      */
     @Suppress("DEPRECATION")
     val mileage: Float?
-        get() = totalMileage ?: startOdometer?.let { so -> endOdometer?.let { eo -> eo - so } }
+        get() = totalMileage ?: if (mismatchedOdometers) {
+            null
+        } else {
+            startOdometer?.let { so ->
+                endOdometer?.let { eo -> eo - so }
+            }
+        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -241,7 +280,10 @@ data class DashEntry(
         override val saveFileName: String
             get() = "entries"
 
-        private enum class Columns(val headerName: String, val getValue: KProperty1<DashEntry, *>) {
+        private enum class Columns(
+            val headerName: String,
+            val getValue: KProperty1<DashEntry, *>
+        ) {
             ENTRY_ID("Entry ID", DashEntry::entryId),
             START_DATE("Start Date", DashEntry::date),
             START_TIME("Start Time", DashEntry::startTime),
@@ -249,6 +291,7 @@ data class DashEntry(
             END_TIME("End Time", DashEntry::endTime),
             START_ODO("Start Odometer", DashEntry::startOdometer),
             END_ODO("End Odometer", DashEntry::endOdometer),
+
             @Suppress("DEPRECATION")
             MILEAGE("Total Mileage", DashEntry::totalMileage),
             BASE_PAY("Base Pay", DashEntry::pay),
