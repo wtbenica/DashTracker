@@ -427,15 +427,10 @@ class MainActivity : AuthenticatedActivity(),
          */
         fun initMainActivityBinding() {
             fun isRecyclerViewAtTop(): Boolean {
-                var t = false
                 val currFrag: Fragment? =
                     supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)?.childFragmentManager?.fragments?.last()
 
-                if (currFrag is ScrollableFragment) {
-                    t = currFrag.isAtTop
-                }
-
-                return t
+                return  currFrag is ScrollableFragment && currFrag.isAtTop
             }
 
             binding = ActivityMainBinding.inflate(layoutInflater).apply {

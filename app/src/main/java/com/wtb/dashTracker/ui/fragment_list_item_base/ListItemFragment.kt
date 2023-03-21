@@ -47,6 +47,9 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     protected val recyclerView: RecyclerView
         get() = binding.itemListRecyclerView
 
+    private val listItemFragmentCallback: ListItemFragmentCallback
+        get() = requireContext() as ListItemFragmentCallback
+
     override val isAtTop: Boolean
         get() = (recyclerView.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition() == 0
 
@@ -55,22 +58,23 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragItemListBinding.inflate(inflater)
-        binding.itemListRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
+        binding = FragItemListBinding.inflate(inflater).apply {
+            itemListRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context)
 
-            val height: Int =
-                (requireActivity() as MainActivity).binding.bottomAppBar.measuredHeight
-            updatePadding(bottom = height + getDimen(R.dimen.margin_default).toInt())
+                val height: Int =
+                    (requireActivity() as MainActivity).binding.bottomAppBar.measuredHeight
+                updatePadding(bottom = height + getDimen(R.dimen.margin_default).toInt())
 
-            this.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
-                with((requireActivity() as MainActivity)) {
-                    if (!isShowingOrHidingToolbars) {
-                        with(binding.fab) {
-                            if (scrollY < oldScrollY && !isOrWillBeShown) {
-                                show()
-                            } else if (scrollY > oldScrollY && !isOrWillBeHidden) {
-                                hide()
+                setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+                    with((requireActivity() as MainActivity)) {
+                        if (!isShowingOrHidingToolbars) {
+                            with(binding.fab) {
+                                if (scrollY < oldScrollY && !isOrWillBeShown) {
+                                    show()
+                                } else if (scrollY > oldScrollY && !isOrWillBeHidden) {
+                                    hide()
+                                }
                             }
                         }
                     }
@@ -131,8 +135,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     }
 
     abstract inner class BaseItemPagingDataAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
-        PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback),
-        ExpandableAdapter {
+        PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback), ExpandableAdapter {
 
         override var mExpandedPosition: Int? = null
 
@@ -237,11 +240,11 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     }
 
     protected open fun onItemExpanded() {
-        (requireContext() as ListItemFragmentCallback).hideToolbarsAndFab()
+        listItemFragmentCallback.hideToolbarsAndFab()
     }
 
     protected open fun onItemClosed() {
-        (requireContext() as ListItemFragmentCallback).showToolbarsAndFab()
+        listItemFragmentCallback.showToolbarsAndFab()
     }
 
     interface ListItemFragmentCallback {
