@@ -427,15 +427,10 @@ class MainActivity : AuthenticatedActivity(),
          */
         fun initMainActivityBinding() {
             fun isRecyclerViewAtTop(): Boolean {
-                var t = false
                 val currFrag: Fragment? =
                     supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)?.childFragmentManager?.fragments?.last()
 
-                if (currFrag is ScrollableFragment) {
-                    t = currFrag.isAtTop
-                }
-
-                return t
+                return  currFrag is ScrollableFragment && currFrag.isAtTop
             }
 
             binding = ActivityMainBinding.inflate(layoutInflater).apply {
@@ -720,22 +715,30 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     // ListItemFragmentCallback overrides
-    override fun hideToolbarsAndFab() {
+    override fun hideToolbarsAndFab(hideToolbar: Boolean, hideFab: Boolean) {
         isShowingOrHidingToolbars = true
         with(binding) {
             appBarLayout.setExpanded(false, true)
-            bottomAppBar.performHide(true)
-            fab.hide()
+            if (hideToolbar) {
+                bottomAppBar.performHide(true)
+            }
+            if (hideFab) {
+                fab.hide()
+            }
         }
     }
 
-    override fun showToolbarsAndFab() {
+    override fun showToolbarsAndFab(showToolbar: Boolean, showFab: Boolean) {
         isShowingOrHidingToolbars = true
         with(binding) {
             appBarLayout.setExpanded(true, true)
-            bottomAppBar.performShow(true)
-            updateToolbarAndBottomPadding()
-            fab.show()
+            if (showToolbar) {
+                bottomAppBar.performShow(true)
+                updateToolbarAndBottomPadding()
+            }
+            if (showFab) {
+                fab.show()
+            }
         }
     }
 

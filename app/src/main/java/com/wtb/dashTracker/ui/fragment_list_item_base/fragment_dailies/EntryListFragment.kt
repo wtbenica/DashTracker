@@ -114,6 +114,7 @@ class EntryListFragment : IncomeListItemFragment() {
                 }
             })
         }
+
         binding.itemListRecyclerView.adapter = entryAdapter
 
         callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
