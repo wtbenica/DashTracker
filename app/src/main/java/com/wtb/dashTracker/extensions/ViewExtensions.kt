@@ -102,11 +102,6 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
                 }
 
             })
-
-            if (duration == 0L) {
-                layoutParams.height = WRAP_CONTENT
-                onComplete?.invoke()
-            }
         }
 
     startAnimation(expandAnimation)
@@ -196,12 +191,12 @@ fun View.revealToHeightIfTrue(
 fun View.collapse(onComplete: (() -> Unit)? = null) {
     clearAnimation()
     val initHeight = measuredHeight
+
     val animation = object : Animation() {
         override fun willChangeBounds(): Boolean = true
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             this@collapse.apply {
-
                 layoutParams.height = if (interpolatedTime < 1f) {
                     initHeight - (initHeight * interpolatedTime).toInt()
                 } else {
@@ -234,15 +229,14 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             }
 
         })
-
-        if (duration == 0L) {
-            layoutParams.height = 0
-            visibility = GONE
-            onComplete?.invoke()
-        }
     }
 
-    startAnimation(animation)
+    if (initHeight > 0)
+        startAnimation(animation)
+    else {
+        visibility = GONE
+        onComplete?.invoke()
+    }
 }
 
 fun View.setVisibleIfTrue(boolean: Boolean) {

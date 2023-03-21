@@ -373,8 +373,6 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
             binding.fragEntryTotalMileage.text =
                 getStringOrElse(R.string.odometer_fmt, "", distance)
 
-//            binding.fragEntryTotalMileageRow.revealIfTrue(distance != null)
-
             setUpdateMileageButtonVisibility()
         }
     }

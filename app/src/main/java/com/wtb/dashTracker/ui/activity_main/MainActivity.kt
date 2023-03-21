@@ -330,8 +330,6 @@ class MainActivity : AuthenticatedActivity(),
                                 beforeId = activeDash.activeEntry?.entry?.entryId,
                                 showMini = destination.id != R.id.navigation_income
                             )
-
-                            updateUi()
                         }
                     }
                 }
@@ -457,11 +455,6 @@ class MainActivity : AuthenticatedActivity(),
                             }
                         }
                     }
-//                    if (fab.tag == null || fab.tag == R.drawable.anim_stop_to_play) {
-//                        showStartDashDialog()
-//                    } else {
-//                        viewModel.loadActiveEntry(null)
-//                    }
                 }
 
                 adb.initialize(this@MainActivity)
@@ -920,6 +913,10 @@ class MainActivity : AuthenticatedActivity(),
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
         internal var serviceState: ADBState = ADBState.INACTIVE
+            set(value) {
+                field = value
+                updateUi()
+            }
 
         private fun onNewActiveEntry(before: FullEntry?, after: FullEntry?) {
             val beforeId = before?.entry?.entryId
@@ -931,8 +928,6 @@ class MainActivity : AuthenticatedActivity(),
                     beforeId = beforeId,
                     showMini = currDestination != R.id.navigation_income
                 )
-
-            updateUi()
         }
 
 
