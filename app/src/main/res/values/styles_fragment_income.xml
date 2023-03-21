@@ -27,7 +27,7 @@
     </style>
 
 
-    <style name="MaterialToggleButton" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="MaterialToggleButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:singleLine">false</item>
         <item name="singleLine">false</item>

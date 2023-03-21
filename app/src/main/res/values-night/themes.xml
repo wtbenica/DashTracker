@@ -57,13 +57,17 @@
         <!-- activity_main.xml -->
         <item name="colorActionBar">?attr/colorPrimaryVariant</item>
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
+
         <item name="colorAppBarBg">?attr/colorTextSecondaryDisabled</item>
+
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBarHighlight">?attr/colorSecondaryVariant</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
+
         <item name="colorFab">?attr/colorSecondary</item>
         <item name="colorFabDisabled">?attr/colorPrimary</item>
         <item name="colorFabIcon">?attr/colorAccent</item>
+
         <item name="colorBottomNavBar">?attr/colorUi</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
@@ -73,6 +77,7 @@
         <item name="colorBottomNavTextDisabled">?attr/colorBottomNavDisabled</item>
         <item name="colorBottomNavItemIndicator">?attr/colorAccent</item>
         <item name="colorBottomNavRipple">?attr/colorPrimaryVariant</item>
+
         <item name="colorPopupBackground">?attr/colorSecondaryDark</item>
         <item name="colorDropdownRipple">?attr/colorSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
@@ -93,7 +98,6 @@
 
         <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
         <item name="colorOptionsMenuStroke">?attr/colorSecondaryVariant</item>
-        <item name="colorOptionsButton">?attr/colorAccent</item>
         <item name="colorOptionsMenuRipple">?attr/colorSecondary</item>
 
         <item name="colorGroupButton">?attr/colorSecondary</item>
@@ -118,9 +122,9 @@
         <item name="colorListItemButtonIcon">?attr/colorPrimaryFaded</item>
         <item name="colorListItemButtonOutline">?attr/colorPrimaryDark</item>
 
+        <item name="colorListItemShadow">?attr/colorUIBackground</item>
         <item name="textColorListItemEntryDayThisWeek">?attr/colorPrimaryFaded</item>
         <item name="textColorListItemEntryDay">?attr/colorTextPrimary</item>
-        <item name="colorListItemShadow">?attr/colorUIBackground</item>
 
         <item name="dimenListItemElevationElevated">0dp</item>
         <item name="dimenListItemElevationLowered">0dp</item>
@@ -157,9 +161,6 @@
         <item name="colorShowFiltersButton">?attr/colorSecondaryVariant</item>
         <item name="colorShowFiltersButtonBg">?attr/colorSecondaryDark</item>
         <item name="colorShowFiltersButtonBorder">?attr/colorSecondary</item>
-        <!--        <item name="colorShowFiltersButton">?attr/colorSecondaryVariant</item>-->
-        <!--        <item name="colorShowFiltersButtonBg">?attr/colorSecondaryDark</item>-->
-        <!--        <item name="colorShowFiltersButtonBorder">?attr/colorSecondary</item>-->
 
         <!-- dialog fragment -->
         <item name="colorDialog">?attr/colorSecondary</item>

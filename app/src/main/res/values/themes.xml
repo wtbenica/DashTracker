@@ -173,13 +173,17 @@
         <!-- activity_main.xml -->
         <item name="colorActionBar">?attr/colorPrimaryVariant</item>
         <item name="colorActionBarText">?attr/colorTextPrimary</item>
+
         <item name="colorAppBarBg">?attr/colorTextSecondary</item>
+
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBarHighlight">?attr/colorSecondaryFaded</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
+
         <item name="colorFab">?attr/colorSecondaryFaded</item>
         <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
         <item name="colorFabIcon">?attr/colorAccent</item>
+
         <item name="colorBottomNavBar">?attr/colorUi</item>
         <item name="colorBottomNavItem">@color/bottom_nav_item_color</item>
         <item name="colorBottomNavItemText">@color/bottom_nav_text_color</item>
@@ -189,6 +193,7 @@
         <item name="colorBottomNavTextDisabled">?attr/colorBottomNavDisabled</item>
         <item name="colorBottomNavItemIndicator">?attr/colorPrimaryFaded</item>
         <item name="colorBottomNavRipple">?attr/colorPrimaryVariant</item>
+
         <item name="colorPopupBackground">?attr/colorSecondaryFaded</item>
         <item name="colorDropdownRipple">?attr/colorSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
@@ -209,8 +214,7 @@
 
         <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
         <item name="colorOptionsMenuStroke">?attr/colorSecondary</item>
-        <item name="colorOptionsButton">?attr/colorPrimary</item>
-        <item name="colorOptionsMenuRipple">?attr/colorTextSecondary</item>
+        <item name="colorOptionsMenuRipple">?attr/colorSecondaryFaded</item>
 
         <item name="colorGroupButton">?attr/colorSecondary</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>

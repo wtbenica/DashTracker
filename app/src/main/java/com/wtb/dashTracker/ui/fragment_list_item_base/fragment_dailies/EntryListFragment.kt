@@ -180,9 +180,13 @@ class EntryListFragment : IncomeListItemFragment() {
                 fun updateMissingAlerts() {
                     binding.listItemAlert.setVisibleIfTrue(this.item.entry.isIncomplete)
                     detailsBinding.listItemAlertHours.setVisibleIfTrue(
-                        this.item.entry.startTime == null || this.item.entry.endTime == null
+                        this.item.entry.startTime == null ||
+                                this.item.entry.endTime == null ||
+                                this.item.entry.mismatchedTimes
                     )
-                    detailsBinding.listItemAlertMiles.setVisibleIfTrue(this.item.entry.mileage == null)
+                    detailsBinding.listItemAlertMiles.setVisibleIfTrue(
+                        this.item.entry.mileage == null || this.item.entry.mismatchedOdometers
+                    )
                     detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.item.entry.numDeliveries == null)
                 }
 
@@ -231,6 +235,7 @@ class EntryListFragment : IncomeListItemFragment() {
 
                 binding.listItemEntryDayOfWeek.text =
                     getString(R.string.add_comma, this.item.entry.date.dayOfWeek.name.capitalize())
+
                 binding.listItemEntryDayOfWeek.setTextColor(
                     if (this.item.entry.date.endOfWeek == LocalDate.now().endOfWeek) {
                         requireContext().getAttrColor(R.attr.textColorListItemEntryDayThisWeek)
@@ -240,27 +245,30 @@ class EntryListFragment : IncomeListItemFragment() {
                 )
 
                 binding.listItemTitle.text = this.item.entry.date.format(dtfDate)
+
                 binding.listItemTitle2.text = getCurrencyString(this.item.entry.totalEarned)
-                binding.listItemSubtitle.text =
-                    getHoursRangeString(this.item.entry.startTime, this.item.entry.endTime)
 
-                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.entry.pay)
-                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.entry.cashTips)
-                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.entry.otherPay)
-
-                detailsBinding.listItemEntryHours.apply {
+                binding.listItemSubtitle.apply {
+                    text = getHoursRangeString(
+                        start = this@EntryHolder.item.entry.startDateTime,
+                        end = this@EntryHolder.item.entry.endDateTime
+                    )
                     setTextColor(
                         context.getAttrColor(
-                            if (this@EntryHolder.item.entry.startTime == null ||
-                                this@EntryHolder.item.entry.endTime == null
-                            ) {
+                            if (this@EntryHolder.item.entry.mismatchedTimes) {
                                 R.attr.colorAlert
                             } else {
-                                R.attr.colorTextPrimary
+                                R.attr.colorListItemSubtitle
                             }
                         )
                     )
                 }
+
+                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.entry.pay)
+
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.entry.cashTips)
+
+                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.entry.otherPay)
 
                 detailsBinding.listItemEntryHours.apply {
                     text =
@@ -269,24 +277,24 @@ class EntryListFragment : IncomeListItemFragment() {
                             "-",
                             this@EntryHolder.item.entry.totalHours
                         )
+                }
+
+                detailsBinding.listItemEntryMileageRange.apply {
+                    text =
+                        getOdometerRangeString(
+                            this@EntryHolder.item.entry.startOdometer,
+                            this@EntryHolder.item.entry.endOdometer
+                        )
                     setTextColor(
                         context.getAttrColor(
-                            if (this@EntryHolder.item.entry.startTime == null ||
-                                this@EntryHolder.item.entry.endTime == null
-                            ) {
+                            if (this@EntryHolder.item.entry.mismatchedOdometers) {
                                 R.attr.colorAlert
                             } else {
-                                R.attr.colorTextPrimary
+                                R.attr.colorRowValueSecondaryText
                             }
                         )
                     )
                 }
-
-                detailsBinding.listItemEntryMileageRange.text =
-                    getOdometerRangeString(
-                        this.item.entry.startOdometer,
-                        this.item.entry.endOdometer
-                    )
                 detailsBinding.listItemEntryMileage.text =
                     getStringOrElse(R.string.odometer_fmt, "-", this.item.entry.mileage)
 

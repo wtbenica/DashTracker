@@ -20,7 +20,7 @@ import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.wtb.dashTracker.R
-import java.time.LocalTime
+import java.time.LocalDateTime
 
 /**
  * @return If any of the args in [args] is null, [ifNull], else the result of [Fragment.getString]
@@ -67,14 +67,15 @@ fun Fragment.getFloatString(value: Float?): String =
 
 fun Fragment.getMileageString(value: Float): String = getString(R.string.mileage_fmt, value)
 
-fun Fragment.getHoursRangeString(start: LocalTime?, end: LocalTime?): String =
+fun Fragment.getHoursRangeString(start: LocalDateTime?, end: LocalDateTime?): String =
     if (start == null && end == null)
         ""
     else
         getString(
             R.string.time_range,
             start?.format(dtfTime) ?: "",
-            end?.format(dtfTime) ?: ""
+            end?.format(if (start?.toLocalDate() == end.toLocalDate()) dtfTime else dtfDateTimeMini)
+                ?: ""
         )
 
 fun Fragment.getOdometerRangeString(start: Float?, end: Float?): String =
