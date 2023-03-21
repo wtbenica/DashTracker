@@ -35,7 +35,6 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.DialogFragEntryBinding
 import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogTimePicker
@@ -63,7 +62,6 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
     abstract val titleText: String
     protected open fun onFirstRun() {
-        debugLog("on first run base. update total mileage fields")
         updateTotalMileageFields()
     }
 
@@ -162,7 +160,6 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                         otherValue = endMileage,
                         stringFormat = R.string.odometer_fmt
                     ) { other, self ->
-                        debugLog("fesm changed. set update mileage button visibility")
                         setUpdateMileageButtonVisibility()
 
                         max(other - self, 0f)
@@ -178,7 +175,6 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
                         otherValue = startMileage,
                         stringFormat = R.string.odometer_fmt
                     ) { other, self ->
-                        debugLog("feem changed. set update mileage button visibility")
                         setUpdateMileageButtonVisibility()
 
                         max(self - other, 0f)
@@ -376,9 +372,6 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
             )
             binding.fragEntryTotalMileage.text =
                 getStringOrElse(R.string.odometer_fmt, "", distance)
-
-//            binding.fragEntryTotalMileageRow.revealIfTrue(distance != null)
-            debugLog("update total mileage fields. set update mileage button visibility")
 
             setUpdateMileageButtonVisibility()
         }

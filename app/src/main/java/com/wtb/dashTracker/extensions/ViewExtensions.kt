@@ -102,11 +102,6 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
                 }
 
             })
-
-            if (duration == 0L) {
-                layoutParams.height = WRAP_CONTENT
-                onComplete?.invoke()
-            }
         }
 
     startAnimation(expandAnimation)

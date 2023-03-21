@@ -47,7 +47,6 @@ import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.ListItemDetailsTableBinding
 import com.wtb.dashTracker.databinding.ListItemHolderBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListItemFragment
@@ -313,8 +312,6 @@ class MonthlyExpenses(val date: LocalDate) : ListItemType {
                 min(newStart, oldStart)
             } else newStart ?: oldStart
 
-        debugLog("oldStart $oldStart | newStart $newStart | new $startOdometer")
-
         val newEnd: Float? = entry.endOdometer
         val oldEnd: Float? = endOdometer
 
@@ -323,10 +320,7 @@ class MonthlyExpenses(val date: LocalDate) : ListItemType {
                 max(newEnd, oldEnd)
             } else newEnd ?: oldEnd
 
-        debugLog("oldEnd $oldEnd | newEnd $newEnd | new $endOdometer")
-
         val addedMiles = entry.mileage ?: 0f
-        debugLog("adding $addedMiles miles")
         workMiles += addedMiles
     }
 

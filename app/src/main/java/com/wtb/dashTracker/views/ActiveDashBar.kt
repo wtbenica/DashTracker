@@ -133,10 +133,8 @@ class ActiveDashBar @JvmOverloads constructor(
                     }
                 }
                 TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
-                    debugLog("adb | show deets? false | do? true | visible? $mIsVisible | collapsing? $isCollapsing | expanding? $isExpanding")
                     activeDashDetailsSpacer.setVisibleIfTrue(currDestination == R.id.navigation_income)
                     activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
-                        debugLog("activeDashDetails have been hidden, continuing")
                         root.apply {
                             setVisibleIfTrue(true)
                             callback?.revealAppBarLayout(true)

@@ -914,13 +914,11 @@ class MainActivity : AuthenticatedActivity(),
         internal var activeCpm: Float? = 0f
         internal var serviceState: ADBState = ADBState.INACTIVE
             set(value) {
-                debugLog("Setting service state | ${field.name} -> ${value.name}")
                 field = value
                 updateUi()
             }
 
         private fun onNewActiveEntry(before: FullEntry?, after: FullEntry?) {
-            debugLog("onNewActiveEntry")
             val beforeId = before?.entry?.entryId
             val afterId = after?.entry?.entryId
 
@@ -938,7 +936,6 @@ class MainActivity : AuthenticatedActivity(),
          */
         internal fun updateUi() {
             fun updateSummaryBarVisibility() {
-                debugLog("updateSummaryBarVisibility")
                 when (serviceState) {
                     ADBState.INACTIVE -> {
                         binding.summaryBar.root.revealIfTrue(
@@ -956,7 +953,6 @@ class MainActivity : AuthenticatedActivity(),
                     ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
                     ADBState.TRACKING_FULL -> {
-                        debugLog("Reveal summaryBar? ${currDestination == R.id.navigation_income} $serviceState")
                         binding.summaryBar.root.revealIfTrue(
                             shouldShow = currDestination == R.id.navigation_income,
                             doAnyways = true
