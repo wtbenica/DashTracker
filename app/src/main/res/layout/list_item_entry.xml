@@ -87,9 +87,11 @@
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_marginEnd="@dimen/margin_half"
                 android:text="@string/list_item_label_net"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/list_item_subtitle_2"
                 app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2"
-                app:layout_constraintTop_toTopOf="@id/list_item_subtitle_2" />
+                app:layout_constraintTop_toTopOf="@id/list_item_subtitle_2"
+                tools:visibility="visible" />
 
             <com.wtb.dashTracker.views.ExpandableTextView
                 android:id="@+id/list_item_subtitle_2"
