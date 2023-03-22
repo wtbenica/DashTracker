@@ -232,7 +232,10 @@ class LocationService : Service() {
             override fun onLocationResult(loc: LocationResult) {
                 super.onLocationResult(loc)
                 val lastLoc = loc.lastLocation
-                if (lastLoc == null || !lastLoc.hasAccuracy() || lastLoc.accuracy > 20f ||
+
+                if (lastLoc == null ||
+                    !lastLoc.hasAccuracy() ||
+                    lastLoc.accuracy > 20f ||
                     serviceState.value == ServiceState.PAUSED
                 ) {
                     return
@@ -388,6 +391,7 @@ class LocationService : Service() {
             _onFoot.value = foot > 50
         }
     }
+
     inner class LocalBinder : Binder() {
         val service: LocationService
             get() = this@LocationService
