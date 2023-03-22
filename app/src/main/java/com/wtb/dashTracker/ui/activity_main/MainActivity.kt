@@ -1189,7 +1189,7 @@ class MainActivity : AuthenticatedActivity(),
                 NotificationUtils.NotificationData(
                     contentTitle = R.string.app_name,
                     bigContentTitle = R.string.app_name,
-                    icon = R.drawable.ic_icon_c_notification,
+                    icon = R.drawable.notification_icon,
                     actions = listOf(
                         ::getOpenActivityAction,
                         ::getStopServiceAction
