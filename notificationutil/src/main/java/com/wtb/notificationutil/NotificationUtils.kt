@@ -18,29 +18,26 @@ import kotlin.reflect.KFunction1
  * @property nd a [NotificationData] object that describes the static content of the [Notification]
  */
 class NotificationUtils(private val context: Context, private var nd: NotificationData) {
+    private var builder: NotificationCompat.Builder? = null
+
     /**
      * Creates a [NotificationChannel] and sends
      *
      * @param mainText the text to show in the [Notification]
      * @param channel the [NotificationChannel] for the [Notification]
-     * @param bigContentTitle set an alternate label when [Notification] is expanded
+     * @param bigText set alternate text when [Notification] is expanded
      * @return the initialized [Notification]
      */
     fun generateNotification(
         mainText: String,
         channel: NotificationChannel,
-        bigContentTitle: Int? = null
+        bigText: String? = null
     ): Notification {
         notificationManager.createNotificationChannel(channel)
 
-        return getNotificationBuilder(mainText, channel.id).also { builder ->
-            bigContentTitle?.let {
-                val bigTextStyle = NotificationCompat.BigTextStyle()
-                    .bigText(mainText)
-                    .setBigContentTitle(context.getString(it))
-                builder.setStyle(bigTextStyle)
-            }
-        }.build()
+        builder = getNotificationBuilder(mainText, channel.id, bigText)
+
+        return builder!!.build()
     }
 
     /**
@@ -48,24 +45,16 @@ class NotificationUtils(private val context: Context, private var nd: Notificati
      *
      * @param mainText the updated text to show in the [Notification]
      * @param notificationId the id of the [Notification] whose text is to be updated
-     * @param channel the [NotificationChannel] for the [Notification]
-     * @param bigContentTitle set an alternate label when [Notification] is expanded
+     * @param bigText set alternate text when [Notification] is expanded
      */
     fun updateNotification(
-        mainText: String, notificationId: Int,
-        channel: NotificationChannel,
-        bigContentTitle: Int? = null
+        mainText: String,
+        notificationId: Int,
+        bigText: String? = null,
     ) {
         notificationManager.notify(
             notificationId,
-            getNotificationBuilder(mainText, channel.id).also { builder ->
-                bigContentTitle?.let {
-                    val bigTextStyle = NotificationCompat.BigTextStyle()
-                        .bigText(mainText)
-                        .setBigContentTitle(context.getString(it))
-                    builder.setStyle(bigTextStyle)
-                }
-            }.build()
+            updateNotificationBuilder(mainText, bigText).build()
         )
     }
 
@@ -83,9 +72,10 @@ class NotificationUtils(private val context: Context, private var nd: Notificati
     private fun getNotificationBuilder(
         mainText: String,
         channelId: String,
+        bigText: String? = null
     ): NotificationCompat.Builder {
         val bigTextStyle = NotificationCompat.BigTextStyle()
-            .bigText(mainText)
+            .bigText(bigText ?: mainText)
             .setBigContentTitle(context.getString(nd.bigContentTitle))
 
         return NotificationCompat.Builder(context, channelId)
@@ -102,6 +92,30 @@ class NotificationUtils(private val context: Context, private var nd: Notificati
                 }
             }
     }
+
+
+    /**
+     * Initializes a [NotificationCompat.Builder] from [nd] [NotificationData]
+     *
+     * @param mainText the text to show in the notification
+     * @param channelId the id of the [NotificationChannel] to use for the notification
+     * @return an initialized [NotificationCompat.Builder]
+     */
+    private fun updateNotificationBuilder(
+        mainText: String,
+        bigText: String? = null,
+    ): NotificationCompat.Builder {
+        return builder!!
+            .setContentText(mainText).also { builder ->
+                val bigTextStyle = NotificationCompat.BigTextStyle()
+                    .bigText(bigText ?: mainText)
+                    .setBigContentTitle(context.getString(nd.bigContentTitle))
+
+                builder.setStyle(bigTextStyle)
+
+            }
+    }
+
     data class NotificationData(
         @StringRes val contentTitle: Int,
         @StringRes val bigContentTitle: Int,

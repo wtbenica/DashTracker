@@ -232,7 +232,10 @@ class LocationService : Service() {
             override fun onLocationResult(loc: LocationResult) {
                 super.onLocationResult(loc)
                 val lastLoc = loc.lastLocation
-                if (lastLoc == null || !lastLoc.hasAccuracy() || lastLoc.accuracy > 20f ||
+
+                if (lastLoc == null ||
+                    !lastLoc.hasAccuracy() ||
+                    lastLoc.accuracy > 20f ||
                     serviceState.value == ServiceState.PAUSED
                 ) {
                     return
@@ -254,10 +257,7 @@ class LocationService : Service() {
                     getUpdateNotificationText?.let {
                         notificationUtil.updateNotification(
                             it(currentLocation),
-                            NOTIFICATION_ID,
-                            notificationChannel
-                                ?: throw IllegalStateException(getString(R.string.uninit_notif_data_exception))
-
+                            NOTIFICATION_ID
                         )
                     }
                 }
@@ -388,6 +388,7 @@ class LocationService : Service() {
             _onFoot.value = foot > 50
         }
     }
+
     inner class LocalBinder : Binder() {
         val service: LocationService
             get() = this@LocationService

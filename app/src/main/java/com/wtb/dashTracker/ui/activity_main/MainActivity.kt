@@ -1189,7 +1189,7 @@ class MainActivity : AuthenticatedActivity(),
                 NotificationUtils.NotificationData(
                     contentTitle = R.string.app_name,
                     bigContentTitle = R.string.app_name,
-                    icon = R.mipmap.icon_c,
+                    icon = R.drawable.ic_icon_c_notification,
                     actions = listOf(
                         ::getOpenActivityAction,
                         ::getStopServiceAction
@@ -1199,7 +1199,8 @@ class MainActivity : AuthenticatedActivity(),
             locationService.initialize(
                 notificationData = locServiceOngoingNotificationData,
                 notificationChannel = notificationChannel,
-                notificationText = { getString(R.string.notification_text_tracking_on) }
+                notificationText = { getString(R.string.notification_text_tracking_on) },
+                updateNotificationText = { getString(R.string.notification_text_tracking_on) },
             )
         }
 
