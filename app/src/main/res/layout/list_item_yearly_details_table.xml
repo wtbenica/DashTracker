@@ -114,13 +114,17 @@
                         style="@style/HeaderStyle"
                         android:layout_row="1"
                         android:layout_column="0"
-                        android:text="@string/lbl_net_expenses" />
+                        android:text="@string/lbl_net_expenses"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
                     <FrameLayout
                         android:id="@+id/list_item_yearly_expense_details_button_frame"
                         style="@style/ExpandDetailsButtonFrame"
                         android:layout_row="1"
-                        android:layout_column="1">
+                        android:layout_column="1"
+                        android:visibility="gone"
+                        tools:visibility="visible">
 
                         <com.wtb.dashTracker.views.ExpandableImageView
                             android:id="@+id/list_item_yearly_expense_details_button"
@@ -133,7 +137,9 @@
                         style="@style/ValueStyle"
                         android:layout_row="1"
                         android:layout_column="3"
-                        tools:text="$56.18" />
+                        android:visibility="gone"
+                        tools:text="$56.18"
+                        tools:visibility="visible" />
 
                     <!-- Row 2 -->
                     <com.wtb.dashTracker.views.ExpandableTextView
@@ -141,21 +147,27 @@
                         style="@style/HeaderStyle"
                         android:layout_row="2"
                         android:layout_column="0"
-                        android:text="@string/lbl_cost_per_mile" />
+                        android:text="@string/lbl_cost_per_mile"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
                     <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_cpm_deduction_type"
                         style="@style/SecondaryValueStyle"
                         android:layout_row="2"
                         android:layout_column="2"
-                        tools:text="Gas Only" />
+                        android:visibility="gone"
+                        tools:text="Gas Only"
+                        tools:visibility="visible" />
 
                     <com.wtb.dashTracker.views.ExpandableTextView
                         android:id="@+id/list_item_yearly_cpm"
                         style="@style/ValueStyle"
                         android:layout_row="2"
                         android:layout_column="3"
-                        tools:text="$0.18" />
+                        android:visibility="gone"
+                        tools:text="$0.18"
+                        tools:visibility="visible" />
 
                     <!-- Row 3 -->
                     <com.wtb.dashTracker.views.ExpandableTextView

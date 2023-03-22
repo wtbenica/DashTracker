@@ -118,12 +118,11 @@ private fun MileageBreakdown(yearly: Yearly) {
                 text = "Non-business", modifier = Modifier.weight(.4f),
             )
             ValueText(
-                text = "${
-                    stringResource(
-                        R.string.float_fmt,
-                        100f - (yearly.businessMileagePercent * 100f)
-                    )
-                }%",
+                text = LocalContext.current.getStringOrElse(
+                    resId = R.string.percent_format,
+                    ifInvalid = "-",
+                    yearly.businessMileagePercent * 100
+                ),
                 modifier = Modifier.weight(.3f),
             )
             val text = stringResource(R.string.odometer_fmt, yearly.nonBusinessMiles)

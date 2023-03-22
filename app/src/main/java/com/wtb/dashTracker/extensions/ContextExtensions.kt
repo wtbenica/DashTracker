@@ -31,8 +31,7 @@ fun Context.getStringOrElse(@StringRes resId: Int, ifInvalid: String, vararg arg
     else
         ifInvalid
 
-private fun isValid(it: Any?) = it != null &&
-        (it as? Float)?.let { it.isNaN() && it.isInfinite() } == false
+private fun isValid(it: Any?) = it != null && (it !is Float || it.isFinite())
 
 fun getElapsedHours(seconds: Long?): String =
     if (seconds == null || seconds < 0) {
