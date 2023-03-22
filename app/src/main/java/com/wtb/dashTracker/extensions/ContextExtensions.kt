@@ -25,11 +25,14 @@ import androidx.annotation.StringRes
 import com.wtb.dashTracker.R
 import java.time.LocalTime
 
-fun Context.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?): String =
-    if (args.map { it != null }.reduce { acc, b -> acc && b })
+fun Context.getStringOrElse(@StringRes resId: Int, ifInvalid: String, vararg args: Any?): String =
+    if (args.map { isValid(it) }.reduce { acc, b -> acc && b })
         getString(resId, *args)
     else
-        ifNull
+        ifInvalid
+
+private fun isValid(it: Any?) = it != null &&
+        (it as? Float)?.let { it.isNaN() && it.isInfinite() } == false
 
 fun getElapsedHours(seconds: Long?): String =
     if (seconds == null || seconds < 0) {
