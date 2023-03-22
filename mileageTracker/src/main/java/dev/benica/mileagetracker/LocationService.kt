@@ -257,10 +257,7 @@ class LocationService : Service() {
                     getUpdateNotificationText?.let {
                         notificationUtil.updateNotification(
                             it(currentLocation),
-                            NOTIFICATION_ID,
-                            notificationChannel
-                                ?: throw IllegalStateException(getString(R.string.uninit_notif_data_exception))
-
+                            NOTIFICATION_ID
                         )
                     }
                 }

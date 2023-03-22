@@ -1199,7 +1199,8 @@ class MainActivity : AuthenticatedActivity(),
             locationService.initialize(
                 notificationData = locServiceOngoingNotificationData,
                 notificationChannel = notificationChannel,
-                notificationText = { getString(R.string.notification_text_tracking_on) }
+                notificationText = { getString(R.string.notification_text_tracking_on) },
+                updateNotificationText = { getString(R.string.notification_text_tracking_on) },
             )
         }
 
