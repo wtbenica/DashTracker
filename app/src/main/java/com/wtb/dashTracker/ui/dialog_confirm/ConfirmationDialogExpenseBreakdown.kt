@@ -46,7 +46,6 @@ import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-// TODO: selecting a purpose to edit and then cancelling deletes the purpose
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi

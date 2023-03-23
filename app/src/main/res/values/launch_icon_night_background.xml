@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="launch_icon_bg">#F8F8F8</color>
+    <color name="launch_icon_night_bg">#3c383c</color>
 </resources>
