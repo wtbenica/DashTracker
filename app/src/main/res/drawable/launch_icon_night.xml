@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2022 Wesley T. Benica
+  ~ Copyright 2023 Wesley T. Benica
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
   ~ limitations under the License.
   -->
 
-<shape xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    tools:keep="@drawable/bg_fab_menu_item_lbl">
-    <corners android:radius="4dp" />
-    <solid android:color="?attr/colorFab" />
-</shape>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/launch_icon_night_bg"/>
+    <foreground android:drawable="@drawable/launch_icon_night_fg"/>
+</adaptive-icon>

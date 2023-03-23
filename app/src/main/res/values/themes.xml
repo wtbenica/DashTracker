@@ -17,12 +17,12 @@
 <resources>
     <!-- Splash screen theme -->
     <style name="SplashScreenBase" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/launch_icon_foreground</item>
         <item name="postSplashScreenTheme">@style/Base.DasherCompanion</item>
     </style>
 
     <style name="SplashScreen" parent="SplashScreenBase">
-        <item name="colorOnSecondary">@color/on_brick</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/launch_icon_fg</item>
+        <item name="windowSplashScreenBackground">@color/splash_screen_bg</item>
     </style>
 
     <!-- Licenses Activities Theme -->

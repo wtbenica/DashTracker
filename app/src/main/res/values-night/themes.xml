@@ -17,7 +17,8 @@
 <resources>
     <!-- Splash screen theme -->
     <style name="SplashScreen" parent="SplashScreenBase">
-        <item name="colorOnSecondary">@color/on_brick</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/launch_icon_night_fg</item>
+        <item name="windowSplashScreenBackground">@color/splash_screen_bg</item>
     </style>
 
     <!-- Licenses Activities Theme -->

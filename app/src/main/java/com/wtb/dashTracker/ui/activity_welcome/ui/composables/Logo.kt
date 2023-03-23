@@ -36,7 +36,7 @@ import com.wtb.dashTracker.R
 fun Logo() {
     ResourcesCompat.getDrawable(
         /* res = */ LocalContext.current.resources,
-        /* id = */ R.drawable.dashtracker_logo,
+        /* id = */ R.drawable.launch_icon_foreground_full,
         /* theme = */ LocalContext.current.theme
     )?.let { drawable ->
         val bitmap = Bitmap.createBitmap(
