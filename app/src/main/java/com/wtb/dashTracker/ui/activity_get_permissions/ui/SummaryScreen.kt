@@ -17,6 +17,8 @@
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -239,6 +241,7 @@ fun PermRow(
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Night")
 @Composable
 fun SummaryScreenPreview() {
     DashTrackerTheme {
@@ -275,46 +278,46 @@ fun SummaryScreenPreview() {
     }
 }
 
-@ExperimentalCoroutinesApi
-@ExperimentalTextApi
-@ExperimentalMaterial3Api
-@ExperimentalAnimationApi
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun SummaryScreenPreviewNight() {
-    DashTrackerTheme {
-        Surface {
-            ScreenTemplate(
-                headerText = "Mileage Tracking",
-                iconImage = {
-                    Icon(
-                        imageVector = Icons.Outlined.LocationOff,
-                        contentDescription = "Location Off",
-                        modifier = Modifier.size(96.dp),
-                        tint = headerIconColor()
-                    )
-                },
-                mainContent = {
-                    CustomOutlinedCard {
-                        Text(text = "Automatic mileage tracking is enabled")
-                    }
-
-                    HalfSpacer()
-
-                    PermissionsSummaryCard(
-                        locationEnabled = true,
-                        bgLocationEnabled = true,
-                        notificationsEnabled = true,
-                        batteryOptimizationDisabled = false
-                    )
-                },
-                navContent = {
-                    SummaryScreenNav()
-                }
-            )
-        }
-    }
-}
+//@ExperimentalCoroutinesApi
+//@ExperimentalTextApi
+//@ExperimentalMaterial3Api
+//@ExperimentalAnimationApi
+//@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+//@Composable
+//fun SummaryScreenPreviewNight() {
+//    DashTrackerTheme {
+//        Surface {
+//            ScreenTemplate(
+//                headerText = "Mileage Tracking",
+//                iconImage = {
+//                    Icon(
+//                        imageVector = Icons.Outlined.LocationOff,
+//                        contentDescription = "Location Off",
+//                        modifier = Modifier.size(96.dp),
+//                        tint = headerIconColor()
+//                    )
+//                },
+//                mainContent = {
+//                    CustomOutlinedCard {
+//                        Text(text = "Automatic mileage tracking is enabled")
+//                    }
+//
+//                    HalfSpacer()
+//
+//                    PermissionsSummaryCard(
+//                        locationEnabled = true,
+//                        bgLocationEnabled = true,
+//                        notificationsEnabled = true,
+//                        batteryOptimizationDisabled = false
+//                    )
+//                },
+//                navContent = {
+//                    SummaryScreenNav()
+//                }
+//            )
+//        }
+//    }
+//}
 
 @ExperimentalTextApi
 @Composable
@@ -347,15 +350,17 @@ fun PermissionsSummaryCard(
 
         DefaultSpacer()
 
-        PermRow(
-            permDesc = "Notifications",
-            permIcon = Icons.TwoTone.Notifications,
-            permIconDescription = "notifications icon",
-            isEnabled = notificationsEnabled,
-            isRequired = false
-        )
+        if (SDK_INT >= TIRAMISU) {
+            PermRow(
+                permDesc = "Notifications",
+                permIcon = Icons.TwoTone.Notifications,
+                permIconDescription = "notifications icon",
+                isEnabled = notificationsEnabled,
+                isRequired = false
+            )
 
-        DefaultSpacer()
+            DefaultSpacer()
+        }
 
         PermRow(
             permDesc = "Battery Optimization Disabled",

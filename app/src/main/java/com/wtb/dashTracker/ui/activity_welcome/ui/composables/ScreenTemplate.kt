@@ -20,6 +20,8 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AccessAlarm
 import androidx.compose.material.icons.twotone.Dangerous
@@ -65,7 +67,10 @@ fun ScreenTemplate(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ),
-            border = BorderStroke(width = borderStrokeWidth, color = MaterialTheme.colorScheme.primaryContainer)
+            border = BorderStroke(
+                width = borderStrokeWidth,
+                color = MaterialTheme.colorScheme.primaryContainer
+            )
         ) {
             WideSpacer()
 
@@ -120,10 +125,13 @@ fun ScreenTemplate(
 
         Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_wide)))
 
+        val mainContentScrollState = rememberScrollState()
+
         Column(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
+                .verticalScroll(state = mainContentScrollState, enabled = true)
         ) {
             mainContent()
         }
@@ -146,6 +154,7 @@ fun ScreenTemplate(
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewScreenTemplate() {
     DashTrackerTheme {
@@ -177,40 +186,40 @@ fun PreviewScreenTemplate() {
 }
 
 
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@ExperimentalAnimationApi
-@ExperimentalTextApi
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewScreenTemplateNight() {
-    DashTrackerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            ScreenTemplate(
-                headerText = "ScreenTemplate",
-                subtitleText = "Subtitle",
-                iconImage = {
-                    Icon(
-                        imageVector = Icons.TwoTone.Dangerous,
-                        contentDescription = "Dangerous",
-                        modifier = Modifier.size(96.dp),
-                        tint = headerIconColor()
-                    )
-                },
-                mainContent = {
-                    ContentCard(
-                        titleText = "ContentCard",
-                        icon = Icons.TwoTone.AccessAlarm,
-                        iconDescription = "Access Alarm"
-                    )
-                },
-                navContent = {
-                    OnboardingIntroNav()
-                }
-            )
-        }
-    }
-}
+//@ExperimentalCoroutinesApi
+//@ExperimentalMaterial3Api
+//@ExperimentalAnimationApi
+//@ExperimentalTextApi
+//@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+//@Composable
+//fun PreviewScreenTemplateNight() {
+//    DashTrackerTheme {
+//        Surface(modifier = Modifier.fillMaxSize()) {
+//            ScreenTemplate(
+//                headerText = "ScreenTemplate",
+//                subtitleText = "Subtitle",
+//                iconImage = {
+//                    Icon(
+//                        imageVector = Icons.TwoTone.Dangerous,
+//                        contentDescription = "Dangerous",
+//                        modifier = Modifier.size(96.dp),
+//                        tint = headerIconColor()
+//                    )
+//                },
+//                mainContent = {
+//                    ContentCard(
+//                        titleText = "ContentCard",
+//                        icon = Icons.TwoTone.AccessAlarm,
+//                        iconDescription = "Access Alarm"
+//                    )
+//                },
+//                navContent = {
+//                    OnboardingIntroNav()
+//                }
+//            )
+//        }
+//    }
+//}
 
 val styleBold: SpanStyle =
     SpanStyle(fontWeight = FontWeight.Bold)

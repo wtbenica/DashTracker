@@ -168,31 +168,9 @@ fun GetBgLocationPermissionNav(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Preview(showBackground = true)
-@Composable
-fun GetBgLocationPermissionPreview() {
-    DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                GetBgLocationPermissionScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 2
-                )
-            }
-        }
-    }
-}
-
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun GetBgLocationPermissionPreviewNight() {
+fun GetBgLocationPermissionPreview() {
     DashTrackerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
