@@ -159,7 +159,6 @@ fun ColumnScope.SummaryScreen(modifier: Modifier = Modifier, activity: Onboardin
 @ExperimentalAnimationApi
 @Composable
 fun SummaryScreenNav(
-    modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
 ) {
     BottomNavButtons {
