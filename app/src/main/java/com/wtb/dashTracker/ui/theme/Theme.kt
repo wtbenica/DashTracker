@@ -61,16 +61,20 @@ private val DarkColorScheme: ColorScheme = darkColorScheme(
     // DropDownMenuBox background
     surfaceVariant = darkOnSecondaryVariant,
 
-    // switch thumb
-    // switch thumb disabled
-    onSecondary = darkSecondaryDark,
+    // DropDownMenu background
+    onSecondary = darkSecondary,
 
-    //switch track
-    onBackground = darkAccent,
+    // switch thumb unchecked
+    errorContainer = darkSecondary,
 
-    outline = darkSecondaryLight,
-    error = darkSecondaryFaded,
-    onError = darkSecondaryLight
+    //switch track checked / unchecked
+    onBackground = darkSecondaryFaded,
+
+    // switch thumb checked, custom outline card outline, switch border checked/unchecked
+    outline = darkSecondaryDark,
+
+    // settingsCard top panel background
+    onError = darkSecondaryLight,
 )
 
 
@@ -98,22 +102,29 @@ private val LightColorScheme: ColorScheme = lightColorScheme(
 
     // expandable card ripple,
     onTertiaryContainer = secondaryFaded,
+
     surface = onSecondary,
     onSurface = onPrimary,
 
     // DropDownMenuBox background
-    surfaceVariant = onSecondaryVariant,
+    surfaceVariant = onSecondary,
 
-    // switch thumb
-    // switch thumb disabled
-    onSecondary = secondaryDark,
-    // switch track
+    // DropDownMenu background
+    onSecondary = secondaryFaded,
+
+    // switch thumb unchecked
+    errorContainer = secondary,
+
+    //switch track checked / unchecked
     onBackground = secondaryFaded,
 
-    outline = secondary,
-    error = secondaryLight,
-    onError = secondaryLight
+    // switch thumb checked, custom outline card outline, switch border checked/unchecked
+    outline = secondaryDark,
+
+    // settingsCard top panel background
+    onError = secondaryLight,
 )
+
 @ExperimentalTextApi
 @Composable
 fun DashTrackerTheme(

@@ -70,7 +70,7 @@ fun ColumnScope.GetLocationPermissionsScreen(
             CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_location_permission),
-                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_sm),
                     fontFamily = FontFamilyFiraSans
                 )
             }

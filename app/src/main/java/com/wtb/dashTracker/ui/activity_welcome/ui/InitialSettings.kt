@@ -95,16 +95,14 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
                     val focusManager = LocalFocusManager.current
 
                     val regularOutline = MaterialTheme.colorScheme.outline
-                    val focusedOutline = MaterialTheme.colorScheme.onSecondary
-
-                    var borderColor by remember { mutableStateOf(regularOutline) }
+                    val focusedOutline = MaterialTheme.colorScheme.errorContainer
 
                     CustomOutlinedCard(
                         padding = 0.dp,
                         outlineColor = if (expanded) {
-                            regularOutline
-                        } else {
                             focusedOutline
+                        } else {
+                            regularOutline
                         }
                     ) {
                         ExposedDropdownMenuBox(
@@ -141,7 +139,7 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
                                         focusManager.clearFocus(true)
                                     },
                                     modifier = Modifier
-                                        .background(MaterialTheme.colorScheme.onTertiaryContainer)
+                                        .background(MaterialTheme.colorScheme.onSecondary)
                                 ) {
                                     PermissionsHelper.UiMode.values().forEach {
                                         val uiModeText = stringResource(it.displayName)
@@ -259,12 +257,12 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
 @Composable
 fun csc(): SwitchColors {
     return SwitchDefaults.colors(
-        checkedThumbColor = MaterialTheme.colorScheme.onSecondary,
+        checkedThumbColor = MaterialTheme.colorScheme.outline,
         checkedTrackColor = MaterialTheme.colorScheme.onBackground,
-        checkedBorderColor = MaterialTheme.colorScheme.onSecondary,
-        uncheckedThumbColor = MaterialTheme.colorScheme.onSecondary,
-        uncheckedTrackColor = MaterialTheme.colorScheme.secondary,
-        uncheckedBorderColor = MaterialTheme.colorScheme.onSecondary
+        checkedBorderColor = MaterialTheme.colorScheme.outline,
+        uncheckedThumbColor = MaterialTheme.colorScheme.errorContainer,
+        uncheckedTrackColor = MaterialTheme.colorScheme.onBackground,
+        uncheckedBorderColor = MaterialTheme.colorScheme.outline
     )
 }
 
@@ -277,7 +275,7 @@ fun SettingsCard(
     CustomOutlinedCard(padding = 0.dp) {
         Column {
             Surface(
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.onError,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ) {
                 Row(
@@ -297,7 +295,7 @@ fun SettingsCard(
                 Column(
                     modifier = Modifier
                         .padding(
-                            vertical = marginHalf(),
+                            vertical = marginDefault(),
                             horizontal = marginDefault()
                         )
                 ) {
