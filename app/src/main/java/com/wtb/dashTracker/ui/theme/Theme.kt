@@ -146,10 +146,16 @@ fun DashTrackerTheme(
     val systemUiController = rememberSystemUiController()
 
     SideEffect {
-        systemUiController.setStatusBarColor(
-            color = colorScheme.primary,
-            darkIcons = !darkTheme
-        )
+        systemUiController.apply {
+            setStatusBarColor(
+                color = colorScheme.primary,
+                darkIcons = !darkTheme
+            )
+            setNavigationBarColor(
+                color = colorScheme.tertiaryContainer,
+                darkIcons = !darkTheme
+            )
+        }
     }
 
 

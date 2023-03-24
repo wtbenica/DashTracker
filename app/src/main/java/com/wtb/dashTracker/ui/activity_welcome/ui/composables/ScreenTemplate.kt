@@ -147,7 +147,7 @@ fun ColumnScope.ScreenTemplate(
                     .weight(1f)
                     .fillMaxHeight()
                     .verticalScroll(state = mainContentScrollState, enabled = true)
-                    .padding(start = marginHalf(), end = marginHalf(), bottom = marginHalf())
+                    .padding(start = marginHalf(), end = marginHalf(), bottom = marginDefault())
             ) {
                 mainContent()
             }
