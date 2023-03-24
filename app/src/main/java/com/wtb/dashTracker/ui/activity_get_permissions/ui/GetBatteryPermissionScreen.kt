@@ -78,7 +78,7 @@ fun ColumnScope.GetBatteryPermissionScreen(
 
                 Text(
                     text = str,
-                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_sm),
                     fontFamily = FontFamilyFiraSans
                 )
 
