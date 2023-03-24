@@ -18,7 +18,6 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -52,9 +51,9 @@ fun ColumnScope.ScreenTemplate(
     modifier: Modifier = Modifier,
     headerText: String,
     subtitleText: String? = null,
-    iconImage: @Composable() (ColumnScope.() -> Unit),
-    mainContent: @Composable() (ColumnScope.() -> Unit),
-    navContent: @Composable() (ColumnScope.() -> Unit)? = null,
+    iconImage: @Composable (ColumnScope.() -> Unit),
+    mainContent: @Composable (ColumnScope.() -> Unit),
+    navContent: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
@@ -63,25 +62,18 @@ fun ColumnScope.ScreenTemplate(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(
-                    start = marginHalf(),
-                    top = marginHalf(),
-                    end = marginHalf(),
-                    bottom = 0.dp
-                )
         ) {
-            HalfSpacer()
-
-            OutlinedCard(
-                shape = cardShape,
+            Card(
+                shape = RoundedCornerShape(
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp,
+                    topStart = 0.dp,
+                    topEnd = 0.dp
+                ),
                 colors = cardColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
-                border = BorderStroke(
-                    width = borderStrokeWidth,
-                    color = MaterialTheme.colorScheme.primaryContainer
-                )
             ) {
                 HalfSpacer()
 
@@ -138,7 +130,7 @@ fun ColumnScope.ScreenTemplate(
                 HalfSpacer()
             }
 
-            DefaultSpacer()
+            WideSpacer()
 
             val mainContentScrollState = rememberScrollState()
 
@@ -147,7 +139,7 @@ fun ColumnScope.ScreenTemplate(
                     .weight(1f)
                     .fillMaxHeight()
                     .verticalScroll(state = mainContentScrollState, enabled = true)
-                    .padding(start = marginHalf(), end = marginHalf(), bottom = marginDefault())
+                    .padding(start = marginDefault(), end = marginDefault(), bottom = marginDefault())
             ) {
                 mainContent()
             }

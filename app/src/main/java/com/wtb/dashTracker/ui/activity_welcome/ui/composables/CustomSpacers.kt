@@ -7,19 +7,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import com.wtb.dashTracker.R
 
 
 @Composable
-fun marginDefault() = dimensionResource(id = R.dimen.margin_default)
+fun marginDefault(): Dp = dimensionResource(id = R.dimen.margin_default)
 
 @Composable
-fun marginHalf() = dimensionResource(id = R.dimen.margin_half)
+fun marginWide(): Dp = dimensionResource(id = R.dimen.margin_wide)
+
 @Composable
-fun marginNarrow() = dimensionResource(id = R.dimen.margin_narrow)
+fun marginHalf(): Dp = dimensionResource(id = R.dimen.margin_half)
 @Composable
-fun marginSkinny() = dimensionResource(id = R.dimen.margin_skinny)
+fun marginNarrow(): Dp = dimensionResource(id = R.dimen.margin_narrow)
+@Composable
+fun marginSkinny(): Dp = dimensionResource(id = R.dimen.margin_skinny)
 
 @Composable
 fun RowScope.FillSpacer() {
@@ -38,7 +41,7 @@ fun DefaultSpacer() {
 
 @Composable
 fun WideSpacer() {
-    Spacer(modifier = Modifier.size(24.dp))
+    Spacer(modifier = Modifier.size(marginWide()))
 }
 
 @Composable
