@@ -18,13 +18,14 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.BatterySaver
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -36,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
+import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
@@ -50,7 +51,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun ReenableBatteryOptimizationScreen(
+fun ColumnScope.ReenableBatteryOptimizationScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ): Unit =
@@ -63,6 +64,7 @@ fun ReenableBatteryOptimizationScreen(
                 imageVector = Icons.TwoTone.BatterySaver,
                 contentDescription = "Battery Saver Icon",
                 modifier = Modifier.size(96.dp),
+                tint = headerIconColor()
             )
         },
         mainContent = {
@@ -122,7 +124,7 @@ fun ReenableBatteryOptimizationScreen(
                     append(stringResource(id = R.string.reenable_battery_permission_7))
                 }
 
-                Text(str, modifier = Modifier.padding(24.dp))
+                Text(str, modifier = Modifier.padding(marginDefault()))
             }
         },
         navContent = {
@@ -140,12 +142,7 @@ fun ReenableBatteryOptimizationNav(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        FillSpacer()
-
+    BottomNavButtons {
         CustomTextButton(
             onClick = {
                 activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, true)
@@ -155,9 +152,9 @@ fun ReenableBatteryOptimizationNav(
             Text("No thanks")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
-        CustomOutlinedButton(
+        CustomButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, true)
                 activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, false)
@@ -181,43 +178,12 @@ fun ReenableBatteryOptimizationNav(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ReenableBatteryOptimizationPreview() {
     DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                ReenableBatteryOptimizationScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 4
-                )
-            }
-        }
-    }
-}
-
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun ReenableBatteryOptimizationPreviewNight() {
-    DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                ReenableBatteryOptimizationScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 4
-                )
-            }
+        ActivityScreen {
+            ReenableBatteryOptimizationScreen()
         }
     }
 }

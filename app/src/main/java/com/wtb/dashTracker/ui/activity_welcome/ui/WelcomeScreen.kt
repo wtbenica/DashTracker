@@ -18,9 +18,7 @@ package com.wtb.dashTracker.ui.activity_welcome.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.Circle
@@ -29,7 +27,6 @@ import androidx.compose.material.icons.twotone.MonetizationOn
 import androidx.compose.material.icons.twotone.Wallet
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -38,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.BottomNavButtons
 import com.wtb.dashTracker.ui.activity_welcome.ui.SelectedCard.*
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -53,7 +51,10 @@ enum class SelectedCard {
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScreenCallback) =
+fun ColumnScope.WelcomeScreen(
+    modifier: Modifier = Modifier,
+    callback: WelcomeScreenCallback,
+) =
     ScreenTemplate(
         modifier = modifier,
         headerText = stringResource(R.string.welcome_header_welcome_screen),
@@ -140,12 +141,7 @@ internal fun WelcomeScreen(modifier: Modifier = Modifier, callback: WelcomeScree
 @ExperimentalTextApi
 @Composable
 fun WelcomeNav(callback: WelcomeScreenCallback) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-
+    BottomNavButtons {
         CustomButton(
             onClick = {
                 callback.nextScreen()
@@ -164,40 +160,16 @@ fun WelcomeNav(callback: WelcomeScreenCallback) {
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewWelcome() {
     val callback = object : WelcomeScreenCallback {
-        override fun nextScreen() {
-
-        }
+        override fun nextScreen() {}
     }
 
     DashTrackerTheme {
-        Surface {
-            Column {
-                WelcomeScreen(modifier = Modifier.weight(1f), callback)
-            }
+        ActivityScreen {
+            WelcomeScreen(modifier = Modifier.weight(1f), callback)
         }
     }
 }
-
-@ExperimentalTextApi
-@ExperimentalMaterial3Api
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewWelcomeNight() {
-    val callback = object : WelcomeScreenCallback {
-        override fun nextScreen() {
-
-        }
-    }
-
-    DashTrackerTheme {
-        Surface {
-            Column {
-                WelcomeScreen(modifier = Modifier.weight(1f), callback)
-            }
-        }
-    }
-}
-

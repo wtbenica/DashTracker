@@ -51,21 +51,26 @@ private val DarkColorScheme: ColorScheme = darkColorScheme(
     onTertiary = darkOnPrimary,
     onPrimaryContainer = darkOnPrimaryVariant,
     onSecondaryContainer = darkOnSecondaryVariant,
+
     // expandable card ripple,
     onTertiaryContainer = darkSecondary,
+
     surface = darkOnSecondary,
     onSurface = darkOnPrimary,
+
     // DropDownMenuBox background
     surfaceVariant = darkOnSecondaryVariant,
 
     // switch thumb
     // switch thumb disabled
     onSecondary = darkSecondaryDark,
+
     //switch track
     onBackground = darkAccent,
-    // switch track disabled
-    outline = darkSecondaryFaded,
 
+    outline = darkSecondaryLight,
+    error = darkSecondaryFaded,
+    onError = darkSecondaryLight
 )
 
 
@@ -90,10 +95,12 @@ private val LightColorScheme: ColorScheme = lightColorScheme(
     onTertiary = onPrimary,
     onPrimaryContainer = onPrimaryVariant,
     onSecondaryContainer = onSecondaryVariant,
+
     // expandable card ripple,
     onTertiaryContainer = secondaryFaded,
     surface = onSecondary,
     onSurface = onPrimary,
+
     // DropDownMenuBox background
     surfaceVariant = onSecondaryVariant,
 
@@ -102,8 +109,10 @@ private val LightColorScheme: ColorScheme = lightColorScheme(
     onSecondary = secondaryDark,
     // switch track
     onBackground = secondaryFaded,
-    // switch track disabled
-    outline = secondaryLight,
+
+    outline = secondary,
+    error = secondaryLight,
+    onError = secondaryLight
 )
 @ExperimentalTextApi
 @Composable

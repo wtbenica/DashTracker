@@ -18,9 +18,7 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FirstPage
 import androidx.compose.material.icons.filled.TextSnippet
@@ -32,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.BottomNavButtons
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 
 @ExperimentalTextApi
@@ -41,11 +40,12 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    Button(
+    OutlinedButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.inversePrimary),
         onClick = onClick,
         modifier = modifier,
         content = content
@@ -92,59 +92,28 @@ fun CustomOutlinedButton(
 
 @ExperimentalTextApi
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewButtons() {
     DashTrackerTheme {
-        Surface {
-            Column(modifier = Modifier.padding(4.dp)) {
-                CustomButton(onClick = { }) {
-                    Text(text = "Button")
-                    Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
-                }
-
-                HalfSpacer()
-
-                CustomTextButton(onClick = {}) {
-                    Text(text = "Text")
-                    Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
-                }
-
-                HalfSpacer()
-
-                CustomOutlinedButton(onClick = {}) {
-                    Text(text = "Outlined")
-                    Icon(Icons.Outlined.Circle, contentDescription = "Circle")
-                }
+        BottomNavButtons {
+            CustomButton(onClick = { }) {
+                Text(text = "Button")
+                Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
             }
-        }
-    }
-}
 
-@ExperimentalTextApi
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewButtonsNight() {
-    DashTrackerTheme {
-        Surface {
-            Column(modifier = Modifier.padding(4.dp)) {
-                CustomButton(onClick = { }) {
-                    Text(text = "Button")
-                    Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
-                }
+            HalfSpacer()
 
-                HalfSpacer()
+            CustomTextButton(onClick = {}) {
+                Text(text = "Text")
+                Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
+            }
 
-                CustomTextButton(onClick = {}) {
-                    Text(text = "Text")
-                    Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
-                }
+            HalfSpacer()
 
-                HalfSpacer()
-
-                CustomOutlinedButton(onClick = {}) {
-                    Text(text = "Outlined")
-                    Icon(Icons.Outlined.Circle, contentDescription = "Circle")
-                }
+            CustomOutlinedButton(onClick = {}) {
+                Text(text = "Outlined")
+                Icon(Icons.Outlined.Circle, contentDescription = "Circle")
             }
         }
     }

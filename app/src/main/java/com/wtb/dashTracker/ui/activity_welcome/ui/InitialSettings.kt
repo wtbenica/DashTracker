@@ -34,9 +34,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.BottomNavButtons
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
@@ -54,7 +56,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun InitialSettings(activity: WelcomeActivity? = null) {
+fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
     val textSizeBody = R.dimen.text_size_sm
 
     val permissionsHelper: PermissionsHelper? = activity?.let {
@@ -85,79 +87,93 @@ fun InitialSettings(activity: WelcomeActivity? = null) {
 
                     var expanded by remember { mutableStateOf(false) }
 
-                    val mode = stringResource(
+                    val mode: String = stringResource(
                         (permissionsHelper?.uiMode ?: PermissionsHelper.UiMode.SYSTEM).displayName
                     )
                     var selectedTheme by remember { mutableStateOf(mode) }
 
                     val focusManager = LocalFocusManager.current
 
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = {
-                            expanded = it
-                        },
-                        modifier = Modifier.wrapContentWidth()
+                    val regularOutline = MaterialTheme.colorScheme.outline
+                    val focusedOutline = MaterialTheme.colorScheme.onSecondary
+
+                    var borderColor by remember { mutableStateOf(regularOutline) }
+
+                    CustomOutlinedCard(
+                        padding = 0.dp,
+                        outlineColor = if (expanded) {
+                            regularOutline
+                        } else {
+                            focusedOutline
+                        }
                     ) {
-                        OutlinedTextField(
-                            value = selectedTheme,
-                            onValueChange = {},
-                            modifier = Modifier
-                                .menuAnchor()
-                                .width(IntrinsicSize.Min),
-                            readOnly = true,
-                            textStyle = TextStyle(
-                                fontSize = fontSizeDimensionResource(id = textSizeBody),
-                                fontFamily = FontFamilyFiraSans,
-                            ),
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            shape = cardShape,
-                            colors = TextFieldDefaults.textFieldColors(
-                                focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
-                                unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary
-                            )
-                        )
-
-                        DropdownMenu(
+                        ExposedDropdownMenuBox(
                             expanded = expanded,
-                            onDismissRequest = {
-                                expanded = false
-                                focusManager.clearFocus(true)
+                            onExpandedChange = {
+                                expanded = it
                             },
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.onTertiaryContainer)
+                            modifier = Modifier.wrapContentWidth()
                         ) {
-                            PermissionsHelper.UiMode.values().forEach {
-                                val uiModeText = stringResource(it.displayName)
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = uiModeText,
-                                            fontSize = fontSizeDimensionResource(id = textSizeBody),
-                                            fontFamily = FontFamilyFiraSans,
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedTheme = uiModeText
-                                        expanded = false
-                                        focusManager.clearFocus()
+                            TextField(
+                                value = selectedTheme,
+                                onValueChange = {},
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .width(IntrinsicSize.Min),
+                                readOnly = true,
+                                textStyle = TextStyle(
+                                    fontSize = fontSizeDimensionResource(id = textSizeBody),
+                                    fontFamily = FontFamilyFiraSans,
+                                    baselineShift = BaselineShift(-.2f)
+                                ),
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                                },
+                                maxLines = 1,
+                                shape = cardShape,
+                            )
 
-                                        permissionsHelper?.apply {
-                                            val prev = uiModeIsDarkMode
-                                            updateUiMode(uiModeByDisplayName(selectedTheme)) {
-                                                if (prev != uiModeIsDarkMode) {
-                                                    setBooleanPref(
-                                                        activity.PREF_SKIP_WELCOME_SCREEN,
-                                                        true
-                                                    )
-                                                    activity.finish()
-                                                }
-                                            }
-                                        }
+                            MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall = cardShape)) {
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = {
+                                        expanded = false
+                                        focusManager.clearFocus(true)
                                     },
-                                )
+                                    modifier = Modifier
+                                        .background(MaterialTheme.colorScheme.onTertiaryContainer)
+                                ) {
+                                    PermissionsHelper.UiMode.values().forEach {
+                                        val uiModeText = stringResource(it.displayName)
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = uiModeText,
+                                                    fontSize = fontSizeDimensionResource(id = textSizeBody),
+                                                    fontFamily = FontFamilyFiraSans,
+                                                )
+                                            },
+                                            onClick = {
+                                                selectedTheme = uiModeText
+                                                expanded = false
+                                                focusManager.clearFocus()
+
+                                                permissionsHelper?.apply {
+                                                    val prev = uiModeIsDarkMode
+                                                    updateUiMode(uiModeByDisplayName(selectedTheme)) {
+                                                        if (prev != uiModeIsDarkMode) {
+                                                            setBooleanPref(
+                                                                activity.PREF_SKIP_WELCOME_SCREEN,
+                                                                true
+                                                            )
+                                                            activity.finish()
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -247,7 +263,7 @@ fun csc(): SwitchColors {
         checkedTrackColor = MaterialTheme.colorScheme.onBackground,
         checkedBorderColor = MaterialTheme.colorScheme.onSecondary,
         uncheckedThumbColor = MaterialTheme.colorScheme.onSecondary,
-        uncheckedTrackColor = MaterialTheme.colorScheme.outline,
+        uncheckedTrackColor = MaterialTheme.colorScheme.secondary,
         uncheckedBorderColor = MaterialTheme.colorScheme.onSecondary
     )
 }
@@ -268,9 +284,9 @@ fun SettingsCard(
                     modifier = Modifier
                         .defaultMinSize(minHeight = dimensionResource(id = R.dimen.min_touch_target))
                         .padding(
-                            horizontal = dimensionResource(id = R.dimen.margin_wide),
+                            horizontal = marginDefault(),
                             vertical = body?.let { 0.dp }
-                                ?: dimensionResource(id = R.dimen.margin_default)
+                                ?: marginHalf()
                         ),
                     verticalAlignment = Alignment.CenterVertically,
                     content = headerContent
@@ -281,8 +297,8 @@ fun SettingsCard(
                 Column(
                     modifier = Modifier
                         .padding(
-                            vertical = dimensionResource(id = R.dimen.margin_default),
-                            horizontal = dimensionResource(id = R.dimen.margin_wide)
+                            vertical = marginHalf(),
+                            horizontal = marginDefault()
                         )
                 ) {
                     body()
@@ -302,12 +318,7 @@ fun InitialSettingsNav(callback: InitialScreenCallback? = null) {
     val cb = callback ?: object : InitialScreenCallback {
         override fun nextScreen2() {}
     }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-
+    BottomNavButtons {
         CustomButton(
             onClick = {
                 cb.nextScreen2()
@@ -329,20 +340,11 @@ fun InitialSettingsNav(callback: InitialScreenCallback? = null) {
 @ExperimentalTextApi
 @Composable
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 fun ThisPreview() {
     DashTrackerTheme {
-        InitialSettings()
-    }
-}
-
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@ExperimentalAnimationApi
-@ExperimentalTextApi
-@Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-fun ThisPreviewNight() {
-    DashTrackerTheme {
-        InitialSettings()
+        ActivityScreen {
+            InitialSettings()
+        }
     }
 }

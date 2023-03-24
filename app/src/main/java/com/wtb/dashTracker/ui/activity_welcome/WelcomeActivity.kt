@@ -24,8 +24,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -44,6 +41,7 @@ import com.wtb.dashTracker.ui.activity_welcome.ui.InitialScreenCallback
 import com.wtb.dashTracker.ui.activity_welcome.ui.InitialSettings
 import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreen
 import com.wtb.dashTracker.ui.activity_welcome.ui.WelcomeScreenCallback
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.ActivityScreen
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_ONBOARD_INTRO
@@ -65,45 +63,35 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
 
         setContent {
             DashTrackerTheme(darkTheme = permissionsHelper.uiModeIsDarkMode) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 16.dp)
+                ActivityScreen {
+                    navController = rememberAnimatedNavController()
+
+                    val startScreen = if (
+                        permissionsHelper.sharedPrefs.getBoolean(
+                            PREF_SKIP_WELCOME_SCREEN,
+                            false
+                        )
                     ) {
-                        navController = rememberAnimatedNavController()
+                        permissionsHelper.setBooleanPref(PREF_SKIP_WELCOME_SCREEN, false)
+                        WelcomeActivityScreen.SETTINGS
+                    } else {
+                        WelcomeActivityScreen.WELCOME
+                    }
 
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            val startScreen = if (
-                                permissionsHelper.sharedPrefs.getBoolean(
-                                    PREF_SKIP_WELCOME_SCREEN,
-                                    false
-                                )
-                            ) {
-                                permissionsHelper.setBooleanPref(PREF_SKIP_WELCOME_SCREEN, false)
-                                WelcomeActivityScreen.SETTINGS
-                            } else {
-                                WelcomeActivityScreen.WELCOME
-                            }
-
-                            AnimatedNavHost(
-                                navController = navController!!,
-                                startDestination = startScreen.name,
-                                modifier = Modifier.weight(1f),
-                                enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
-                                exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
-                                popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
-                                popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
-                            ) {
-                                composable(WelcomeActivityScreen.WELCOME.name) {
-                                    WelcomeScreen(callback = this@WelcomeActivity)
-                                }
-                                composable(WelcomeActivityScreen.SETTINGS.name) {
-                                    InitialSettings(this@WelcomeActivity)
-                                }
-                            }
+                    AnimatedNavHost(
+                        navController = navController!!,
+                        startDestination = startScreen.name,
+                        modifier = Modifier.weight(1f),
+                        enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                        exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
+                        popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                        popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
+                    ) {
+                        composable(WelcomeActivityScreen.WELCOME.name) {
+                            WelcomeScreen(callback = this@WelcomeActivity)
+                        }
+                        composable(WelcomeActivityScreen.SETTINGS.name) {
+                            InitialSettings(this@WelcomeActivity)
                         }
                     }
                 }
@@ -124,8 +112,6 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
     companion object {
         @Composable
         fun headerIconColor(): Color = MaterialTheme.colorScheme.inversePrimary
-
-
     }
 }
 
@@ -136,7 +122,8 @@ enum class WelcomeActivityScreen {
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun DefaultPreview() {
     val callback = object : WelcomeScreenCallback {
@@ -148,28 +135,7 @@ fun DefaultPreview() {
     DashTrackerTheme {
         Surface {
             Column {
-                WelcomeScreen(modifier = Modifier.weight(1f), callback)
-            }
-        }
-    }
-}
-
-@ExperimentalAnimationApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun DefaultPreviewNight() {
-    val callback = object : WelcomeScreenCallback {
-        override fun nextScreen() {
-
-        }
-    }
-
-    DashTrackerTheme {
-        Surface {
-            Column {
-                WelcomeScreen(modifier = Modifier.weight(1f), callback)
+                WelcomeScreen(modifier = Modifier.weight(1f), callback,)
             }
         }
     }

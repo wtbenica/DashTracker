@@ -19,8 +19,10 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AccessAlarm
@@ -46,104 +48,127 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalTextApi
 @Composable
-fun ScreenTemplate(
+fun ColumnScope.ScreenTemplate(
     modifier: Modifier = Modifier,
     headerText: String,
     subtitleText: String? = null,
-    iconImage: @Composable (ColumnScope.() -> Unit),
-    mainContent: @Composable (ColumnScope.() -> Unit),
-    navContent: @Composable (ColumnScope.() -> Unit)? = null
+    iconImage: @Composable() (ColumnScope.() -> Unit),
+    mainContent: @Composable() (ColumnScope.() -> Unit),
+    navContent: @Composable() (ColumnScope.() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp)
+            .weight(1f)
     ) {
-        DefaultSpacer()
-
-        OutlinedCard(
-            shape = cardShape,
-            colors = cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ),
-            border = BorderStroke(
-                width = borderStrokeWidth,
-                color = MaterialTheme.colorScheme.primaryContainer
-            )
-        ) {
-            WideSpacer()
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                FillSpacer()
-
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = headerText,
-                        modifier = Modifier.padding(0.dp),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = subtitleText?.let { 18.sp } ?: 20.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-
-                    subtitleText?.let {
-                        Text(
-                            text = it,
-                            modifier = Modifier.padding(0.dp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontSize = 14.sp,
-                        )
-                    }
-                }
-
-                FillSpacer()
-
-                Card(
-                    modifier = Modifier
-                        .width(128.dp)
-                        .height(96.dp)
-                        .align(Alignment.CenterVertically)
-                        .padding(end = dimensionResource(R.dimen.margin_half)),
-                    shape = cardShape,
-                    colors = cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.tertiary
-                    ),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        iconImage()
-                    }
-                }
-            }
-
-            WideSpacer()
-        }
-
-        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_wide)))
-
-        val mainContentScrollState = rememberScrollState()
-
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight()
-                .verticalScroll(state = mainContentScrollState, enabled = true)
+                .padding(
+                    start = marginHalf(),
+                    top = marginHalf(),
+                    end = marginHalf(),
+                    bottom = 0.dp
+                )
         ) {
-            mainContent()
-        }
+            HalfSpacer()
 
-        navContent?.let {
+            OutlinedCard(
+                shape = cardShape,
+                colors = cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
+                border = BorderStroke(
+                    width = borderStrokeWidth,
+                    color = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                HalfSpacer()
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FillSpacer()
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = headerText,
+                            modifier = Modifier.padding(0.dp),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = subtitleText?.let { 18.sp } ?: 20.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+
+                        subtitleText?.let {
+                            Text(
+                                text = it,
+                                modifier = Modifier.padding(0.dp),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                fontSize = 14.sp,
+                            )
+                        }
+                    }
+
+                    FillSpacer()
+
+                    Card(
+                        modifier = Modifier
+                            .width(128.dp)
+                            .height(96.dp)
+                            .align(Alignment.CenterVertically)
+                            .padding(end = dimensionResource(R.dimen.margin_half)),
+                        shape = cardShape,
+                        colors = cardColors(
+                            containerColor = if (isSystemInDarkTheme()) {
+                                MaterialTheme.colorScheme.onSecondaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surface
+                            },
+                            contentColor = MaterialTheme.colorScheme.tertiary
+                        ),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            iconImage()
+                        }
+                    }
+                }
+
+                HalfSpacer()
+            }
+
+            DefaultSpacer()
+
+            val mainContentScrollState = rememberScrollState()
+
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(top = dimensionResource(id = R.dimen.margin_default))
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .verticalScroll(state = mainContentScrollState, enabled = true)
+                    .padding(start = marginHalf(), end = marginHalf(), bottom = marginHalf())
             ) {
-                it()
+                mainContent()
+            }
+        }
+
+        Card(
+            shape = RoundedCornerShape(0.dp),
+            colors = cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
+        ) {
+            navContent?.let {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(vertical = marginNarrow())
+                ) {
+                    it()
+                }
             }
         }
     }
@@ -158,9 +183,9 @@ fun ScreenTemplate(
 @Composable
 fun PreviewScreenTemplate() {
     DashTrackerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
+        ActivityScreen {
             ScreenTemplate(
-                headerText = "ScreenTemplate",
+                headerText = "ScreenTemplate with a long name",
                 subtitleText = "Subtitle",
                 iconImage = {
                     Icon(
@@ -176,6 +201,86 @@ fun PreviewScreenTemplate() {
                         icon = Icons.TwoTone.AccessAlarm,
                         iconDescription = "Access Alarm"
                     )
+
+                    HalfSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    DefaultSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    DefaultSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    HalfSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    DefaultSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    DefaultSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    HalfSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    HalfSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    DefaultSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
+
+                    DefaultSpacer()
+
+                    ContentCard(
+                        titleText = "ContentCard",
+                        icon = Icons.TwoTone.AccessAlarm,
+                        iconDescription = "Access Alarm"
+                    )
                 },
                 navContent = {
                     OnboardingIntroNav()
@@ -184,42 +289,6 @@ fun PreviewScreenTemplate() {
         }
     }
 }
-
-
-//@ExperimentalCoroutinesApi
-//@ExperimentalMaterial3Api
-//@ExperimentalAnimationApi
-//@ExperimentalTextApi
-//@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-//@Composable
-//fun PreviewScreenTemplateNight() {
-//    DashTrackerTheme {
-//        Surface(modifier = Modifier.fillMaxSize()) {
-//            ScreenTemplate(
-//                headerText = "ScreenTemplate",
-//                subtitleText = "Subtitle",
-//                iconImage = {
-//                    Icon(
-//                        imageVector = Icons.TwoTone.Dangerous,
-//                        contentDescription = "Dangerous",
-//                        modifier = Modifier.size(96.dp),
-//                        tint = headerIconColor()
-//                    )
-//                },
-//                mainContent = {
-//                    ContentCard(
-//                        titleText = "ContentCard",
-//                        icon = Icons.TwoTone.AccessAlarm,
-//                        iconDescription = "Access Alarm"
-//                    )
-//                },
-//                navContent = {
-//                    OnboardingIntroNav()
-//                }
-//            )
-//        }
-//    }
-//}
 
 val styleBold: SpanStyle =
     SpanStyle(fontWeight = FontWeight.Bold)

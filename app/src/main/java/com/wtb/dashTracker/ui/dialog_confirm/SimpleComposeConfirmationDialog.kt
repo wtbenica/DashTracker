@@ -173,7 +173,7 @@ class ConfirmationDialogUseTrackedMiles {
             dialog: SimpleConfirmationDialog<View, Any, ViewBinding, ViewBinding>? = null
         ) {
             DashTrackerTheme {
-                val cardStroke = MaterialTheme.colorScheme.outline
+                val cardStroke = MaterialTheme.colorScheme.secondary
                 val cardColors =
                     cardColors(
                         containerColor = MaterialTheme.colorScheme.onTertiaryContainer,

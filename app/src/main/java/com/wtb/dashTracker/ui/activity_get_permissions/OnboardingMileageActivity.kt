@@ -31,17 +31,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Circle
-import androidx.compose.material.icons.twotone.Circle
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,9 +43,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingScreen.*
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.*
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.ActivityScreen
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
@@ -129,65 +123,58 @@ class OnboardingMileageActivity : ComponentActivity() {
 
         setContent {
             DashTrackerTheme(darkTheme = permissionsHelper.uiModeIsDarkMode) {
-                Surface(modifier = Modifier.fillMaxSize()) {
-
+                ActivityScreen {
                     if (loadSingleScreen != null) {
                         if (initialScreen != null && initialScreen!! > loadSingleScreen!!) {
                             finish()
                         }
 
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(bottom = 16.dp)
-                        ) {
-                            when (loadSingleScreen!!) {
-                                INTRO_SCREEN -> {
-                                    OnboardingIntroScreen(
-                                        modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity
-                                    )
-                                }
-                                LOCATION_SCREEN -> {
-                                    GetLocationPermissionsScreen(
-                                        modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity
-                                    )
-                                }
-                                BG_LOCATION_SCREEN -> {
-                                    GetBgLocationPermissionScreen(
-                                        modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity
-                                    )
-                                }
-                                NOTIFICATION_SCREEN -> {
-                                    if (SDK_INT >= TIRAMISU) {
-                                        GetNotificationPermissionScreen(
-                                            modifier = Modifier.weight(1f),
-                                            activity = this@OnboardingMileageActivity,
-                                            finishWhenDone = true
-                                        )
-                                    }
-                                }
-                                OPTIMIZATION_OFF_SCREEN -> {
-                                    GetBatteryPermissionScreen(
+                        when (loadSingleScreen!!) {
+                            INTRO_SCREEN -> {
+                                OnboardingIntroScreen(
+                                    modifier = Modifier.weight(1f),
+                                    activity = this@OnboardingMileageActivity
+                                )
+                            }
+                            LOCATION_SCREEN -> {
+                                GetLocationPermissionsScreen(
+                                    modifier = Modifier.weight(1f),
+                                    activity = this@OnboardingMileageActivity
+                                )
+                            }
+                            BG_LOCATION_SCREEN -> {
+                                GetBgLocationPermissionScreen(
+                                    modifier = Modifier.weight(1f),
+                                    activity = this@OnboardingMileageActivity
+                                )
+                            }
+                            NOTIFICATION_SCREEN -> {
+                                if (SDK_INT >= TIRAMISU) {
+                                    GetNotificationPermissionScreen(
                                         modifier = Modifier.weight(1f),
                                         activity = this@OnboardingMileageActivity,
                                         finishWhenDone = true
                                     )
                                 }
-                                SUMMARY_SCREEN -> {
-                                    SummaryScreen(
-                                        modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity,
-                                    )
-                                }
-                                OPTIMIZATION_ON_SCREEN -> {
-                                    ReenableBatteryOptimizationScreen(
-                                        modifier = Modifier.weight(1f),
-                                        activity = this@OnboardingMileageActivity
-                                    )
-                                }
+                            }
+                            OPTIMIZATION_OFF_SCREEN -> {
+                                GetBatteryPermissionScreen(
+                                    modifier = Modifier.weight(1f),
+                                    activity = this@OnboardingMileageActivity,
+                                    finishWhenDone = true
+                                )
+                            }
+                            SUMMARY_SCREEN -> {
+                                SummaryScreen(
+                                    modifier = Modifier.weight(1f),
+                                    activity = this@OnboardingMileageActivity,
+                                )
+                            }
+                            OPTIMIZATION_ON_SCREEN -> {
+                                ReenableBatteryOptimizationScreen(
+                                    modifier = Modifier.weight(1f),
+                                    activity = this@OnboardingMileageActivity
+                                )
                             }
                         }
                     } else if (initialScreen == null) {
@@ -195,58 +182,52 @@ class OnboardingMileageActivity : ComponentActivity() {
                     } else {
                         navController = rememberAnimatedNavController()
 
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            val navBackStackEntry by navController!!.currentBackStackEntryAsState()
+                        val navBackStackEntry by navController!!.currentBackStackEntryAsState()
 
-                            val route = navBackStackEntry?.destination?.route
+                        val route = navBackStackEntry?.destination?.route
 
-                            AnimatedNavHost(
-                                navController = navController!!,
-                                startDestination = initialScreen!!.name,
-                                modifier = Modifier.weight(1f),
-                                enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
-                                exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
-                                popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
-                                popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
-                            ) {
-                                composable(LOCATION_SCREEN.name) {
-                                    GetLocationPermissionsScreen(activity = this@OnboardingMileageActivity)
-                                }
-                                composable(BG_LOCATION_SCREEN.name) {
-                                    GetBgLocationPermissionScreen(activity = this@OnboardingMileageActivity)
-                                }
-                                composable(NOTIFICATION_SCREEN.name) {
-                                    if (SDK_INT >= TIRAMISU) {
-                                        GetNotificationPermissionScreen(activity = this@OnboardingMileageActivity)
-                                    }
-                                }
-                                composable(OPTIMIZATION_OFF_SCREEN.name) {
-                                    GetBatteryPermissionScreen(activity = this@OnboardingMileageActivity)
-                                }
-                                composable(INTRO_SCREEN.name) {
-                                    OnboardingIntroScreen(activity = this@OnboardingMileageActivity)
-                                }
-                                composable(SUMMARY_SCREEN.name) {
-                                    SummaryScreen(activity = this@OnboardingMileageActivity)
+                        AnimatedNavHost(
+                            navController = navController!!,
+                            startDestination = initialScreen!!.name,
+                            modifier = Modifier.weight(1f),
+                            enterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                            exitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() },
+                            popEnterTransition = { slideInHorizontally { it / 4 } + fadeIn() },
+                            popExitTransition = { slideOutHorizontally { -it / 4 } + fadeOut() }
+                        ) {
+                            composable(LOCATION_SCREEN.name) {
+                                GetLocationPermissionsScreen(activity = this@OnboardingMileageActivity)
+                            }
+                            composable(BG_LOCATION_SCREEN.name) {
+                                GetBgLocationPermissionScreen(activity = this@OnboardingMileageActivity)
+                            }
+                            composable(NOTIFICATION_SCREEN.name) {
+                                if (SDK_INT >= TIRAMISU) {
+                                    GetNotificationPermissionScreen(activity = this@OnboardingMileageActivity)
                                 }
                             }
-
-                            val absoluteScreenNumber = route?.let {
-                                OnboardingScreen.valueOf(it).ordinal
-                            } ?: 0
-
-                            val currentPage =
-                                missingPermissions.subList(0, absoluteScreenNumber).count { it }
-
-                            PageIndicator(
-                                modifier = Modifier.padding(
-                                    horizontal = 16.dp,
-                                    vertical = 0.dp
-                                ),
-                                numPages = numPages,
-                                selectedPage = currentPage
-                            )
+                            composable(OPTIMIZATION_OFF_SCREEN.name) {
+                                GetBatteryPermissionScreen(activity = this@OnboardingMileageActivity)
+                            }
+                            composable(INTRO_SCREEN.name) {
+                                OnboardingIntroScreen(activity = this@OnboardingMileageActivity)
+                            }
+                            composable(SUMMARY_SCREEN.name) {
+                                SummaryScreen(activity = this@OnboardingMileageActivity)
+                            }
                         }
+
+                        val absoluteScreenNumber = route?.let {
+                            valueOf(it).ordinal
+                        } ?: 0
+
+                        val currentPage =
+                            missingPermissions.subList(0, absoluteScreenNumber).count { it }
+
+                        PageIndicator(
+                            numPages = numPages,
+                            selectedPage = currentPage
+                        )
                     }
                 }
             }
@@ -487,72 +468,25 @@ enum class OnboardingScreen {
     OPTIMIZATION_ON_SCREEN
 }
 
+@ExperimentalCoroutinesApi
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
+@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-internal fun PageIndicator(modifier: Modifier = Modifier, numPages: Int, selectedPage: Int = 0) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        for (i in 0 until numPages) {
-            Icon(
-                if (i == selectedPage) Icons.Filled.Circle else Icons.TwoTone.Circle,
-                contentDescription = stringResource(
-                    R.string.content_desc_page_indicator,
-                    selectedPage + 1,
-                    numPages
-                ),
-                modifier = Modifier.size(8.dp),
-                tint = MaterialTheme.colorScheme.inversePrimary
+fun GetPermissionsActivityPreview() {
+    DashTrackerTheme {
+        ActivityScreen {
+            GetLocationPermissionsScreen()
+
+            PageIndicator(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
+                numPages = 4,
+                selectedPage = 0
             )
         }
     }
 }
 
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-@Preview(showBackground = true)
-@Composable
-fun GetPermissionsActivityPreview() {
-    DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                GetLocationPermissionsScreen()
-                PageIndicator(numPages = 4, selectedPage = 0)
-            }
-        }
-    }
-}
 
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun GetPermissionsActivityPreviewNight() {
-    DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                GetLocationPermissionsScreen()
-                PageIndicator(numPages = 4, selectedPage = 0)
-            }
-        }
-    }
-}
-
-@ExperimentalTextApi
-@Preview(showBackground = true)
-@Composable
-fun PageIndicatorPreview() {
-    DashTrackerTheme {
-        PageIndicator(numPages = 4, selectedPage = 1)
-    }
-}

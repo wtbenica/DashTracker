@@ -56,7 +56,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Composable
-fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity) {
+fun ColumnScope.SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity) {
     val permHelp = PermissionsHelper(activity)
 
     fun getIconImage(): @Composable (ColumnScope.() -> Unit) {
@@ -162,12 +162,7 @@ fun SummaryScreenNav(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        FillSpacer()
-
+    BottomNavButtons {
         CustomButton(
             onClick = {
                 activity?.setBooleanPref(activity.PREF_SHOW_SUMMARY_SCREEN, false)
@@ -245,7 +240,7 @@ fun PermRow(
 @Composable
 fun SummaryScreenPreview() {
     DashTrackerTheme {
-        Surface {
+        ActivityScreen {
             ScreenTemplate(
                 headerText = "Mileage Tracking",
                 iconImage = {
@@ -277,47 +272,6 @@ fun SummaryScreenPreview() {
         }
     }
 }
-
-//@ExperimentalCoroutinesApi
-//@ExperimentalTextApi
-//@ExperimentalMaterial3Api
-//@ExperimentalAnimationApi
-//@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-//@Composable
-//fun SummaryScreenPreviewNight() {
-//    DashTrackerTheme {
-//        Surface {
-//            ScreenTemplate(
-//                headerText = "Mileage Tracking",
-//                iconImage = {
-//                    Icon(
-//                        imageVector = Icons.Outlined.LocationOff,
-//                        contentDescription = "Location Off",
-//                        modifier = Modifier.size(96.dp),
-//                        tint = headerIconColor()
-//                    )
-//                },
-//                mainContent = {
-//                    CustomOutlinedCard {
-//                        Text(text = "Automatic mileage tracking is enabled")
-//                    }
-//
-//                    HalfSpacer()
-//
-//                    PermissionsSummaryCard(
-//                        locationEnabled = true,
-//                        bgLocationEnabled = true,
-//                        notificationsEnabled = true,
-//                        batteryOptimizationDisabled = false
-//                    )
-//                },
-//                navContent = {
-//                    SummaryScreenNav()
-//                }
-//            )
-//        }
-//    }
-//}
 
 @ExperimentalTextApi
 @Composable

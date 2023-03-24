@@ -18,13 +18,14 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.PinDrop
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -36,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -50,7 +51,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetBgLocationPermissionScreen(
+fun ColumnScope.GetBgLocationPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ): Unit =
@@ -96,7 +97,7 @@ fun GetBgLocationPermissionScreen(
 
                     append(", then return to DashTracker.")
                 }
-                Text(str, modifier = Modifier.padding(24.dp))
+                Text(str, modifier = Modifier.padding(marginDefault()))
             }
         },
         navContent = {
@@ -113,12 +114,7 @@ fun GetBgLocationPermissionNav(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        FillSpacer()
-
+    BottomNavButtons {
         CustomTextButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_LOCATION, true)
@@ -129,7 +125,7 @@ fun GetBgLocationPermissionNav(
             Text("No thanks")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
         CustomTextButton(
             onClick = {
@@ -141,7 +137,7 @@ fun GetBgLocationPermissionNav(
             Text("Maybe later")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
         CustomButton(
             onClick = {
@@ -172,17 +168,13 @@ fun GetBgLocationPermissionNav(
 @Composable
 fun GetBgLocationPermissionPreview() {
     DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                GetBgLocationPermissionScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 2
-                )
-            }
+        ActivityScreen {
+            GetBgLocationPermissionScreen()
+
+            PageIndicator(
+                numPages = 5,
+                selectedPage = 2
+            )
         }
     }
 }
