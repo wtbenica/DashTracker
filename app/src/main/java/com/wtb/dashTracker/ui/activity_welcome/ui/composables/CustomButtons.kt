@@ -18,7 +18,8 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FirstPage
 import androidx.compose.material.icons.filled.TextSnippet
@@ -30,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.BottomNavButtons
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 
 @ExperimentalTextApi
@@ -40,12 +40,11 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    OutlinedButton(
+    Button(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.inversePrimary),
         onClick = onClick,
         modifier = modifier,
         content = content
@@ -70,6 +69,14 @@ fun CustomTextButton(
     )
 }
 
+@ExperimentalTextApi
+@Composable
+fun DefaultButton(
+    onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit
+) {
+    CustomOutlinedButton(onClick = onClick, modifier = modifier, content = content)
+}
+
 
 @ExperimentalTextApi
 @Composable
@@ -80,14 +87,26 @@ fun CustomOutlinedButton(
 ) {
     OutlinedButton(
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.inverseOnSurface),
         onClick = onClick,
         modifier = modifier,
         content = content
     )
+}
+
+@Composable
+fun BottomNavButtons(content: @Composable RowScope.() -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = marginHalf())
+    ) {
+        FillSpacer()
+        content()
+    }
 }
 
 @ExperimentalTextApi
@@ -96,24 +115,41 @@ fun CustomOutlinedButton(
 @Composable
 fun PreviewButtons() {
     DashTrackerTheme {
-        BottomNavButtons {
-            CustomButton(onClick = { }) {
-                Text(text = "Button")
-                Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
-            }
+        Surface {
+            Card(
+                shape = RoundedCornerShape(0.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(top = marginHalf(), bottom = marginNarrow())
+                ) {
+                    BottomNavButtons {
+                        CustomButton(onClick = { }) {
+                            Text(text = "Button")
+                            Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
+                        }
 
-            HalfSpacer()
+                        HalfSpacer()
 
-            CustomTextButton(onClick = {}) {
-                Text(text = "Text")
-                Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
-            }
+                        CustomTextButton(onClick = {}) {
+                            Text(text = "Text")
+                            Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
+                        }
 
-            HalfSpacer()
+                        HalfSpacer()
 
-            CustomOutlinedButton(onClick = {}) {
-                Text(text = "Outlined")
-                Icon(Icons.Outlined.Circle, contentDescription = "Circle")
+                        CustomOutlinedButton(onClick = {}) {
+                            Text(text = "Outlined")
+                            Icon(Icons.Outlined.Circle, contentDescription = "Circle")
+                        }
+                    }
+                }
             }
         }
     }

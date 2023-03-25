@@ -25,11 +25,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
@@ -107,11 +105,6 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
         permissionsHelper.setBooleanPref(PREF_SHOW_ONBOARD_INTRO, false)
         startActivity(Intent(this, OnboardingMileageActivity::class.java))
         finish()
-    }
-
-    companion object {
-        @Composable
-        fun headerIconColor(): Color = MaterialTheme.colorScheme.inversePrimary
     }
 }
 

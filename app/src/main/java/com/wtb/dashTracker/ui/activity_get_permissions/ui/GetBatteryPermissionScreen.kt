@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
@@ -123,7 +123,6 @@ fun ColumnScope.GetBatteryPermissionScreen(
 @ExperimentalTextApi
 @Composable
 fun GetBatteryPermissionNav(
-    modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
 ) {
@@ -154,7 +153,7 @@ fun GetBatteryPermissionNav(
 
         HalfSpacer()
 
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, false)
                 activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, true)
@@ -183,12 +182,12 @@ fun GetBatteryPermissionNav(
 fun GetBatteryPermissionPreview() {
     DashTrackerTheme {
         ActivityScreen {
-                GetBatteryPermissionScreen()
+            GetBatteryPermissionScreen()
 
-                PageIndicator(
-                    numPages = 5,
-                    selectedPage = 4
-                )
-            }
+            PageIndicator(
+                numPages = 5,
+                selectedPage = 4
+            )
+        }
     }
 }

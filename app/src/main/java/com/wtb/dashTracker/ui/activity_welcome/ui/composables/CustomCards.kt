@@ -69,11 +69,41 @@ fun customCardColors(): CardColors {
     )
 }
 
-//        MaterialTheme.colorScheme.secondary
-
 val borderStrokeWidth: Dp
     @Composable get() = dimensionResource(id = R.dimen.margin_skinny)
 
+@ExperimentalTextApi
+@Composable
+fun DefaultOutlinedCard(
+    modifier: Modifier = Modifier,
+    outlineColor: Color? = null,
+    content: @Composable() (ColumnScope.() -> Unit)
+): Unit = OutlinedCard(
+    modifier = modifier
+        .fillMaxWidth()
+        .clip(cardShape),
+    shape = cardShape,
+    colors = customCardColors(),
+    border = BorderStroke(
+        width = borderStrokeWidth,
+        color = outlineColor ?: MaterialTheme.colorScheme.outlineVariant
+    ),
+    content = content
+)
+
+@ExperimentalTextApi
+@Composable
+fun CustomOutlinedCard(
+    modifier: Modifier = Modifier,
+    padding: Dp? = null,
+    content: @Composable() (ColumnScope.() -> Unit)
+): Unit = DefaultOutlinedCard {
+    Column(
+        modifier = Modifier.padding(padding ?: marginDefault())
+    ) {
+        content()
+    }
+}
 
 @ExperimentalTextApi
 @Composable
@@ -87,25 +117,18 @@ fun SingleExpandableCard(
     content: @Composable (() -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    OutlinedCard(
+
+    DefaultOutlinedCard(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(cardShape)
             .clickable(
                 interactionSource = interactionSource,
                 indication = rememberRipple(
                     bounded = true,
                     radius = Dp.Unspecified,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    color = MaterialTheme.colorScheme.surfaceTint
                 ),
                 enabled = content != null
             ) { callback() },
-        shape = cardShape,
-        colors = customCardColors(),
-        border = BorderStroke(
-            width = borderStrokeWidth,
-            color = MaterialTheme.colorScheme.outline
-        )
     ) {
         Column {
             Row(
@@ -114,7 +137,11 @@ fun SingleExpandableCard(
                         .padding(all = marginDefault())
                 } else {
                     Modifier
-                        .padding(start = marginDefault(), top = marginDefault(), end = marginDefault())
+                        .padding(
+                            start = marginDefault(),
+                            top = marginDefault(),
+                            end = marginDefault()
+                        )
                 }
             ) {
                 Text(
@@ -122,7 +149,7 @@ fun SingleExpandableCard(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .weight(1f),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Start,
                 )
@@ -160,7 +187,7 @@ fun SingleExpandableCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(marginDefault()),
-                        tint = MaterialTheme.colorScheme.tertiary
+                        tint = iconTint
                     )
                     false -> Icon(
                         Icons.Filled.KeyboardArrowDown,
@@ -168,41 +195,13 @@ fun SingleExpandableCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(marginDefault()),
-                        tint = MaterialTheme.colorScheme.tertiary
+                        tint = iconTint
                     )
                 }
             }
         }
     }
 }
-
-@ExperimentalTextApi
-@Composable
-fun CustomOutlinedCard(
-    modifier: Modifier = Modifier,
-    padding: Dp? = null,
-    outlineColor: Color = MaterialTheme.colorScheme.outline,
-    content: @Composable (ColumnScope.() -> Unit)
-): Unit = OutlinedCard(
-    modifier = modifier
-        .fillMaxWidth()
-        .clip(cardShape),
-    shape = cardShape,
-    colors = customCardColors(),
-    border = BorderStroke(
-        width = borderStrokeWidth,
-        color = outlineColor
-    ),
-) {
-    Column(
-        modifier = Modifier.padding(
-            padding ?: marginDefault()
-        )
-    ) {
-        content()
-    }
-}
-
 
 /**
  * Outlined card with title, icon, and content areas
@@ -222,22 +221,16 @@ fun ContentCard(
     iconDescription: String,
     content: @Composable (() -> Unit)? = null
 ) {
-    OutlinedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(cardShape),
-        shape = cardShape,
-        colors = customCardColors(),
-        border = BorderStroke(
-            width = borderStrokeWidth,
-            color = MaterialTheme.colorScheme.secondary
-        )
-    ) {
+    DefaultOutlinedCard {
         Row(
             modifier = if (content == null) {
                 Modifier.padding(all = marginDefault())
             } else {
-                Modifier.padding(start = marginDefault(), top = marginDefault(), end = marginDefault())
+                Modifier.padding(
+                    start = marginDefault(),
+                    top = marginDefault(),
+                    end = marginDefault()
+                )
             }
         ) {
             Text(
@@ -277,13 +270,14 @@ fun SecondaryCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Card(
+    OutlinedCard(
         modifier = modifier.fillMaxWidth(),
         shape = cardShape,
         colors = cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            containerColor = MaterialTheme.colorScheme.inverseSurface,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.inverseOnSurface)
     ) {
         content()
     }
@@ -320,7 +314,7 @@ fun ListRow(
             text,
             fontSize = fontSize,
             fontFamily = fontFamily,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -329,73 +323,70 @@ fun ListRow(
 @Composable
 @Preview
 @Preview(uiMode = UI_MODE_NIGHT_YES)
-fun PreviewSingleExpandableCard() {
+fun CardPreviews() {
     DashTrackerTheme {
-        SingleExpandableCard(
-            text = "Track Your Income",
-            icon = Icons.TwoTone.SquareFoot,
-            iconDescription = "Stinky Fish",
-            isExpanded = true,
-            callback = { },
-        ) {
-            ListRow("Eat your potato salad, dearie")
-        }
-    }
-}
+        Surface {
+            Column(modifier = Modifier.padding(marginDefault())) {
+                CustomOutlinedCard {
+                    Text("This has been here for a while, but I forgot because there was never a preview for it.")
+                }
 
-@ExperimentalTextApi
-@Composable
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-fun PreviewContentCard() {
-    DashTrackerTheme {
-        ContentCard(
-            titleText = "Track your income as if your life depended on it i'm trying to see what " +
-                    "happens when the text is long and I want to see if it is limited to nope",
-            icon = Icons.TwoTone.AttachMoney,
-            iconDescription = "Drawing of a car",
-        ) {
-            Column {
-                ListRow("Is today Monday?")
-                ListRow(
-                    "\"Eat your potato salad, dearie,\" said the wolf to the crow, as the night " +
-                            "melody played of whistles and skeetleburrs."
-                )
+                DefaultSpacer()
+
+                SingleExpandableCard(
+                    text = "Track Your Income",
+                    icon = Icons.TwoTone.SquareFoot,
+                    iconDescription = "Stinky Fish",
+                    isExpanded = true,
+                    callback = { },
+                ) {
+                    ListRow("Eat your potato salad, dearie")
+                }
+
+                DefaultSpacer()
+
+                ContentCard(
+                    titleText = "Track your income as if your life depended on it i'm trying to see what " +
+                            "happens when the text is long and I want to see if it is limited to nope",
+                    icon = Icons.TwoTone.AttachMoney,
+                    iconDescription = "Drawing of a car",
+                ) {
+                    Column {
+                        ListRow("Is today Monday?")
+                        ListRow(
+                            "\"Eat your potato salad, dearie,\" said the wolf to the crow, as the night " +
+                                    "melody played of whistles and skeetleburrs."
+                        )
+                    }
+                }
+
+                DefaultSpacer()
+
+                SecondaryCard {
+                    val str = buildAnnotatedString {
+                        append("To grant location permissions, select ")
+
+                        withStyle(style = styleBold) {
+                            append("OK")
+                        }
+
+                        append(" then allow location access ")
+
+                        withStyle(style = styleBold) {
+                            append("While using the app")
+                        }
+
+                        append(", then ")
+
+                        withStyle(style = styleBold) {
+                            append("Allow")
+                        }
+
+                        append(" physical activity access.")
+                    }
+                    Text(str, modifier = Modifier.padding(marginDefault()))
+                }
             }
-        }
-    }
-}
-
-
-@ExperimentalTextApi
-@Composable
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-fun PreviewSecondaryCard() {
-    DashTrackerTheme {
-        SecondaryCard {
-            val str = buildAnnotatedString {
-                append("To grant location permissions, select ")
-
-                withStyle(style = styleBold) {
-                    append("OK")
-                }
-
-                append(" then allow location access ")
-
-                withStyle(style = styleBold) {
-                    append("While using the app")
-                }
-
-                append(", then ")
-
-                withStyle(style = styleBold) {
-                    append("Allow")
-                }
-
-                append(" physical activity access.")
-            }
-            Text(str, modifier = Modifier.padding(marginDefault()))
         }
     }
 }

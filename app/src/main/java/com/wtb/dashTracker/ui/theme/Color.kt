@@ -1,5 +1,7 @@
 package com.wtb.dashTracker.ui.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val primaryDark: Color = Color(0xFF90C060)
@@ -37,3 +39,6 @@ val darkAccent: Color = Color(0xFFA0BBBB)
 
 val darkOnSecondary: Color = Color(0xFF101014)
 val darkOnSecondaryVariant: Color = Color(0xFF202024)
+
+@Composable
+fun headerIconColor(): Color = MaterialTheme.colorScheme.inversePrimary

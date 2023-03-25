@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -110,10 +110,7 @@ fun ColumnScope.GetBgLocationPermissionScreen(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetBgLocationPermissionNav(
-    modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null
-) {
+fun GetBgLocationPermissionNav(activity: OnboardingMileageActivity? = null) {
     BottomNavButtons {
         CustomTextButton(
             onClick = {
@@ -139,7 +136,7 @@ fun GetBgLocationPermissionNav(
 
         HalfSpacer()
 
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_LOCATION, false)
                 activity?.setLocationEnabled(true)

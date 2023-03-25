@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui
 
+
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -35,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.BottomNavButtons
 import com.wtb.dashTracker.ui.activity_welcome.ui.SelectedCard.*
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
@@ -142,7 +142,7 @@ fun ColumnScope.WelcomeScreen(
 @Composable
 fun WelcomeNav(callback: WelcomeScreenCallback) {
     BottomNavButtons {
-        CustomButton(
+        DefaultButton(
             onClick = {
                 callback.nextScreen()
             },

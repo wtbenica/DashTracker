@@ -18,7 +18,6 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.OnboardingIntroNav
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.cardShape
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalTextApi
@@ -72,7 +71,7 @@ fun ColumnScope.ScreenTemplate(
                 ),
                 colors = cardColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
             ) {
                 HalfSpacer()
@@ -84,7 +83,7 @@ fun ColumnScope.ScreenTemplate(
                         Text(
                             text = headerText,
                             modifier = Modifier.padding(0.dp),
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = subtitleText?.let { 18.sp } ?: 20.sp,
                             fontWeight = FontWeight.Bold,
                         )
@@ -109,12 +108,8 @@ fun ColumnScope.ScreenTemplate(
                             .padding(end = dimensionResource(R.dimen.margin_half)),
                         shape = cardShape,
                         colors = cardColors(
-                            containerColor = if (isSystemInDarkTheme()) {
-                                MaterialTheme.colorScheme.onSecondaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.surface
-                            },
-                            contentColor = MaterialTheme.colorScheme.tertiary
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                     ) {
                         Column(
@@ -145,19 +140,19 @@ fun ColumnScope.ScreenTemplate(
             }
         }
 
-        Card(
-            shape = RoundedCornerShape(0.dp),
-            colors = cardColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
-            navContent?.let {
+        navContent?.let {
+            Card(
+                shape = RoundedCornerShape(0.dp),
+                colors = cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(vertical = marginNarrow())
+                        .padding(top = marginHalf(), bottom = marginNarrow())
                 ) {
                     it()
                 }

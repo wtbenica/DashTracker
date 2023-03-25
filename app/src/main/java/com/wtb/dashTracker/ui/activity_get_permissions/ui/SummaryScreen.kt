@@ -38,9 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
@@ -158,11 +158,9 @@ fun ColumnScope.SummaryScreen(modifier: Modifier = Modifier, activity: Onboardin
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Composable
-fun SummaryScreenNav(
-    activity: OnboardingMileageActivity? = null,
-) {
+fun SummaryScreenNav(activity: OnboardingMileageActivity? = null, ) {
     BottomNavButtons {
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setBooleanPref(activity.PREF_SHOW_SUMMARY_SCREEN, false)
                 activity?.finish()

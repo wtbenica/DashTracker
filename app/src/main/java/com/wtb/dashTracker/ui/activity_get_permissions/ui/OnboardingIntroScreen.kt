@@ -18,7 +18,9 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.PriceCheck
@@ -40,9 +42,9 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
@@ -106,18 +108,6 @@ fun ColumnScope.OnboardingIntroScreen(
         }
     )
 
-@Composable
-fun BottomNavButtons(content: @Composable RowScope.() -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = marginHalf())
-    ) {
-        FillSpacer()
-        content()
-    }
-}
-
 /**
  * Provides buttons for opting-in or -out to automatic mileage tracking: opt out, opt in, or
  * decide later. Sets the result for [activity] and calls [WelcomeActivity.finish]
@@ -156,7 +146,7 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
 
         HalfSpacer()
 
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setOptOutLocation(false)
                 activity?.setLocationEnabled(true)

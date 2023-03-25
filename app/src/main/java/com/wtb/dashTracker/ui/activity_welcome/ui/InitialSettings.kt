@@ -21,6 +21,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.NavigateNext
@@ -38,13 +39,12 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.ui.activity_get_permissions.ui.BottomNavButtons
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.cardShape
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
@@ -94,11 +94,10 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
 
                     val focusManager = LocalFocusManager.current
 
-                    val regularOutline = MaterialTheme.colorScheme.outline
-                    val focusedOutline = MaterialTheme.colorScheme.errorContainer
+                    val regularOutline = MaterialTheme.colorScheme.outlineVariant
+                    val focusedOutline = MaterialTheme.colorScheme.onError
 
-                    CustomOutlinedCard(
-                        padding = 0.dp,
+                    DefaultOutlinedCard(
                         outlineColor = if (expanded) {
                             focusedOutline
                         } else {
@@ -131,7 +130,7 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
                                 shape = cardShape,
                             )
 
-                            MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall = cardShape)) {
+                            MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(marginHalf()))) {
                                 DropdownMenu(
                                     expanded = expanded,
                                     onDismissRequest = {
@@ -139,10 +138,11 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
                                         focusManager.clearFocus(true)
                                     },
                                     modifier = Modifier
-                                        .background(MaterialTheme.colorScheme.onSecondary)
+                                        .background(MaterialTheme.colorScheme.surface)
                                 ) {
                                     PermissionsHelper.UiMode.values().forEach {
                                         val uiModeText = stringResource(it.displayName)
+
                                         DropdownMenuItem(
                                             text = {
                                                 Text(
@@ -203,7 +203,7 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
                                 newValue
                             )
                         },
-                        colors = csc()
+                        colors = switchColors()
                     )
                 }
             ) {
@@ -237,7 +237,7 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
                                 newValue
                             )
                         },
-                        colors = csc()
+                        colors = switchColors()
                     )
                 }
             ) {
@@ -255,14 +255,14 @@ fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
 }
 
 @Composable
-fun csc(): SwitchColors {
+fun switchColors(): SwitchColors {
     return SwitchDefaults.colors(
-        checkedThumbColor = MaterialTheme.colorScheme.outline,
-        checkedTrackColor = MaterialTheme.colorScheme.onBackground,
-        checkedBorderColor = MaterialTheme.colorScheme.outline,
+        checkedThumbColor = MaterialTheme.colorScheme.secondary,
+        checkedTrackColor = MaterialTheme.colorScheme.surface,
+        checkedBorderColor = MaterialTheme.colorScheme.outlineVariant,
         uncheckedThumbColor = MaterialTheme.colorScheme.errorContainer,
-        uncheckedTrackColor = MaterialTheme.colorScheme.onBackground,
-        uncheckedBorderColor = MaterialTheme.colorScheme.outline
+        uncheckedTrackColor = MaterialTheme.colorScheme.onError,
+        uncheckedBorderColor = MaterialTheme.colorScheme.outlineVariant
     )
 }
 
@@ -272,7 +272,7 @@ fun SettingsCard(
     headerContent: @Composable (RowScope.() -> Unit),
     body: @Composable (ColumnScope.() -> Unit)? = null
 ) {
-    CustomOutlinedCard(padding = 0.dp) {
+    DefaultOutlinedCard {
         Column {
             Surface(
                 color = MaterialTheme.colorScheme.onError,
@@ -316,8 +316,9 @@ fun InitialSettingsNav(callback: InitialScreenCallback? = null) {
     val cb = callback ?: object : InitialScreenCallback {
         override fun nextScreen2() {}
     }
+
     BottomNavButtons {
-        CustomButton(
+        DefaultButton(
             onClick = {
                 cb.nextScreen2()
             },

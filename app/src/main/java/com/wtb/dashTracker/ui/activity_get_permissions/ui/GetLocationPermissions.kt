@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -159,7 +159,7 @@ fun GetLocationPermissionsNav(
 
         HalfSpacer()
 
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setOptOutLocation(false)
                 activity?.setLocationEnabled(true)

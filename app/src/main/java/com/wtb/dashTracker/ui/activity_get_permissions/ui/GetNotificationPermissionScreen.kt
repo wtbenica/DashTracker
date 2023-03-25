@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
@@ -110,7 +110,6 @@ fun ColumnScope.GetNotificationPermissionScreen(
 @ExperimentalTextApi
 @Composable
 fun GetNotificationsPermissionNav(
-    modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
 ) {
@@ -141,7 +140,7 @@ fun GetNotificationsPermissionNav(
 
         HalfSpacer()
 
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, false)
                 activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, true)
