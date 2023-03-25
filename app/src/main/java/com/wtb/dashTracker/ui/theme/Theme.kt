@@ -94,7 +94,7 @@ private val LightColorScheme: ColorScheme = lightColorScheme(
     onSurfaceVariant = onPrimary, // DropDown arrow (?can't change?)
     surfaceTint = secondaryFaded, // expandable card ripple
     inverseSurface = primaryFaded, // Secondary Card bg
-    inverseOnSurface = primaryDark, // Secondary Card stroke, outline button outline
+    inverseOnSurface = primary, // Secondary Card stroke, outline button outline
 
 //    error = DEFAULT,
 

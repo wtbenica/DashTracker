@@ -18,6 +18,7 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -74,7 +75,11 @@ fun CustomTextButton(
 fun DefaultButton(
     onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit
 ) {
-    CustomOutlinedButton(onClick = onClick, modifier = modifier, content = content)
+    if (isSystemInDarkTheme()) {
+        CustomButton(onClick = onClick, modifier = modifier, content = content)
+    } else {
+        CustomOutlinedButton(onClick = onClick, modifier = modifier, content = content)
+    }
 }
 
 
@@ -90,7 +95,7 @@ fun CustomOutlinedButton(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.inverseOnSurface),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.inversePrimary),
         onClick = onClick,
         modifier = modifier,
         content = content
