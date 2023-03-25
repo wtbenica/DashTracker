@@ -124,7 +124,7 @@ private const val APP = "GT_"
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
 
-private var IS_TESTING = false
+private var IS_TESTING = true
 
 private const val DEBUGGING = true
 internal fun Any.debugLog(message: String, condition: Boolean = true) {
