@@ -112,15 +112,15 @@
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
         <item name="colorListItemBorder">?attr/colorListItem</item>
-        <item name="colorListItemExpanded">?attr/colorPrimary</item>
+        <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
         <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorOnSecondaryVariant</item>
         <item name="colorListItemRipple">?attr/colorPrimaryVariant</item>
 
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimaryDisabled</item>
-        <item name="colorListItemButtonBg">?attr/colorPrimaryVariant</item>
-        <item name="colorListItemButtonIcon">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemButtonBg">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
         <item name="colorListItemButtonOutline">?attr/colorPrimaryDark</item>
 
         <item name="colorListItemShadow">?attr/colorUIBackground</item>
