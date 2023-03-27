@@ -16,8 +16,8 @@
 
 <resources>
     <color name="dark">#1b201b</color>
-    <color name="regular">#283028</color>
-    <color name="light">#384038</color>
+    <color name="regular">#283828</color>
+    <color name="light">#384838</color>
     <color name="faded">#A0A080</color>
 
     <color name="on_regular">#E8E8E8</color>
@@ -41,5 +41,5 @@
     <color name="alert">#EE5522</color>
     <color name="tracking_status">#70E050</color>
     <color name="tracking_status_fill">#209000</color>
-    <color name="splash_screen_bg">#141414</color>
+    <color name="splash_screen_bg">#1b201b</color>
 </resources>

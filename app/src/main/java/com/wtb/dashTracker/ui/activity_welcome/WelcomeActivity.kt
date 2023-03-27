@@ -55,6 +55,9 @@ class WelcomeActivity : ComponentActivity(), WelcomeScreenCallback, InitialScree
     private val permissionsHelper = PermissionsHelper(this)
     private var navController: NavHostController? = null
 
+    override val isDarkMode: Boolean
+        get() = permissionsHelper.uiModeIsDarkMode
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
@@ -120,15 +123,16 @@ enum class WelcomeActivityScreen {
 @Composable
 fun DefaultPreview() {
     val callback = object : WelcomeScreenCallback {
-        override fun nextScreen() {
+        override fun nextScreen() {}
 
-        }
+        override val isDarkMode: Boolean
+            get() = true
     }
 
     DashTrackerTheme {
         Surface {
             Column {
-                WelcomeScreen(modifier = Modifier.weight(1f), callback,)
+                WelcomeScreen(modifier = Modifier.weight(1f), callback)
             }
         }
     }

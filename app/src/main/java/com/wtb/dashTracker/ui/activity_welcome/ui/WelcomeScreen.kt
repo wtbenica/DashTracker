@@ -42,6 +42,7 @@ import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 
 interface WelcomeScreenCallback {
     fun nextScreen()
+    val isDarkMode: Boolean
 }
 
 enum class SelectedCard {
@@ -54,11 +55,11 @@ enum class SelectedCard {
 fun ColumnScope.WelcomeScreen(
     modifier: Modifier = Modifier,
     callback: WelcomeScreenCallback,
-) =
+): Unit =
     ScreenTemplate(
         modifier = modifier,
         headerText = stringResource(R.string.welcome_header_welcome_screen),
-        iconImage = { Logo() },
+        iconImage = { Logo(callback.isDarkMode) },
         mainContent = {
             Column {
                 var expandedCard by remember { mutableStateOf(NONE) }
@@ -165,6 +166,7 @@ fun WelcomeNav(callback: WelcomeScreenCallback) {
 fun PreviewWelcome() {
     val callback = object : WelcomeScreenCallback {
         override fun nextScreen() {}
+        override val isDarkMode: Boolean = true
     }
 
     DashTrackerTheme {

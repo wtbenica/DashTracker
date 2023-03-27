@@ -55,8 +55,9 @@ fun ColumnScope.ScreenTemplate(
     navContent: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .weight(1f)
+            .then(modifier)
     ) {
         Column(
             modifier = Modifier
@@ -141,22 +142,7 @@ fun ColumnScope.ScreenTemplate(
         }
 
         navContent?.let {
-            Card(
-                shape = RoundedCornerShape(0.dp),
-                colors = cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(top = marginHalf(), bottom = marginNarrow())
-                ) {
-                    it()
-                }
-            }
+            it()
         }
     }
 }

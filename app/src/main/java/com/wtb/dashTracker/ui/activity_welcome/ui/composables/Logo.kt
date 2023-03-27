@@ -16,12 +16,15 @@
 
 package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -33,10 +36,14 @@ import androidx.core.content.res.ResourcesCompat
 import com.wtb.dashTracker.R
 
 @Composable
-fun Logo() {
+fun Logo(darkMode: Boolean = isSystemInDarkTheme()) {
     ResourcesCompat.getDrawable(
         /* res = */ LocalContext.current.resources,
-        /* id = */ R.drawable.launch_icon_foreground_full,
+        /* id = */ if (darkMode) {
+            R.drawable.launch_icon_foreground_full_night
+        } else {
+            R.drawable.launch_icon_foreground_full
+        },
         /* theme = */ LocalContext.current.theme
     )?.let { drawable ->
         val bitmap = Bitmap.createBitmap(
@@ -50,7 +57,8 @@ fun Logo() {
         Image(
             bitmap = bitmap.asImageBitmap(),
             contentDescription = "DashTracker logo",
-            modifier = Modifier.requiredSize(96.dp)
+            modifier = Modifier
+                .requiredSize(96.dp)
                 .padding(8.dp),
         )
     }
@@ -59,7 +67,10 @@ fun Logo() {
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewLogo() {
-    Logo()
+    Surface {
+        Logo()
+    }
 }

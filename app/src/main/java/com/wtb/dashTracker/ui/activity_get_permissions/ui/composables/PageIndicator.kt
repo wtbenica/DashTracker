@@ -43,15 +43,16 @@ internal fun PageIndicator(
     Card(
         shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            containerColor = MaterialTheme.colorScheme.onTertiary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
+                .then(modifier)
         ) {
             for (i in 0 until numPages) {
                 Icon(

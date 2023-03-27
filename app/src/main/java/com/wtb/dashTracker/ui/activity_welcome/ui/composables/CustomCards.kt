@@ -79,9 +79,10 @@ fun DefaultOutlinedCard(
     outlineColor: Color? = null,
     content: @Composable() (ColumnScope.() -> Unit)
 ): Unit = OutlinedCard(
-    modifier = modifier
+    modifier = Modifier
         .fillMaxWidth()
-        .clip(cardShape),
+        .clip(cardShape)
+        .then(modifier),
     shape = cardShape,
     colors = customCardColors(),
     border = BorderStroke(

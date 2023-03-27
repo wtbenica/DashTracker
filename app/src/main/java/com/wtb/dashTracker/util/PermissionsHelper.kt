@@ -190,9 +190,10 @@ class PermissionsHelper(val context: Context) {
         ) ?: context.getString(UiMode.SYSTEM.displayName)
     }
 
-    fun updateUiMode(uiMode: UiMode, onPrefSet: (() -> Unit)? = null) {
+    fun updateUiMode(theme: String, onPrefSet: (() -> Unit)? = null) {
         @Suppress("ApplySharedPref")
         sharedPrefs?.apply {
+            val uiMode = uiModeByDisplayName(theme)
             edit()
                 .putString(
                     context.UI_MODE_PREF,
