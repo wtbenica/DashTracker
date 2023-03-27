@@ -60,6 +60,8 @@ private val View.targetHeight: Int
         return measuredHeight
     }
 
+private const val ANIMATION_DURATION = 100L
+
 fun View.reveal(onComplete: (() -> Unit)? = null) {
     clearAnimation()
     layoutParams.height = max(1, layoutParams.height)
@@ -82,7 +84,7 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
                 }
             }
         }.apply {
-            duration = 200L
+            duration = ANIMATION_DURATION
             fillAfter = true
 
             setAnimationListener(object : AnimationListener {
@@ -166,7 +168,7 @@ fun View.revealToHeight(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = M
                 requestLayout()
             }
         }.apply {
-            duration = 200L
+            duration = ANIMATION_DURATION
         }
 
         startAnimation(animation)
@@ -209,7 +211,7 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             }
         }
     }.apply {
-        duration = 200L
+        duration = ANIMATION_DURATION
         fillAfter = true
 
         setAnimationListener(object : AnimationListener {
@@ -277,7 +279,7 @@ fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
     val colorFrom = MaterialColors.getColor(this, from)
     val colorTo = MaterialColors.getColor(this, to)
     val colorAnimation: ValueAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-    colorAnimation.duration = 200L
+    colorAnimation.duration = ANIMATION_DURATION
 
     colorAnimation.addUpdateListener {
         if (it.animatedValue is Int) {
@@ -302,7 +304,7 @@ fun View.transitionBackgroundTo(@AttrRes to: Int) {
 
     val colorAnimation: ValueAnimator =
         ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
-            duration = 200L
+            duration = ANIMATION_DURATION
         }
 
     colorAnimation.addUpdateListener {

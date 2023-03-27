@@ -22,7 +22,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
-import androidx.core.view.setPadding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
@@ -90,15 +89,15 @@ class ActiveDashBar @JvmOverloads constructor(
                     onComplete?.invoke()
                 }
                 TRACKING_FULL -> { // Always show expanded details
-                    activeDashDetails.revealIfTrue(shouldShow = true, doAnyways = true) {
-                        root.apply {
-                            setPadding(narrowMargin)
-                            setVisibleIfTrue(true)
-                            callback?.revealAppBarLayout(shouldShow = true)
-                            onComplete?.invoke()
-                            requestLayout()
-                        }
+                    root.apply {
+                        setVisibleIfTrue(true)
+                    }
 
+                    activeDashDetailsTopSpacer.setVisibleIfTrue(true)
+                    callback?.revealAppBarLayout(shouldShow = true)
+                    activeDashDetails.revealIfTrue(shouldShow = true, doAnyways = true) {
+                        onComplete?.invoke()
+                        requestLayout()
                     }
 
                     btnStopActiveDash.visibility = GONE
@@ -106,27 +105,29 @@ class ActiveDashBar @JvmOverloads constructor(
                     startTrackingIndicator()
                 }
                 TRACKING_COLLAPSED -> { // Show collapsed
-                    activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
-                        root.apply {
-                            setPadding(0)
-                            setVisibleIfTrue(true)
-                            callback?.revealAppBarLayout(true)
-                            onComplete?.invoke()
-                            requestLayout()
-                        }
-
-                        btnStopActiveDash.visibility = VISIBLE
+                    root.apply {
+                        setVisibleIfTrue(true)
                     }
+
+                    activeDashDetailsTopSpacer.setVisibleIfTrue(false)
+                    callback?.revealAppBarLayout(true)
+                    activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
+                        onComplete?.invoke()
+                        requestLayout()
+                    }
+
+                    btnStopActiveDash.visibility = VISIBLE
                 }
                 TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
+                    root.apply {
+                        setVisibleIfTrue(true)
+                    }
+
+                    activeDashDetailsTopSpacer.setVisibleIfTrue(false)
+                    callback?.revealAppBarLayout(true)
                     activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
-                        root.apply {
-                            setPadding(0)
-                            setVisibleIfTrue(true)
-                            callback?.revealAppBarLayout(true)
-                            onComplete?.invoke()
-                            requestLayout()
-                        }
+                        onComplete?.invoke()
+                        requestLayout()
                     }
 
                     stopTrackingIndicator()
