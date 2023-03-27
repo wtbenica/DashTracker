@@ -23,7 +23,6 @@ import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
 import androidx.core.view.setPadding
-import androidx.core.view.updatePadding
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
@@ -81,6 +80,8 @@ class ActiveDashBar @JvmOverloads constructor(
         @IdRes currDestination: Int,
         onComplete: (() -> Unit)? = null
     ) {
+        val narrowMargin = resources.getDimension(R.dimen.margin_narrow).toInt()
+
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
@@ -89,22 +90,15 @@ class ActiveDashBar @JvmOverloads constructor(
                     onComplete?.invoke()
                 }
                 TRACKING_FULL -> { // Always show expanded details
-                    activeDashDetailsSpacer.setVisibleIfTrue(true)
                     activeDashDetails.revealIfTrue(shouldShow = true, doAnyways = true) {
                         root.apply {
+                            setPadding(narrowMargin)
                             setVisibleIfTrue(true)
                             callback?.revealAppBarLayout(shouldShow = true)
                             onComplete?.invoke()
-
-                            val hor = resources.getDimension(R.dimen.margin_narrow).toInt()
-                            updatePadding(left = hor, top = hor, right = hor, bottom = hor)
                             requestLayout()
                         }
 
-                        val hor = resources.getDimension(R.dimen.margin_wide).toInt()
-                        listOf(adbTitleRow, trackingStatusRow).forEach {
-                            it.updatePadding(left = hor, right = hor)
-                        }
                     }
 
                     btnStopActiveDash.visibility = GONE
@@ -112,44 +106,27 @@ class ActiveDashBar @JvmOverloads constructor(
                     startTrackingIndicator()
                 }
                 TRACKING_COLLAPSED -> { // Show collapsed
-                    activeDashDetailsSpacer.setVisibleIfTrue(true)
                     activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
                         root.apply {
+                            setPadding(0)
                             setVisibleIfTrue(true)
                             callback?.revealAppBarLayout(true)
                             onComplete?.invoke()
-                            setPadding(0)
                             requestLayout()
-                        }
-
-                        val hor = resources.getDimension(R.dimen.margin_default).toInt()
-                        listOf(adbTitleRow, trackingStatusRow).forEach {
-                            it.updatePadding(left = hor, right = hor)
                         }
 
                         btnStopActiveDash.visibility = VISIBLE
                     }
                 }
                 TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
-                    activeDashDetailsSpacer.setVisibleIfTrue(currDestination == R.id.navigation_income)
                     activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
                         root.apply {
+                            setPadding(0)
                             setVisibleIfTrue(true)
                             callback?.revealAppBarLayout(true)
                             onComplete?.invoke()
-                            if (currDestination == R.id.navigation_income) {
-                                val hor = resources.getDimension(R.dimen.margin_narrow).toInt()
-                                updatePadding(left = hor, top = hor, right = hor, bottom = hor)
-                            } else {
-                                setPadding(0)
-                            }
                             requestLayout()
                         }
-                    }
-
-                    val hor = resources.getDimension(R.dimen.margin_default).toInt()
-                    listOf(adbTitleRow, trackingStatusRow).forEach {
-                        it.updatePadding(left = hor, right = hor)
                     }
 
                     stopTrackingIndicator()

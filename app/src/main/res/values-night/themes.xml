@@ -62,7 +62,7 @@
         <item name="colorAppBarBg">?attr/colorTextSecondaryDisabled</item>
 
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBarHighlight">?attr/colorSecondaryVariant</item>
+        <item name="colorSummaryBarHighlight">?attr/colorOnSecondary</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
 
         <item name="colorFab">?attr/colorSecondary</item>
@@ -85,12 +85,11 @@
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- active_dash_bar -->
-        <item name="colorActiveDashBarBg">?attr/colorSecondaryFaded</item>
+        <item name="colorActiveDashBarBg">?attr/colorSecondary</item>
         <item name="colorActiveDashBarStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
-        <item name="colorActiveDashTrackingIndicator">@color/tracking_status_fill</item>
-        <item name="colorActiveDashTrackingIndicatorFill">@color/tracking_status_fill</item>
+        <item name="colorActiveDashTrackingIndicator">@color/accent</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>

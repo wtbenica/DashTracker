@@ -39,7 +39,5 @@
     <color name="nighttime_light">#9CBEBE</color>
 
     <color name="alert">#EE5522</color>
-    <color name="tracking_status">#70E050</color>
-    <color name="tracking_status_fill">#209000</color>
     <color name="splash_screen_bg">#1b201b</color>
 </resources>
