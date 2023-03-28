@@ -264,7 +264,7 @@
     <string name="prefs_authentication_enabled_confirmed">prefs_authentication_enabled_confirmed</string>
     <string name="prefs_authentication_enabled_reverted">prefs_authentication_enabled_reverted</string>
 
-    <string name="show_weekly_bpa_desc">DashTracker can include fields for tracking any additions to your weekly pay. This would be useful if you live in a state with a weekly base pay adjustment or work in a market that has weekly incentives or extra pay.</string>
+    <string name="show_weekly_bpa_desc">DashTracker can include fields for tracking any additions to your weekly pay. This is primarily for areas with a weekly base pay adjustment, weekly incentives or other extra pay.</string>
     <string name="require_pin_desc">To protect your data, DashTracker can require a fingerprint or PIN to open.</string>
     <string name="pref_title_show_weekly_adjustment_field">Show weekly adjustment field</string>
     <string name="pref_title_require_authentication">Require authentication to open</string>

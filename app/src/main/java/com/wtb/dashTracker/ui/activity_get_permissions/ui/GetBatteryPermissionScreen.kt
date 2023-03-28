@@ -18,17 +18,17 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.BatterySaver
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
@@ -37,11 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.BG_BATTERY_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_BATTERY_OPTIMIZER
@@ -52,7 +52,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetBatteryPermissionScreen(
+fun ColumnScope.GetBatteryPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
@@ -78,7 +78,7 @@ fun GetBatteryPermissionScreen(
 
                 Text(
                     text = str,
-                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_sm),
                     fontFamily = FontFamilyFiraSans
                 )
 
@@ -108,7 +108,7 @@ fun GetBatteryPermissionScreen(
 
                     append(" then return to DashTracker.")
                 }
-                Text(str, modifier = Modifier.padding(24.dp))
+                Text(str, modifier = Modifier.padding(marginDefault()))
             }
         },
         navContent = {
@@ -123,17 +123,10 @@ fun GetBatteryPermissionScreen(
 @ExperimentalTextApi
 @Composable
 fun GetBatteryPermissionNav(
-    modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        LocalContext.current
-        FillSpacer()
-
+    BottomNavButtons {
         CustomTextButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, true)
@@ -145,7 +138,7 @@ fun GetBatteryPermissionNav(
             Text("No thanks")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
         CustomTextButton(
             onClick = {
@@ -158,9 +151,9 @@ fun GetBatteryPermissionNav(
             Text("Maybe later")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_BATTERY_OPTIMIZER, false)
                 activity?.setBooleanPref(activity.BG_BATTERY_ENABLED, true)
@@ -184,43 +177,17 @@ fun GetBatteryPermissionNav(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun GetBatteryPermissionPreview() {
     DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                GetBatteryPermissionScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 4
-                )
-            }
-        }
-    }
-}
+        ActivityScreen {
+            GetBatteryPermissionScreen()
 
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun GetBatteryPermissionPreviewNight() {
-    DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                GetBatteryPermissionScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 4
-                )
-            }
+            PageIndicator(
+                numPages = 5,
+                selectedPage = 4
+            )
         }
     }
 }

@@ -18,7 +18,9 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.LocationOn
@@ -26,7 +28,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -36,11 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -49,7 +50,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun GetLocationPermissionsScreen(
+fun ColumnScope.GetLocationPermissionsScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ): Unit =
@@ -69,7 +70,7 @@ fun GetLocationPermissionsScreen(
             CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_location_permission),
-                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_sm),
                     fontFamily = FontFamilyFiraSans
                 )
             }
@@ -100,7 +101,7 @@ fun GetLocationPermissionsScreen(
 
                     append(" physical activity access.")
                 }
-                Text(str, modifier = Modifier.padding(24.dp))
+                Text(str, modifier = Modifier.padding(marginDefault()))
             }
         },
         navContent = {
@@ -132,13 +133,7 @@ fun PrivacyPolicyLink() {
 fun GetLocationPermissionsNav(
     activity: OnboardingMileageActivity? = null
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        LocalContext.current
-        FillSpacer()
-
+    BottomNavButtons {
         CustomTextButton(
             onClick = {
                 activity?.setOptOutLocation(true)
@@ -149,7 +144,7 @@ fun GetLocationPermissionsNav(
             Text("No thanks")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
         CustomTextButton(
             onClick = {
@@ -162,9 +157,9 @@ fun GetLocationPermissionsNav(
             Text("Maybe later")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setOptOutLocation(false)
                 activity?.setLocationEnabled(true)
@@ -188,43 +183,17 @@ fun GetLocationPermissionsNav(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun GetLocationPermissionsPreview() {
     DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                GetLocationPermissionsScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 1
-                )
-            }
-        }
-    }
-}
+        ActivityScreen {
+            GetLocationPermissionsScreen()
 
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun GetLocationPermissionsPreviewNight() {
-    DashTrackerTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            Column {
-                GetLocationPermissionsScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 1
-                )
-            }
+            PageIndicator(
+                numPages = 5,
+                selectedPage = 1
+            )
         }
     }
 }

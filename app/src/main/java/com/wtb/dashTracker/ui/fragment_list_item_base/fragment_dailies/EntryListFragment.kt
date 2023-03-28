@@ -28,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
@@ -117,9 +116,13 @@ class EntryListFragment : IncomeListItemFragment() {
 
         binding.itemListRecyclerView.adapter = entryAdapter
 
-        callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
-            deductionType = it
-            entryAdapter.notifyItemRangeChanged(0, entryAdapter.itemCount)
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                callback?.deductionType?.collectLatest {
+                    deductionType = it
+                    entryAdapter.notifyDataSetChanged()
+                }
+            }
         }
 
         lifecycleScope.launch {

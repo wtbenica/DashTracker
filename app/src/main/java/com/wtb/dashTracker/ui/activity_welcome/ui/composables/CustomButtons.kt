@@ -18,9 +18,8 @@ package com.wtb.dashTracker.ui.activity_welcome.ui.composables
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FirstPage
 import androidx.compose.material.icons.filled.TextSnippet
@@ -32,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 
 @ExperimentalTextApi
@@ -42,12 +42,12 @@ fun CustomButton(
     content: @Composable RowScope.() -> Unit
 ) {
     Button(
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
         onClick = onClick,
         modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        ),
         content = content
     )
 }
@@ -70,6 +70,14 @@ fun CustomTextButton(
     )
 }
 
+@ExperimentalTextApi
+@Composable
+fun DefaultButton(
+    onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit
+) {
+    CustomOutlinedButton(onClick = onClick, modifier = modifier, content = content)
+}
+
 
 @ExperimentalTextApi
 @Composable
@@ -80,71 +88,78 @@ fun CustomOutlinedButton(
 ) {
     OutlinedButton(
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
         ),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onTertiaryContainer),
         onClick = onClick,
         modifier = modifier,
         content = content
     )
 }
 
-@ExperimentalTextApi
-@Preview
 @Composable
-fun PreviewButtons() {
-    DashTrackerTheme {
-        Surface {
-            Column(modifier = Modifier.padding(4.dp)) {
-                CustomButton(onClick = { }) {
-                    Text(text = "Button")
-                    Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
-                }
-
-                HalfSpacer()
-
-                CustomTextButton(onClick = {}) {
-                    Text(text = "Text")
-                    Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
-                }
-
-                HalfSpacer()
-
-                CustomOutlinedButton(onClick = {}) {
-                    Text(text = "Outlined")
-                    Icon(Icons.Outlined.Circle, contentDescription = "Circle")
-                }
-            }
+fun BottomNavButtons(content: @Composable RowScope.() -> Unit) {
+    Card(
+        shape = RoundedCornerShape(0.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onTertiary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = marginHalf(),
+                    top = marginHalf(),
+                    end = marginHalf(),
+                    bottom = marginNarrow()
+                )
+        ) {
+            FillSpacer()
+            content()
         }
     }
 }
 
 @ExperimentalTextApi
-@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Preview(device = "spec:width=600dp,height=800dp,dpi=480")
+@Preview(uiMode = UI_MODE_NIGHT_YES, device = "spec:width=600dp,height=800dp,dpi=480")
 @Composable
-fun PreviewButtonsNight() {
+fun PreviewButtons() {
     DashTrackerTheme {
         Surface {
-            Column(modifier = Modifier.padding(4.dp)) {
-                CustomButton(onClick = { }) {
-                    Text(text = "Button")
-                    Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
+            Column {
+                BottomNavButtons {
+                    DefaultButton(onClick = { }) {
+                        Text(text = "Default Button")
+                        Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
+                    }
+
+                    HalfSpacer()
+
+                    CustomButton(onClick = { }) {
+                        Text(text = "Button")
+                        Icon(Icons.Filled.FirstPage, contentDescription = "First Page")
+                    }
+
+                    HalfSpacer()
+
+                    CustomTextButton(onClick = {}) {
+                        Text(text = "Text")
+                        Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
+                    }
+
+                    HalfSpacer()
+
+                    CustomOutlinedButton(onClick = {}) {
+                        Text(text = "Outlined")
+                        Icon(Icons.Outlined.Circle, contentDescription = "Circle")
+                    }
                 }
 
-                HalfSpacer()
-
-                CustomTextButton(onClick = {}) {
-                    Text(text = "Text")
-                    Icon(Icons.Filled.TextSnippet, contentDescription = "Text Snippet")
-                }
-
-                HalfSpacer()
-
-                CustomOutlinedButton(onClick = {}) {
-                    Text(text = "Outlined")
-                    Icon(Icons.Outlined.Circle, contentDescription = "Circle")
-                }
+                PageIndicator(numPages = 4)
             }
         }
     }

@@ -24,6 +24,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -31,80 +32,87 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 val cardShape: RoundedCornerShape = RoundedCornerShape(24.dp)
 
 private val DarkColorScheme: ColorScheme = darkColorScheme(
-    // template header
-    primaryContainer = darkPrimaryLight,
-    // template header stroke
-    primary = darkPrimary,
-    // header icon color
-    inversePrimary = darkPrimaryFaded,
-    // secondary container
-    tertiaryContainer = darkPrimaryDark,
-    // card outline
-    secondary = darkSecondaryFaded,
-    // content card icon
-    secondaryContainer = darkAccent,
-    // accent
-    tertiary = darkAccent,
+    primary = darkPrimary, // header,
+    onPrimary = darkOnPrimary, // most text,
+    primaryContainer = darkPrimaryFaded, // buttons
+    onPrimaryContainer = darkOnPrimaryVariant, // header subtitle, disabled text,
+    inversePrimary = darkPrimaryFaded, // header icon, text button text, page indicator,
 
-    onPrimary = darkOnPrimary,
+    secondary = darkSecondaryFaded, // checked thumb,
+    onSecondary = darkSecondary, //
+    secondaryContainer = darkAccent, // content card icon, permission granted icon
+    onSecondaryContainer = darkOnSecondaryVariant, //
+
+    tertiary = darkAccent, // accent, list row icon, privacy policy link, permissions row icon,
+    onTertiary = darkPrimaryLight, //
+    tertiaryContainer = darkPrimaryDark, // secondary container,
+    onTertiaryContainer = darkPrimaryDark, // outline button outline,
+
     background = darkOnSecondary,
-    onTertiary = darkOnPrimary,
-    onPrimaryContainer = darkOnPrimaryVariant,
-    onSecondaryContainer = darkOnSecondaryVariant,
-    // expandable card ripple,
-    onTertiaryContainer = darkSecondary,
-    surface = darkOnSecondary,
+    onBackground = darkSecondaryFaded, // switch track checked
+
+    surface = darkOnSecondary, // header icon bg, main bg, card bg, switch rack checked
     onSurface = darkOnPrimary,
-    // DropDownMenuBox background
-    surfaceVariant = darkOnSecondaryVariant,
+    surfaceVariant = darkOnSecondaryVariant, // DropDownMenuBox background (can't change)
+    onSurfaceVariant = onSecondary, // DropDown arrow (can't change)
+    surfaceTint = darkSecondaryFaded, // expandable card ripple
+    inverseSurface = darkPrimary, // Secondary Card bg
+    inverseOnSurface = darkPrimaryLight, // Secondary Card stroke, outline button outline
 
-    // switch thumb
-    // switch thumb disabled
-    onSecondary = darkSecondaryDark,
-    //switch track
-    onBackground = darkAccent,
-    // switch track disabled
-    outline = darkSecondaryFaded,
+//    error = DEFAULT,
+    // settingsCard top panel background, switch track unchecked, dropdown menu open indicator
+    onError = darkSecondaryLight,
+    errorContainer = darkSecondaryDark, // unchecked thumb,
+    onErrorContainer = Color.Red,
 
+    // custom outline card outline, switch border checked/unchecked
+    outline = darkSecondaryDark,
+    outlineVariant = darkSecondary, // card outline, switch border
+    scrim = Color.Blue
 )
 
 
 private val LightColorScheme: ColorScheme = lightColorScheme(
-    // template header
-    primaryContainer = primaryLight,
-    // template header stroke
-    primary = primary,
-    // header icon color
-    inversePrimary = primaryDark,
-    // secondary container
-    tertiaryContainer = primaryFaded,
-    // card outline
-    secondary = secondaryLight,
-    // content card icon
-    secondaryContainer = secondaryDark,
-    // accent
-    tertiary = accent,
+    primary = primary, // header
+    onPrimary = onPrimary, // most text, page indicator,
+    primaryContainer = primaryFaded, // buttons,
+    onPrimaryContainer = onPrimaryVariant, // header subtitle, disabled text,
+    inversePrimary = primaryDark, // header icon, text button text, page indicator,
 
-    onPrimary = onPrimary,
-    background = onSecondary,
-    onTertiary = onPrimary,
-    onPrimaryContainer = onPrimaryVariant,
+    secondary = secondary, // checked thumb color,
+    onSecondary = onSecondary, //
+    secondaryContainer = secondaryDark, // content card icon, permission granted icon
     onSecondaryContainer = onSecondaryVariant,
-    // expandable card ripple,
-    onTertiaryContainer = secondaryFaded,
-    surface = onSecondary,
-    onSurface = onPrimary,
-    // DropDownMenuBox background
-    surfaceVariant = onSecondaryVariant,
 
-    // switch thumb
-    // switch thumb disabled
-    onSecondary = secondaryDark,
-    // switch track
-    onBackground = secondaryFaded,
-    // switch track disabled
-    outline = secondaryLight,
+    tertiary = accent, // accent, list row icon, privacy policy link, permissions row icon,
+    onTertiary = primaryLight, // bottom bar, page indicator bar
+    tertiaryContainer = primaryFaded, // secondary container
+    onTertiaryContainer = primaryDark, // outline button outline,
+
+    background = Color.Cyan,
+    onBackground = secondaryFaded, // switch track unchecked
+
+    surface = onSecondary, // header icon bg, main bg, card bg, switch track checked
+    onSurface = onPrimary,
+    surfaceVariant = onSecondary, // DropDownMenuBox background (can't change)
+    onSurfaceVariant = onPrimary, // DropDown arrow (?can't change?)
+    surfaceTint = secondaryFaded, // expandable card ripple
+    inverseSurface = primaryFaded, // Secondary Card bg
+    inverseOnSurface = primary, // Secondary Card stroke, outline button outline
+
+//    error = DEFAULT,
+
+    // settingsCard top panel background, switch track unchecked, dropdown menu open indicator
+    onError = secondaryFaded,
+    errorContainer = secondary, // switch thumb unchecked
+    onErrorContainer = Color.Red,
+
+    // custom outline card outline, switch border checked/unchecked
+    outline = secondary,
+    outlineVariant = secondaryLight, // card outline, switch border
+    scrim = Color.Blue
 )
+
 @ExperimentalTextApi
 @Composable
 fun DashTrackerTheme(
@@ -126,10 +134,16 @@ fun DashTrackerTheme(
     val systemUiController = rememberSystemUiController()
 
     SideEffect {
-        systemUiController.setStatusBarColor(
-            color = colorScheme.primary,
-            darkIcons = !darkTheme
-        )
+        systemUiController.apply {
+            setStatusBarColor(
+                color = colorScheme.primary,
+                darkIcons = !darkTheme
+            )
+            setNavigationBarColor(
+                color = colorScheme.onTertiary,
+                darkIcons = !darkTheme
+            )
+        }
     }
 
 

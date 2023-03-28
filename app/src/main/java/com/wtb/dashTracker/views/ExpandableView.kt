@@ -18,7 +18,8 @@ package com.wtb.dashTracker.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TableLayout
@@ -35,36 +36,70 @@ interface ExpandableView {
     val mIsVisible: Boolean
     fun mExpand(onComplete: (() -> Unit)? = null)
     fun mExpandTo(
-        targetHeight: Int? = ViewGroup.LayoutParams.WRAP_CONTENT,
-        targetWidth: Int? = ViewGroup.LayoutParams.MATCH_PARENT
+        targetHeight: Int? = WRAP_CONTENT,
+        targetWidth: Int? = MATCH_PARENT
     )
 
     fun mCollapse(onComplete: (() -> Unit)? = null)
 
+    /**
+     * Prevents unnecessary expands
+     */
     var isExpanding: Boolean
+
+    /**
+     * Prevents unnecessary collapses
+     */
     var isCollapsing: Boolean
+
+    /**
+     * Prevents calling an onComplete prematurely
+     */
+    var viewIsExpanded: Boolean
+
+    /**
+     * Prevents calling an onComplete prematurely
+     */
+    var viewIsCollapsed: Boolean
 
     fun revealIfTrue(
         shouldShow: Boolean = true,
         doAnyways: Boolean = false,
         onComplete: (() -> Unit)? = null
     ) {
-        if (shouldShow && (!mIsVisible || isCollapsing)) {
-            isExpanding = true
-            isCollapsing = false
-            mExpand {
-                onComplete?.invoke()
-                isExpanding = false
-            }
-        } else if (!shouldShow && (mIsVisible || isExpanding)) {
-            isCollapsing = true
-            isExpanding = false
-            mCollapse {
-                onComplete?.invoke()
+        val shouldExpand = shouldShow && !viewIsExpanded && (!isExpanding || isCollapsing)
+        val shouldCollapse = !shouldShow && !viewIsCollapsed && (!isCollapsing || isExpanding)
+        val shouldDoAnyways =
+            doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
+
+        when {
+            shouldExpand -> {
+                isExpanding = true
                 isCollapsing = false
+                viewIsCollapsed = false
+                mExpand {
+                    isExpanding = false
+                    isCollapsing = false
+                    viewIsExpanded = true
+                    viewIsCollapsed = false
+                    onComplete?.invoke()
+                }
             }
-        } else if (doAnyways) {
-            onComplete?.invoke()
+            shouldCollapse -> {
+                isCollapsing = true
+                isExpanding = false
+                viewIsExpanded = false
+                mCollapse {
+                    isExpanding = false
+                    isCollapsing = false
+                    viewIsExpanded = false
+                    viewIsCollapsed = true
+                    onComplete?.invoke()
+                }
+            }
+            shouldDoAnyways -> {
+                onComplete?.invoke()
+            }
         }
     }
 
@@ -98,6 +133,9 @@ open class ExpandableLinearLayout @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
+
+    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
+    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
 }
 
 class ExpandableGridLayout @JvmOverloads constructor(
@@ -118,6 +156,8 @@ class ExpandableGridLayout @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
+    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
+    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
 }
 
 class ExpandableAppBarLayout @JvmOverloads constructor(
@@ -137,6 +177,8 @@ class ExpandableAppBarLayout @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
+    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
+    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
 }
 
 class ExpandableTableLayout @JvmOverloads constructor(
@@ -155,6 +197,8 @@ class ExpandableTableLayout @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
+    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
+    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
 }
 
 
@@ -175,6 +219,9 @@ class ExpandableTextView @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
+
+    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
+    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
 }
 
 class ExpandableButton @JvmOverloads constructor(
@@ -194,6 +241,8 @@ class ExpandableButton @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
+    override var viewIsExpanded: Boolean = isVisible
+    override var viewIsCollapsed: Boolean = !isVisible
 }
 
 class ExpandableCardView @JvmOverloads constructor(
@@ -213,6 +262,9 @@ class ExpandableCardView @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
+
+    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
+    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
 }
 
 class ExpandableImageView @JvmOverloads constructor(
@@ -232,4 +284,6 @@ class ExpandableImageView @JvmOverloads constructor(
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
+    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
+    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
 }

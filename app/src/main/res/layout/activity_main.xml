@@ -36,16 +36,16 @@
             style="@style/AppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:liftOnScroll="false">
+            android:orientation="vertical">
 
-            <!--             Don't add vertical margins, it messes up the hiding on scroll -->
+                        <!--             Don't add vertical margins, it messes up the hiding on scroll -->
             <include
                 android:id="@+id/summary_bar"
                 layout="@layout/activity_main_summary_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlways|snap" />
+                app:layout_scrollFlags="scroll|enterAlways|snap"
+                tools:visibility="gone" />
 
             <!--             Don't add vertical margins, it messes up the hiding on scroll -->
             <com.wtb.dashTracker.views.ActiveDashBar
@@ -99,8 +99,6 @@
                 style="@style/Widget.Material3.BottomNavigationView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp"
                 android:animateLayoutChanges="true"
                 android:background="?attr/selectableItemBackground"
                 android:minHeight="@dimen/margin_extra_wide"

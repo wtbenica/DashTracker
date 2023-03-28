@@ -26,19 +26,27 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.DialogFragConfirmExpenseBreakdownBinding
 import com.wtb.dashTracker.extensions.getAttrColor
 import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.ui.activity_welcome.ui.composables.marginDefault
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
 import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.Yearly
@@ -70,55 +78,92 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
         binding.expenseBreakdownTable.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                DashTrackerTheme {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Bottom
-                        ) {
-                            HeaderText(text = "Category")
-                            HeaderText(text = "Business", textAlign = TextAlign.End)
-                            HeaderText(text = "Total", textAlign = TextAlign.End)
-                        }
-
-                        Divider(
-                            thickness = 1.dp,
-                            color = Color(context.getAttrColor(R.attr.colorSecondaryDark))
-                        )
-
-                        yearly.expenses?.let {
-                            it.toSortedMap { a, b ->
-                                val first: Float? = it[a]
-                                val second: Float? = it[b]
-                                when {
-                                    first == null && second == null -> {
-                                        (b.name ?: "").compareTo(a.name ?: "")
-                                    }
-                                    first == null -> -1
-                                    second == null -> 1
-                                    else -> second.compareTo(first)
-                                }
-                            }.forEach {
-                                Row(
-                                    modifier = Modifier,
-                                    verticalAlignment = Bottom
-                                ) {
-                                    HeaderText(text = it.key.name ?: "")
-                                    ValueText(
-                                        text = getCurrencyString(it.value * yearly.businessMileagePercent)
-                                    )
-                                    ValueText(text = getCurrencyString(it.value))
-                                }
-                            }
-                        }
-                    }
-                }
+                DashTrackerTheme { ExpenseBreakdownTable(yearly) }
             }
         }
 
         return binding.root
+    }
+}
+
+@ExperimentalCoroutinesApi
+@Composable
+fun ExpenseBreakdownTable(yearly: Yearly) {
+    Column(
+        modifier = Modifier.padding(marginDefault())
+    ) {
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Bottom
+        ) {
+            HeaderText(text = "Category")
+            HeaderText(text = "Business", textAlign = TextAlign.End)
+            HeaderText(text = "Total", textAlign = TextAlign.End)
+        }
+
+        Divider(
+            thickness = 1.dp,
+            color = Color(LocalContext.current.getAttrColor(R.attr.colorSecondaryDark))
+        )
+
+        yearly.expenses?.let {
+            it.toSortedMap { a, b ->
+                val first: Float? = it[a]
+                val second: Float? = it[b]
+                when {
+                    first == null && second == null -> {
+                        (b.name ?: "").compareTo(a.name ?: "")
+                    }
+                    first == null -> -1
+                    second == null -> 1
+                    else -> second.compareTo(first)
+                }
+            }.forEach {
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Bottom
+                ) {
+                    HeaderText(text = it.key.name ?: "")
+                    ValueText(
+                        text = LocalContext.current.getCurrencyString(it.value * yearly.businessMileagePercent)
+                    )
+                    ValueText(text = LocalContext.current.getCurrencyString(it.value))
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalTextApi
+@ExperimentalCoroutinesApi
+@Preview
+@Composable
+fun EBTPreview() {
+    val yearly = Yearly(2023).apply {
+        addEntry(
+            DashEntry(entryId = 1, startOdometer = 100f, endOdometer = 200f)
+        )
+        addEntry(
+            DashEntry(entryId = 1, startOdometer = 250f, endOdometer = 300f)
+        )
+        expenses = mapOf<ExpensePurpose, Float>(
+            ExpensePurpose(0, "Fred") to 4f,
+            ExpensePurpose(1, "Mochi") to 5f,
+            ExpensePurpose(1, "Mochi") to 5f,
+            ExpensePurpose(1, "Mochi") to 5f,
+            ExpensePurpose(1, "Mochi") to 5f,
+            ExpensePurpose(1, "Mochi") to 5f,
+            ExpensePurpose(0, "Fred") to 4f,
+            ExpensePurpose(0, "Fred") to 4f,
+        )
+    }
+
+    DashTrackerTheme {
+        Surface {
+            Card {
+                ExpenseBreakdownTable(yearly)
+            }
+        }
     }
 }
 

@@ -1,13 +1,29 @@
+<!--
+  ~ Copyright 2023 Wesley T. Benica
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
+    android:width="1024dp"
+    android:height="1024dp"
     android:viewportWidth="270.93"
     android:viewportHeight="270.93">
     <group
-        android:scaleX="0.65"
-        android:scaleY="0.65"
-        android:translateX="47.41275"
-        android:translateY="47.41275">
+        android:scaleX="1.38"
+        android:scaleY="1.38"
+        android:translateX="-51.4767"
+        android:translateY="-51.4767">
         <path
             android:fillColor="#687858"
             android:pathData="M225.43,136A89.96,89.96 0,0 1,135.47 225.95,89.96 89.96,0 0,1 45.51,136 89.96,89.96 0,0 1,135.47 46.04,89.96 89.96,0 0,1 225.43,136Z"

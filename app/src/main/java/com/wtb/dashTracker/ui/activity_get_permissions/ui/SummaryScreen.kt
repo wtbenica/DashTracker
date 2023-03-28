@@ -17,6 +17,8 @@
 package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -36,9 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.*
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
@@ -54,7 +56,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Composable
-fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity) {
+fun ColumnScope.SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActivity) {
     val permHelp = PermissionsHelper(activity)
 
     fun getIconImage(): @Composable (ColumnScope.() -> Unit) {
@@ -156,17 +158,9 @@ fun SummaryScreen(modifier: Modifier = Modifier, activity: OnboardingMileageActi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Composable
-fun SummaryScreenNav(
-    modifier: Modifier = Modifier,
-    activity: OnboardingMileageActivity? = null,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        FillSpacer()
-
-        CustomButton(
+fun SummaryScreenNav(activity: OnboardingMileageActivity? = null, ) {
+    BottomNavButtons {
+        DefaultButton(
             onClick = {
                 activity?.setBooleanPref(activity.PREF_SHOW_SUMMARY_SCREEN, false)
                 activity?.finish()
@@ -239,51 +233,11 @@ fun PermRow(
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Night")
 @Composable
 fun SummaryScreenPreview() {
     DashTrackerTheme {
-        Surface {
-            ScreenTemplate(
-                headerText = "Mileage Tracking",
-                iconImage = {
-                    Icon(
-                        imageVector = Icons.Outlined.LocationOff,
-                        contentDescription = "Location Off",
-                        modifier = Modifier.size(96.dp),
-                        tint = headerIconColor()
-                    )
-                },
-                mainContent = {
-                    CustomOutlinedCard {
-                        Text(text = "Automatic mileage tracking is enabled")
-                    }
-
-                    HalfSpacer()
-
-                    PermissionsSummaryCard(
-                        locationEnabled = true,
-                        bgLocationEnabled = true,
-                        notificationsEnabled = true,
-                        batteryOptimizationDisabled = false
-                    )
-                },
-                navContent = {
-                    SummaryScreenNav()
-                }
-            )
-        }
-    }
-}
-
-@ExperimentalCoroutinesApi
-@ExperimentalTextApi
-@ExperimentalMaterial3Api
-@ExperimentalAnimationApi
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun SummaryScreenPreviewNight() {
-    DashTrackerTheme {
-        Surface {
+        ActivityScreen {
             ScreenTemplate(
                 headerText = "Mileage Tracking",
                 iconImage = {
@@ -347,15 +301,17 @@ fun PermissionsSummaryCard(
 
         DefaultSpacer()
 
-        PermRow(
-            permDesc = "Notifications",
-            permIcon = Icons.TwoTone.Notifications,
-            permIconDescription = "notifications icon",
-            isEnabled = notificationsEnabled,
-            isRequired = false
-        )
+        if (SDK_INT >= TIRAMISU) {
+            PermRow(
+                permDesc = "Notifications",
+                permIcon = Icons.TwoTone.Notifications,
+                permIconDescription = "notifications icon",
+                isEnabled = notificationsEnabled,
+                isRequired = false
+            )
 
-        DefaultSpacer()
+            DefaultSpacer()
+        }
 
         PermRow(
             permDesc = "Battery Optimization Disabled",

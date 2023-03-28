@@ -62,6 +62,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.BuildConfig
@@ -430,7 +431,7 @@ class MainActivity : AuthenticatedActivity(),
                 val currFrag: Fragment? =
                     supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)?.childFragmentManager?.fragments?.last()
 
-                return  currFrag is ScrollableFragment && currFrag.isAtTop
+                return currFrag is ScrollableFragment && currFrag.isAtTop
             }
 
             binding = ActivityMainBinding.inflate(layoutInflater).apply {
@@ -454,29 +455,39 @@ class MainActivity : AuthenticatedActivity(),
 
                 adb.initialize(this@MainActivity)
 
-                appBarLayout.addOnOffsetChangedListener { appBar: AppBarLayout, offset: Int ->
-                    val appBarIsHidden = appBar.height + offset == 0
-                    val forceShowBottomAppBar =
-                        offset == 0 && bottomAppBar.isScrolledDown && isRecyclerViewAtTop()
+                appBarLayout.apply {
+                    addOnOffsetChangedListener { appBar: AppBarLayout, offset: Int ->
+                        val appBarIsHidden = appBar.height + offset == 0
+                        val forceShowBottomAppBar =
+                            offset == 0 && bottomAppBar.isScrolledDown && isRecyclerViewAtTop()
 
-                    when {
-                        !isShowingOrHidingToolbars && forceShowBottomAppBar -> {
-                            isShowingOrHidingToolbars = true
-                            with(binding) {
-                                bottomAppBar.performShow(true)
-                                CoroutineScope(Dispatchers.Default).launch {
-                                    runOnUiThread {
-                                        fab.show()
+                        when {
+                            !isShowingOrHidingToolbars && forceShowBottomAppBar -> {
+                                isShowingOrHidingToolbars = true
+                                with(binding) {
+                                    bottomAppBar.performShow(true)
+                                    CoroutineScope(Dispatchers.Default).launch {
+                                        runOnUiThread {
+                                            fab.show()
+                                        }
                                     }
                                 }
                             }
-                        }
-                        isShowingOrHidingToolbars -> {
-                            if (appBarIsHidden) {
-                                isShowingOrHidingToolbars = false
+                            isShowingOrHidingToolbars -> {
+                                if (appBarIsHidden) {
+                                    isShowingOrHidingToolbars = false
+                                }
                             }
                         }
                     }
+
+                    viewIsExpanded = true
+                    viewIsCollapsed = false
+                }
+
+                summaryBar.root.apply {
+                    viewIsExpanded = true
+                    viewIsCollapsed = false
                 }
             }
         }
@@ -699,12 +710,21 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     override fun revealAppBarLayout(
-        shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
+        shouldShow: Boolean,
+        doAnyways: Boolean,
+        lockAppBar: Boolean,
+        onComplete: (() -> Unit)?
     ) {
         binding.appBarLayout.revealIfTrue(
             shouldShow = shouldShow,
             doAnyways = doAnyways
         ) {
+            (binding.summaryBar.root.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
+                if (lockAppBar) {
+                    SCROLL_FLAG_NO_SCROLL
+                } else {
+                    SCROLL_FLAG_ENTER_ALWAYS or SCROLL_FLAG_SCROLL or SCROLL_FLAG_SNAP
+                }
             onComplete?.invoke()
         }
     }
@@ -938,7 +958,7 @@ class MainActivity : AuthenticatedActivity(),
          * Animate fab icon and adb visibility depending on [serviceState].
          */
         internal fun updateUi() {
-            fun updateSummaryBarVisibility() {
+            fun updateTopAppBarVisibility() {
                 when (serviceState) {
                     ADBState.INACTIVE -> {
                         binding.summaryBar.root.revealIfTrue(
@@ -946,7 +966,7 @@ class MainActivity : AuthenticatedActivity(),
                             doAnyways = true
                         ) {
                             binding.appBarLayout.revealIfTrue(
-                                shouldShow = currDestination == R.id.navigation_income || isTracking,
+                                shouldShow = currDestination == R.id.navigation_income,
                                 doAnyways = true
                             ) {
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
@@ -960,7 +980,10 @@ class MainActivity : AuthenticatedActivity(),
                             shouldShow = currDestination == R.id.navigation_income,
                             doAnyways = true
                         ) {
-                            binding.appBarLayout.revealIfTrue(shouldShow = true, doAnyways = true) {
+                            binding.appBarLayout.revealIfTrue(
+                                shouldShow = true,
+                                doAnyways = true
+                            ) {
                                 if (currDestination == R.id.navigation_income) {
                                     binding.adb.transitionBackgroundTo(R.attr.colorAppBarBg)
                                 } else {
@@ -974,8 +997,8 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
-            binding.adb.onServiceStateUpdated(serviceState, currDestination) {
-                updateSummaryBarVisibility()
+            binding.adb.onServiceStateUpdated(serviceState) {
+                updateTopAppBarVisibility()
 
                 binding.fab.updateIcon(
                     currFragId = currDestination,

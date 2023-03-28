@@ -81,7 +81,6 @@
     <attr name="colorActiveDashBarDetailsBg" format="reference" />
     <attr name="activeDashCornerRadius" format="reference" />
     <attr name="colorActiveDashTrackingIndicator" format="reference|color" />
-    <attr name="colorActiveDashTrackingIndicatorFill" format="reference|color" />
 
     <!-- fragment_income -->
     <attr name="colorTabIndicator" format="reference" />
@@ -147,6 +146,7 @@
     <attr name="textSizeItemHeader" format="reference" />
     <attr name="textSizeItemValue" format="reference" />
     <attr name="textSizeItemSecondaryValue" format="reference" />
+    <attr name="colorExpandDetailsButton" format="reference" />
 
     <!-- charts -->
     <attr name="colorBarChartDatasetDefault" format="reference" />

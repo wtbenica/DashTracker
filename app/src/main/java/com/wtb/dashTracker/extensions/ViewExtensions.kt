@@ -60,7 +60,10 @@ private val View.targetHeight: Int
         return measuredHeight
     }
 
+private const val ANIMATION_DURATION = 300L
+
 fun View.reveal(onComplete: (() -> Unit)? = null) {
+    animation?.cancel()
     clearAnimation()
     layoutParams.height = max(1, layoutParams.height)
     visibility = VISIBLE
@@ -71,18 +74,12 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
                 this@reveal.apply {
-                    layoutParams.height = if (interpolatedTime < 1f) {
-                        (targetHeight * interpolatedTime).toInt()
-                    } else {
-                        onComplete?.invoke()
-                        WRAP_CONTENT
-                    }
-
+                    layoutParams.height = (targetHeight * interpolatedTime).toInt()
                     requestLayout()
                 }
             }
         }.apply {
-            duration = 200L
+            duration = ANIMATION_DURATION
             fillAfter = true
 
             setAnimationListener(object : AnimationListener {
@@ -92,15 +89,16 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
 
                 override fun onAnimationEnd(animation: Animation?) {
                     this@reveal.apply {
+                        layoutParams.height = WRAP_CONTENT
                         clearAnimation()
                         requestLayout()
+                        onComplete?.invoke()
                     }
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {
                     // Do nothing
                 }
-
             })
         }
 
@@ -166,7 +164,7 @@ fun View.revealToHeight(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = M
                 requestLayout()
             }
         }.apply {
-            duration = 200L
+            duration = ANIMATION_DURATION
         }
 
         startAnimation(animation)
@@ -189,28 +187,21 @@ fun View.revealToHeightIfTrue(
 }
 
 fun View.collapse(onComplete: (() -> Unit)? = null) {
+    animation?.cancel()
     clearAnimation()
     val initHeight = measuredHeight
 
-    val animation = object : Animation() {
+    val collapseAnimation = object : Animation() {
         override fun willChangeBounds(): Boolean = true
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             this@collapse.apply {
-                layoutParams.height = if (interpolatedTime < 1f) {
-                    initHeight - (initHeight * interpolatedTime).toInt()
-                } else {
-                    visibility = GONE
-                    onComplete?.invoke()
-                    0
-                }
-
+                layoutParams.height = initHeight - (initHeight * interpolatedTime).toInt()
                 requestLayout()
             }
         }
     }.apply {
-        duration = 200L
-        fillAfter = true
+        duration = ANIMATION_DURATION
 
         setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
@@ -219,20 +210,22 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
 
             override fun onAnimationEnd(animation: Animation?) {
                 this@collapse.apply {
+                    layoutParams.height = 0
+                    visibility = GONE
                     clearAnimation()
                     requestLayout()
+                    onComplete?.invoke()
                 }
             }
 
             override fun onAnimationRepeat(animation: Animation?) {
                 // Do nothing
             }
-
         })
     }
 
     if (initHeight > 0)
-        startAnimation(animation)
+        startAnimation(collapseAnimation)
     else {
         visibility = GONE
         onComplete?.invoke()
@@ -241,6 +234,7 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
 
 fun View.setVisibleIfTrue(boolean: Boolean) {
     visibility = if (boolean) VISIBLE else GONE
+    requestLayout()
 }
 
 fun View.focusAndShowKeyboard() {
@@ -277,7 +271,7 @@ fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
     val colorFrom = MaterialColors.getColor(this, from)
     val colorTo = MaterialColors.getColor(this, to)
     val colorAnimation: ValueAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-    colorAnimation.duration = 200L
+    colorAnimation.duration = ANIMATION_DURATION
 
     colorAnimation.addUpdateListener {
         if (it.animatedValue is Int) {
@@ -302,7 +296,7 @@ fun View.transitionBackgroundTo(@AttrRes to: Int) {
 
     val colorAnimation: ValueAnimator =
         ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
-            duration = 200L
+            duration = ANIMATION_DURATION
         }
 
     colorAnimation.addUpdateListener {

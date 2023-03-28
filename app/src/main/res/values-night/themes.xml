@@ -62,7 +62,7 @@
         <item name="colorAppBarBg">?attr/colorTextSecondaryDisabled</item>
 
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBarHighlight">?attr/colorSecondaryVariant</item>
+        <item name="colorSummaryBarHighlight">?attr/colorSecondaryDark</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
 
         <item name="colorFab">?attr/colorSecondary</item>
@@ -85,12 +85,11 @@
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
 
         <!-- active_dash_bar -->
-        <item name="colorActiveDashBarBg">?attr/colorSecondaryFaded</item>
+        <item name="colorActiveDashBarBg">?attr/colorSecondary</item>
         <item name="colorActiveDashBarStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
-        <item name="colorActiveDashTrackingIndicator">@color/tracking_status_fill</item>
-        <item name="colorActiveDashTrackingIndicatorFill">@color/tracking_status_fill</item>
+        <item name="colorActiveDashTrackingIndicator">@color/accent</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondaryFaded</item>
@@ -112,15 +111,15 @@
         <!-- list_item -->
         <item name="colorListItem">?attr/colorUIBackground</item>
         <item name="colorListItemBorder">?attr/colorListItem</item>
-        <item name="colorListItemExpanded">?attr/colorPrimary</item>
+        <item name="colorListItemExpanded">?attr/colorPrimaryVariant</item>
         <item name="colorListItemExpandedBorder">?attr/colorPrimaryVariant</item>
         <item name="colorListItemAccent">?attr/colorOnSecondaryVariant</item>
         <item name="colorListItemRipple">?attr/colorPrimaryVariant</item>
 
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimaryDisabled</item>
-        <item name="colorListItemButtonBg">?attr/colorPrimaryVariant</item>
-        <item name="colorListItemButtonIcon">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemButtonBg">?attr/colorPrimaryFaded</item>
+        <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
         <item name="colorListItemButtonOutline">?attr/colorPrimaryDark</item>
 
         <item name="colorListItemShadow">?attr/colorUIBackground</item>
@@ -139,6 +138,7 @@
         <item name="colorRowHeaderText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValueText">?attr/colorTextPrimary</item>
         <item name="colorRowValueSecondaryText">?attr/colorTextPrimary</item>
+        <item name="colorExpandDetailsButton">?attr/colorPrimaryFaded</item>
 
         <!-- charts -->
         <item name="colorChartBackground">?attr/colorListItem</item>

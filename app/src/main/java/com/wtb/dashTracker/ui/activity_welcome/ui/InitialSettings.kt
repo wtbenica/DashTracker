@@ -21,6 +21,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.NavigateNext
@@ -28,21 +29,23 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
 import com.wtb.dashTracker.ui.theme.cardShape
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.AUTHENTICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
@@ -54,14 +57,174 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Composable
-fun InitialSettings(activity: WelcomeActivity? = null) {
+fun ColumnScope.InitialSettings(activity: WelcomeActivity? = null) {
     val textSizeBody = R.dimen.text_size_sm
 
-    val permissionsHelper: PermissionsHelper? = activity?.let {
-        PermissionsHelper(activity)
+    val permissionsHelper = PermissionsHelper(LocalContext.current)
+
+    val sharedPrefs: SharedPreferences? = permissionsHelper.sharedPrefs
+
+    @Composable
+    fun themePrefHeader() {
+        Text(
+            text = stringResource(id = R.string.pref_title_light_dark_theme),
+            fontWeight = FontWeight.Bold
+        )
+
+        WideSpacer()
+
+        var expanded by remember { mutableStateOf(false) }
+
+        val mode: String = stringResource(permissionsHelper.uiMode.displayName)
+
+        var selectedTheme by remember { mutableStateOf(mode) }
+
+        val focusManager = LocalFocusManager.current
+
+        val regularOutline = MaterialTheme.colorScheme.outlineVariant
+        val focusedOutline = MaterialTheme.colorScheme.onError
+
+        DefaultOutlinedCard(
+            outlineColor = if (expanded) {
+                focusedOutline
+            } else {
+                regularOutline
+            }
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = {
+                    expanded = it
+                },
+                modifier = Modifier.wrapContentWidth()
+            ) {
+                TextField(
+                    value = selectedTheme,
+                    onValueChange = {},
+                    modifier = Modifier
+                        .menuAnchor()
+                        .width(IntrinsicSize.Min),
+                    readOnly = true,
+                    textStyle = TextStyle(
+                        fontSize = fontSizeDimensionResource(id = textSizeBody),
+                        fontFamily = FontFamilyFiraSans,
+                        baselineShift = BaselineShift(-.2f)
+                    ),
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    maxLines = 1,
+                    shape = cardShape,
+                )
+
+                MaterialTheme(
+                    shapes = MaterialTheme.shapes.copy(
+                        extraSmall = RoundedCornerShape(marginHalf())
+                    )
+                ) {
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = {
+                            expanded = false
+                            focusManager.clearFocus(true)
+                        },
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.surface)
+                    ) {
+                        PermissionsHelper.UiMode.values().forEach {
+                            val uiModeText = stringResource(it.displayName)
+
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = uiModeText,
+                                        fontSize = fontSizeDimensionResource(id = textSizeBody),
+                                        fontFamily = FontFamilyFiraSans,
+                                    )
+                                },
+                                onClick = {
+                                    selectedTheme = uiModeText
+                                    expanded = false
+                                    focusManager.clearFocus()
+
+                                    permissionsHelper.apply {
+                                        val prev = uiModeIsDarkMode
+                                        updateUiMode(selectedTheme) {
+                                            if (prev != uiModeIsDarkMode) {
+                                                setBooleanPref(
+                                                    context.PREF_SKIP_WELCOME_SCREEN,
+                                                    true
+                                                )
+                                                // I think this effectively restarts the activity bc
+                                                // WelcomeActivity finishes, and in MainActivity's
+                                                // onResume/Create, it restarts WelcomeActivity bc
+                                                // it never actually finished. If not, I'm not sure
+                                                // why this works. I could check, but if it works,
+                                                // it works. For now.
+                                                activity?.finish()
+                                            }
+                                        }
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    val sharedPrefs: SharedPreferences? = permissionsHelper?.sharedPrefs
+    @Composable
+    fun bpaPrefHeader() {
+        Text(
+            text = stringResource(R.string.pref_title_show_weekly_adjustment_field),
+            fontWeight = FontWeight.Bold,
+        )
+
+        FillSpacer()
+        val prefShowBpas = permissionsHelper.sharedPrefs?.getBoolean(
+            permissionsHelper.context.PREF_SHOW_BASE_PAY_ADJUSTS,
+            true
+        ) ?: true
+        val showBPAs = remember { mutableStateOf(prefShowBpas) }
+
+        Switch(
+            checked = showBPAs.value,
+            onCheckedChange = { newValue ->
+                showBPAs.value = newValue
+                permissionsHelper.setBooleanPref(
+                    permissionsHelper.context.PREF_SHOW_BASE_PAY_ADJUSTS,
+                    newValue
+                )
+            },
+            colors = switchColors()
+        )
+    }
+
+    @Composable
+    fun authPrefHeader() {
+        Text(
+            text = stringResource(id = R.string.pref_title_require_authentication),
+            fontWeight = FontWeight.Bold
+        )
+        FillSpacer()
+
+        val prefAuthEnabled =
+            sharedPrefs?.getBoolean(permissionsHelper.context.AUTHENTICATION_ENABLED, true) ?: true
+        val authEnabled = remember { mutableStateOf(prefAuthEnabled) }
+
+        Switch(
+            checked = authEnabled.value,
+            onCheckedChange = { newValue ->
+                authEnabled.value = newValue
+                permissionsHelper.setBooleanPref(
+                    permissionsHelper.context.AUTHENTICATION_ENABLED,
+                    newValue
+                )
+            },
+            colors = switchColors()
+        )
+    }
 
     ScreenTemplate(
         headerText = stringResource(R.string.welcome_header_initial_setup),
@@ -75,123 +238,13 @@ fun InitialSettings(activity: WelcomeActivity? = null) {
         },
         mainContent = {
             SettingsCard(
-                headerContent = {
-                    Text(
-                        text = stringResource(id = R.string.pref_title_light_dark_theme),
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    WideSpacer()
-
-                    var expanded by remember { mutableStateOf(false) }
-
-                    val mode = stringResource(
-                        (permissionsHelper?.uiMode ?: PermissionsHelper.UiMode.SYSTEM).displayName
-                    )
-                    var selectedTheme by remember { mutableStateOf(mode) }
-
-                    val focusManager = LocalFocusManager.current
-
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = {
-                            expanded = it
-                        },
-                        modifier = Modifier.wrapContentWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = selectedTheme,
-                            onValueChange = {},
-                            modifier = Modifier
-                                .menuAnchor()
-                                .width(IntrinsicSize.Min),
-                            readOnly = true,
-                            textStyle = TextStyle(
-                                fontSize = fontSizeDimensionResource(id = textSizeBody),
-                                fontFamily = FontFamilyFiraSans,
-                            ),
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            shape = cardShape,
-                            colors = TextFieldDefaults.textFieldColors(
-                                focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
-                                unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary
-                            )
-                        )
-
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = {
-                                expanded = false
-                                focusManager.clearFocus(true)
-                            },
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.onTertiaryContainer)
-                        ) {
-                            PermissionsHelper.UiMode.values().forEach {
-                                val uiModeText = stringResource(it.displayName)
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = uiModeText,
-                                            fontSize = fontSizeDimensionResource(id = textSizeBody),
-                                            fontFamily = FontFamilyFiraSans,
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedTheme = uiModeText
-                                        expanded = false
-                                        focusManager.clearFocus()
-
-                                        permissionsHelper?.apply {
-                                            val prev = uiModeIsDarkMode
-                                            updateUiMode(uiModeByDisplayName(selectedTheme)) {
-                                                if (prev != uiModeIsDarkMode) {
-                                                    setBooleanPref(
-                                                        activity.PREF_SKIP_WELCOME_SCREEN,
-                                                        true
-                                                    )
-                                                    activity.finish()
-                                                }
-                                            }
-                                        }
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
+                headerContent = { themePrefHeader() }
             )
 
             WideSpacer()
 
             SettingsCard(
-                headerContent = {
-                    Text(
-                        text = stringResource(R.string.pref_title_show_weekly_adjustment_field),
-                        fontWeight = FontWeight.Bold,
-                    )
-
-                    FillSpacer()
-                    val prefShowBpas = permissionsHelper?.sharedPrefs?.getBoolean(
-                        activity.PREF_SHOW_BASE_PAY_ADJUSTS,
-                        true
-                    ) ?: true
-                    val showBPAs = remember { mutableStateOf(prefShowBpas) }
-
-                    Switch(
-                        checked = showBPAs.value,
-                        onCheckedChange = { newValue ->
-                            showBPAs.value = newValue
-                            permissionsHelper?.setBooleanPref(
-                                activity.PREF_SHOW_BASE_PAY_ADJUSTS,
-                                newValue
-                            )
-                        },
-                        colors = csc()
-                    )
-                }
+                headerContent = { bpaPrefHeader() }
             ) {
                 Text(
                     text = stringResource(R.string.show_weekly_bpa_desc),
@@ -203,29 +256,7 @@ fun InitialSettings(activity: WelcomeActivity? = null) {
             WideSpacer()
 
             SettingsCard(
-                headerContent = {
-                    Text(
-                        text = stringResource(id = R.string.pref_title_require_authentication),
-                        fontWeight = FontWeight.Bold
-                    )
-                    FillSpacer()
-
-                    val prefAuthEnabled =
-                        sharedPrefs?.getBoolean(activity.AUTHENTICATION_ENABLED, true) ?: true
-                    val authEnabled = remember { mutableStateOf(prefAuthEnabled) }
-
-                    Switch(
-                        checked = authEnabled.value,
-                        onCheckedChange = { newValue ->
-                            authEnabled.value = newValue
-                            permissionsHelper?.setBooleanPref(
-                                activity.AUTHENTICATION_ENABLED,
-                                newValue
-                            )
-                        },
-                        colors = csc()
-                    )
-                }
+                headerContent = { authPrefHeader() }
             ) {
                 Text(
                     text = stringResource(R.string.require_pin_desc),
@@ -241,14 +272,14 @@ fun InitialSettings(activity: WelcomeActivity? = null) {
 }
 
 @Composable
-fun csc(): SwitchColors {
+fun switchColors(): SwitchColors {
     return SwitchDefaults.colors(
-        checkedThumbColor = MaterialTheme.colorScheme.onSecondary,
-        checkedTrackColor = MaterialTheme.colorScheme.onBackground,
-        checkedBorderColor = MaterialTheme.colorScheme.onSecondary,
-        uncheckedThumbColor = MaterialTheme.colorScheme.onSecondary,
-        uncheckedTrackColor = MaterialTheme.colorScheme.outline,
-        uncheckedBorderColor = MaterialTheme.colorScheme.onSecondary
+        checkedThumbColor = MaterialTheme.colorScheme.secondary,
+        checkedTrackColor = MaterialTheme.colorScheme.surface,
+        checkedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        uncheckedThumbColor = MaterialTheme.colorScheme.errorContainer,
+        uncheckedTrackColor = MaterialTheme.colorScheme.onError,
+        uncheckedBorderColor = MaterialTheme.colorScheme.outlineVariant
     )
 }
 
@@ -258,19 +289,19 @@ fun SettingsCard(
     headerContent: @Composable (RowScope.() -> Unit),
     body: @Composable (ColumnScope.() -> Unit)? = null
 ) {
-    CustomOutlinedCard(padding = 0.dp) {
+    DefaultOutlinedCard {
         Column {
             Surface(
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.onError,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ) {
                 Row(
                     modifier = Modifier
                         .defaultMinSize(minHeight = dimensionResource(id = R.dimen.min_touch_target))
                         .padding(
-                            horizontal = dimensionResource(id = R.dimen.margin_wide),
+                            horizontal = marginDefault(),
                             vertical = body?.let { 0.dp }
-                                ?: dimensionResource(id = R.dimen.margin_default)
+                                ?: marginHalf()
                         ),
                     verticalAlignment = Alignment.CenterVertically,
                     content = headerContent
@@ -281,8 +312,8 @@ fun SettingsCard(
                 Column(
                     modifier = Modifier
                         .padding(
-                            vertical = dimensionResource(id = R.dimen.margin_default),
-                            horizontal = dimensionResource(id = R.dimen.margin_wide)
+                            vertical = marginDefault(),
+                            horizontal = marginDefault()
                         )
                 ) {
                     body()
@@ -302,13 +333,9 @@ fun InitialSettingsNav(callback: InitialScreenCallback? = null) {
     val cb = callback ?: object : InitialScreenCallback {
         override fun nextScreen2() {}
     }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
 
-        CustomButton(
+    BottomNavButtons {
+        DefaultButton(
             onClick = {
                 cb.nextScreen2()
             },
@@ -329,20 +356,11 @@ fun InitialSettingsNav(callback: InitialScreenCallback? = null) {
 @ExperimentalTextApi
 @Composable
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 fun ThisPreview() {
     DashTrackerTheme {
-        InitialSettings()
-    }
-}
-
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@ExperimentalAnimationApi
-@ExperimentalTextApi
-@Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-fun ThisPreviewNight() {
-    DashTrackerTheme {
-        InitialSettings()
+        ActivityScreen {
+            InitialSettings()
+        }
     }
 }

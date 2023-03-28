@@ -7,8 +7,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import com.wtb.dashTracker.R
+
+
+@Composable
+fun marginDefault(): Dp = dimensionResource(id = R.dimen.margin_default)
+
+@Composable
+fun marginWide(): Dp = dimensionResource(id = R.dimen.margin_wide)
+
+@Composable
+fun marginHalf(): Dp = dimensionResource(id = R.dimen.margin_half)
+@Composable
+fun marginNarrow(): Dp = dimensionResource(id = R.dimen.margin_narrow)
+@Composable
+fun marginSkinny(): Dp = dimensionResource(id = R.dimen.margin_skinny)
 
 @Composable
 fun RowScope.FillSpacer() {
@@ -22,26 +36,26 @@ fun ColumnScope.FillSpacer(modifier: Modifier = Modifier) {
 
 @Composable
 fun DefaultSpacer() {
-    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_default)))
+    Spacer(modifier = Modifier.size(marginDefault()))
 }
 
 @Composable
 fun WideSpacer() {
-    Spacer(modifier = Modifier.size(24.dp))
+    Spacer(modifier = Modifier.size(marginWide()))
 }
 
 @Composable
 fun HalfSpacer() {
-    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_half)))
+    Spacer(modifier = Modifier.size(marginHalf()))
 }
 
 @Composable
 fun QuarterSpacer() {
-    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.margin_narrow)))
+    Spacer(modifier = Modifier.size(marginNarrow()))
 }
 
 @Composable
 fun NarrowSpacer() {
-    Spacer(modifier = Modifier.size(2.dp))
+    Spacer(modifier = Modifier.size(marginSkinny()))
 }
 

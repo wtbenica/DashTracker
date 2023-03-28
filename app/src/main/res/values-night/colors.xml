@@ -16,15 +16,15 @@
 
 <resources>
     <color name="dark">#1b201b</color>
-    <color name="regular">#283028</color>
-    <color name="light">#384038</color>
-    <color name="faded">#A0A080</color>
+    <color name="regular">#283828</color>
+    <color name="light">#384838</color>
+    <color name="faded">#788868</color>
 
     <color name="on_regular">#E8E8E8</color>
     <color name="on_regular_light">#CDCDCD</color>
 
     <color name="accent">#A0BBBB</color>
-    <color name="brick_dark">#07202b</color>
+    <color name="brick_dark">#103038</color>
     <color name="brick">#133443</color>
     <color name="brick_light">#234756</color>
     <color name="brick_faded">#375B6B</color>
@@ -39,7 +39,5 @@
     <color name="nighttime_light">#9CBEBE</color>
 
     <color name="alert">#EE5522</color>
-    <color name="tracking_status">#70E050</color>
-    <color name="tracking_status_fill">#209000</color>
-    <color name="splash_screen_bg">#141414</color>
+    <color name="splash_screen_bg">#1b201b</color>
 </resources>

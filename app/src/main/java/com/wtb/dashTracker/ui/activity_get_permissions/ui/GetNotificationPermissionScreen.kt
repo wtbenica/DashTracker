@@ -18,13 +18,14 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NavigateNext
 import androidx.compose.material.icons.twotone.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -36,11 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
-import com.wtb.dashTracker.ui.activity_get_permissions.PageIndicator
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import com.wtb.dashTracker.ui.theme.FontFamilyFiraSans
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_NOTIFICATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.NOTIFICATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.OPT_OUT_NOTIFICATION
@@ -51,7 +52,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @Composable
-fun GetNotificationPermissionScreen(
+fun ColumnScope.GetNotificationPermissionScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
@@ -72,7 +73,7 @@ fun GetNotificationPermissionScreen(
             CustomOutlinedCard {
                 Text(
                     text = stringResource(id = R.string.dialog_notification_permission),
-                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_med),
+                    fontSize = fontSizeDimensionResource(id = R.dimen.text_size_sm),
                     fontFamily = FontFamilyFiraSans
                 )
             }
@@ -95,7 +96,7 @@ fun GetNotificationPermissionScreen(
 
                     append(".")
                 }
-                Text(str, modifier = Modifier.padding(24.dp))
+                Text(str, modifier = Modifier.padding(marginDefault()))
             }
         },
         navContent = {
@@ -109,16 +110,10 @@ fun GetNotificationPermissionScreen(
 @ExperimentalTextApi
 @Composable
 fun GetNotificationsPermissionNav(
-    modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null,
     finishWhenDone: Boolean = false
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        FillSpacer()
-
+    BottomNavButtons {
         CustomTextButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, true)
@@ -130,7 +125,7 @@ fun GetNotificationsPermissionNav(
             Text("No thanks")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
         CustomTextButton(
             onClick = {
@@ -143,9 +138,9 @@ fun GetNotificationsPermissionNav(
             Text("Maybe later")
         }
 
-        DefaultSpacer()
+        HalfSpacer()
 
-        CustomButton(
+        DefaultButton(
             onClick = {
                 activity?.setBooleanPref(activity.OPT_OUT_NOTIFICATION, false)
                 activity?.setBooleanPref(activity.NOTIFICATION_ENABLED, true)
@@ -169,39 +164,17 @@ fun GetNotificationsPermissionNav(
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewGetNotificationPermissionScreen() {
     DashTrackerTheme {
-        Surface {
-            Column {
-                GetNotificationPermissionScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 3
-                )
-            }
-        }
-    }
-}
+        ActivityScreen {
+            GetNotificationPermissionScreen(modifier = Modifier.weight(1f))
 
-@ExperimentalCoroutinesApi
-@ExperimentalAnimationApi
-@ExperimentalMaterial3Api
-@ExperimentalTextApi
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewGetNotificationPermissionScreenNight() {
-    DashTrackerTheme {
-        Surface {
-            Column {
-                GetNotificationPermissionScreen()
-                PageIndicator(
-                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
-                    numPages = 4,
-                    selectedPage = 3
-                )
-            }
+            PageIndicator(
+                numPages = 5,
+                selectedPage = 3
+            )
         }
     }
 }

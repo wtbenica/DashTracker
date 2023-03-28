@@ -92,13 +92,13 @@
 
         <!-- activity_main -->
         <item name="textSizeActionBarTitle">@dimen/text_size_xlarge</item>
-        <item name="textSizeSummaryBarHeader">@dimen/text_size_sm</item>
+        <item name="textSizeSummaryBarHeader">@dimen/text_size_xs</item>
         <item name="textSizeSummaryBarValue">@dimen/text_size_large</item>
         <item name="textSizeBottomNavActive">@dimen/text_size_med</item>
         <item name="textSizeBottomNavInactive">@dimen/text_size_sm</item>
 
         <!-- active dash -->
-        <item name="activeDashCornerRadius">?attr/listItemCornerRadius</item>
+        <item name="activeDashCornerRadius">@dimen/margin_half</item>
 
         <!-- list_item -->
         <item name="listItemCardStyle">@style/DTCardViewStyle.ListItem</item>
@@ -178,7 +178,7 @@
 
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
         <item name="colorSummaryBarHighlight">?attr/colorSecondaryFaded</item>
-        <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
+        <item name="colorSummaryBarHighlightStroke">?attr/colorSecondaryVariant</item>
 
         <item name="colorFab">?attr/colorSecondaryFaded</item>
         <item name="colorFabDisabled">?attr/colorPrimaryDark</item>
@@ -204,8 +204,7 @@
         <item name="colorActiveDashBarBg">?attr/colorSecondaryVariant</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorSecondary</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
-        <item name="colorActiveDashTrackingIndicator">@color/tracking_status_fill</item>
-        <item name="colorActiveDashTrackingIndicatorFill">@color/tracking_status_fill</item>
+        <item name="colorActiveDashTrackingIndicator">@color/accent</item>
 
         <!-- fragment_income -->
         <item name="colorTabIndicator">?attr/colorSecondary</item>
@@ -255,6 +254,7 @@
         <item name="colorRowHeaderText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValueText">?attr/colorOnSurface</item>
         <item name="colorRowValueSecondaryText">?attr/colorOnPrimaryVariant</item>
+        <item name="colorExpandDetailsButton">?attr/colorPrimaryDark</item>
 
         <!-- charts -->
         <item name="colorChartBackground">?attr/colorListItemDetails</item>

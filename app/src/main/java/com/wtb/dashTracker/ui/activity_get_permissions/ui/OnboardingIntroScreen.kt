@@ -18,7 +18,9 @@ package com.wtb.dashTracker.ui.activity_get_permissions.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.PriceCheck
@@ -38,10 +40,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
+import com.wtb.dashTracker.ui.activity_get_permissions.ui.composables.PageIndicator
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
-import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity.Companion.headerIconColor
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.*
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
+import com.wtb.dashTracker.ui.theme.headerIconColor
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BATTERY_OPTIMIZER
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_BG_LOCATION
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.ASK_AGAIN_LOCATION
@@ -53,7 +56,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @Composable
-fun OnboardingIntroScreen(
+fun ColumnScope.OnboardingIntroScreen(
     modifier: Modifier = Modifier,
     activity: OnboardingMileageActivity? = null
 ): Unit =
@@ -97,7 +100,7 @@ fun OnboardingIntroScreen(
                         append("I'm in.")
                     }
                 }
-                Text(str, modifier = Modifier.padding(24.dp))
+                Text(str, modifier = Modifier.padding(marginDefault()))
             }
         },
         navContent = {
@@ -115,56 +118,48 @@ fun OnboardingIntroScreen(
 @ExperimentalCoroutinesApi
 @Composable
 fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
-    DashTrackerTheme(darkTheme = activity?.permissionsHelper?.uiModeIsDarkMode == true) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp)
+    BottomNavButtons {
+        CustomTextButton(
+            onClick = {
+                activity?.setOptOutLocation(true)
+                activity?.setLocationEnabled(false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
+            },
         ) {
-            FillSpacer()
+            Text("No thanks")
+        }
 
-            CustomTextButton(
-                onClick = {
-                    activity?.setOptOutLocation(true)
-                    activity?.setLocationEnabled(false)
-                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
-                },
-            ) {
-                Text("No thanks")
-            }
+        HalfSpacer()
 
-            DefaultSpacer()
+        CustomTextButton(
+            onClick = {
+                activity?.setOptOutLocation(false)
+                activity?.setLocationEnabled(false)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, true)
+            },
+        ) {
+            Text("Maybe later")
+        }
 
-            CustomTextButton(
-                onClick = {
-                    activity?.setOptOutLocation(false)
-                    activity?.setLocationEnabled(false)
-                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, true)
-                    activity?.setBooleanPref(activity.ASK_AGAIN_BG_LOCATION, true)
-                    activity?.setBooleanPref(activity.ASK_AGAIN_NOTIFICATION, true)
-                    activity?.setBooleanPref(activity.ASK_AGAIN_BATTERY_OPTIMIZER, true)
-                },
-            ) {
-                Text("Maybe later")
-            }
+        HalfSpacer()
 
-            DefaultSpacer()
-
-            CustomButton(
-                onClick = {
-                    activity?.setOptOutLocation(false)
-                    activity?.setLocationEnabled(true)
-                    activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
-                },
-            ) {
-                HalfSpacer()
-                Text("I'm in!")
-                Icon(
-                    Icons.Rounded.NavigateNext,
-                    contentDescription = "Next screen",
-                    modifier = Modifier.padding(0.dp)
-                )
-            }
+        DefaultButton(
+            onClick = {
+                activity?.setOptOutLocation(false)
+                activity?.setLocationEnabled(true)
+                activity?.setBooleanPref(activity.ASK_AGAIN_LOCATION, false)
+            },
+        ) {
+            HalfSpacer()
+            Text("I'm in!")
+            Icon(
+                Icons.Rounded.NavigateNext,
+                contentDescription = "Next screen",
+                modifier = Modifier.padding(0.dp)
+            )
         }
     }
 }
@@ -174,25 +169,17 @@ fun OnboardingIntroNav(activity: OnboardingMileageActivity? = null) {
 @ExperimentalCoroutinesApi
 @ExperimentalMaterial3Api
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewWhatsNew() {
     DashTrackerTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            OnboardingIntroScreen(modifier = Modifier.weight(1f))
-        }
-    }
-}
+        ActivityScreen {
+                OnboardingIntroScreen(modifier = Modifier.weight(1f))
 
-@ExperimentalAnimationApi
-@ExperimentalTextApi
-@ExperimentalCoroutinesApi
-@ExperimentalMaterial3Api
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewWhatsNewNight() {
-    DashTrackerTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            OnboardingIntroScreen(modifier = Modifier.weight(1f))
+                PageIndicator(
+                    numPages = 5,
+                    selectedPage = 0
+                )
+            }
         }
     }
-}
