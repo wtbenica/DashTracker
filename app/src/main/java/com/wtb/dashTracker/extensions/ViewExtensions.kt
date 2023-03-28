@@ -212,7 +212,6 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
         }
     }.apply {
         duration = ANIMATION_DURATION
-        fillAfter = true
 
         setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
@@ -221,6 +220,7 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
 
             override fun onAnimationEnd(animation: Animation?) {
                 this@collapse.apply {
+                    layoutParams.height = 0
                     clearAnimation()
                     requestLayout()
                 }
@@ -243,6 +243,7 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
 
 fun View.setVisibleIfTrue(boolean: Boolean) {
     visibility = if (boolean) VISIBLE else GONE
+    requestLayout()
 }
 
 fun View.focusAndShowKeyboard() {

@@ -89,50 +89,53 @@ class ActiveDashBar @JvmOverloads constructor(
                     onComplete?.invoke()
                 }
                 TRACKING_FULL -> { // Always show expanded details
-                    root.apply {
-                        setVisibleIfTrue(true)
-                    }
-
-                    activeDashDetailsTopSpacer.setVisibleIfTrue(true)
-                    callback?.revealAppBarLayout(shouldShow = true)
-                    activeDashDetails.revealIfTrue(shouldShow = true, doAnyways = true) {
-                        onComplete?.invoke()
-                        requestLayout()
-                    }
-
-                    btnStopActiveDash.visibility = GONE
-
                     startTrackingIndicator()
+                    btnStopActiveDash.setVisibleIfTrue(false)
+                    callback?.revealAppBarLayout(shouldShow = true)
+                    activeDashDetailsTopSpacer.setVisibleIfTrue(true)
+                    root.setVisibleIfTrue(true)
+
+                    activeDashDetails.apply {
+                        revealIfTrue(
+                            shouldShow = true,
+                            doAnyways = true
+                        ) {
+                            onComplete?.invoke()
+                            requestLayout()
+                        }
+                    }
                 }
                 TRACKING_COLLAPSED -> { // Show collapsed
-                    root.apply {
-                        setVisibleIfTrue(true)
-                    }
-
+                    startTrackingIndicator()
+                    btnStopActiveDash.setVisibleIfTrue(true)
+                    callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
                     activeDashDetailsTopSpacer.setVisibleIfTrue(false)
-                    callback?.revealAppBarLayout(true)
-                    activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
-                        onComplete?.invoke()
-                        requestLayout()
-                    }
+                    root.setVisibleIfTrue(true)
 
-                    btnStopActiveDash.visibility = VISIBLE
+                    activeDashDetails.apply {
+                        revealIfTrue(
+                            shouldShow = false,
+                            doAnyways = true
+                        ) {
+                            onComplete?.invoke()
+                            requestLayout()
+                        }
+                    }
                 }
                 TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
-                    root.apply {
-                        setVisibleIfTrue(true)
-                    }
-
+                    stopTrackingIndicator()
+                    btnStopActiveDash.setVisibleIfTrue(true)
+                    callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
                     activeDashDetailsTopSpacer.setVisibleIfTrue(false)
-                    callback?.revealAppBarLayout(true)
-                    activeDashDetails.revealIfTrue(shouldShow = false, doAnyways = true) {
+                    root.setVisibleIfTrue(true)
+
+                    activeDashDetails.revealIfTrue(
+                        shouldShow = false,
+                        doAnyways = true
+                    ) {
                         onComplete?.invoke()
                         requestLayout()
                     }
-
-                    stopTrackingIndicator()
-
-                    btnStopActiveDash.setVisibleIfTrue(currDestination != R.id.navigation_income)
                 }
             }
         }
@@ -181,6 +184,7 @@ class ActiveDashBar @JvmOverloads constructor(
         fun revealAppBarLayout(
             shouldShow: Boolean,
             doAnyways: Boolean = true,
+            lockAppBar: Boolean = false,
             onComplete: (() -> Unit)? = null
         )
 

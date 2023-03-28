@@ -62,6 +62,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.LayoutParams.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wtb.dashTracker.BuildConfig
@@ -430,7 +431,7 @@ class MainActivity : AuthenticatedActivity(),
                 val currFrag: Fragment? =
                     supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)?.childFragmentManager?.fragments?.last()
 
-                return  currFrag is ScrollableFragment && currFrag.isAtTop
+                return currFrag is ScrollableFragment && currFrag.isAtTop
             }
 
             binding = ActivityMainBinding.inflate(layoutInflater).apply {
@@ -699,12 +700,21 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     override fun revealAppBarLayout(
-        shouldShow: Boolean, doAnyways: Boolean, onComplete: (() -> Unit)?
+        shouldShow: Boolean,
+        doAnyways: Boolean,
+        lockAppBar: Boolean,
+        onComplete: (() -> Unit)?
     ) {
         binding.appBarLayout.revealIfTrue(
             shouldShow = shouldShow,
             doAnyways = doAnyways
         ) {
+            (binding.summaryBar.root.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
+                if (lockAppBar) {
+                    SCROLL_FLAG_NO_SCROLL
+                } else {
+                    SCROLL_FLAG_ENTER_ALWAYS or SCROLL_FLAG_SCROLL or SCROLL_FLAG_SNAP
+                }
             onComplete?.invoke()
         }
     }
