@@ -30,7 +30,6 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.reveal
 import com.wtb.dashTracker.extensions.revealToHeight
-import com.wtb.dashTracker.ui.activity_main.debugLog
 
 // TODO: There's got to be a better way of doing this
 interface ExpandableView {
@@ -43,9 +42,24 @@ interface ExpandableView {
 
     fun mCollapse(onComplete: (() -> Unit)? = null)
 
+    /**
+     * Prevents unnecessary expands
+     */
     var isExpanding: Boolean
+
+    /**
+     * Prevents unnecessary collapses
+     */
     var isCollapsing: Boolean
+
+    /**
+     * Prevents calling an onComplete prematurely
+     */
     var viewIsExpanded: Boolean
+
+    /**
+     * Prevents calling an onComplete prematurely
+     */
     var viewIsCollapsed: Boolean
 
     fun revealIfTrue(
@@ -57,17 +71,6 @@ interface ExpandableView {
         val shouldCollapse = !shouldShow && !viewIsCollapsed && (!isCollapsing || isExpanding)
         val shouldDoAnyways =
             doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
-        debugLog(
-            "Doing: ${
-                when {
-                    shouldExpand -> "Expanding"
-                    shouldCollapse -> "Collapsing"
-                    shouldDoAnyways -> "Doing Anyways"
-                    else -> "Nothin"
-                }
-            } ${this::class.simpleName} | Show? $shouldShow | Expanded? $viewIsExpanded | Expanding? $isExpanding | Collapsed? $viewIsCollapsed | Collapsing? $isCollapsing",
-            this is ExpandableAppBarLayout || this is ExpandableGridLayout
-        )
 
         when {
             shouldExpand -> {

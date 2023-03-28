@@ -68,17 +68,13 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
     layoutParams.height = max(1, layoutParams.height)
     visibility = VISIBLE
 
-    var finishedNormally = false
     val expandAnimation =
         object : Animation() {
             override fun willChangeBounds(): Boolean = true
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
                 this@reveal.apply {
-
                     layoutParams.height = (targetHeight * interpolatedTime).toInt()
-
-                    finishedNormally = interpolatedTime >= 1f
                     requestLayout()
                 }
             }
@@ -96,9 +92,7 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
                         layoutParams.height = WRAP_CONTENT
                         clearAnimation()
                         requestLayout()
-                        if (finishedNormally) {
-                            onComplete?.invoke()
-                        }
+                        onComplete?.invoke()
                     }
                 }
 
@@ -203,7 +197,6 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             this@collapse.apply {
                 layoutParams.height = initHeight - (initHeight * interpolatedTime).toInt()
-
                 requestLayout()
             }
         }
@@ -228,7 +221,6 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             override fun onAnimationRepeat(animation: Animation?) {
                 // Do nothing
             }
-
         })
     }
 
