@@ -62,7 +62,7 @@
         <item name="colorAppBarBg">?attr/colorTextSecondaryDisabled</item>
 
         <item name="colorSummaryBarItemText">?attr/colorTextPrimary</item>
-        <item name="colorSummaryBarHighlight">?attr/colorOnSecondary</item>
+        <item name="colorSummaryBarHighlight">?attr/colorSecondaryDark</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
 
         <item name="colorFab">?attr/colorSecondary</item>
@@ -138,6 +138,7 @@
         <item name="colorRowHeaderText">?attr/colorOnPrimaryVariant</item>
         <item name="colorRowValueText">?attr/colorTextPrimary</item>
         <item name="colorRowValueSecondaryText">?attr/colorTextPrimary</item>
+        <item name="colorExpandDetailsButton">?attr/colorPrimaryFaded</item>
 
         <!-- charts -->
         <item name="colorChartBackground">?attr/colorListItem</item>

@@ -30,7 +30,7 @@ val darkOnPrimary: Color = Color(0xFFE8E8E8)
 val darkOnPrimaryVariant: Color = Color(0xFFCDCDCD)
 
 
-val darkSecondaryDark: Color = Color(0xFF07202b)
+val darkSecondaryDark: Color = Color(0xFF103038)
 val darkSecondary: Color = Color(0xFF133443)
 val darkSecondaryLight: Color = Color(0xFF234756)
 val darkSecondaryFaded: Color = Color(0xFF375B6B)

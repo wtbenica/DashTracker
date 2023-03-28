@@ -23,7 +23,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:columnCount="5"
-    android:padding="@dimen/margin_half"
+    android:padding="@dimen/margin_narrow"
     android:rowCount="4">
 
     <View

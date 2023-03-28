@@ -146,6 +146,7 @@
     <attr name="textSizeItemHeader" format="reference" />
     <attr name="textSizeItemValue" format="reference" />
     <attr name="textSizeItemSecondaryValue" format="reference" />
+    <attr name="colorExpandDetailsButton" format="reference" />
 
     <!-- charts -->
     <attr name="colorBarChartDatasetDefault" format="reference" />
