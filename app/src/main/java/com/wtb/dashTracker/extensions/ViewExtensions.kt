@@ -166,7 +166,6 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
 
         val initHeight = height
         val initWidth = width
-        val initAlpha = translationX
 
         val deltaHeight = measuredHeight - initHeight
         val deltaWidth = measuredWidth - initWidth

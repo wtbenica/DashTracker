@@ -90,13 +90,11 @@ class ActiveDashBar @JvmOverloads constructor(
                 }
                 TRACKING_FULL -> { // Always show expanded details
                     startTrackingIndicator()
-                    debugLog("Full on tracking -> !expand")
                     btnStopActiveDash.transformTo(
                         expand = false,
                         toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),
                         toWidth = 0
                     )
-//                    btnStopActiveDash.setVisibleIfTrue(false)
 
                     activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     callback?.revealAppBarLayout(shouldShow = true)
@@ -109,13 +107,12 @@ class ActiveDashBar @JvmOverloads constructor(
                     }
                 }
                 else -> {
-                    debugLog("Tracking: ${serviceState.name} -> expand")
                     btnStopActiveDash.transformTo(
                         expand = true,
                         toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),
                         toWidth = resources.getDimension(R.dimen.min_touch_target).toInt()
                     )
-//                    btnStopActiveDash.setVisibleIfTrue(true)
+
                     activeDashDetailsTopSpacer.setVisibleIfTrue(false)
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
                     root.visibility = VISIBLE
