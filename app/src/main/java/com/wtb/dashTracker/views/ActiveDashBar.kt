@@ -28,6 +28,7 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -43,20 +44,18 @@ class ActiveDashBar @JvmOverloads constructor(
     private var activeEntry: FullEntry? = null
     private val flashingIndicator: ValueAnimator
 
-//    override var viewIsExpanded: Boolean = false
-//    override var viewIsCollapsed: Boolean = true
-
     init {
         val view: View = inflate(context, R.layout.activity_main_active_dash_bar, this)
 
         binding = ActivityMainActiveDashBarBinding.bind(view)
 
-        flashingIndicator = ValueAnimator.ofFloat(0.1f, 1f).apply {
+        flashingIndicator = ValueAnimator.ofInt(26, 255).apply {
             duration = 400
             repeatMode = ValueAnimator.REVERSE
             repeatCount = -1
             addUpdateListener { animation ->
-                binding.trackingStatusIndicator.alpha = animation.animatedValue as Float
+                binding.trackingStatusIndicator.compoundDrawables[2].alpha =
+                    animation.animatedValue as Int
             }
         }
 
@@ -84,13 +83,21 @@ class ActiveDashBar @JvmOverloads constructor(
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
+                    debugLog("Tracking: ${serviceState.name}")
                     root.visibility = GONE
                     flashingIndicator.pause()
                     onComplete?.invoke()
                 }
                 TRACKING_FULL -> { // Always show expanded details
                     startTrackingIndicator()
-                    btnStopActiveDash.setVisibleIfTrue(false)
+                    debugLog("Full on tracking -> !expand")
+                    btnStopActiveDash.transformTo(
+                        expand = false,
+                        toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),
+                        toWidth = 0
+                    )
+//                    btnStopActiveDash.setVisibleIfTrue(false)
+
                     activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     callback?.revealAppBarLayout(shouldShow = true)
                     root.visibility = VISIBLE
@@ -102,7 +109,13 @@ class ActiveDashBar @JvmOverloads constructor(
                     }
                 }
                 else -> {
-                    btnStopActiveDash.setVisibleIfTrue(true)
+                    debugLog("Tracking: ${serviceState.name} -> expand")
+                    btnStopActiveDash.transformTo(
+                        expand = true,
+                        toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),
+                        toWidth = resources.getDimension(R.dimen.min_touch_target).toInt()
+                    )
+//                    btnStopActiveDash.setVisibleIfTrue(true)
                     activeDashDetailsTopSpacer.setVisibleIfTrue(false)
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
                     root.visibility = VISIBLE
@@ -130,13 +143,13 @@ class ActiveDashBar @JvmOverloads constructor(
     }
 
     private fun startTrackingIndicator() {
-        binding.trackingStatusRow.visibility = VISIBLE
+        binding.trackingStatusIndicator.visibility = VISIBLE
 
         if (!flashingIndicator.isStarted || flashingIndicator.isPaused) flashingIndicator.start()
     }
 
     private fun stopTrackingIndicator() {
-        binding.trackingStatusRow.visibility = GONE
+        binding.trackingStatusIndicator.visibility = VISIBLE
         binding.trackingStatusIndicator.alpha = 1f
 
         flashingIndicator.pause()

@@ -36,6 +36,7 @@ import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
@@ -105,66 +106,103 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
     startAnimation(expandAnimation)
 }
 
-fun View.revealToHeight(targetHeight: Int? = WRAP_CONTENT, targetWidth: Int? = MATCH_PARENT) {
-    val mTargetHeight = targetHeight ?: WRAP_CONTENT
-    val mTargetWidth = targetWidth ?: MATCH_PARENT
-
-    if (!isVisible) {
-        val specWidth: Int
-        val specWidthMode: Int
-        if (mTargetWidth == MATCH_PARENT) {
-            specWidth = (parent as View).width
-            specWidthMode = View.MeasureSpec.EXACTLY
-        } else if (mTargetWidth == WRAP_CONTENT) {
-            specWidth = 0
-            specWidthMode = View.MeasureSpec.UNSPECIFIED
-        } else {
-            specWidth = mTargetWidth
-            specWidthMode = View.MeasureSpec.EXACTLY
-        }
-
-        val specHeight: Int
-        val specHeightMode: Int
-        if (mTargetHeight == MATCH_PARENT) {
-            specHeight = (parent as View).width
-            specHeightMode = View.MeasureSpec.EXACTLY
-        } else if (mTargetHeight == WRAP_CONTENT) {
-            specHeight = 0
-            specHeightMode = View.MeasureSpec.UNSPECIFIED
-        } else {
-            specHeight = mTargetHeight
-            specHeightMode = View.MeasureSpec.EXACTLY
-        }
-
-        val widthMeasureSpec =
-            View.MeasureSpec.makeMeasureSpec(specWidth, specWidthMode)
-        val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(specHeight, specHeightMode)
-        measure(widthMeasureSpec, heightMeasureSpec)
-        val toHeight = measuredHeight
-        val toWidth = measuredWidth
-
+fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
+    animation?.cancel()
+    clearAnimation()
+    if ((targetHeight == 0 && height == 0) || (targetWidth == 0 && width == 0)) {
+        this.debugLog("shrinking but already gone")
+        visibility = GONE
+        targetHeight?.let { layoutParams.height = it }
+        targetWidth?.let { layoutParams.width = it }
+    } else {
         layoutParams.height = max(1, layoutParams.height)
         visibility = VISIBLE
+
+        var widthMeasureSpec = layoutParams.width
+        targetWidth?.let {
+            val specWidth: Int
+            val specWidthMode: Int
+            when (targetWidth) {
+                MATCH_PARENT -> {
+                    specWidth = (parent as View).width
+                    specWidthMode = View.MeasureSpec.EXACTLY
+                }
+                WRAP_CONTENT -> {
+                    specWidth = 0
+                    specWidthMode = View.MeasureSpec.UNSPECIFIED
+                }
+                else -> {
+                    specWidth = targetWidth
+                    specWidthMode = View.MeasureSpec.EXACTLY
+                }
+            }
+
+            widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(specWidth, specWidthMode)
+        }
+
+        var heightMeasureSpec: Int = layoutParams.height
+        targetHeight?.let {
+            val specHeight: Int
+            val specHeightMode: Int
+            when (targetHeight) {
+                MATCH_PARENT -> {
+                    specHeight = (parent as View).width
+                    specHeightMode = View.MeasureSpec.EXACTLY
+                }
+                WRAP_CONTENT -> {
+                    specHeight = 0
+                    specHeightMode = View.MeasureSpec.UNSPECIFIED
+                }
+                else -> {
+                    specHeight = targetHeight
+                    specHeightMode = View.MeasureSpec.EXACTLY
+                }
+            }
+
+            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(specHeight, specHeightMode)
+        }
+
+        measure(widthMeasureSpec, heightMeasureSpec)
+
+        val initHeight = height
+        val initWidth = width
+        val initAlpha = translationX
+
+        val deltaHeight = measuredHeight - initHeight
+        val deltaWidth = measuredWidth - initWidth
 
         val animation = object : Animation() {
             override fun willChangeBounds(): Boolean = true
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                layoutParams.height = if (interpolatedTime >= 1f) {
-                    toHeight
-                } else {
-                    (toHeight * interpolatedTime).toInt()
-                }
-                layoutParams.width = if (interpolatedTime >= 1f) {
-                    toWidth
-                } else {
-                    (toWidth * interpolatedTime).toInt()
-                }
-
+                layoutParams.height = initHeight + (deltaHeight * interpolatedTime).toInt()
+                layoutParams.width = initWidth + (deltaWidth * interpolatedTime).toInt()
                 requestLayout()
             }
         }.apply {
             duration = ANIMATION_DURATION
+
+            setAnimationListener(object : AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+                    // Do nothing
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    this@animateTo.apply {
+                        layoutParams.height = initHeight + deltaHeight
+                        layoutParams.width = initWidth + deltaWidth
+                        clearAnimation()
+                        if (height == 0 || width == 0) {
+                            visibility = GONE
+                        }
+                        requestLayout()
+                    }
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+                    // Do nothing
+                }
+            })
         }
 
         startAnimation(animation)
@@ -177,9 +215,9 @@ fun View.revealToHeightIfTrue(
     toWidth: Int? = null
 ) {
     if (shouldExpand && !isVisible) {
-        revealToHeight(
+        animateTo(
             targetHeight = toHeight,
-            targetWidth = toWidth
+            targetWidth = toWidth,
         )
     } else if (!shouldExpand && isVisible) {
         collapse()

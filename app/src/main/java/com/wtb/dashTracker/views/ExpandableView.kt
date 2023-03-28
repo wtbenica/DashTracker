@@ -27,17 +27,18 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import com.google.android.material.appbar.AppBarLayout
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.extensions.animateTo
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.reveal
-import com.wtb.dashTracker.extensions.revealToHeight
 
 // TODO: There's got to be a better way of doing this
 interface ExpandableView {
     val mIsVisible: Boolean
     fun mExpand(onComplete: (() -> Unit)? = null)
-    fun mExpandTo(
+    fun mAnimateTo(
         targetHeight: Int? = WRAP_CONTENT,
-        targetWidth: Int? = MATCH_PARENT
+        targetWidth: Int? = MATCH_PARENT,
+        onComplete: (() -> Unit)? = null
     )
 
     fun mCollapse(onComplete: (() -> Unit)? = null)
@@ -68,7 +69,9 @@ interface ExpandableView {
         onComplete: (() -> Unit)? = null
     ) {
         val shouldExpand = shouldShow && !viewIsExpanded && (!isExpanding || isCollapsing)
+
         val shouldCollapse = !shouldShow && !viewIsCollapsed && (!isCollapsing || isExpanding)
+
         val shouldDoAnyways =
             doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
 
@@ -103,14 +106,49 @@ interface ExpandableView {
         }
     }
 
-    fun expandToIfTrue(shouldExpand: Boolean = true, toHeight: Int? = null, toWidth: Int? = null) {
-        if (shouldExpand && !mIsVisible) {
-            mExpandTo(
-                targetHeight = toHeight,
-                targetWidth = toWidth
-            )
-        } else if (!shouldExpand && mIsVisible) {
-            mCollapse()
+    fun transformTo(
+        expand: Boolean,
+        toHeight: Int?,
+        toWidth: Int?,
+        onComplete: (() -> Unit)? = null
+    ) {
+        val shouldExpand = expand && !viewIsExpanded && (!isExpanding || isCollapsing)
+
+        val shouldCollapse = !expand && !viewIsCollapsed && (!isCollapsing || isExpanding)
+
+        val shouldDoAnyways = (expand && viewIsExpanded) || (!isExpanding && viewIsCollapsed)
+
+        isExpanding = shouldExpand
+        isCollapsing = shouldCollapse
+
+        when {
+            shouldExpand -> {
+                mAnimateTo(
+                    targetHeight = toHeight,
+                    targetWidth = toWidth
+                ) {
+                    isExpanding = false
+                    isCollapsing = false
+                    viewIsExpanded = true
+                    viewIsCollapsed = false
+                    onComplete?.invoke()
+                }
+            }
+            shouldCollapse -> {
+                mAnimateTo (
+                    targetHeight = toHeight,
+                    targetWidth = toWidth
+                ) {
+                    isExpanding = false
+                    isCollapsing = false
+                    viewIsExpanded = false
+                    viewIsCollapsed = true
+                    onComplete?.invoke()
+                }
+            }
+            shouldDoAnyways -> {
+                onComplete?.invoke()
+            }
         }
     }
 }
@@ -126,10 +164,10 @@ open class ExpandableLinearLayout @JvmOverloads constructor(
 
     override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
 
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
-        revealToHeight(targetHeight, targetWidth)
+    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
@@ -149,10 +187,10 @@ class ExpandableGridLayout @JvmOverloads constructor(
 
     override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
 
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
-        revealToHeight(targetHeight, targetWidth)
+    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
@@ -170,10 +208,10 @@ class ExpandableAppBarLayout @JvmOverloads constructor(
 
     override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
 
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
-        revealToHeight(targetHeight, targetWidth)
+    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
@@ -190,10 +228,10 @@ class ExpandableTableLayout @JvmOverloads constructor(
 
     override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
 
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
-        revealToHeight(targetHeight, targetWidth)
+    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
@@ -212,10 +250,10 @@ class ExpandableTextView @JvmOverloads constructor(
 
     override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
 
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
-        revealToHeight(targetHeight, targetWidth)
+    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
@@ -234,10 +272,10 @@ class ExpandableButton @JvmOverloads constructor(
 
     override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
 
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
-        revealToHeight(targetHeight, targetWidth)
+    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
@@ -255,10 +293,10 @@ class ExpandableCardView @JvmOverloads constructor(
 
     override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
 
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
-        revealToHeight(targetHeight, targetWidth)
+    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false
@@ -277,10 +315,31 @@ class ExpandableImageView @JvmOverloads constructor(
 
     override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
 
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
+
     override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
-    override fun mExpandTo(targetHeight: Int?, targetWidth: Int?): Unit =
-        revealToHeight(targetHeight, targetWidth)
+    override var isExpanding: Boolean = false
+    override var isCollapsing: Boolean = false
+    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
+    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+}
+
+class ExpandableImageButton @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : androidx.appcompat.widget.AppCompatImageButton(context, attrs, defStyleAttr), ExpandableView {
+    override val mIsVisible: Boolean
+        get() = isVisible
+
+    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
+
+    override fun mAnimateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)?): Unit =
+        animateTo(targetHeight, targetWidth)
+
+    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
 
     override var isExpanding: Boolean = false
     override var isCollapsing: Boolean = false

@@ -37,6 +37,7 @@ import androidx.activity.viewModels
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
@@ -595,7 +596,23 @@ class MainActivity : AuthenticatedActivity(),
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val showBPAs = sharedPrefs.getBoolean(PREF_SHOW_BASE_PAY_ADJUSTS, true)
 
-        menu?.findItem(R.id.action_new_weekly)?.isVisible = showBPAs
+        menu?.let {
+            it.findItem(R.id.action_new_weekly)?.isVisible = showBPAs
+            if (it is MenuBuilder) {
+                try {
+                    val f = it::class.java.getDeclaredMethod(
+                        "setOptionalIconsVisible",
+                        Boolean::class.java
+                    )
+                    f.isAccessible = true
+                    f.invoke(it, true)
+                } catch (e: Exception) {
+                    debugLog("Kotlin Exception")
+                } catch (se: java.lang.Exception) {
+                    debugLog("Java Exception")
+                }
+            }
+        }
 
         return super.onPrepareOptionsMenu(menu)
     }

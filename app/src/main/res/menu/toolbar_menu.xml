@@ -18,9 +18,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_new_item"
-        android:icon="@drawable/ic_add_rounded"
-        app:iconTint="?attr/colorTextPrimary"
+        android:icon="@drawable/ic_add_circle"
         android:title="@string/action_menu_new_item"
+        app:iconTint="?attr/colorOnPrimaryVariant"
         app:showAsAction="ifRoom">
         <menu>
             <item
@@ -38,27 +38,37 @@
         </menu>
     </item>
     <item
-        android:id="@+id/action_licenses"
-        android:title="@string/label_action_licenses"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_export_to_csv"
+        android:icon="@drawable/ic_export_outline"
         android:title="@string/label_action_export"
+        app:iconTint="?attr/colorSecondaryDark"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_import_from_csv"
+        android:icon="@drawable/ic_import_outline"
         android:title="@string/label_action_import"
+        app:iconTint="?attr/colorSecondaryDark"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings_outline"
         android:title="@string/title_activity_settings"
+        app:iconTint="?attr/colorSecondaryDark"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_contact"
+        android:icon="@drawable/ic_mail_outline"
         android:title="@string/title_action_contact"
+        app:iconTint="?attr/colorSecondaryDark"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_licenses"
+        android:icon="@drawable/ic_licenses_outline"
+        android:title="@string/label_action_licenses"
+        app:iconTint="?attr/colorSecondaryDark"
         app:showAsAction="never" />
 </menu>
