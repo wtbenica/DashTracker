@@ -33,7 +33,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.setPadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
@@ -69,9 +68,13 @@ class YearlyListFragment : IncomeListItemFragment() {
         val entryAdapter = YearlyAdapter()
         recyclerView.adapter = entryAdapter
 
-        callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
-            deductionType = it
-            entryAdapter.notifyDataSetChanged()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                callback?.deductionType?.collectLatest {
+                    deductionType = it
+                    entryAdapter.notifyDataSetChanged()
+                }
+            }
         }
 
         lifecycleScope.launch {

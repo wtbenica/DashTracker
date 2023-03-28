@@ -32,7 +32,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
@@ -75,9 +74,13 @@ class WeeklyListFragment : IncomeListItemFragment() {
 
         binding.itemListRecyclerView.adapter = fullWeeklyAdapter
 
-        callback?.deductionType?.asLiveData()?.observe(viewLifecycleOwner) {
-            deductionType = it
-            fullWeeklyAdapter.notifyDataSetChanged()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                callback?.deductionType?.collectLatest {
+                    deductionType = it
+                    fullWeeklyAdapter.notifyDataSetChanged()
+                }
+            }
         }
 
         lifecycleScope.launch {
