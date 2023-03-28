@@ -98,7 +98,7 @@
         <item name="textSizeBottomNavInactive">@dimen/text_size_sm</item>
 
         <!-- active dash -->
-        <item name="activeDashCornerRadius">?attr/listItemCornerRadius</item>
+        <item name="activeDashCornerRadius">@dimen/margin_half</item>
 
         <!-- list_item -->
         <item name="listItemCardStyle">@style/DTCardViewStyle.ListItem</item>
