@@ -65,7 +65,7 @@
         <item name="colorSummaryBarHighlight">?attr/colorSecondaryDark</item>
         <item name="colorSummaryBarHighlightStroke">?attr/colorSecondary</item>
 
-        <item name="colorFab">?attr/colorSecondary</item>
+        <item name="colorFab">?attr/colorSecondaryVariant</item>
         <item name="colorFabDisabled">?attr/colorPrimary</item>
         <item name="colorFabIcon">?attr/colorAccent</item>
 
@@ -83,9 +83,10 @@
         <item name="colorDropdownRipple">?attr/colorSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnSecondary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
+        <item name="colorOverflowMenuItemIcon">?attr/colorSecondaryFaded</item>
 
         <!-- active_dash_bar -->
-        <item name="colorActiveDashBarBg">?attr/colorSecondary</item>
+        <item name="colorActiveDashBarBg">?attr/colorSecondaryDark</item>
         <item name="colorActiveDashBarStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsStroke">?attr/colorActiveDashBarBg</item>
         <item name="colorActiveDashBarDetailsBg">?attr/colorTextSecondary</item>
@@ -97,12 +98,12 @@
         <item name="colorTabLayoutBg">?attr/colorUIBackground</item>
 
         <item name="colorOptionsMenu">?attr/colorSecondaryVariant</item>
-        <item name="colorOptionsMenuStroke">?attr/colorSecondaryVariant</item>
+        <item name="colorOptionsMenuStroke">?attr/colorSecondary</item>
         <item name="colorOptionsMenuRipple">?attr/colorSecondary</item>
 
         <item name="colorGroupButton">?attr/colorSecondary</item>
         <item name="colorGroupButtonDisabled">?attr/colorSecondaryFaded</item>
-        <item name="colorGroupStroke">?attr/colorSecondaryDark</item>
+        <item name="colorGroupStroke">?attr/colorOnSecondaryVariant</item>
 
         <item name="colorGroupButtonText">@color/button_group_button_text</item>
         <item name="colorGroupButtonTextDefault">?attr/colorTextPrimary</item>
@@ -164,7 +165,7 @@
         <item name="colorShowFiltersButtonBorder">?attr/colorSecondary</item>
 
         <!-- dialog fragment -->
-        <item name="colorDialog">?attr/colorSecondary</item>
+        <item name="colorDialog">?attr/colorSecondaryDark</item>
         <item name="colorDialogOutline">?attr/colorSecondary</item>
 
         <item name="colorDialogBg">?attr/colorOnSecondary</item>
@@ -174,18 +175,19 @@
         <item name="colorDialogText">?attr/colorTextPrimary</item>
         <item name="textColorDialogHeader">?attr/colorAccent</item>
 
-        <item name="colorDialogItemOutline">?attr/colorDialog</item>
+        <item name="colorDialogItemOutline">?attr/colorSecondary</item>
         <item name="colorDialogItem">?attr/colorTextSecondaryDisabled</item>
         <item name="colorDialogUneditableItem">?attr/colorTextSecondary</item>
-        <item name="colorDialogUneditableItemOutline">?attr/colorSecondaryFaded</item>
+        <item name="colorDialogUneditableItemOutline">?attr/colorSecondaryVariant</item>
 
         <item name="colorDialogButton">?attr/colorAccent</item>
-        <item name="colorDialogButtonStroke">?attr/colorSecondaryDark</item>
+        <item name="colorDialogButtonStroke">?attr/colorOnSecondary</item>
         <item name="colorDialogButtonBg">?attr/colorSecondaryVariant</item>
         <item name="colorDialogWidget">?attr/colorTextPrimary</item>
         <item name="textColorDialogButtonDefault">?attr/colorTextPrimary</item>
 
         <item name="colorDialogFragSpinnerPopupBg">?attr/colorSecondaryDark</item>
+        <item name="colorDialogDividerB">?attr/colorSecondaryDark</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>

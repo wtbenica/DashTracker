@@ -14,22 +14,9 @@
   ~ limitations under the License.
   -->
 
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape>
-            <solid android:color="?attr/colorSecondary" />
-            <padding android:top="1dp" />
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="?attr/colorDialogDividerB" />
+            <padding android:top="2dp" />
             <corners
-                android:bottomLeftRadius="@dimen/margin_skinny"
-                android:bottomRightRadius="@dimen/margin_skinny" />
+                android:radius="@dimen/margin_skinny" />
         </shape>
-    </item>
-    <item>
-        <shape>
-            <solid android:color="?attr/colorSecondaryVariant" />
-            <corners
-                android:bottomLeftRadius="@dimen/margin_skinny"
-                android:bottomRightRadius="@dimen/margin_skinny" />
-        </shape>
-    </item>
-</layer-list>

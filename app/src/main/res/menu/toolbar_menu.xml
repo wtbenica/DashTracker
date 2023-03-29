@@ -41,34 +41,34 @@
         android:id="@+id/action_export_to_csv"
         android:icon="@drawable/ic_export_outline"
         android:title="@string/label_action_export"
-        app:iconTint="?attr/colorSecondaryDark"
+        app:iconTint="?attr/colorOverflowMenuItemIcon"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_import_from_csv"
         android:icon="@drawable/ic_import_outline"
         android:title="@string/label_action_import"
-        app:iconTint="?attr/colorSecondaryDark"
+        app:iconTint="?attr/colorOverflowMenuItemIcon"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings_outline"
         android:title="@string/title_activity_settings"
-        app:iconTint="?attr/colorSecondaryDark"
+        app:iconTint="?attr/colorOverflowMenuItemIcon"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_contact"
         android:icon="@drawable/ic_mail_outline"
         android:title="@string/title_action_contact"
-        app:iconTint="?attr/colorSecondaryDark"
+        app:iconTint="?attr/colorOverflowMenuItemIcon"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_licenses"
         android:icon="@drawable/ic_licenses_outline"
         android:title="@string/label_action_licenses"
-        app:iconTint="?attr/colorSecondaryDark"
+        app:iconTint="?attr/colorOverflowMenuItemIcon"
         app:showAsAction="never" />
 </menu>

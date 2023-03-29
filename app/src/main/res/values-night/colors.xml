@@ -29,6 +29,12 @@
     <color name="brick_light">#234756</color>
     <color name="brick_faded">#375B6B</color>
 
+<!--    <color name="accent">#C0DBDB</color>-->
+<!--    <color name="brick_dark">#082830</color>-->
+<!--    <color name="brick">#133443</color>-->
+<!--    <color name="brick_light">#395766</color>-->
+<!--    <color name="brick_faded">#A0B0B0</color>-->
+
     <color name="on_brick">#101014</color>
     <color name="on_brick_light">#202024</color>
 

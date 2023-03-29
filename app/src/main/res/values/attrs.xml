@@ -68,6 +68,7 @@
     <attr name="colorPopupBackground" format="reference" />
     <attr name="colorOverflowMenuText" format="reference" />
     <attr name="colorOverflowMenuButton" format="reference" />
+    <attr name="colorOverflowMenuItemIcon" format="reference" />
     <attr name="textSizeActionBarTitle" format="reference" />
     <attr name="textSizeSummaryBarHeader" format="reference" />
     <attr name="textSizeSummaryBarValue" format="reference" />
@@ -201,6 +202,7 @@
     <attr name="colorDialogGroupBg" format="reference" />
     <attr name="colorDialogGroupStroke" format="reference" />
     <attr name="colorDialogFragSpinnerPopupBg" format="reference" />
+    <attr name="colorDialogDividerB" format="reference" />
 
     <!-- datetime picker -->
     <attr name="colorPickerHeader" format="reference|color" />

@@ -28,8 +28,8 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getElapsedHours
 import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
+import com.wtb.dashTracker.views.ExpandableView.Companion.fadeAndGo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -54,7 +54,7 @@ class ActiveDashBar @JvmOverloads constructor(
             repeatMode = ValueAnimator.REVERSE
             repeatCount = -1
             addUpdateListener { animation ->
-                binding.trackingStatusIndicator.compoundDrawables[2].alpha =
+                binding.trackingStatusIndicator.compoundDrawables.getOrNull(2)?.alpha =
                     animation.animatedValue as Int
             }
         }
@@ -83,18 +83,21 @@ class ActiveDashBar @JvmOverloads constructor(
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
-                    debugLog("Tracking: ${serviceState.name}")
                     root.visibility = GONE
                     flashingIndicator.pause()
                     onComplete?.invoke()
                 }
                 TRACKING_FULL -> { // Always show expanded details
                     startTrackingIndicator()
-                    btnStopActiveDash.transformTo(
+
+                    fadeAndGo(
                         expand = false,
-                        toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),
-                        toWidth = 0
-                    )
+                        expandView = adbTitleBar,
+                        targetMargin = resources.getDimension(R.dimen.min_touch_target),
+                        fadingView = btnStopActiveDash
+                    ) { lp, value ->
+                        lp.marginEnd = value
+                    }
 
                     activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     callback?.revealAppBarLayout(shouldShow = true)
@@ -107,11 +110,14 @@ class ActiveDashBar @JvmOverloads constructor(
                     }
                 }
                 else -> {
-                    btnStopActiveDash.transformTo(
+                    fadeAndGo(
                         expand = true,
-                        toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),
-                        toWidth = resources.getDimension(R.dimen.min_touch_target).toInt()
-                    )
+                        expandView = adbTitleBar,
+                        targetMargin = resources.getDimension(R.dimen.min_touch_target),
+                        fadingView = btnStopActiveDash
+                    ) { lp, value ->
+                        lp.marginEnd = value
+                    }
 
                     activeDashDetailsTopSpacer.setVisibleIfTrue(false)
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)

@@ -198,6 +198,7 @@
         <item name="colorDropdownRipple">?attr/colorSecondary</item>
         <item name="colorOverflowMenuText">?attr/colorOnPrimary</item>
         <item name="colorOverflowMenuButton">?attr/colorActionBarText</item>
+        <item name="colorOverflowMenuItemIcon">?attr/colorSecondaryDark</item>
 
         <!-- active_dash_bar -->
         <item name="colorActiveDashBarStroke">?attr/colorSecondary</item>
@@ -302,6 +303,7 @@
         <item name="textColorDialogButtonDefault">?attr/colorTextPrimary</item>
 
         <item name="colorDialogFragSpinnerPopupBg">?attr/colorSecondaryFaded</item>
+        <item name="colorDialogDividerB">?attr/colorSecondaryVariant</item>
 
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>

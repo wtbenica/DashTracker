@@ -38,6 +38,7 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
+import kotlin.reflect.KProperty1
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     val x = ev?.x?.toInt()
@@ -61,8 +62,11 @@ private val View.targetHeight: Int
         return measuredHeight
     }
 
-private const val ANIMATION_DURATION = 300L
+internal const val ANIMATION_DURATION = 300L
 
+fun View.animateValue(property: KProperty1<View, Int>, from: Int, to: Int) {
+
+}
 fun View.reveal(onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
