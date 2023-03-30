@@ -19,91 +19,93 @@ package com.wtb.dashTracker.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup.INVISIBLE
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.animation.Animation
-import android.view.animation.Transformation
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TableLayout
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.google.android.material.appbar.AppBarLayout
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.extensions.ANIMATION_DURATION
 import com.wtb.dashTracker.extensions.animateTo
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.reveal
-import com.wtb.dashTracker.ui.activity_main.debugLog
-import kotlin.math.abs
+import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState
+import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.*
 
 // TODO: There's got to be a better way of doing this
 interface ExpandableView {
-    val mIsVisible: Boolean
-    fun mExpand(onComplete: (() -> Unit)? = null)
+    fun mExpand(onComplete: (() -> Unit)? = null) {
+        if (this is View) {
+            reveal { onComplete?.invoke() }
+        }
+    }
+
     fun mAnimateTo(
         targetHeight: Int? = WRAP_CONTENT,
         targetWidth: Int? = MATCH_PARENT,
         onComplete: (() -> Unit)? = null
-    )
+    ) {
+        if (this is View) {
+            animateTo(targetHeight, targetWidth, onComplete)
+        }
+    }
 
-    fun mCollapse(onComplete: (() -> Unit)? = null)
+    fun mCollapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = null) {
+        if (this is View) {
+            collapse(endVisibility, onComplete)
+        }
+    }
 
-    /**
-     * Prevents unnecessary expands
-     */
-    var isExpanding: Boolean
-
-    /**
-     * Prevents unnecessary collapses
-     */
-    var isCollapsing: Boolean
-
-    /**
-     * Prevents calling an onComplete prematurely
-     */
-    var viewIsExpanded: Boolean
+    var expandedState: ExpandedState
 
     /**
      * Prevents calling an onComplete prematurely
      */
-    var viewIsCollapsed: Boolean
+    val viewIsExpanded: Boolean
+        get() = expandedState == EXPANDED
+
+    /**
+     * Prevents calling an onComplete prematurely
+     */
+    val viewIsCollapsed: Boolean
+        get() = expandedState == COLLAPSED
+
+    val isCollapsedOrCollapsing: Boolean
+        get() = expandedState == COLLAPSING || expandedState == COLLAPSED
+
+    val isExpandedOrExpanding: Boolean
+        get() = expandedState == EXPANDING || expandedState == EXPANDED
 
     fun revealIfTrue(
         shouldShow: Boolean = true,
         doAnyways: Boolean = false,
+        endVisibility: Int = INVISIBLE,
         onComplete: (() -> Unit)? = null
     ) {
-        val shouldExpand = shouldShow && !viewIsExpanded && (!isExpanding || isCollapsing)
+        val shouldExpand = shouldShow && isCollapsedOrCollapsing
 
-        val shouldCollapse = !shouldShow && !viewIsCollapsed && (!isCollapsing || isExpanding)
+        val shouldCollapse = !shouldShow && isExpandedOrExpanding
 
         val shouldDoAnyways =
             doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
 
         when {
             shouldExpand -> {
-                isExpanding = true
-                isCollapsing = false
-                viewIsCollapsed = false
+                expandedState = EXPANDING
                 mExpand {
-                    isExpanding = false
-                    isCollapsing = false
-                    viewIsExpanded = true
-                    viewIsCollapsed = false
+                    expandedState = EXPANDED
                     onComplete?.invoke()
                 }
             }
             shouldCollapse -> {
-                isCollapsing = true
-                isExpanding = false
-                viewIsExpanded = false
-                mCollapse {
-                    isExpanding = false
-                    isCollapsing = false
-                    viewIsExpanded = false
-                    viewIsCollapsed = true
+                expandedState = COLLAPSING
+                mCollapse(endVisibility) {
+                    expandedState = COLLAPSED
                     onComplete?.invoke()
                 }
             }
@@ -119,37 +121,30 @@ interface ExpandableView {
         toWidth: Int?,
         onComplete: (() -> Unit)? = null
     ) {
-        val shouldExpand = expand && !viewIsExpanded && (!isExpanding || isCollapsing)
+        val shouldExpand = expand && isCollapsedOrCollapsing
 
-        val shouldCollapse = !expand && !viewIsCollapsed && (!isCollapsing || isExpanding)
+        val shouldCollapse = !expand && isExpandedOrExpanding
 
-        val shouldDoAnyways = (expand && viewIsExpanded) || (!isExpanding && viewIsCollapsed)
-
-        isExpanding = shouldExpand
-        isCollapsing = shouldCollapse
+        val shouldDoAnyways = (expand && viewIsExpanded) || (!expand && viewIsCollapsed)
 
         when {
             shouldExpand -> {
+                expandedState = EXPANDING
                 mAnimateTo(
                     targetHeight = toHeight,
                     targetWidth = toWidth
                 ) {
-                    isExpanding = false
-                    isCollapsing = false
-                    viewIsExpanded = true
-                    viewIsCollapsed = false
+                    expandedState = EXPANDED
                     onComplete?.invoke()
                 }
             }
             shouldCollapse -> {
+                expandedState = COLLAPSING
                 mAnimateTo(
                     targetHeight = toHeight,
                     targetWidth = toWidth
                 ) {
-                    isExpanding = false
-                    isCollapsing = false
-                    viewIsExpanded = false
-                    viewIsCollapsed = true
+                    expandedState = COLLAPSED
                     onComplete?.invoke()
                 }
             }
@@ -160,167 +155,13 @@ interface ExpandableView {
     }
 
     companion object {
+        enum class ExpandedState {
+            COLLAPSED, COLLAPSING, EXPANDING, EXPANDED
+        }
+
         val View.marginLayoutParams
             get() = layoutParams as MarginLayoutParams
 
-        fun fadeAndGo(
-            expand: Boolean,
-            expandView: View,
-            targetMargin: Float,
-            fadingView: View,
-            setMargin: (MarginLayoutParams, Int) -> Unit
-        ) {
-            val shouldExpand = expand &&
-                    (expandView !is ExpandableView ||
-                            (!expandView.viewIsExpanded &&
-                                    (!expandView.isExpanding || expandView.isCollapsing)))
-
-            val shouldCollapse =
-                !expand && (expandView !is ExpandableView ||
-                        (!expandView.viewIsCollapsed && (!expandView.isCollapsing || expandView.isExpanding)))
-
-            if (expandView is ExpandableView) {
-                expandView.isExpanding = shouldExpand
-                expandView.isCollapsing = shouldCollapse
-            }
-
-            debugLog(
-                when {
-                    shouldExpand -> "Should Expand"
-                    shouldCollapse -> "Should Collapse"
-                    else -> "Do nothing"
-                },
-                shouldExpand || shouldExpand
-            )
-            when {
-                shouldExpand || shouldCollapse -> {
-                    listOf(expandView, fadingView).forEach {
-                        it.animation?.cancel()
-                        it.clearAnimation()
-                    }
-
-                    val startAlpha = fadingView.alpha
-                    val endAlpha = if (expand) 1f else 0f
-                    val alphaDuration = endAlpha - startAlpha
-
-                    fun getFadeAnimation(doNext: (() -> Unit)?) =
-                        object : Animation() {
-                            override fun applyTransformation(
-                                interpolatedTime: Float,
-                                t: Transformation?
-                            ) {
-                                fadingView.apply {
-                                    alpha = startAlpha + (alphaDuration * interpolatedTime)
-                                    invalidate()
-                                }
-                            }
-                        }.apply {
-                            duration =
-                                (ANIMATION_DURATION * abs(alphaDuration) / 2).toLong()
-                            fillAfter = true
-
-                            setAnimationListener(
-                                object : Animation.AnimationListener {
-                                    override fun onAnimationStart(animation: Animation?) {
-                                        // Do nothing
-                                    }
-
-                                    override fun onAnimationEnd(animation: Animation?) {
-                                        fadingView.apply {
-                                            alpha = endAlpha
-                                            clearAnimation()
-                                            invalidate()
-                                        }
-
-                                        doNext?.invoke()
-                                    }
-
-                                    override fun onAnimationRepeat(animation: Animation?) {
-                                        // Do nothing
-                                    }
-                                }
-                            )
-                        }
-
-                    val startingMargin = expandView.marginLayoutParams.marginEnd
-                    val endMargin = if (expand) targetMargin.toInt() else 0
-                    val marginDuration = endMargin - startingMargin
-
-                    fun getExpandAnimation(doNext: (() -> Unit)?) =
-                        object : Animation() {
-                            override fun willChangeBounds(): Boolean = true
-
-                            override fun applyTransformation(
-                                interpolatedTime: Float,
-                                t: Transformation?
-                            ) {
-                                expandView.apply {
-                                    val lp = marginLayoutParams
-                                    val value =
-                                        (startingMargin + marginDuration * interpolatedTime).toInt()
-                                    setMargin(lp, value)
-                                    layoutParams = lp
-
-                                    requestLayout()
-                                }
-                            }
-                        }.apply {
-                            duration =
-                                (ANIMATION_DURATION * abs(marginDuration) / targetMargin / 2).toLong()
-                            fillAfter = true
-
-                            setAnimationListener(object : Animation.AnimationListener {
-                                override fun onAnimationStart(animation: Animation?) {
-                                    // Do nothing
-                                }
-
-                                override fun onAnimationEnd(animation: Animation?) {
-                                    expandView.apply {
-                                        val lp = marginLayoutParams
-                                        setMargin(lp, endMargin)
-                                        layoutParams = lp
-
-                                        clearAnimation()
-                                        requestLayout()
-
-                                        if (this is ExpandableView) {
-                                            isExpanding = false
-                                            isCollapsing = false
-                                            viewIsExpanded = expand
-                                            viewIsCollapsed = !expand
-                                        }
-                                    }
-
-                                    doNext?.invoke()
-                                }
-
-                                override fun onAnimationRepeat(animation: Animation?) {
-                                    // Do nothing
-                                }
-                            })
-                        }
-
-                    if (expand) {
-                        debugLog("fading away then expanding")
-                        expandView.startAnimation(getExpandAnimation {
-                            debugLog("faded away then expanding")
-                            fadingView.startAnimation(getFadeAnimation {
-                                debugLog("faded away and expanded")
-                            })
-                        })
-                    } else {
-                        debugLog("collapsing then fading in")
-                        fadingView.startAnimation(getFadeAnimation {
-                            debugLog("collapsed then fading in")
-                            expandView.startAnimation(getExpandAnimation {
-                                debugLog("collapsed and faded in")
-                            })
-                        })
-
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -330,25 +171,24 @@ open class ExpandableLinearLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes), ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
+}
 
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-
-    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
-    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+class ExpandableConstraintLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+    defStyleRes: Int = 0
+) : ConstraintLayout(context, attrs, defStyleAttr, defStyleRes), ExpandableView {
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
 
 class ExpandableGridLayout @JvmOverloads constructor(
@@ -357,24 +197,11 @@ class ExpandableGridLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : GridLayout(context, attrs, defStyleAttr, defStyleRes), ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
-
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
-    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
 
 class ExpandableAppBarLayout @JvmOverloads constructor(
@@ -382,75 +209,34 @@ class ExpandableAppBarLayout @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : AppBarLayout(context, attrs, defStyleAttr), ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
-
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
-    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
 
 class ExpandableTableLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
 ) : TableLayout(context, attrs), ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
-
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
-    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
-
 
 class ExpandableTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatTextView(context, attrs, defStyleAttr), ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
-
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-
-    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
-    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
 
 class ExpandableButton @JvmOverloads constructor(
@@ -458,24 +244,11 @@ class ExpandableButton @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatButton(context, attrs, defStyleAttr), ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
-
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-    override var viewIsExpanded: Boolean = isVisible
-    override var viewIsCollapsed: Boolean = !isVisible
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
 
 class ExpandableCardView @JvmOverloads constructor(
@@ -483,25 +256,11 @@ class ExpandableCardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cardViewStyle
 ) : CardView(context, attrs, defStyleAttr), ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
-
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-
-    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
-    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
 
 class ExpandableImageView @JvmOverloads constructor(
@@ -509,24 +268,11 @@ class ExpandableImageView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatImageView(context, attrs, defStyleAttr), ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
-
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
-    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
 
 class ExpandableImageButton @JvmOverloads constructor(
@@ -535,22 +281,10 @@ class ExpandableImageButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatImageButton(context, attrs, defStyleAttr),
     ExpandableView {
-    override val mIsVisible: Boolean
-        get() = isVisible
-
-    override fun mExpand(onComplete: (() -> Unit)?): Unit = reveal { onComplete?.invoke() }
-
-    override fun mAnimateTo(
-        targetHeight: Int?,
-        targetWidth: Int?,
-        onComplete: (() -> Unit)?
-    ): Unit =
-        animateTo(targetHeight, targetWidth)
-
-    override fun mCollapse(onComplete: (() -> Unit)?): Unit = collapse { onComplete?.invoke() }
-
-    override var isExpanding: Boolean = false
-    override var isCollapsing: Boolean = false
-    override var viewIsExpanded: Boolean = isVisible && (layoutParams?.height == WRAP_CONTENT)
-    override var viewIsCollapsed: Boolean = !isVisible && (layoutParams?.height == 0)
+    override var expandedState: ExpandedState = if (isVisible) {
+        EXPANDED
+    } else {
+        COLLAPSED
+    }
 }
+

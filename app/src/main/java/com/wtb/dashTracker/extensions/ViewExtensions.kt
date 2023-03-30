@@ -22,8 +22,8 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
+import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewTreeObserver
@@ -36,9 +36,16 @@ import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.wtb.dashTracker.ui.activity_main.debugLog
+import com.wtb.dashTracker.views.ExpandableView
+import com.wtb.dashTracker.views.ExpandableView.Companion.marginLayoutParams
 import java.lang.Integer.max
+import kotlin.math.abs
+import kotlin.reflect.KFunction1
+import kotlin.reflect.KFunction2
 import kotlin.reflect.KProperty1
+
+internal const val ANIMATION_DURATION = 300L
+private const val COLOR_TRANSITION_ANIMATION = 100L
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     val x = ev?.x?.toInt()
@@ -62,11 +69,18 @@ private val View.targetHeight: Int
         return measuredHeight
     }
 
-internal const val ANIMATION_DURATION = 300L
 
 fun View.animateValue(property: KProperty1<View, Int>, from: Int, to: Int) {
 
 }
+
+fun View.showOrHide(shouldShow: Boolean, animate: Boolean, elseVisibility: Int = INVISIBLE): Unit =
+    if (!animate || this !is ExpandableView) {
+        this.setVisibleIfTrue(shouldShow, elseVisibility)
+    } else {
+        this.revealIfTrue(shouldShow = shouldShow, endVisibility = elseVisibility)
+    }
+
 fun View.reveal(onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
@@ -110,12 +124,11 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
     startAnimation(expandAnimation)
 }
 
-fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
+fun View.animateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
     if ((targetHeight == 0 && height == 0) || (targetWidth == 0 && width == 0)) {
-        this.debugLog("shrinking but already gone")
-        visibility = GONE
+        visibility = INVISIBLE
         targetHeight?.let { layoutParams.height = it }
         targetWidth?.let { layoutParams.width = it }
     } else {
@@ -196,9 +209,10 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
                         layoutParams.width = initWidth + deltaWidth
                         clearAnimation()
                         if (height == 0 || width == 0) {
-                            visibility = GONE
+                            visibility = INVISIBLE
                         }
                         requestLayout()
+                        onComplete?.invoke()
                     }
                 }
 
@@ -227,7 +241,7 @@ fun View.revealToHeightIfTrue(
     }
 }
 
-fun View.collapse(onComplete: (() -> Unit)? = null) {
+fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
     val initHeight = measuredHeight
@@ -252,7 +266,7 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
             override fun onAnimationEnd(animation: Animation?) {
                 this@collapse.apply {
                     layoutParams.height = 0
-                    visibility = GONE
+                    visibility = endVisibility
                     clearAnimation()
                     requestLayout()
                     onComplete?.invoke()
@@ -268,13 +282,13 @@ fun View.collapse(onComplete: (() -> Unit)? = null) {
     if (initHeight > 0)
         startAnimation(collapseAnimation)
     else {
-        visibility = GONE
+        visibility = INVISIBLE
         onComplete?.invoke()
     }
 }
 
-fun View.setVisibleIfTrue(boolean: Boolean) {
-    visibility = if (boolean) VISIBLE else GONE
+fun View.setVisibleIfTrue(boolean: Boolean, elseVisibility: Int = GONE) {
+    visibility = if (boolean) VISIBLE else elseVisibility
     requestLayout()
 }
 
@@ -325,8 +339,6 @@ fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
 }
 
 fun View.transitionBackgroundTo(@AttrRes to: Int) {
-    val initHeight = measuredHeight
-
     val bgColor = when (background) {
         is ColorDrawable -> (background as ColorDrawable?)?.color
         is MaterialShapeDrawable -> (background as MaterialShapeDrawable?)?.fillColor?.defaultColor
@@ -337,7 +349,7 @@ fun View.transitionBackgroundTo(@AttrRes to: Int) {
 
     val colorAnimation: ValueAnimator =
         ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
-            duration = ANIMATION_DURATION
+            duration = COLOR_TRANSITION_ANIMATION
         }
 
     colorAnimation.addUpdateListener {
@@ -384,4 +396,138 @@ fun MaterialButton.rotateUp() {
     }
 
     startAnimation(animation)
+}
+
+fun View.fade(
+    fadeIn: Boolean,
+    doNext: (() -> Unit)? = null
+) {
+    animation?.cancel()
+    clearAnimation()
+
+    val startAlpha = alpha
+    val endAlpha = if (fadeIn) 1f else 0f
+    val alphaDuration = endAlpha - startAlpha
+
+    val fadeAnimation =
+        object : Animation() {
+            override fun applyTransformation(
+                interpolatedTime: Float,
+                t: Transformation?
+            ) {
+                alpha = startAlpha + (alphaDuration * interpolatedTime)
+                invalidate()
+            }
+        }.apply {
+            duration =
+                (ANIMATION_DURATION * abs(alphaDuration)).toLong()
+            fillAfter = true
+
+            setAnimationListener(
+                object : AnimationListener {
+                    override fun onAnimationStart(animation: Animation?) {
+                        // Do nothing
+                    }
+
+                    override fun onAnimationEnd(animation: Animation?) {
+                        alpha = endAlpha
+                        clearAnimation()
+                        invalidate()
+                        doNext?.invoke()
+                    }
+
+                    override fun onAnimationRepeat(animation: Animation?) {
+                        // Do nothing
+                    }
+                }
+            )
+        }
+
+    startAnimation(fadeAnimation)
+}
+
+fun View.animateMargin(
+    expand: Boolean,
+    marginFullSize: Float,
+    getMarginValue: KFunction1<ViewGroup.MarginLayoutParams, Int>,
+    setMarginValue: KFunction2<ViewGroup.MarginLayoutParams, Int, Unit>,
+    doNext: (() -> Unit)? = null
+) {
+    animation?.cancel()
+    clearAnimation()
+
+    val startingMargin = getMarginValue(marginLayoutParams)
+    val endMargin = if (expand) marginFullSize.toInt() else 0
+    val marginDuration = endMargin - startingMargin
+
+    val animation =
+        object : Animation() {
+            override fun willChangeBounds(): Boolean = true
+
+            override fun applyTransformation(
+                interpolatedTime: Float,
+                t: Transformation?
+            ) {
+                val lp = marginLayoutParams
+                setMarginValue(
+                    lp,
+                    (startingMargin + marginDuration * interpolatedTime).toInt()
+                )
+                layoutParams = lp
+
+                requestLayout()
+            }
+        }.apply {
+            duration =
+                (ANIMATION_DURATION * abs(marginDuration) / marginFullSize).toLong()
+            fillAfter = true
+
+            setAnimationListener(object : AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+                    // Do nothing
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    val lp = marginLayoutParams
+                    setMarginValue(lp, endMargin)
+                    layoutParams = lp
+
+                    clearAnimation()
+                    requestLayout()
+                    doNext?.invoke()
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+                    // Do nothing
+                }
+            })
+        }
+
+    startAnimation(animation)
+}
+
+fun View.fadeAndGo(
+    expandMargin: Boolean,
+    targetMargin: Float,
+    fadingView: View,
+    getMarginValue: KFunction1<ViewGroup.MarginLayoutParams, Int>,
+    setMarginValue: KFunction2<ViewGroup.MarginLayoutParams, Int, Unit>
+) {
+    val shouldExpand =
+        expandMargin && (getMarginValue(marginLayoutParams) < targetMargin)
+
+    val shouldCollapse =
+        !expandMargin && (getMarginValue(marginLayoutParams) > 0)
+
+    when {
+        shouldExpand || shouldCollapse -> {
+            animateMargin(
+                expand = expandMargin,
+                marginFullSize = targetMargin,
+                getMarginValue = getMarginValue,
+                setMarginValue = setMarginValue
+            )
+            fadingView.fade(fadeIn = expandMargin)
+        }
+    }
 }

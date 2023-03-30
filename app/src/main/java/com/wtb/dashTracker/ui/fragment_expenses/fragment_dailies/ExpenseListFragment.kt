@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Wesley T. Benica
+ * Copyright 2023 Wesley T. Benica
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_expenses
+package com.wtb.dashTracker.ui.fragment_expenses.fragment_dailies
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -42,6 +42,8 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
+import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListItemFragment
+import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -147,9 +149,7 @@ class ExpenseListFragment : ExpenseListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullExpense, payloads: List<Any>?) {
-                this.item = item
-
+            override fun updateHeaderFields() {
                 if (this.item.isEmpty) {
                     viewModel.delete(item.expense)
                 }
@@ -166,13 +166,15 @@ class ExpenseListFragment : ExpenseListItemFragment() {
                     )
                 binding.listItemGallons.text =
                     getStringOrElse(R.string.float_fmt, "-", this.item.expense.gallons)
-
-                setVisibilityFromPayloads(payloads)
             }
+
+            override fun updateDetailsFields() {}
+
+            override fun launchObservers() {}
         }
 
         @ExperimentalAnimationApi
-        inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseAdapter.ExpenseHolder(
+        inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense_non_gas, parent, false)
         ), View.OnClickListener {
             private val binding: ListItemExpenseNonGasBinding =
@@ -203,16 +205,16 @@ class ExpenseListFragment : ExpenseListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullExpense, payloads: List<Any>?) {
-                this.item = item
-
+            override fun updateHeaderFields() {
                 binding.listItemTitle.text = this.item.expense.date.formatted
                 binding.listItemTitle2.text =
                     getStringOrElse(R.string.currency_fmt, "-", this.item.expense.amount)
                 binding.listItemSubtitle.text = this.item.purpose.name
-
-                setVisibilityFromPayloads(payloads)
             }
+
+            override fun updateDetailsFields() {}
+
+            override fun launchObservers() {}
         }
     }
 

@@ -30,9 +30,10 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragExpenseBinding
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
-import com.wtb.dashTracker.ui.fragment_expenses.fragment_monthly_expenses.MonthlyExpenseListFragment
+import com.wtb.dashTracker.ui.fragment_expenses.fragment_dailies.ExpenseListFragment
+import com.wtb.dashTracker.ui.fragment_expenses.fragment_monthlies.MonthlyExpenseListFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment
+import com.wtb.dashTracker.ui.fragment_income.fragment_dailies.EntryListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**

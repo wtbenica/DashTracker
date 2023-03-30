@@ -112,12 +112,13 @@
             <com.wtb.dashTracker.views.ExpandableLinearLayout
                 android:id="@+id/filter_box_collapsable_area"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:visibility="invisible"
+                tools:visibility="invisible"
                 android:orientation="vertical"
                 android:paddingHorizontal="@dimen/margin_default"
                 android:paddingVertical="@dimen/margin_default"
-                android:visibility="gone"
-                tools:visibility="visible">
+                tools:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"

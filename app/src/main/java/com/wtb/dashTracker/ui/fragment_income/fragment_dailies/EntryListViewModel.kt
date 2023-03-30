@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies
+package com.wtb.dashTracker.ui.fragment_income.fragment_dailies
 
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData

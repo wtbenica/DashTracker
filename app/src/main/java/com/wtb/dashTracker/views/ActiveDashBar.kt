@@ -24,12 +24,8 @@ import androidx.annotation.AttrRes
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
-import com.wtb.dashTracker.extensions.getCurrencyString
-import com.wtb.dashTracker.extensions.getElapsedHours
-import com.wtb.dashTracker.extensions.getStringOrElse
-import com.wtb.dashTracker.extensions.setVisibleIfTrue
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
-import com.wtb.dashTracker.views.ExpandableView.Companion.fadeAndGo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -90,14 +86,13 @@ class ActiveDashBar @JvmOverloads constructor(
                 TRACKING_FULL -> { // Always show expanded details
                     startTrackingIndicator()
 
-                    fadeAndGo(
-                        expand = false,
-                        expandView = adbTitleBar,
+                    adbTitleBar.fadeAndGo(
+                        expandMargin = false,
                         targetMargin = resources.getDimension(R.dimen.min_touch_target),
-                        fadingView = btnStopActiveDash
-                    ) { lp, value ->
-                        lp.marginEnd = value
-                    }
+                        fadingView = btnStopActiveDash,
+                        getMarginValue = MarginLayoutParams::getMarginEnd,
+                        setMarginValue = MarginLayoutParams::setMarginEnd
+                    )
 
                     activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     callback?.revealAppBarLayout(shouldShow = true)
@@ -110,14 +105,13 @@ class ActiveDashBar @JvmOverloads constructor(
                     }
                 }
                 else -> {
-                    fadeAndGo(
-                        expand = true,
-                        expandView = adbTitleBar,
+                    adbTitleBar.fadeAndGo(
+                        expandMargin = true,
                         targetMargin = resources.getDimension(R.dimen.min_touch_target),
-                        fadingView = btnStopActiveDash
-                    ) { lp, value ->
-                        lp.marginEnd = value
-                    }
+                        fadingView = btnStopActiveDash,
+                        getMarginValue = MarginLayoutParams::getMarginEnd,
+                        setMarginValue = MarginLayoutParams::setMarginEnd
+                    )
 
                     activeDashDetailsTopSpacer.setVisibleIfTrue(false)
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)

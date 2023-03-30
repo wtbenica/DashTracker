@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthly_expenses
+package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthlies
 
 import androidx.lifecycle.ViewModel
 import com.wtb.dashTracker.database.models.DashEntry

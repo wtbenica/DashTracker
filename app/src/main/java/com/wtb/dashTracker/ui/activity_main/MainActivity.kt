@@ -481,15 +481,15 @@ class MainActivity : AuthenticatedActivity(),
                             }
                         }
                     }
-
-                    viewIsExpanded = true
-                    viewIsCollapsed = false
+//
+//                    viewIsExpanded = true
+//                    viewIsCollapsed = false
                 }
-
-                summaryBar.root.apply {
-                    viewIsExpanded = true
-                    viewIsCollapsed = false
-                }
+//
+//                summaryBar.root.apply {
+//                    viewIsExpanded = true
+//                    viewIsCollapsed = false
+//                }
             }
         }
 
@@ -1014,14 +1014,13 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
-            binding.adb.onServiceStateUpdated(serviceState) {
-                updateTopAppBarVisibility()
+            binding.adb.onServiceStateUpdated(serviceState)
+            updateTopAppBarVisibility()
 
-                binding.fab.updateIcon(
-                    currFragId = currDestination,
-                    isTracking = serviceState != ADBState.INACTIVE
-                )
-            }
+            binding.fab.updateIcon(
+                currFragId = currDestination,
+                isTracking = serviceState != ADBState.INACTIVE
+            )
         }
 
         /**

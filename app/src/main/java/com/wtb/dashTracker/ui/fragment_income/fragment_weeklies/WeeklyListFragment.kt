@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_weeklies
+package com.wtb.dashTracker.ui.fragment_income.fragment_weeklies
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
@@ -48,7 +46,7 @@ import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.getDateRange
-import com.wtb.dashTracker.ui.fragment_list_item_base.IncomeListItemFragment
+import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -154,31 +152,69 @@ class WeeklyListFragment : IncomeListItemFragment() {
                 }
             }
 
-            override fun bind(item: FullWeekly, payloads: List<Any>?) {
-                fun showExpenseFields() {
-                    binding.listItemSubtitle2Label.visibility = VISIBLE
-                    binding.listItemSubtitle2.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyCpmHeader.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyCpmDeductionType.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyCpm.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyExpensesHeader.visibility = VISIBLE
-                    detailsBinding.listItemWeeklyExpenses.visibility = VISIBLE
-                }
-
-                fun hideExpenseFields() {
-                    binding.listItemSubtitle2Label.visibility = GONE
-                    binding.listItemSubtitle2.visibility = GONE
-                    detailsBinding.listItemWeeklyCpmHeader.visibility = GONE
-                    detailsBinding.listItemWeeklyCpmDeductionType.visibility = GONE
-                    detailsBinding.listItemWeeklyCpm.visibility = GONE
-                    detailsBinding.listItemWeeklyExpensesHeader.visibility = GONE
-                    detailsBinding.listItemWeeklyExpenses.visibility = GONE
-                }
-
-                this.item = item
-
+            override fun updateHeaderFields() {
                 if (this.item.isEmpty) {
                     viewModel.delete(item.weekly)
+                } else {
+                    binding.listItemBtnEdit.isVisible = showBPAs
+
+                    binding.listItemTitle.text =
+                        getDateRange(
+                            start = this.item.weekly.date.minusDays(6),
+                            end = this.item.weekly.date
+                        )
+
+                    binding.listItemAlert.setVisibleIfTrue(showBPAs && this.item.weekly.isIncomplete)
+
+                    binding.listItemTitle2.text =
+                        getCurrencyString(
+                            if (this.item.totalPay != 0f) {
+                                this.item.totalPay
+                            } else {
+                                null
+                            }
+                        )
+                    binding.listItemSubtitle.text =
+                        getString(R.string.week_number, this.item.weekly.date.weekOfYear)
+                }
+            }
+
+            override fun updateDetailsFields() {
+                val basePayAdjust = this.item.weekly.basePayAdjustment
+                detailsBinding.listItemWeeklyAdjust.text =
+                    getCurrencyString(basePayAdjust)
+                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.regularPay)
+                detailsBinding.listItemWeeklyAdjust.text =
+                    getCurrencyString(basePayAdjust)
+                detailsBinding.listItemWeeklyAdjust.setTextColor(
+                    if (this.item.weekly.basePayAdjustment == null) {
+                        requireContext().getAttrColor(R.attr.colorAlert)
+                    } else {
+                        requireContext().getAttrColor(R.attr.colorTextPrimary)
+                    }
+                )
+
+                detailsBinding.listItemWeeklyAdjust.revealIfTrue(showBPAs)
+                detailsBinding.labelBasePayAdjust.revealIfTrue(showBPAs)
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
+                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
+                detailsBinding.listItemWeeklyHours.text = getFloatString(this.item.hours)
+                detailsBinding.listItemWeeklyHourly.text = getCurrencyString(this.item.hourly)
+                detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(this.item.avgDelivery)
+                detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(this.item.delPerHour)
+                detailsBinding.listItemWeeklyMiles.text =
+                    getStringOrElse(R.string.odometer_fmt, "-", this.item.miles)
+            }
+
+            override fun launchObservers() {
+                fun updateExpenseFieldsVisibility(show: Boolean) {
+                    binding.listItemSubtitle2Label.fade(show)
+                    binding.listItemSubtitle2.fade(show)
+                    detailsBinding.listItemWeeklyCpmHeader.showOrHide(show, isExpanded)
+                    detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(show, isExpanded)
+                    detailsBinding.listItemWeeklyCpm.showOrHide(show, isExpanded)
+                    detailsBinding.listItemWeeklyExpensesHeader.showOrHide(show, isExpanded)
+                    detailsBinding.listItemWeeklyExpenses.showOrHide(show, isExpanded)
                 }
 
                 CoroutineScope(Dispatchers.Default).launch {
@@ -190,9 +226,9 @@ class WeeklyListFragment : IncomeListItemFragment() {
                     }.let { (expenses, cpm) ->
                         (context as MainActivity).runOnUiThread {
                             when (deductionType) {
-                                DeductionType.NONE -> hideExpenseFields()
+                                DeductionType.NONE -> updateExpenseFieldsVisibility(false)
                                 else -> {
-                                    showExpenseFields()
+                                    updateExpenseFieldsVisibility(true)
 
                                     detailsBinding.listItemWeeklyCpmDeductionType.text =
                                         deductionType.fullDesc
@@ -218,54 +254,6 @@ class WeeklyListFragment : IncomeListItemFragment() {
                     }
 
                 }
-
-                binding.listItemBtnEdit.isVisible = showBPAs
-
-                binding.listItemTitle.text =
-                    getDateRange(
-                        start = this.item.weekly.date.minusDays(6),
-                        end = this.item.weekly.date
-                    )
-
-                binding.listItemAlert.setVisibleIfTrue(showBPAs && this.item.weekly.isIncomplete)
-
-                binding.listItemTitle2.text =
-                    getCurrencyString(
-                        if (this.item.totalPay != 0f) {
-                            this.item.totalPay
-                        } else {
-                            null
-                        }
-                    )
-                binding.listItemSubtitle.text =
-                    getString(R.string.week_number, this.item.weekly.date.weekOfYear)
-
-                val basePayAdjust = this.item.weekly.basePayAdjustment
-                detailsBinding.listItemWeeklyAdjust.text =
-                    getCurrencyString(basePayAdjust)
-                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.regularPay)
-                detailsBinding.listItemWeeklyAdjust.text =
-                    getCurrencyString(basePayAdjust)
-                detailsBinding.listItemWeeklyAdjust.setTextColor(
-                    if (this.item.weekly.basePayAdjustment == null) {
-                        requireContext().getAttrColor(R.attr.colorAlert)
-                    } else {
-                        requireContext().getAttrColor(R.attr.colorTextPrimary)
-                    }
-                )
-
-                detailsBinding.listItemWeeklyAdjust.revealIfTrue(showBPAs)
-                detailsBinding.labelBasePayAdjust.revealIfTrue(showBPAs)
-                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
-                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
-                detailsBinding.listItemWeeklyHours.text = getFloatString(this.item.hours)
-                detailsBinding.listItemWeeklyHourly.text = getCurrencyString(this.item.hourly)
-                detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(this.item.avgDelivery)
-                detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(this.item.delPerHour)
-                detailsBinding.listItemWeeklyMiles.text =
-                    getStringOrElse(R.string.odometer_fmt, "-", this.item.miles)
-
-                setVisibilityFromPayloads(payloads)
             }
         }
     }

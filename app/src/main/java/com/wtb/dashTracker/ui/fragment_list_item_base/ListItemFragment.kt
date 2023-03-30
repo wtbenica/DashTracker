@@ -183,11 +183,26 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     abstract inner class BaseItemHolder<T : ListItemType>(itemView: View) :
         RecyclerView.ViewHolder(itemView), OnClickListener {
         protected lateinit var item: T
+        protected var isExpanded: Boolean = false
         abstract val collapseArea: Array<View>
         abstract val backgroundArea: ViewGroup
         abstract val bgCard: CardView
 
-        abstract fun bind(item: T, payloads: List<Any>? = null)
+        abstract fun updateHeaderFields()
+        abstract fun updateDetailsFields()
+        abstract fun launchObservers()
+
+        fun bind(item: T, payloads: List<Any>? = null) {
+            this.item = item
+
+            launchObservers()
+
+            setVisibilityFromPayloads(payloads)
+
+            updateHeaderFields()
+
+            updateDetailsFields()
+        }
 
         init {
             itemView.setOnClickListener(this)
@@ -231,14 +246,18 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         protected fun setVisibilityFromPayloads(payloads: List<Any>?) {
-            val showDetails = payloads?.getOrNull(0) == VISIBLE
+            val payload = payloads?.getOrNull(0) == VISIBLE
 
-            collapseArea.forEach { it.setVisibleIfTrue(showDetails) }
+            if (isExpanded != payload) {
+                isExpanded = payload
 
-            if (showDetails) {
-                backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
-            } else {
-                backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
+                collapseArea.forEach { it.setVisibleIfTrue(isExpanded) }
+
+                if (isExpanded) {
+                    backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
+                } else {
+                    backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
+                }
             }
         }
     }

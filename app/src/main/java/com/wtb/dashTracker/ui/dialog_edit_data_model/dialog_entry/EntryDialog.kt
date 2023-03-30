@@ -29,7 +29,7 @@ import com.wtb.dashTracker.extensions.getStringOrElse
 import com.wtb.dashTracker.extensions.toCurrencyString
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
-import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies.EntryListFragment
+import com.wtb.dashTracker.ui.fragment_income.fragment_dailies.EntryListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
 import java.time.LocalDateTime

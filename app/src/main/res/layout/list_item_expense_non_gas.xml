@@ -45,10 +45,10 @@
                 android:id="@+id/list_item_recurring"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:contentDescription="@string/content_desc_recurring_expense"
                 android:src="@drawable/ic_recurring"
                 android:visibility="gone"
-                android:layout_gravity="center_vertical"
                 app:tint="?attr/colorListItemTitle"
                 tools:visibility="visible" />
 
