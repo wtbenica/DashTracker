@@ -21,6 +21,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AttrRes
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
@@ -28,6 +31,9 @@ import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class ActiveDashBar @JvmOverloads constructor(
     context: Context,
@@ -74,8 +80,6 @@ class ActiveDashBar @JvmOverloads constructor(
         serviceState: ADBState,
         onComplete: (() -> Unit)? = null
     ) {
-        val narrowMargin = resources.getDimension(R.dimen.margin_narrow).toInt()
-
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse

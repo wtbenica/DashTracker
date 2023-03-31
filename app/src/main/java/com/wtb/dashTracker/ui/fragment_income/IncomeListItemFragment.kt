@@ -25,11 +25,14 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.fragment_list_item_base.ExpandableAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
@@ -83,6 +86,38 @@ abstract class IncomeListItemFragment : ListItemFragment() {
         super.onItemExpanded()
         parentFragmentManager.setFragmentResult(REQ_KEY_INCOME_LIST_ITEM_SELECTED, bundleOf())
     }
+
+    abstract inner class IncomeItemPagingDataAdapter<T : IncomeListItemType, HolderType : IncomeItemHolder<T>>(diffCallback: DiffUtil.ItemCallback<T>) :
+        BaseItemPagingDataAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
+        override fun onBindViewHolder(
+            holder: HolderType,
+            position: Int,
+            payloads: List<Any>
+        ) {
+            if (payloads.isEmpty()) {
+                super.onBindViewHolder(holder, position, payloads)
+            } else {
+                val tDeductionType: DeductionType? =
+                    (payloads.lastOrNull { it is Pair<*, *> && it.first == "Deduction" } as Pair<*, *>?)?.second as DeductionType?
+                holder.updateExpenseFieldsVisibility(tDeductionType)
+                holder.setExpandedFromPayloads(payloads)
+            }
+        }
+    }
+
+    @Suppress("LeakingThis")
+    abstract inner class IncomeItemHolder<T : IncomeListItemType>(itemView: View) :
+        BaseItemHolder<T>(itemView), View.OnClickListener {
+        override fun bind(item: T, payloads: List<Any>?) {
+            super.bind(item, payloads)
+
+            updateExpenseFieldsVisibility()
+        }
+
+        abstract fun updateExpenseFieldsVisibility(tDeductionType: DeductionType? = null)
+    }
+
+    interface IncomeListItemType : ListItemType
 
     interface IncomeListItemFragmentCallback {
         fun onItemSelected()

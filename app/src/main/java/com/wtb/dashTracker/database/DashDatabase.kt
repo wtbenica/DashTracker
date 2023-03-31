@@ -17,6 +17,9 @@
 package com.wtb.dashTracker.database
 
 import android.content.Context
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
@@ -29,6 +32,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.Executors
 
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @Database(
     version = 12,

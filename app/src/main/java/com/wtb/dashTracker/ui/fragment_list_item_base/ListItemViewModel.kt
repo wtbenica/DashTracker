@@ -16,6 +16,9 @@
 
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wtb.dashTracker.database.models.AUTO_ID
@@ -24,6 +27,9 @@ import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 abstract class ListItemViewModel<T : DataModel> : ViewModel() {
     protected val repository: Repository = Repository.get()

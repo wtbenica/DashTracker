@@ -16,9 +16,13 @@
 
 package com.wtb.dashTracker.database.models
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.room.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.extensions.toIntOrNull
+import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import dev.benica.csvutil.CSVConvertible
 import dev.benica.csvutil.CSVConvertible.Column
@@ -152,7 +156,7 @@ data class DashEntry(
             totalHours?.let { tot -> tot - dh }
         }
 
-    val totalEarned: Float?
+    val totalEarned: Float
         get() = (pay ?: 0f) + (otherPay ?: 0f) + (cashTips ?: 0f)
 
     val dayEarned: Float?
@@ -177,17 +181,15 @@ data class DashEntry(
 
     val hourly: Float?
         get() = totalHours?.let { th ->
-            totalEarned?.let { te -> if (th != 0f) te / th else 0f }
+            if (th != 0f) totalEarned / th else 0f
         }
 
     val avgDelivery: Float?
         get() = numDeliveries?.let { nd ->
-            totalEarned?.let { te ->
-                if (nd > 0) {
-                    te / nd
-                } else {
-                    0f
-                }
+            if (nd > 0) {
+                totalEarned / nd
+            } else {
+                0f
             }
         }
 
@@ -251,27 +253,22 @@ data class DashEntry(
     fun getExpenses(costPerMile: Float): Float = (mileage ?: 0f) * costPerMile
 
     fun getHourly(costPerMile: Float): Float? = totalHours?.let { th ->
-        totalEarned?.let { te ->
-            if (th != 0f) {
-                (te - getExpenses(costPerMile)) / th
-            } else {
-                0f
-            }
+        if (th != 0f) {
+            (totalEarned - getExpenses(costPerMile)) / th
+        } else {
+            0f
         }
     }
 
     fun getAvgDelivery(costPerMile: Float): Float? = numDeliveries?.let { nd ->
-        totalEarned?.let { te ->
-            if (nd > 0) {
-                (te - getExpenses(costPerMile)) / nd
-            } else {
-                0f
-            }
+        if (nd > 0) {
+            (totalEarned - getExpenses(costPerMile)) / nd
+        } else {
+            0f
         }
     }
 
-    fun getNet(costPerMile: Float): Float? =
-        totalEarned?.let { te -> te - getExpenses(costPerMile) }
+    fun getNet(costPerMile: Float): Float = totalEarned - getExpenses(costPerMile)
 
     companion object : CSVConvertible<DashEntry> {
         private val daySplitTime = LocalTime.of(17, 0)
@@ -333,6 +330,9 @@ data class DashEntry(
     }
 }
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 data class FullEntry(
     @Embedded
@@ -340,7 +340,7 @@ data class FullEntry(
 
     @Relation(parentColumn = "entryId", entityColumn = "entry")
     val locations: List<LocationData>,
-) : ListItemType {
+) : IncomeListItemFragment.IncomeListItemType {
     val netTime: Long?
         get() = entry.startDateTime?.until(LocalDateTime.now(), ChronoUnit.SECONDS)
 

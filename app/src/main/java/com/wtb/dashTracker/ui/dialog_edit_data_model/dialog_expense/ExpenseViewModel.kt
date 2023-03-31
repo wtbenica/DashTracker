@@ -16,6 +16,9 @@
 
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.FullExpensePurpose
@@ -23,6 +26,9 @@ import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class ExpenseViewModel : ListItemViewModel<Expense>() {
     override fun getItemFlowById(id: Long): Flow<Expense?> =

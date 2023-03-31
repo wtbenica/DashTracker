@@ -16,6 +16,9 @@
 
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -29,6 +32,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class WeeklyViewModel : ListItemViewModel<Weekly>() {
     override fun getItemFlowById(id: Long): Flow<Weekly?> =

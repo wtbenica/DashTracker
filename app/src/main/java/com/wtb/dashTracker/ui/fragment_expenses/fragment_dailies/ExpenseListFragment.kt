@@ -99,8 +99,8 @@ class ExpenseListFragment : ExpenseListItemFragment() {
     }
 
     @ExperimentalAnimationApi
-    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense>(DIFF_CALLBACK) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullExpense> =
+    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense, ExpenseAdapter.ExpenseHolder>(DIFF_CALLBACK) {
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): ExpenseHolder =
             when (viewType) {
                 0 -> GasExpenseHolder(parent)
                 else -> OtherExpenseHolder(parent)
