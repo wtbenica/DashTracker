@@ -43,10 +43,10 @@ import com.wtb.dashTracker.databinding.YearlyMileageGridBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExpenseBreakdown
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogMileageBreakdown
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.aggregate_list_items.Yearly
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -58,25 +58,16 @@ import java.util.*
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class YearlyListFragment : IncomeListItemFragment() {
+class YearlyListFragment :
+    IncomeListItemFragment<Yearly, Map<Int, Float>, YearlyListFragment.YearlyAdapter.YearlyHolder>() {
+
+    override val entryAdapter: YearlyAdapter = YearlyAdapter()
 
     private val viewModel: YearlyListViewModel by viewModels()
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val entryAdapter = YearlyAdapter()
-        recyclerView.adapter = entryAdapter
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                callback?.deductionType?.collectLatest {
-                    deductionType = it
-                    entryAdapter.notifyDataSetChanged()
-                }
-            }
-        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -93,17 +84,31 @@ class YearlyListFragment : IncomeListItemFragment() {
         CPM, MILES
     }
 
-    inner class YearlyAdapter : BaseItemListAdapter<Yearly, YearlyAdapter.YearlyHolder>(DIFF_CALLBACK) {
-        override fun getViewHolder(
-            parent: ViewGroup,
-            viewType: Int?
-        ): YearlyHolder =
+    inner class YearlyAdapter :
+        IncomeItemListAdapter<Yearly, Map<Int, Float>, YearlyAdapter.YearlyHolder>(DIFF_CALLBACK) {
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): YearlyHolder =
             YearlyHolder(parent)
 
-        inner class YearlyHolder(parent: ViewGroup) : BaseItemHolder<Yearly>(
+        inner class YearlyHolder(parent: ViewGroup) : IncomeItemHolder<Yearly, Map<Int, Float>>(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.list_item_yearly, parent, false)
         ) {
+            // BaseItemHolder Overrides
+            override val collapseArea: Array<View>
+                get() = arrayOf(binding.listItemDetails)
+
+            override val backgroundArea: LinearLayout
+                get() = binding.listItemWrapper
+
+            override val bgCard: CardView
+                get() = binding.root
+
+            override val parentFrag: ListItemFragment
+                get() = this@YearlyListFragment
+
+            // IncomeItemHolder Overrides
+            override var expenseValues: Map<Int, Float> = emptyMap()
+
             private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
 
             private val detailsBinding: ListItemYearlyDetailsTableBinding =
@@ -119,15 +124,7 @@ class YearlyListFragment : IncomeListItemFragment() {
             private val mileageGridBinding: YearlyMileageGridBinding =
                 YearlyMileageGridBinding.bind(itemView)
 
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.listItemDetails)
-
-            override val backgroundArea: LinearLayout
-                get() = binding.listItemWrapper
-
-            override val bgCard: CardView
-                get() = binding.root
-
+            // BaseItemHolder Overrides
             override fun updateHeaderFields() {
                 binding.listItemTitle.text = this.item.year.toString()
                 binding.listItemTitle2.text = getCurrencyString(this.item.totalPay)
@@ -144,8 +141,65 @@ class YearlyListFragment : IncomeListItemFragment() {
                 detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.item.hourly)
             }
 
-            override fun launchObservers() {
-                fun updateExpenseFields(
+            // IncomeItemHolder Overrides
+            override fun onNewExpenseValues() {
+                fun updateMileageBreakdownTable(expenseValues: Map<Int, Float>?) {
+                    fun getMileageBreakdownData(cpm: Map<Int, Float>?): MutableMap<Int, Map<MileageBreakdownKey, Float?>> {
+                        val res = mutableMapOf<Int, Map<MileageBreakdownKey, Float?>>()
+                        var startMonth = 0
+                        cpm?.keys?.forEach { endMonth ->
+                            val miles: Float =
+                                item.monthlies.filter { m -> m.key.value in startMonth..endMonth }
+                                    .toList()
+                                    .fold(0f) { acc, value ->
+                                        acc + value.second.mileage
+                                    }
+                            res[endMonth] = mapOf(
+                                MileageBreakdownKey.CPM to cpm[endMonth],
+                                MileageBreakdownKey.MILES to miles
+                            )
+                            startMonth = endMonth + 1
+                        }
+
+                        return res
+                    }
+
+                    val initChildren = 3
+                    val spannedColumns = 0
+                    mileageGridBinding.mileageBreakdownGrid.apply {
+                        removeViews(initChildren, childCount - initChildren)
+                    }
+
+                    var startMonth = 1
+                    val mbd = getMileageBreakdownData(expenseValues)
+                    mbd.forEach { entry ->
+                        mileageGridBinding.mileageBreakdownGrid.apply {
+                            val row = (childCount + spannedColumns) / 3
+                            val dates = "${
+                                Month.of(startMonth).toString()
+                                    .substring(0..2)
+                                    .capitalize()
+                            }-${
+                                Month.of(entry.key).toString()
+                                    .substring(0..2)
+                                    .capitalize()
+                            }"
+                            startMonth = entry.key + 1
+                            yearlyMileageRow(
+                                context = context,
+                                root = this,
+                                row = row,
+                                mDateRange = dates,
+                                mCpm = entry.value[MileageBreakdownKey.CPM]
+                                    ?: 0f,
+                                mMiles = entry.value[MileageBreakdownKey.MILES]
+                                    ?: 0f
+                            )
+                        }
+                    }
+                }
+
+                fun updateValues(
                     show: Boolean = true,
                     hasMultipleStdDeductions: Boolean = false
                 ) {
@@ -158,7 +212,7 @@ class YearlyListFragment : IncomeListItemFragment() {
                             val target = resources.getDimension(R.dimen.min_touch_target).toInt()
                             revealToHeightIfTrue(show, target, target)
                         }
-                        
+
                         listItemYearlyExpenseDetailsButton.showOrHide(show, isExpanded)
                         listItemYearlyExpenses.showOrHide(show, isExpanded)
 
@@ -185,8 +239,8 @@ class YearlyListFragment : IncomeListItemFragment() {
                     val table = viewModel.standardMileageDeductionTable()
                     var res = 0f
                     item.monthlies.keys.forEach { mon ->
-                        val deduction: Float = table[LocalDate.of(item.year, mon, 1)]
-                        res += deduction * (item.monthlies[mon]?.mileage ?: 0f)
+                        val stdDedAmount: Float = table[LocalDate.of(item.year, mon, 1)]
+                        res += stdDedAmount * (item.monthlies[mon]?.mileage ?: 0f)
                     }
                     return res
                 }
@@ -202,122 +256,67 @@ class YearlyListFragment : IncomeListItemFragment() {
 
                 fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / item.hours
 
-                fun getMileageBreakdownData(cpm: Map<Int, Float>?): MutableMap<Int, Map<MileageBreakdownKey, Float?>> {
-                    val res = mutableMapOf<Int, Map<MileageBreakdownKey, Float?>>()
-                    var startMonth = 0
-                    cpm?.keys?.forEach { endMonth ->
-                        val miles: Float =
-                            item.monthlies.filter { m -> m.key.value in startMonth..endMonth }
-                                .toList()
-                                .fold(0f) { acc, value ->
-                                    acc + value.second.mileage
-                                }
-                        res[endMonth] = mapOf(
-                            MileageBreakdownKey.CPM to cpm[endMonth],
-                            MileageBreakdownKey.MILES to miles
+                detailsBinding.mileageBreakdownCard.visibility = GONE
+
+                when (deductionType) {
+                    DeductionType.NONE -> updateValues(false)
+                    DeductionType.IRS_STD -> {
+                        val hasMultipleStdDeductions = expenseValues.size > 1
+
+                        updateValues(
+                            show = true,
+                            hasMultipleStdDeductions = hasMultipleStdDeductions
                         )
-                        startMonth = endMonth + 1
-                    }
 
-                    return res
-                }
+                        if (hasMultipleStdDeductions) {
+                            updateMileageBreakdownTable(expenseValues)
+                        } else {
+                            detailsBinding.listItemYearlyCpmDeductionType.text =
+                                deductionType.fullDesc
 
-                CoroutineScope(Dispatchers.Default).launch {
-                    withContext(Dispatchers.Default) {
-                        viewModel.getAnnualCostPerMile(
-                            this@YearlyHolder.item.year,
-                            deductionType
-                        )
-                    }.let { cpm: Map<Int, Float>? ->
-                        (context as MainActivity).runOnUiThread {
-                            detailsBinding.mileageBreakdownCard.visibility = GONE
-
-                            when (deductionType) {
-                                DeductionType.NONE -> updateExpenseFields(false)
-                                DeductionType.IRS_STD -> {
-                                    val hasMultipleStdDeductions = cpm != null && cpm.size > 1
-
-                                    updateExpenseFields(show = true, hasMultipleStdDeductions = hasMultipleStdDeductions)
-
-                                    if (hasMultipleStdDeductions) {
-                                        val initChildren = 3
-                                        val spannedColumns = 0
-                                        mileageGridBinding.mileageBreakdownGrid.apply {
-                                            removeViews(initChildren, childCount - initChildren)
-                                        }
-
-                                        var startMonth = 1
-                                        val mbd = getMileageBreakdownData(cpm)
-                                        mbd.forEach { entry ->
-                                            mileageGridBinding.mileageBreakdownGrid.apply {
-                                                val row = (childCount + spannedColumns) / 3
-                                                val dates = "${
-                                                    Month.of(startMonth).toString()
-                                                        .substring(0..2)
-                                                        .capitalize()
-                                                }-${
-                                                    Month.of(entry.key).toString()
-                                                        .substring(0..2)
-                                                        .capitalize()
-                                                }"
-                                                startMonth = entry.key + 1
-                                                yearlyMileageRow(
-                                                    context = context,
-                                                    root = this,
-                                                    row = row,
-                                                    mDateRange = dates,
-                                                    mCpm = entry.value[MileageBreakdownKey.CPM]
-                                                        ?: 0f,
-                                                    mMiles = entry.value[MileageBreakdownKey.MILES]
-                                                        ?: 0f
-                                                )
-                                            }
-                                        }
-                                    } else {
-                                        detailsBinding.listItemYearlyCpmDeductionType.text =
-                                            deductionType.fullDesc
-
-                                        detailsBinding.listItemYearlyCpm.text =
-                                            getCpmIrsStdString(cpm)
-
-                                    }
-
-                                    detailsBinding.listItemYearlyExpenses.text =
-                                        getCurrencyString(getExpenses(deductionType))
-
-                                    binding.listItemSubtitle2.text =
-                                        getCurrencyString(getNet(0f, deductionType))
-
-                                    detailsBinding.listItemYearlyHourly.text =
-                                        getCurrencyString(getHourly(0f))
-                                }
-                                else -> {
-                                    updateExpenseFields()
-
-                                    val costPerMile: Float = cpm?.get(12) ?: 0f
-
-                                    detailsBinding.listItemYearlyCpmDeductionType.text =
-                                        deductionType.fullDesc
-
-                                    detailsBinding.listItemYearlyCpm.text =
-                                        getCpmString(costPerMile)
-
-                                    detailsBinding.listItemYearlyExpenses.text =
-                                        getCurrencyString(
-                                            getExpenses(deductionType, costPerMile)
-                                        )
-
-                                    binding.listItemSubtitle2.text =
-                                        getCurrencyString(getNet(costPerMile, deductionType))
-
-                                    detailsBinding.listItemYearlyHourly.text =
-                                        getCurrencyString(getHourly(costPerMile))
-                                }
-                            }
+                            detailsBinding.listItemYearlyCpm.text =
+                                getCpmIrsStdString(expenseValues)
                         }
+
+                        detailsBinding.listItemYearlyExpenses.text =
+                            getCurrencyString(getExpenses(deductionType))
+
+                        binding.listItemSubtitle2.text =
+                            getCurrencyString(getNet(0f, deductionType))
+
+                        detailsBinding.listItemYearlyHourly.text =
+                            getCurrencyString(getHourly(0f))
+                    }
+                    else -> {
+                        updateValues()
+
+                        val costPerMile: Float = expenseValues.get(12) ?: 0f
+
+                        detailsBinding.listItemYearlyCpmDeductionType.text =
+                            deductionType.fullDesc
+
+                        detailsBinding.listItemYearlyCpm.text =
+                            getCpmString(costPerMile)
+
+                        detailsBinding.listItemYearlyExpenses.text =
+                            getCurrencyString(
+                                getExpenses(deductionType, costPerMile)
+                            )
+
+                        binding.listItemSubtitle2.text =
+                            getCurrencyString(getNet(costPerMile, deductionType))
+
+                        detailsBinding.listItemYearlyHourly.text =
+                            getCurrencyString(getHourly(costPerMile))
                     }
                 }
             }
+
+            override suspend fun getExpenseValues(): Map<Int, Float> =
+                viewModel.getAnnualCostPerMile(
+                    this@YearlyHolder.item.year,
+                    deductionType
+                ) ?: emptyMap()
         }
     }
 
@@ -369,7 +368,7 @@ fun yearlyMileageRow(
         }
         root.addView(HeaderTextView(context).apply {
             layoutParams = lp
-            text = context.getString(R.string.cpm_unit, it)
+            text = context.getString(R.string.irs_cpm_unit, it)
             textAlignment = TEXT_ALIGNMENT_TEXT_END
             textSize = context.getDimen(R.dimen.text_size_med)
             setPadding(0)

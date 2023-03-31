@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_income.fragment_dailies
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,11 +36,9 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.DeductionType.NONE
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
@@ -53,81 +50,68 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Modific
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.ModificationState.DELETED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-class EntryListFragment : IncomeListItemFragment() {
+class EntryListFragment :
+    IncomeListItemFragment<FullEntry, Float, EntryListFragment.EntryAdapter.EntryHolder>() {
+
+    override val entryAdapter: EntryAdapter = EntryAdapter().apply {
+        registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                binding.itemListRecyclerView.scrollToPosition(positionStart)
+            }
+        })
+    }
+
     private val viewModel: EntryListViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        fun setDialogListeners() {
+            childFragmentManager.setFragmentResultListener(
+                ConfirmDialog.DELETE.key,
+                this
+            ) { _, bundle ->
+                val result = bundle.getBoolean(ARG_IS_CONFIRMED)
+                val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
+
+                if (result) {
+                    (activity as MainActivity).clearActiveEntry(id)
+                    viewModel.deleteEntryById(id)
+                    (requireContext() as ListItemFragmentCallback).showToolbarsAndFab()
+                }
+            }
+
+            // Entry Dialog Result
+            childFragmentManager.setFragmentResultListener(
+                REQUEST_KEY_DATA_MODEL_DIALOG,
+                this
+            ) { _, bundle ->
+                val modifyState = bundle.getString(ARG_MODIFICATION_STATE)
+                    ?.let { ModificationState.valueOf(it) }
+
+                val id = bundle.getLong(ARG_MODIFIED_ID, -1)
+
+                if (modifyState == DELETED && id != -1L) {
+                    (activity as MainActivity).clearActiveEntry(id)
+                    viewModel.deleteEntryById(id)
+                }
+            }
+        }
+
         super.onCreate(savedInstanceState)
 
         setDialogListeners()
     }
 
-    private fun setDialogListeners() {
-        childFragmentManager.setFragmentResultListener(
-            ConfirmDialog.DELETE.key,
-            this
-        ) { _, bundle ->
-            val result = bundle.getBoolean(ARG_IS_CONFIRMED)
-            val id = bundle.getLong(ARG_EXTRA_ITEM_ID)
-
-            if (result) {
-                (activity as MainActivity).clearActiveEntry(id)
-                viewModel.deleteEntryById(id)
-                (requireContext() as ListItemFragmentCallback).showToolbarsAndFab()
-            }
-        }
-
-        // Entry Dialog Result
-        childFragmentManager.setFragmentResultListener(
-            REQUEST_KEY_DATA_MODEL_DIALOG,
-            this
-        ) { _, bundle ->
-            val modifyState = bundle.getString(ARG_MODIFICATION_STATE)
-                ?.let { ModificationState.valueOf(it) }
-
-            val id = bundle.getLong(ARG_MODIFIED_ID, -1)
-
-            if (modifyState == DELETED && id != -1L) {
-                (activity as MainActivity).clearActiveEntry(id)
-                viewModel.deleteEntryById(id)
-            }
-        }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val entryAdapter = EntryAdapter().apply {
-            registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                    binding.itemListRecyclerView.scrollToPosition(positionStart)
-                }
-            })
-        }
-
-        binding.itemListRecyclerView.adapter = entryAdapter
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                callback?.deductionType?.collectLatest {
-                    deductionType = it
-                    entryAdapter.notifyItemRangeChanged(
-                        0,
-                        entryAdapter.itemCount,
-                        Pair("Deduction", deductionType)
-                    )
-                }
-            }
-        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -141,17 +125,15 @@ class EntryListFragment : IncomeListItemFragment() {
     interface EntryListFragmentCallback : DeductionCallback
 
     inner class EntryAdapter :
-        IncomeListItemFragment.IncomeItemPagingDataAdapter<FullEntry, EntryAdapter.EntryHolder>(DIFF_CALLBACK) {
+        IncomeItemPagingDataAdapter<FullEntry, Float, EntryAdapter.EntryHolder>(DIFF_CALLBACK) {
 
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): EntryHolder =
             EntryHolder(parent)
 
-        inner class EntryHolder(parent: ViewGroup) : IncomeItemHolder<FullEntry>(
+        inner class EntryHolder(parent: ViewGroup) : IncomeItemHolder<FullEntry, Float>(
             LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
         ) {
-            private val binding = ListItemEntryBinding.bind(itemView)
-            private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
-
+            // BaseItemHolder Overrides
             override val collapseArea: Array<View>
                 get() = arrayOf(binding.listItemDetails)
 
@@ -160,6 +142,16 @@ class EntryListFragment : IncomeListItemFragment() {
 
             override val bgCard: CardView
                 get() = binding.root
+
+            override val parentFrag: EntryListFragment
+                get() = this@EntryListFragment
+
+            // IncomeItemHolder Overrides
+            override var expenseValues: Float = 0f
+
+            private val binding = ListItemEntryBinding.bind(itemView)
+
+            private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
 
             init {
                 binding.listItemBtnEdit.apply {
@@ -177,6 +169,7 @@ class EntryListFragment : IncomeListItemFragment() {
                 }
             }
 
+            // BaseItemHolder Overrides
             override fun updateHeaderFields() {
                 binding.listItemEntryDayOfWeek.text =
                     getString(
@@ -211,20 +204,6 @@ class EntryListFragment : IncomeListItemFragment() {
                         )
                     )
                 }
-            }
-
-            override fun updateExpenseFieldsVisibility(tDeductionType: DeductionType?) {
-                val shouldShow = (tDeductionType ?: deductionType) != NONE
-                debugLog("${item.entry.date.formatted} | update field visibility: $shouldShow")
-                binding.listItemSubtitle2Label.fade(shouldShow)
-                binding.listItemSubtitle2.fade(shouldShow)
-                detailsBinding.listItemEntryCpmHeader.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryCpmDeductionType.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryCpm.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryExpensesHeader.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryExpenses.revealIfTrue(shouldShow)
-
-                updateExpenseFieldValues(costPerMile ?: 0f)
             }
 
             override fun updateDetailsFields() {
@@ -289,49 +268,49 @@ class EntryListFragment : IncomeListItemFragment() {
                 updateMissingAlerts()
             }
 
-            var costPerMile: Float? = null
-            override fun launchObservers() {
-                CoroutineScope(Dispatchers.Default).launch {
-                    withContext(Dispatchers.Default) {
-                        viewModel.getCostPerMile(item.entry.date, deductionType)
-                    }.let { cpm: Float? ->
-                        costPerMile = cpm ?: 0f
-                        (context as MainActivity).runOnUiThread {
-                            this@EntryHolder.debugLog("$cpm | ${deductionType.name}")
-                            if (deductionType != NONE) {
-                                updateExpenseFieldValues(costPerMile ?: 0f)
-                            }
-                        }
-                    }
+            // IncomeItemHolder Overrides
+            override suspend fun getExpenseValues(): Float =
+                viewModel.getCostPerMile(item.entry.date, deductionType)
+
+            override fun onNewExpenseValues() {
+                val shouldShow = deductionType != NONE
+                binding.listItemSubtitle2Label.fade(shouldShow)
+                binding.listItemSubtitle2.fade(shouldShow)
+                detailsBinding.listItemEntryCpmHeader.revealIfTrue(shouldShow)
+                detailsBinding.listItemEntryCpmDeductionType.revealIfTrue(shouldShow)
+                detailsBinding.listItemEntryCpm.revealIfTrue(shouldShow)
+                detailsBinding.listItemEntryExpensesHeader.revealIfTrue(shouldShow)
+                detailsBinding.listItemEntryExpenses.revealIfTrue(shouldShow)
+
+                detailsBinding.listItemEntryCpmDeductionType.apply {
+                    text = deductionType.fullDesc
                 }
-            }
 
-            private fun updateExpenseFieldValues(costPerMile: Float) {
-                detailsBinding.listItemEntryCpmDeductionType.text =
-                    deductionType.fullDesc
+                val cpm: Float = expenseValues
 
-                detailsBinding.listItemEntryExpenses.text =
-                    getCurrencyString(
-                        this@EntryHolder.item.entry.getExpenses(costPerMile)
-                    )
+                detailsBinding.listItemEntryExpenses.apply {
+                    text = getCurrencyString(this@EntryHolder.item.entry.getExpenses(cpm))
+                }
 
-                detailsBinding.listItemEntryCpm.text =
-                    getCpmString(costPerMile)
+                detailsBinding.listItemEntryCpm.apply {
+                    text = getCpmString(cpm)
+                }
 
-                binding.listItemSubtitle2Label.setText(R.string.list_item_label_net)
+                binding.listItemSubtitle2Label.apply {
+                    setText(R.string.list_item_label_net)
+                }
 
-                binding.listItemSubtitle2.text =
-                    getCurrencyString(
-                        this@EntryHolder.item.entry.getNet(costPerMile)
-                    )
+                binding.listItemSubtitle2.apply {
+                    text = getCurrencyString(this@EntryHolder.item.entry.getNet(cpm))
+                }
 
-                detailsBinding.listItemEntryHourly.text = getCurrencyString(
-                    this@EntryHolder.item.entry.getHourly(costPerMile)
-                )
+                detailsBinding.listItemEntryHourly.apply {
+                    text = getCurrencyString(this@EntryHolder.item.entry.getHourly(cpm))
+                }
 
-                detailsBinding.listItemEntryAvgDel.text = getCurrencyString(
-                    this@EntryHolder.item.entry.getAvgDelivery(costPerMile)
-                )
+                detailsBinding.listItemEntryAvgDel.apply {
+                    text = getCurrencyString(this@EntryHolder.item.entry.getAvgDelivery(cpm))
+                }
             }
         }
     }

@@ -40,13 +40,13 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.Companion.REQ_KEY_INCOME_LIST_ITEM_SELECTED
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeListItemFragmentCallback
-import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_income.fragment_dailies.EntryListFragment
 import com.wtb.dashTracker.ui.fragment_income.fragment_dailies.EntryListFragment.EntryListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.fragment_weeklies.WeeklyListFragment
 import com.wtb.dashTracker.ui.fragment_income.fragment_weeklies.WeeklyListFragment.WeeklyListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_income.fragment_yearlies.YearlyListFragment
 import com.wtb.dashTracker.ui.fragment_income.fragment_yearlies.YearlyListFragment.YearlyListFragmentCallback
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -206,7 +206,7 @@ class IncomeFragment : Fragment(),
     companion object {
         private val NUM_PAGES = IncomePages.values().size
 
-        enum class IncomePages(val tabLabel: String, val fragment: () -> IncomeListItemFragment) {
+        enum class IncomePages(val tabLabel: String, val fragment: () -> IncomeListItemFragment<*, *, *>) {
             DAILY("Daily", { EntryListFragment() }),
             WEEKLY("Weekly", { WeeklyListFragment() }),
             YEARLY("Yearly", { YearlyListFragment() })

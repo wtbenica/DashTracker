@@ -101,6 +101,7 @@
     <!-- String Formats -->
     <string name="currency_fmt">$%.2f</string>
     <string name="cpm_unit">$%.2f</string>
+    <string name="irs_cpm_unit">$%.3f</string>
     <string name="gas_price_edit">%.3f</string>
     <string name="gas_price_display">$%.3f</string>
     <string name="blank_currency">$  -  </string>

@@ -82,6 +82,9 @@ class ConfirmationDialogMileageBreakdown(private val yearly: Yearly) : FullWidth
     }
 }
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 @Composable
 private fun MileageBreakdown(yearly: Yearly) {
@@ -144,7 +147,9 @@ private fun MileageBreakdown(yearly: Yearly) {
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 @Composable
 @Preview

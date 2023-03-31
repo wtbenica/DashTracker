@@ -112,7 +112,13 @@ class CpmChart(
             setDrawBorders(true)
             valueFormatter = object : ValueFormatter() {
                 override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                    return context.getString(R.string.cpm_unit, value)
+                    return context.getString(
+                        if (selectedDeductionType == DeductionType.IRS_STD) {
+                            R.string.irs_cpm_unit
+                        } else {
+                            R.string.cpm_unit
+                        }, value
+                    )
                 }
             }
         }

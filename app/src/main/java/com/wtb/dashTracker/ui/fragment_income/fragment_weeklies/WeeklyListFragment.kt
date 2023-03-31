@@ -42,11 +42,11 @@ import com.wtb.dashTracker.databinding.ListItemWeeklyDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
-import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyViewModel
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.getDateRange
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
@@ -55,10 +55,10 @@ import kotlinx.coroutines.flow.collectLatest
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-class WeeklyListFragment : IncomeListItemFragment() {
-    private val viewModel: WeeklyViewModel by viewModels()
+class WeeklyListFragment :
+    IncomeListItemFragment<FullWeekly, Pair<Float, Float>, WeeklyListFragment.FullWeeklyAdapter.WeeklyHolder>() {
 
-    private val fullWeeklyAdapter = FullWeeklyAdapter().apply {
+    override val entryAdapter: FullWeeklyAdapter = FullWeeklyAdapter().apply {
         registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 binding.itemListRecyclerView.scrollToPosition(positionStart)
@@ -66,25 +66,29 @@ class WeeklyListFragment : IncomeListItemFragment() {
         })
     }
 
+    private val viewModel: WeeklyViewModel by viewModels()
+
+    // TODO: Switch to notify items changes and check payloads
     @SuppressLint("NotifyDataSetChanged")
+    private val sharedPrefsListener = OnSharedPreferenceChangeListener { sharedPrefs, key ->
+        if (key == requireContext().PREF_SHOW_BASE_PAY_ADJUSTS) {
+            val recyclerView = binding.itemListRecyclerView
+            val myLayoutManager = recyclerView.layoutManager
+            recyclerView.adapter = null
+            recyclerView.layoutManager = null
+            recyclerView.adapter = entryAdapter
+            recyclerView.layoutManager = myLayoutManager
+            entryAdapter.notifyDataSetChanged()
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.itemListRecyclerView.adapter = fullWeeklyAdapter
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                callback?.deductionType?.collectLatest {
-                    deductionType = it
-                    fullWeeklyAdapter.notifyDataSetChanged()
-                }
-            }
-        }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allWeekliesPaged.collectLatest {
-                    fullWeeklyAdapter.submitData(it)
+                    entryAdapter.submitData(it)
                 }
             }
         }
@@ -104,41 +108,40 @@ class WeeklyListFragment : IncomeListItemFragment() {
         super.onPause()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private val sharedPrefsListener = OnSharedPreferenceChangeListener { sharedPrefs, key ->
-        if (key == requireContext().PREF_SHOW_BASE_PAY_ADJUSTS) {
-            val recyclerView = binding.itemListRecyclerView
-            val myLayoutManager = recyclerView.layoutManager
-            recyclerView.adapter = null
-            recyclerView.layoutManager = null
-            recyclerView.adapter = fullWeeklyAdapter
-            recyclerView.layoutManager = myLayoutManager
-            fullWeeklyAdapter.notifyDataSetChanged()
-        }
-    }
-
-    interface WeeklyListFragmentCallback : DeductionCallback
-
     @ExperimentalAnimationApi
-    inner class FullWeeklyAdapter : BaseItemPagingDataAdapter<FullWeekly, FullWeeklyAdapter.WeeklyHolder>(DIFF_CALLBACK) {
+    inner class FullWeeklyAdapter :
+        IncomeItemPagingDataAdapter<FullWeekly, Pair<Float, Float>, FullWeeklyAdapter.WeeklyHolder>(
+            DIFF_CALLBACK
+        ) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): WeeklyHolder =
             WeeklyHolder(parent)
 
-        @ExperimentalAnimationApi
-        inner class WeeklyHolder(parent: ViewGroup) : BaseItemHolder<FullWeekly>(
-            LayoutInflater.from(parent.context).inflate(R.layout.list_item_weekly, parent, false)
-        ) {
+        inner class WeeklyHolder(parent: ViewGroup) :
+            IncomeItemHolder<FullWeekly, Pair<Float, Float>>(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.list_item_weekly, parent, false)
+            ) {
+
+            // BaseItemHolder Overrides
+            override val collapseArea: Array<View>
+                get() = arrayOf(binding.listItemDetails)
+
+            override val backgroundArea: LinearLayout
+                get() = binding.listItemWrapper
+
+            override val bgCard: CardView
+                get() = binding.root
+
+            override val parentFrag: ListItemFragment
+                get() = this@WeeklyListFragment
+
+            // IncomeItemHolder Overrides
+            override var expenseValues: Pair<Float, Float> = Pair(0f, 0f)
+
             private val binding: ListItemWeeklyBinding = ListItemWeeklyBinding.bind(itemView)
 
             private val detailsBinding: ListItemWeeklyDetailsTableBinding =
                 ListItemWeeklyDetailsTableBinding.bind(itemView)
-
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.listItemDetails)
-            override val backgroundArea: LinearLayout
-                get() = binding.listItemWrapper
-            override val bgCard: CardView
-                get() = binding.root
 
             private val showBPAs = PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getBoolean(requireContext().PREF_SHOW_BASE_PAY_ADJUSTS, true)
@@ -152,6 +155,7 @@ class WeeklyListFragment : IncomeListItemFragment() {
                 }
             }
 
+            // BaseItemHolder Overrides
             override fun updateHeaderFields() {
                 if (this.item.isEmpty) {
                     viewModel.delete(item.weekly)
@@ -206,57 +210,48 @@ class WeeklyListFragment : IncomeListItemFragment() {
                     getStringOrElse(R.string.odometer_fmt, "-", this.item.miles)
             }
 
-            override fun launchObservers() {
-                fun updateExpenseFieldsVisibility(show: Boolean) {
-                    binding.listItemSubtitle2Label.fade(show)
-                    binding.listItemSubtitle2.fade(show)
-                    detailsBinding.listItemWeeklyCpmHeader.showOrHide(show, isExpanded)
-                    detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(show, isExpanded)
-                    detailsBinding.listItemWeeklyCpm.showOrHide(show, isExpanded)
-                    detailsBinding.listItemWeeklyExpensesHeader.showOrHide(show, isExpanded)
-                    detailsBinding.listItemWeeklyExpenses.showOrHide(show, isExpanded)
-                }
+            // IncomeItemHolder Overrides
+            override suspend fun getExpenseValues(): Pair<Float, Float> =
+                viewModel.getExpensesAndCostPerMile(
+                    this@WeeklyHolder.item,
+                    deductionType
+                )
 
-                CoroutineScope(Dispatchers.Default).launch {
-                    withContext(Dispatchers.Default) {
-                        viewModel.getExpensesAndCostPerMile(
-                            this@WeeklyHolder.item,
-                            deductionType
-                        )
-                    }.let { (expenses, cpm) ->
-                        (context as MainActivity).runOnUiThread {
-                            when (deductionType) {
-                                DeductionType.NONE -> updateExpenseFieldsVisibility(false)
-                                else -> {
-                                    updateExpenseFieldsVisibility(true)
+            override fun onNewExpenseValues() {
+                val shouldShow = deductionType != DeductionType.NONE
+                binding.listItemSubtitle2Label.fade(shouldShow)
+                binding.listItemSubtitle2.fade(shouldShow)
+                detailsBinding.listItemWeeklyCpmHeader.showOrHide(shouldShow, isExpanded)
+                detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(shouldShow, isExpanded)
+                detailsBinding.listItemWeeklyCpm.showOrHide(shouldShow, isExpanded)
+                detailsBinding.listItemWeeklyExpensesHeader.showOrHide(shouldShow, isExpanded)
+                detailsBinding.listItemWeeklyExpenses.showOrHide(shouldShow, isExpanded)
 
-                                    detailsBinding.listItemWeeklyCpmDeductionType.text =
-                                        deductionType.fullDesc
+                detailsBinding.listItemWeeklyCpmDeductionType.text =
+                    deductionType.fullDesc
 
-                                    detailsBinding.listItemWeeklyExpenses.text =
-                                        getCurrencyString(expenses)
+                val (expenses, cpm) = expenseValues
 
-                                    detailsBinding.listItemWeeklyCpm.text = getCpmString(cpm)
+                detailsBinding.listItemWeeklyExpenses.text =
+                    getCurrencyString(expenses)
 
-                                    binding.listItemSubtitle2.text =
-                                        getCurrencyString(this@WeeklyHolder.item.getNet(cpm))
+                detailsBinding.listItemWeeklyCpm.text = getCpmString(cpm)
 
-                                    detailsBinding.listItemWeeklyHourly.text = getCurrencyString(
-                                        this@WeeklyHolder.item.getHourly(cpm)
-                                    )
+                binding.listItemSubtitle2.text =
+                    getCurrencyString(this@WeeklyHolder.item.getNet(cpm))
 
-                                    detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(
-                                        this@WeeklyHolder.item.getAvgDelivery(cpm)
-                                    )
-                                }
-                            }
-                        }
-                    }
+                detailsBinding.listItemWeeklyHourly.text = getCurrencyString(
+                    this@WeeklyHolder.item.getHourly(cpm)
+                )
 
-                }
+                detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(
+                    this@WeeklyHolder.item.getAvgDelivery(cpm)
+                )
             }
         }
     }
+
+    interface WeeklyListFragmentCallback : DeductionCallback
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FullWeekly>() {

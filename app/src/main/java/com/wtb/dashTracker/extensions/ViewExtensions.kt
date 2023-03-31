@@ -92,8 +92,10 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
             override fun willChangeBounds(): Boolean = true
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                layoutParams.height = (startHeight + heightDuration * interpolatedTime).toInt()
-                requestLayout()
+                this@reveal.apply {
+                    layoutParams.height = (startHeight + heightDuration * interpolatedTime).toInt()
+                    requestLayout()
+                }
             }
         }.apply {
             duration = ANIMATION_DURATION * abs(heightDuration) / endHeight
@@ -105,10 +107,12 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    layoutParams.height = WRAP_CONTENT
-                    clearAnimation()
-                    requestLayout()
-                    onComplete?.invoke()
+                    this@reveal.apply {
+                        layoutParams.height = WRAP_CONTENT
+                        clearAnimation()
+                        requestLayout()
+                        onComplete?.invoke()
+                    }
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {
@@ -240,6 +244,7 @@ fun View.revealToHeightIfTrue(
 fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
+
     val startHeight = measuredHeight
     val endHeight = 0
     val heightDuration = endHeight - startHeight
@@ -254,7 +259,11 @@ fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = nu
             }
         }
     }.apply {
-        duration = ANIMATION_DURATION
+        duration = if (startHeight == 0) {
+            ANIMATION_DURATION
+        } else {
+            ANIMATION_DURATION * abs(heightDuration) / startHeight
+        }
 
         setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
@@ -280,7 +289,7 @@ fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = nu
     if (startHeight > 0)
         startAnimation(collapseAnimation)
     else {
-        visibility = INVISIBLE
+        visibility = endVisibility
         onComplete?.invoke()
     }
 }

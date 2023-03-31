@@ -30,7 +30,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.reveal
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.*
 
@@ -70,10 +69,8 @@ interface ExpandableView {
 
     fun mCollapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = null) {
         if (this is View) {
-            debugLog("Collapsing #$ticketId")
             expandedState = COLLAPSING
             collapse(endVisibility) {
-                debugLog("Collapsed #$ticketId")
                 expandedState = COLLAPSED
                 onComplete?.invoke()
             }
@@ -86,14 +83,12 @@ interface ExpandableView {
         endVisibility: Int = INVISIBLE,
         onComplete: (() -> Unit)? = null
     ) {
-        val shouldExpand = shouldShow //&& isCollapsedOrCollapsing
+        val shouldExpand = shouldShow // && isCollapsedOrCollapsing
 
         val shouldCollapse = !shouldShow // && isExpandedOrExpanding
 
         val shouldDoAnyways =
             doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
-
-        debugLog("#${ticketId} | expand: $shouldExpand | collapse: $shouldCollapse | do: $shouldDoAnyways")
 
         when {
             shouldExpand -> mExpand(onComplete)
@@ -194,7 +189,6 @@ class ExpandableTextView @JvmOverloads constructor(
 
     override var expandedState: ExpandedState? = null
         set(value) {
-            debugLog("New state #$ticketId: ${value?.name}")
             field = value
         }
 

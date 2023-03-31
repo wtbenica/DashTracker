@@ -16,14 +16,20 @@
 
 package com.wtb.dashTracker.ui.fragment_list_item_base.aggregate_list_items
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.ExpensePurpose
-import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
+import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeListItemType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Month
 
+@ExperimentalTextApi
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-class Yearly(val year: Int) : ListItemType {
+class Yearly(val year: Int) : IncomeListItemType {
     val monthlies: MutableMap<Month, Monthly> = mutableMapOf<Month, Monthly>().apply {
         Month.values().forEach { this[it] = Monthly() }
     }

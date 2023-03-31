@@ -94,6 +94,7 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialo
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.StartDashDialog.Companion.RESULT_START_DASH_CONFIRM_START
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
+import com.wtb.dashTracker.ui.fragment_expenses.fragment_dailies.ExpenseListFragment
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment.IncomeFragmentCallback
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
@@ -139,7 +140,7 @@ internal fun Any.errorLog(message: String) {
 
 /**
  * Primary [AppCompatActivity] for DashTracker. Contains [BottomNavigationView] for switching
- * between [IncomeFragment], [com.wtb.dashTracker.ui.fragment_expenses.ExpenseListFragment], and
+ * between [IncomeFragment], [ExpenseListFragment], and
  * [com.wtb.dashTracker.ui.fragment_trends.ChartsFragment];
  * [FloatingActionButton] for starting/stopping [LocationService]; new item menu for
  * [EntryDialog], [WeeklyDialog], and [ExpenseDialog]; options menu for
@@ -194,8 +195,6 @@ class MainActivity : AuthenticatedActivity(),
             return hasPermissions && isEnabled
         }
     private var trackingEnabledPrevious: Boolean = false
-    private val isTracking: Boolean
-        get() = activeDash.activeEntry != null
 
     // Launchers
     /**
@@ -607,9 +606,9 @@ class MainActivity : AuthenticatedActivity(),
                     f.isAccessible = true
                     f.invoke(it, true)
                 } catch (e: Exception) {
-                    debugLog("Kotlin Exception")
+                    errorLog("Kotlin Exception")
                 } catch (se: java.lang.Exception) {
-                    debugLog("Java Exception")
+                    errorLog("Java Exception")
                 }
             }
         }
@@ -955,7 +954,13 @@ class MainActivity : AuthenticatedActivity(),
         internal var serviceState: ADBState = ADBState.INACTIVE
             set(value) {
                 field = value
-                updateUi()
+                revealAppBarLayout(
+                    shouldShow = currDestination == R.id.navigation_income || field != ADBState.INACTIVE,
+                    lockAppBar = field == ADBState.TRACKING_COLLAPSED || field == ADBState.TRACKING_DISABLED
+                ) {
+                    updateToolbarAndBottomPadding(slideAppBarDown = false)
+                    updateUi()
+                }
             }
 
         private fun onNewActiveEntry(before: FullEntry?, after: FullEntry?) {

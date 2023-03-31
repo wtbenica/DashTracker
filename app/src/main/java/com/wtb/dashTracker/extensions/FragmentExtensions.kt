@@ -54,7 +54,7 @@ fun Fragment.getCpmIrsStdString(value: Map<Int, Float>?): String =
                 res.append("/")
             }
 
-            res.append(getStringOrElse(R.string.cpm_unit, "-", value[it]))
+            res.append(getStringOrElse(R.string.irs_cpm_unit, "-", value[it]))
         }
         res.toString()
     }

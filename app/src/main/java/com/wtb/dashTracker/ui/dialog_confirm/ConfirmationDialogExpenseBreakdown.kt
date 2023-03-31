@@ -86,6 +86,9 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
     }
 }
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 @Composable
 fun ExpenseBreakdownTable(yearly: Yearly) {
@@ -134,7 +137,9 @@ fun ExpenseBreakdownTable(yearly: Yearly) {
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 @Preview
 @Composable

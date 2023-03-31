@@ -90,7 +90,7 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
     }
 
     inner class MonthlyExpenseAdapter :
-        ListItemFragment.BaseItemListAdapter<MonthlyExpenses, MonthlyExpenseAdapter.MonthlyExpenseHolder>(DIFF_CALLBACK) {
+        BaseItemListAdapter<MonthlyExpenses, MonthlyExpenseAdapter.MonthlyExpenseHolder>(DIFF_CALLBACK) {
 
         override fun onBindViewHolder(
             holder: MonthlyExpenseHolder,
@@ -127,6 +127,9 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
 
             override val bgCard: CardView
                 get() = binding.root
+
+            override val parentFrag: ListItemFragment
+                get() = this@MonthlyExpenseListFragment
 
             override fun updateHeaderFields() {
                 binding.apply {
@@ -181,8 +184,6 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
                     }
                 }
             }
-
-            override fun launchObservers() {}
         }
     }
 

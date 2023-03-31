@@ -44,6 +44,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListItemFragment
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListViewModel
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -99,7 +100,9 @@ class ExpenseListFragment : ExpenseListItemFragment() {
     }
 
     @ExperimentalAnimationApi
-    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense, ExpenseAdapter.ExpenseHolder>(DIFF_CALLBACK) {
+    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense, ExpenseAdapter.ExpenseHolder>(
+        DIFF_CALLBACK
+    ) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): ExpenseHolder =
             when (viewType) {
                 0 -> GasExpenseHolder(parent)
@@ -112,7 +115,10 @@ class ExpenseListFragment : ExpenseListItemFragment() {
                 else -> 1
             }
 
-        abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView)
+        abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView) {
+            override val parentFrag: ListItemFragment
+                get() = this@ExpenseListFragment
+        }
 
         @ExperimentalAnimationApi
         inner class GasExpenseHolder(parent: ViewGroup) : ExpenseHolder(
@@ -169,8 +175,6 @@ class ExpenseListFragment : ExpenseListItemFragment() {
             }
 
             override fun updateDetailsFields() {}
-
-            override fun launchObservers() {}
         }
 
         @ExperimentalAnimationApi
@@ -213,8 +217,6 @@ class ExpenseListFragment : ExpenseListItemFragment() {
             }
 
             override fun updateDetailsFields() {}
-
-            override fun launchObservers() {}
         }
     }
 

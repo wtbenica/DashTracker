@@ -23,6 +23,9 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.daos.TransactionDao.NewCpm
@@ -33,6 +36,9 @@ import com.wtb.dashTracker.views.ExpandableTableLayout
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 class DTChartHolder @JvmOverloads constructor(
     context: Context,
@@ -113,6 +119,9 @@ class DTChartHolder @JvmOverloads constructor(
     }
 }
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 abstract class DTChart @JvmOverloads constructor(
     context: Context,
