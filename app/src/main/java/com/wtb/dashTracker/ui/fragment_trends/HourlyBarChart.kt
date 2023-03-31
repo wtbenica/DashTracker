@@ -250,7 +250,7 @@ class HourlyBarChart(
                 val dec = map[de.date] ?: DashEntryCollector(0f, 0, 0f, 0f)
                 dec.totalHours += de.totalHours ?: 0f
                 dec.numDeliveries += de.numDeliveries ?: 0
-                dec.totalEarned += de.totalEarned ?: 0f
+                dec.totalEarned += de.totalEarned
                 dec.mileage += de.mileage ?: 0f
                 map[de.date] = dec
                 map

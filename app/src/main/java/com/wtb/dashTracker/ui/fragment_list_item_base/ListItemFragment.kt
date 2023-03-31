@@ -90,8 +90,8 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         return binding.root
     }
 
-    abstract inner class BaseItemListAdapter<ItemType : ListItemType>(diffCallback: DiffUtil.ItemCallback<ItemType>) :
-        ListAdapter<ItemType, BaseItemHolder<ItemType>>(diffCallback),
+    abstract inner class BaseItemListAdapter<ItemType : ListItemType, HolderType: BaseItemHolder<ItemType>>(diffCallback: DiffUtil.ItemCallback<ItemType>) :
+        ListAdapter<ItemType, HolderType>(diffCallback),
         ExpandableAdapter {
 
         override var mExpandedPosition: Int? = null
@@ -103,24 +103,19 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         override fun onBindViewHolder(
-            holder: BaseItemHolder<ItemType>,
+            holder: HolderType,
             position: Int,
             payloads: List<Any>
         ) {
-            super.onBindViewHolder(holder, position, payloads)
-            val itemIsExpanded = if (position == mExpandedPosition) {
-                VISIBLE
+            if (payloads.isEmpty()) {
+                super.onBindViewHolder(holder, position, payloads)
             } else {
-                GONE
-            }
-            val newPayloads = listOf(itemIsExpanded) + payloads
-            getItem(position)?.let {
-                holder.bind(it, newPayloads)
+                holder.setExpandedFromPayloads(payloads)
             }
         }
 
         override fun onBindViewHolder(
-            holder: BaseItemHolder<ItemType>,
+            holder: HolderType,
             position: Int
         ) {
             getItem(position)?.let { holder.bind(it) }
@@ -129,17 +124,17 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): BaseItemHolder<ItemType> =
+        ): HolderType =
             getViewHolder(parent, viewType)
 
         abstract fun getViewHolder(
             parent: ViewGroup,
             viewType: Int? = null
-        ): BaseItemHolder<ItemType>
+        ): HolderType
     }
 
-    abstract inner class BaseItemPagingDataAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
-        PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback), ExpandableAdapter {
+    abstract inner class BaseItemPagingDataAdapter<ItemType : ListItemType, HolderType: BaseItemHolder<ItemType>>(diffCallback: DiffUtil.ItemCallback<ItemType>) :
+        PagingDataAdapter<ItemType, HolderType>(diffCallback), ExpandableAdapter {
 
         override var mExpandedPosition: Int? = null
 
@@ -150,30 +145,25 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         override fun onBindViewHolder(
-            holder: BaseItemHolder<T>,
+            holder: HolderType,
             position: Int,
             payloads: List<Any>
         ) {
-            super.onBindViewHolder(holder, position, payloads)
-            val itemIsExpanded = if (position == mExpandedPosition) {
-                VISIBLE
+            if (payloads.isEmpty()) {
+                super.onBindViewHolder(holder, position, payloads)
             } else {
-                GONE
-            }
-            val newPayloads = listOf(itemIsExpanded) + payloads
-            getItem(position)?.let {
-                holder.bind(it, newPayloads)
+                holder.setExpandedFromPayloads(payloads)
             }
         }
 
-        override fun onBindViewHolder(holder: BaseItemHolder<T>, position: Int) {
+        override fun onBindViewHolder(holder: HolderType, position: Int) {
             getItem(position)?.let { holder.bind(it) }
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<T> =
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderType =
             getViewHolder(parent, viewType)
 
-        abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): BaseItemHolder<T>
+        abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): HolderType
     }
 
     /**
@@ -192,16 +182,28 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         abstract fun updateDetailsFields()
         abstract fun launchObservers()
 
-        fun bind(item: T, payloads: List<Any>? = null) {
-            this.item = item
+        private var isInitialized = false
+        private var prevPayload: List<Any>? = null
+
+        open fun bind(item: T, payloads: List<Any>? = null) {
+            val prev = if (isInitialized) {
+                this.item
+            } else {
+                isInitialized = true
+                null
+            }.also {
+                this.item = item
+            }
 
             launchObservers()
 
-            setVisibilityFromPayloads(payloads)
+            if (prev != item) {
+                updateHeaderFields()
 
-            updateHeaderFields()
+                updateDetailsFields()
+            }
 
-            updateDetailsFields()
+            setExpandedFromPayloads(emptyList())
         }
 
         init {
@@ -210,16 +212,16 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
 
         override fun onClick(v: View?) {
             if (bindingAdapter is ExpandableAdapter) {
-                var prev: Int? = null
+                var previouslyExpandedItemPosition: Int?
 
                 val adapter: ExpandableAdapter? = when (bindingAdapter) {
-                    is ListItemFragment.BaseItemPagingDataAdapter<*> -> bindingAdapter as ListItemFragment.BaseItemPagingDataAdapter<*>
-                    is ListItemFragment.BaseItemListAdapter<*> -> bindingAdapter as ListItemFragment.BaseItemListAdapter<*>
+                    is ListItemFragment.BaseItemPagingDataAdapter<*, *> -> bindingAdapter as ListItemFragment.BaseItemPagingDataAdapter<*, *>
+                    is ListItemFragment.BaseItemListAdapter<*, *> -> bindingAdapter as ListItemFragment.BaseItemListAdapter<*, *>
                     else -> null
                 }
 
                 adapter?.let {
-                    prev = it.mExpandedPosition
+                    previouslyExpandedItemPosition = it.mExpandedPosition
                     if (bindingAdapterPosition == it.mExpandedPosition) {
                         onItemClosed()
 
@@ -227,7 +229,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                     } else {
                         onItemExpanded()
 
-                        it.mExpandedPosition = (bindingAdapterPosition)
+                        it.mExpandedPosition = bindingAdapterPosition
                         val scroller = object : LinearSmoothScroller(context) {
                             override fun getVerticalSnapPreference(): Int {
                                 return SNAP_TO_START
@@ -238,18 +240,28 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
 
                         recyclerView.layoutManager?.startSmoothScroll(scroller)
                     }
-                }
 
-                prev?.let { bindingAdapter?.notifyItemChanged(it) }
-                bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
+                    previouslyExpandedItemPosition?.let { pos ->
+                        bindingAdapter?.notifyItemChanged(
+                            pos,
+                            Pair("Expanded", (pos == it.mExpandedPosition))
+                        )
+                    }
+                    bindingAdapter?.notifyItemChanged(
+                        bindingAdapterPosition,
+                        Pair("Expanded", bindingAdapterPosition == it.mExpandedPosition)
+                    )
+                }
             }
         }
 
-        protected fun setVisibilityFromPayloads(payloads: List<Any>?) {
-            val payload = payloads?.getOrNull(0) == VISIBLE
+        fun setExpandedFromPayloads(payloads: List<Any>) {
+            val lIsExpanded: Boolean? =
+                (payloads.lastOrNull { it is Pair<*, *> && it.first == "Expanded" } as Pair<*, *>?)?.second as Boolean?
 
-            if (isExpanded != payload) {
-                isExpanded = payload
+            if (isExpanded != lIsExpanded) {
+                isExpanded =
+                    lIsExpanded ?: ((bindingAdapter as? ExpandableAdapter)?.mExpandedPosition == bindingAdapterPosition)
 
                 collapseArea.forEach { it.setVisibleIfTrue(isExpanded) }
 

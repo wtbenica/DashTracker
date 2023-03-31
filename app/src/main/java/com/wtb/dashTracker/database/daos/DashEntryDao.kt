@@ -16,6 +16,9 @@
 
 package com.wtb.dashTracker.database.daos
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
@@ -30,6 +33,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 @Dao
 abstract class DashEntryDao : BaseDao<DashEntry>("DashEntry", "entryId") {

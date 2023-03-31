@@ -16,6 +16,9 @@
 
 package com.wtb.dashTracker.ui.fragment_income.fragment_yearlies
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.ExpensePurpose
@@ -31,6 +34,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class YearlyListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()

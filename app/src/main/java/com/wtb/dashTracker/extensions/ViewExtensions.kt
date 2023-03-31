@@ -37,12 +37,13 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.wtb.dashTracker.views.ExpandableView
+import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.COLLAPSED
+import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.EXPANDED
 import com.wtb.dashTracker.views.ExpandableView.Companion.marginLayoutParams
 import java.lang.Integer.max
 import kotlin.math.abs
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KFunction2
-import kotlin.reflect.KProperty1
 
 internal const val ANIMATION_DURATION = 300L
 private const val COLOR_TRANSITION_ANIMATION = 100L
@@ -62,43 +63,40 @@ fun View.isTouchTarget(ev: MotionEvent?): Boolean {
 private val View.targetHeight: Int
     get() {
         val matchParentMeasureSpec =
-            View.MeasureSpec.makeMeasureSpec((parent as View).width, View.MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec((parent as View).width, MeasureSpec.EXACTLY)
         val wrapContentMeasureSpec =
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         measure(matchParentMeasureSpec, wrapContentMeasureSpec)
         return measuredHeight
     }
 
-
-fun View.animateValue(property: KProperty1<View, Int>, from: Int, to: Int) {
-
-}
-
 fun View.showOrHide(shouldShow: Boolean, animate: Boolean, elseVisibility: Int = INVISIBLE): Unit =
-    if (!animate || this !is ExpandableView) {
-        this.setVisibleIfTrue(shouldShow, elseVisibility)
-    } else {
+    if (animate && this is ExpandableView) {
         this.revealIfTrue(shouldShow = shouldShow, endVisibility = elseVisibility)
+    } else {
+        this.setVisibleIfTrue(shouldShow, elseVisibility)
     }
 
 fun View.reveal(onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
-    layoutParams.height = max(1, layoutParams.height)
+    layoutParams.height = max(1, height)
     visibility = VISIBLE
+
+    val startHeight = height
+    val endHeight = targetHeight
+    val heightDuration = endHeight - height
 
     val expandAnimation =
         object : Animation() {
             override fun willChangeBounds(): Boolean = true
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                this@reveal.apply {
-                    layoutParams.height = (targetHeight * interpolatedTime).toInt()
-                    requestLayout()
-                }
+                layoutParams.height = (startHeight + heightDuration * interpolatedTime).toInt()
+                requestLayout()
             }
         }.apply {
-            duration = ANIMATION_DURATION
+            duration = ANIMATION_DURATION * abs(heightDuration) / endHeight
             fillAfter = true
 
             setAnimationListener(object : AnimationListener {
@@ -107,12 +105,10 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    this@reveal.apply {
-                        layoutParams.height = WRAP_CONTENT
-                        clearAnimation()
-                        requestLayout()
-                        onComplete?.invoke()
-                    }
+                    layoutParams.height = WRAP_CONTENT
+                    clearAnimation()
+                    requestLayout()
+                    onComplete?.invoke()
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {
@@ -142,19 +138,19 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Uni
             when (targetWidth) {
                 MATCH_PARENT -> {
                     specWidth = (parent as View).width
-                    specWidthMode = View.MeasureSpec.EXACTLY
+                    specWidthMode = MeasureSpec.EXACTLY
                 }
                 WRAP_CONTENT -> {
                     specWidth = 0
-                    specWidthMode = View.MeasureSpec.UNSPECIFIED
+                    specWidthMode = MeasureSpec.UNSPECIFIED
                 }
                 else -> {
                     specWidth = targetWidth
-                    specWidthMode = View.MeasureSpec.EXACTLY
+                    specWidthMode = MeasureSpec.EXACTLY
                 }
             }
 
-            widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(specWidth, specWidthMode)
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(specWidth, specWidthMode)
         }
 
         var heightMeasureSpec: Int = layoutParams.height
@@ -164,19 +160,19 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Uni
             when (targetHeight) {
                 MATCH_PARENT -> {
                     specHeight = (parent as View).width
-                    specHeightMode = View.MeasureSpec.EXACTLY
+                    specHeightMode = MeasureSpec.EXACTLY
                 }
                 WRAP_CONTENT -> {
                     specHeight = 0
-                    specHeightMode = View.MeasureSpec.UNSPECIFIED
+                    specHeightMode = MeasureSpec.UNSPECIFIED
                 }
                 else -> {
                     specHeight = targetHeight
-                    specHeightMode = View.MeasureSpec.EXACTLY
+                    specHeightMode = MeasureSpec.EXACTLY
                 }
             }
 
-            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(specHeight, specHeightMode)
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(specHeight, specHeightMode)
         }
 
         measure(widthMeasureSpec, heightMeasureSpec)
@@ -191,8 +187,8 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Uni
             override fun willChangeBounds(): Boolean = true
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                layoutParams.height = initHeight + (deltaHeight * interpolatedTime).toInt()
-                layoutParams.width = initWidth + (deltaWidth * interpolatedTime).toInt()
+                layoutParams.height = (initHeight + deltaHeight * interpolatedTime).toInt()
+                layoutParams.width = (initWidth + deltaWidth * interpolatedTime).toInt()
                 requestLayout()
             }
         }.apply {
@@ -244,14 +240,16 @@ fun View.revealToHeightIfTrue(
 fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
-    val initHeight = measuredHeight
+    val startHeight = measuredHeight
+    val endHeight = 0
+    val heightDuration = endHeight - startHeight
 
     val collapseAnimation = object : Animation() {
         override fun willChangeBounds(): Boolean = true
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             this@collapse.apply {
-                layoutParams.height = initHeight - (initHeight * interpolatedTime).toInt()
+                layoutParams.height = (startHeight + heightDuration * interpolatedTime).toInt()
                 requestLayout()
             }
         }
@@ -279,7 +277,7 @@ fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = nu
         })
     }
 
-    if (initHeight > 0)
+    if (startHeight > 0)
         startAnimation(collapseAnimation)
     else {
         visibility = INVISIBLE
@@ -289,6 +287,9 @@ fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = nu
 
 fun View.setVisibleIfTrue(boolean: Boolean, elseVisibility: Int = GONE) {
     visibility = if (boolean) VISIBLE else elseVisibility
+    if (this is ExpandableView) {
+        expandedState = if (boolean) EXPANDED else COLLAPSED
+    }
     requestLayout()
 }
 
@@ -321,8 +322,6 @@ fun View.focusAndShowKeyboard() {
 }
 
 fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
-    val initHeight = measuredHeight
-
     val colorFrom = MaterialColors.getColor(this, from)
     val colorTo = MaterialColors.getColor(this, to)
     val colorAnimation: ValueAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
@@ -411,11 +410,8 @@ fun View.fade(
 
     val fadeAnimation =
         object : Animation() {
-            override fun applyTransformation(
-                interpolatedTime: Float,
-                t: Transformation?
-            ) {
-                alpha = startAlpha + (alphaDuration * interpolatedTime)
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+                alpha = startAlpha + alphaDuration * interpolatedTime
                 invalidate()
             }
         }.apply {
@@ -464,16 +460,11 @@ fun View.animateMargin(
         object : Animation() {
             override fun willChangeBounds(): Boolean = true
 
-            override fun applyTransformation(
-                interpolatedTime: Float,
-                t: Transformation?
-            ) {
-                val lp = marginLayoutParams
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
                 setMarginValue(
-                    lp,
+                    marginLayoutParams,
                     (startingMargin + marginDuration * interpolatedTime).toInt()
                 )
-                layoutParams = lp
 
                 requestLayout()
             }
@@ -488,9 +479,7 @@ fun View.animateMargin(
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    val lp = marginLayoutParams
-                    setMarginValue(lp, endMargin)
-                    layoutParams = lp
+                    setMarginValue(marginLayoutParams, endMargin)
 
                     clearAnimation()
                     requestLayout()

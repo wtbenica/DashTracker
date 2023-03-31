@@ -93,11 +93,11 @@ class YearlyListFragment : IncomeListItemFragment() {
         CPM, MILES
     }
 
-    inner class YearlyAdapter : BaseItemListAdapter<Yearly>(DIFF_CALLBACK) {
+    inner class YearlyAdapter : BaseItemListAdapter<Yearly, YearlyAdapter.YearlyHolder>(DIFF_CALLBACK) {
         override fun getViewHolder(
             parent: ViewGroup,
             viewType: Int?
-        ): BaseItemHolder<Yearly> =
+        ): YearlyHolder =
             YearlyHolder(parent)
 
         inner class YearlyHolder(parent: ViewGroup) : BaseItemHolder<Yearly>(

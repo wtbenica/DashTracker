@@ -90,10 +90,10 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
     }
 
     inner class MonthlyExpenseAdapter :
-        ListItemFragment.BaseItemListAdapter<MonthlyExpenses>(DIFF_CALLBACK) {
+        ListItemFragment.BaseItemListAdapter<MonthlyExpenses, MonthlyExpenseAdapter.MonthlyExpenseHolder>(DIFF_CALLBACK) {
 
         override fun onBindViewHolder(
-            holder: BaseItemHolder<MonthlyExpenses>,
+            holder: MonthlyExpenseHolder,
             position: Int,
             payloads: List<Any>
         ) {
@@ -102,7 +102,7 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
             }
         }
 
-        override fun onBindViewHolder(holder: BaseItemHolder<MonthlyExpenses>, position: Int) {
+        override fun onBindViewHolder(holder: MonthlyExpenseHolder, position: Int) {
             if (getItem(position)?.showInList == true) {
                 super.onBindViewHolder(holder, position)
             }
@@ -111,7 +111,7 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
         override fun getViewHolder(
             parent: ViewGroup,
             viewType: Int?
-        ): BaseItemHolder<MonthlyExpenses> = MonthlyExpenseHolder(parent)
+        ): MonthlyExpenseHolder = MonthlyExpenseHolder(parent)
 
         inner class MonthlyExpenseHolder(parent: ViewGroup) : BaseItemHolder<MonthlyExpenses>(
             LayoutInflater.from(parent.context).inflate(R.layout.list_item_holder, parent, false)

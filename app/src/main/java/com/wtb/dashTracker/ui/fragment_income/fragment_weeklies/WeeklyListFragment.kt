@@ -120,8 +120,8 @@ class WeeklyListFragment : IncomeListItemFragment() {
     interface WeeklyListFragmentCallback : DeductionCallback
 
     @ExperimentalAnimationApi
-    inner class FullWeeklyAdapter : BaseItemPagingDataAdapter<FullWeekly>(DIFF_CALLBACK) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullWeekly> =
+    inner class FullWeeklyAdapter : BaseItemPagingDataAdapter<FullWeekly, FullWeeklyAdapter.WeeklyHolder>(DIFF_CALLBACK) {
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): WeeklyHolder =
             WeeklyHolder(parent)
 
         @ExperimentalAnimationApi
@@ -194,8 +194,8 @@ class WeeklyListFragment : IncomeListItemFragment() {
                     }
                 )
 
-                detailsBinding.listItemWeeklyAdjust.revealIfTrue(showBPAs)
-                detailsBinding.labelBasePayAdjust.revealIfTrue(showBPAs)
+                detailsBinding.listItemWeeklyAdjust.setVisibleIfTrue(showBPAs)
+                detailsBinding.labelBasePayAdjust.setVisibleIfTrue(showBPAs)
                 detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
                 detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
                 detailsBinding.listItemWeeklyHours.text = getFloatString(this.item.hours)

@@ -21,6 +21,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -37,6 +40,9 @@ import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 import java.util.concurrent.Executors
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class Repository private constructor(private val context: Context) {
     private val executor = Executors.newSingleThreadExecutor()
