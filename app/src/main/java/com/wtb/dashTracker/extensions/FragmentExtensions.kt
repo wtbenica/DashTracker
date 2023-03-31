@@ -44,6 +44,8 @@ fun Fragment.getCpmString(value: Float?): String =
     else
         getStringOrElse(R.string.cpm_unit, "-", value)
 
+fun Fragment.getCpmIrsStdString(value: Float?) = getCpmIrsStdString(mapOf(12 to (value ?: 0f)))
+
 fun Fragment.getCpmIrsStdString(value: Map<Int, Float>?): String =
     if (value == null) {
         getString(R.string.blank_currency)

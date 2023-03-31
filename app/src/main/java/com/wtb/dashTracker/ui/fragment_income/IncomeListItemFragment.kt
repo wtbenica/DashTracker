@@ -32,6 +32,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.wtb.dashTracker.BuildConfig
+import com.wtb.dashTracker.extensions.getCpmIrsStdString
+import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.debugLog
@@ -119,6 +121,12 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         super.onItemExpanded()
         parentFragmentManager.setFragmentResult(REQ_KEY_INCOME_LIST_ITEM_SELECTED, bundleOf())
     }
+
+    protected fun formatCpm(cpm: Float): String =
+        if (deductionType == DeductionType.IRS_STD)
+            getCpmIrsStdString(cpm)
+        else
+            getCpmString(cpm)
 
     abstract class IncomeItemPagingDataAdapter<T : IncomeListItemType, ExpenseType : Any, HolderType : IncomeItemHolder<T, ExpenseType>>(
         diffCallback: DiffUtil.ItemCallback<T>

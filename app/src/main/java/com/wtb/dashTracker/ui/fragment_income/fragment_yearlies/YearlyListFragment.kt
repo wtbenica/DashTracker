@@ -295,13 +295,10 @@ class YearlyListFragment :
                         detailsBinding.listItemYearlyCpmDeductionType.text =
                             deductionType.fullDesc
 
-                        detailsBinding.listItemYearlyCpm.text =
-                            getCpmString(costPerMile)
+                        detailsBinding.listItemYearlyCpm.text = formatCpm(costPerMile)
 
                         detailsBinding.listItemYearlyExpenses.text =
-                            getCurrencyString(
-                                getExpenses(deductionType, costPerMile)
-                            )
+                            getCurrencyString(getExpenses(deductionType, costPerMile))
 
                         binding.listItemSubtitle2.text =
                             getCurrencyString(getNet(costPerMile, deductionType))

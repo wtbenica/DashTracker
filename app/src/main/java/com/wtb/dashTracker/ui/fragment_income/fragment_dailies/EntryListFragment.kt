@@ -292,9 +292,7 @@ class EntryListFragment :
                     text = getCurrencyString(this@EntryHolder.item.entry.getExpenses(cpm))
                 }
 
-                detailsBinding.listItemEntryCpm.apply {
-                    text = getCpmString(cpm)
-                }
+                detailsBinding.listItemEntryCpm.text = formatCpm(cpm)
 
                 binding.listItemSubtitle2Label.apply {
                     setText(R.string.list_item_label_net)

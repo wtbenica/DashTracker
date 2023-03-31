@@ -235,7 +235,7 @@ class WeeklyListFragment :
                 detailsBinding.listItemWeeklyExpenses.text =
                     getCurrencyString(expenses)
 
-                detailsBinding.listItemWeeklyCpm.text = getCpmString(cpm)
+                detailsBinding.listItemWeeklyCpm.text = formatCpm(cpm)
 
                 binding.listItemSubtitle2.text =
                     getCurrencyString(this@WeeklyHolder.item.getNet(cpm))
