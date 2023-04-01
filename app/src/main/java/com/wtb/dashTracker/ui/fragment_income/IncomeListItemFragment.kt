@@ -37,7 +37,6 @@ import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.debugLog
-import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
 import com.wtb.dashTracker.ui.fragment_list_item_base.ExpandableAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
@@ -59,10 +58,6 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
     protected var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     protected var deductionType: DeductionType = DeductionType.NONE
-        set(value) {
-            field = value
-            debugLog("Setting income list item fragment deduction type: ${deductionType.fullDesc}")
-        }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -101,12 +96,14 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 callback?.deductionType?.collectLatest {
-                    deductionType = it
-                    entryAdapter.notifyItemRangeChanged(
-                        0,
-                        entryAdapter.itemCount,
-                        Pair(PayloadField.DEDUCTION, it)
-                    )
+                    if (deductionType != it) {
+                        deductionType = it
+                        entryAdapter.notifyItemRangeChanged(
+                            0,
+                            entryAdapter.itemCount,
+                            Pair(IncomeItemListAdapter.Companion.PayloadField.DEDUCTION, it)
+                        )
+                    }
                 }
             }
         }
@@ -136,12 +133,12 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             position: Int,
             payloads: List<Any>
         ) {
-            if (payloads.isEmpty()) {
-                super.onBindViewHolder(holder, position, payloads)
-            } else {
+            if (payloads.isNotEmpty()) {
+                debugLog("onBindViewHolder")
                 holder.updateDeductionType()
-                holder.setExpandedFromPayloads(payloads)
             }
+
+            super.onBindViewHolder(holder, position, payloads)
         }
     }
 
@@ -153,12 +150,11 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             position: Int,
             payloads: List<Any>
         ) {
-            if (payloads.isEmpty()) {
-                super.onBindViewHolder(holder, position, payloads)
-            } else {
+            if (payloads.isNotEmpty()) {
                 holder.updateDeductionType()
-                holder.setExpandedFromPayloads(payloads)
             }
+
+            super.onBindViewHolder(holder, position, payloads)
         }
 
         companion object {
@@ -195,9 +191,11 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         protected abstract fun onNewExpenseValues()
 
         override fun bind(item: T, payloads: List<Any>?) {
-            super.bind(item, payloads)
+            if (!mIsInitialized || this.mItem != item) {
+                super.bind(item, payloads)
 
-            launchObservers()
+                launchObservers()
+            }
         }
 
         private fun launchObservers() {

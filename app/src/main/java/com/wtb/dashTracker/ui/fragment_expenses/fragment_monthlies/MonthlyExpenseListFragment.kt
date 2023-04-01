@@ -134,9 +134,9 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
             override fun updateHeaderFields() {
                 binding.apply {
                     listItemTitle.text =
-                        this@MonthlyExpenseHolder.item.date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
+                        this@MonthlyExpenseHolder.mItem.date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
 
-                    listItemTitle2.text = getCurrencyString(item.total)
+                    listItemTitle2.text = getCurrencyString(mItem.total)
 
                     listItemSubtitle.revealIfTrue(false)
                     listItemSubtitle2.revealIfTrue(false)
@@ -150,22 +150,22 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
             override fun updateDetailsFields() {
                 detailsBinding.apply {
                     listItemWorkMiles.text =
-                        getString(R.string.odometer_fmt, item.workMiles)
+                        getString(R.string.odometer_fmt, mItem.workMiles)
 
-                    listItemTotalMiles.text = item.totalMiles.toString()
+                    listItemTotalMiles.text = mItem.totalMiles.toString()
 
                     listItemPctWorkMiles.text =
-                        getString(R.string.percent_int, item.workMilePercentDisplay)
+                        getString(R.string.percent_int, mItem.workMilePercentDisplay)
 
-                    val showWorkCosts = item.workCost > 0f
+                    val showWorkCosts = mItem.workCost > 0f
                     listItemWorkCosts.apply {
                         setVisibleIfTrue(showWorkCosts)
-                        text = getString(R.string.currency_fmt, item.workCost)
+                        text = getString(R.string.currency_fmt, mItem.workCost)
                     }
 
                     listItemWorkCostsLabel.setVisibleIfTrue(showWorkCosts)
 
-                    val showTopDetailsTable = item.workMiles > 0f
+                    val showTopDetailsTable = mItem.workMiles > 0f
                     val showBottomDetailsTable = purposes?.isNotEmpty() == true
 
                     detailsTableSplit.setVisibleIfTrue(showTopDetailsTable && showBottomDetailsTable)
@@ -177,7 +177,7 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
                         if (showBottomDetailsTable) {
                             setContent {
                                 DashTrackerTheme {
-                                    MonthlyExpensesDetails(item, purposes)
+                                    MonthlyExpensesDetails(mItem, purposes)
                                 }
                             }
                         }

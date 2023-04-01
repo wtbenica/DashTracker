@@ -156,14 +156,14 @@ class EntryListFragment :
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        EntryDialog.newInstance(this@EntryHolder.item.entry.entryId)
+                        EntryDialog.newInstance(this@EntryHolder.mItem.entry.entryId)
                             .show(childFragmentManager, "edit_entry_details")
                     }
                 }
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(this@EntryHolder.item.entry.entryId)
+                        ConfirmDeleteDialog.newInstance(this@EntryHolder.mItem.entry.entryId)
                             .show(childFragmentManager, "delete_entry")
                     }
                 }
@@ -174,29 +174,29 @@ class EntryListFragment :
                 binding.listItemEntryDayOfWeek.text =
                     getString(
                         R.string.add_comma,
-                        this.item.entry.date.dayOfWeek.name.capitalize()
+                        this.mItem.entry.date.dayOfWeek.name.capitalize()
                     )
 
                 binding.listItemEntryDayOfWeek.setTextColor(
-                    if (this.item.entry.date.endOfWeek == LocalDate.now().endOfWeek) {
+                    if (this.mItem.entry.date.endOfWeek == LocalDate.now().endOfWeek) {
                         requireContext().getAttrColor(R.attr.textColorListItemEntryDayThisWeek)
                     } else {
                         requireContext().getAttrColor(R.attr.textColorListItemEntryDay)
                     }
                 )
 
-                binding.listItemTitle.text = this.item.entry.date.format(dtfDate)
+                binding.listItemTitle.text = this.mItem.entry.date.format(dtfDate)
 
-                binding.listItemTitle2.text = getCurrencyString(this.item.entry.totalEarned)
+                binding.listItemTitle2.text = getCurrencyString(this.mItem.entry.totalEarned)
 
                 binding.listItemSubtitle.apply {
                     text = getHoursRangeString(
-                        start = this@EntryHolder.item.entry.startDateTime,
-                        end = this@EntryHolder.item.entry.endDateTime
+                        start = this@EntryHolder.mItem.entry.startDateTime,
+                        end = this@EntryHolder.mItem.entry.endDateTime
                     )
                     setTextColor(
                         context.getAttrColor(
-                            if (this@EntryHolder.item.entry.mismatchedTimes) {
+                            if (this@EntryHolder.mItem.entry.mismatchedTimes) {
                                 R.attr.colorAlert
                             } else {
                                 R.attr.colorListItemSubtitle
@@ -208,44 +208,44 @@ class EntryListFragment :
 
             override fun updateDetailsFields() {
                 fun updateMissingAlerts() {
-                    binding.listItemAlert.setVisibleIfTrue(this.item.entry.isIncomplete)
+                    binding.listItemAlert.setVisibleIfTrue(this.mItem.entry.isIncomplete)
                     detailsBinding.listItemAlertHours.setVisibleIfTrue(
-                        this.item.entry.startTime == null ||
-                                this.item.entry.endTime == null ||
-                                this.item.entry.mismatchedTimes
+                        this.mItem.entry.startTime == null ||
+                                this.mItem.entry.endTime == null ||
+                                this.mItem.entry.mismatchedTimes
                     )
                     detailsBinding.listItemAlertMiles.setVisibleIfTrue(
-                        this.item.entry.mileage == null || this.item.entry.mismatchedOdometers
+                        this.mItem.entry.mileage == null || this.mItem.entry.mismatchedOdometers
                     )
-                    detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.item.entry.numDeliveries == null)
+                    detailsBinding.listItemAlertDeliveries.setVisibleIfTrue(this.mItem.entry.numDeliveries == null)
                 }
 
-                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.entry.pay)
+                detailsBinding.listItemRegularPay.text = getCurrencyString(this.mItem.entry.pay)
 
                 detailsBinding.listItemCashTips.text =
-                    getCurrencyString(this.item.entry.cashTips)
+                    getCurrencyString(this.mItem.entry.cashTips)
 
                 detailsBinding.listItemOtherPay.text =
-                    getCurrencyString(this.item.entry.otherPay)
+                    getCurrencyString(this.mItem.entry.otherPay)
 
                 detailsBinding.listItemEntryHours.apply {
                     text =
                         getStringOrElse(
                             R.string.float_fmt,
                             "-",
-                            this@EntryHolder.item.entry.totalHours
+                            this@EntryHolder.mItem.entry.totalHours
                         )
                 }
 
                 detailsBinding.listItemEntryMileageRange.apply {
                     text =
                         getOdometerRangeString(
-                            this@EntryHolder.item.entry.startOdometer,
-                            this@EntryHolder.item.entry.endOdometer
+                            this@EntryHolder.mItem.entry.startOdometer,
+                            this@EntryHolder.mItem.entry.endOdometer
                         )
                     setTextColor(
                         context.getAttrColor(
-                            if (this@EntryHolder.item.entry.mismatchedOdometers) {
+                            if (this@EntryHolder.mItem.entry.mismatchedOdometers) {
                                 R.attr.colorAlert
                             } else {
                                 R.attr.colorRowValueSecondaryText
@@ -254,23 +254,23 @@ class EntryListFragment :
                     )
                 }
                 detailsBinding.listItemEntryMileage.text =
-                    getStringOrElse(R.string.odometer_fmt, "-", this.item.entry.mileage)
+                    getStringOrElse(R.string.odometer_fmt, "-", this.mItem.entry.mileage)
 
                 detailsBinding.listItemEntryNumDeliveries.text =
-                    "${this.item.entry.numDeliveries ?: "-"}"
+                    "${this.mItem.entry.numDeliveries ?: "-"}"
                 detailsBinding.listItemEntryHourly.text =
-                    getCurrencyString(this.item.entry.hourly)
+                    getCurrencyString(this.mItem.entry.hourly)
                 detailsBinding.listItemEntryAvgDel.text =
-                    getCurrencyString(this.item.entry.avgDelivery)
+                    getCurrencyString(this.mItem.entry.avgDelivery)
                 detailsBinding.listItemEntryHourlyDels.text =
-                    getFloatString(this.item.entry.hourlyDeliveries)
+                    getFloatString(this.mItem.entry.hourlyDeliveries)
 
                 updateMissingAlerts()
             }
 
             // IncomeItemHolder Overrides
             override suspend fun getExpenseValues(): Float =
-                viewModel.getCostPerMile(item.entry.date, deductionType)
+                viewModel.getCostPerMile(mItem.entry.date, deductionType)
 
             override fun onNewExpenseValues() {
                 val shouldShow = deductionType != NONE
@@ -289,7 +289,7 @@ class EntryListFragment :
                 val cpm: Float = expenseValues
 
                 detailsBinding.listItemEntryExpenses.apply {
-                    text = getCurrencyString(this@EntryHolder.item.entry.getExpenses(cpm))
+                    text = getCurrencyString(this@EntryHolder.mItem.entry.getExpenses(cpm))
                 }
 
                 detailsBinding.listItemEntryCpm.text = formatCpm(cpm)
@@ -299,15 +299,15 @@ class EntryListFragment :
                 }
 
                 binding.listItemSubtitle2.apply {
-                    text = getCurrencyString(this@EntryHolder.item.entry.getNet(cpm))
+                    text = getCurrencyString(this@EntryHolder.mItem.entry.getNet(cpm))
                 }
 
                 detailsBinding.listItemEntryHourly.apply {
-                    text = getCurrencyString(this@EntryHolder.item.entry.getHourly(cpm))
+                    text = getCurrencyString(this@EntryHolder.mItem.entry.getHourly(cpm))
                 }
 
                 detailsBinding.listItemEntryAvgDel.apply {
-                    text = getCurrencyString(this@EntryHolder.item.entry.getAvgDelivery(cpm))
+                    text = getCurrencyString(this@EntryHolder.mItem.entry.getAvgDelivery(cpm))
                 }
             }
         }
@@ -323,8 +323,7 @@ class EntryListFragment :
                 oldItem: FullEntry,
                 newItem: FullEntry
             ): Boolean =
-                oldItem.entry.equals(newItem.entry) &&
-                        oldItem.trackedDistance == newItem.trackedDistance
+                oldItem.entry.equals(newItem.entry)
         }
     }
 }

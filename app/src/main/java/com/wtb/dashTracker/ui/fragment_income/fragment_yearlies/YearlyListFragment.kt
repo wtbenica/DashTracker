@@ -114,10 +114,10 @@ class YearlyListFragment :
             private val detailsBinding: ListItemYearlyDetailsTableBinding =
                 binding.listItemDetailsTableCard.apply {
                     listItemYearlyExpenseDetailsButton.setOnClickListener { v ->
-                        ConfirmationDialogExpenseBreakdown(item).show(childFragmentManager, null)
+                        ConfirmationDialogExpenseBreakdown(mItem).show(childFragmentManager, null)
                     }
                     mileageDetailsButton.setOnClickListener { v ->
-                        ConfirmationDialogMileageBreakdown(item).show(childFragmentManager, null)
+                        ConfirmationDialogMileageBreakdown(mItem).show(childFragmentManager, null)
                     }
                 }
 
@@ -126,19 +126,19 @@ class YearlyListFragment :
 
             // BaseItemHolder Overrides
             override fun updateHeaderFields() {
-                binding.listItemTitle.text = this.item.year.toString()
-                binding.listItemTitle2.text = getCurrencyString(this.item.totalPay)
+                binding.listItemTitle.text = this.mItem.year.toString()
+                binding.listItemTitle2.text = getCurrencyString(this.mItem.totalPay)
             }
 
             override fun updateDetailsFields() {
                 detailsBinding.listItemReportedIncome.text =
-                    getCurrencyString(this.item.reportedPay)
-                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
+                    getCurrencyString(this.mItem.reportedPay)
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.mItem.cashTips)
                 detailsBinding.listItemYearlyMileage.text =
-                    getStringOrElse(R.string.odometer_fmt, "-", this.item.mileage)
+                    getStringOrElse(R.string.odometer_fmt, "-", this.mItem.mileage)
                 detailsBinding.listItemYearlyHours.text =
-                    getString(R.string.format_hours, item.hours)
-                detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.item.hourly)
+                    getString(R.string.format_hours, mItem.hours)
+                detailsBinding.listItemYearlyHourly.text = getCurrencyString(this.mItem.hourly)
             }
 
             // IncomeItemHolder Overrides
@@ -149,7 +149,7 @@ class YearlyListFragment :
                         var startMonth = 0
                         cpm?.keys?.forEach { endMonth ->
                             val miles: Float =
-                                item.monthlies.filter { m -> m.key.value in startMonth..endMonth }
+                                mItem.monthlies.filter { m -> m.key.value in startMonth..endMonth }
                                     .toList()
                                     .fold(0f) { acc, value ->
                                         acc + value.second.mileage
@@ -207,40 +207,40 @@ class YearlyListFragment :
                     binding.listItemSubtitle2.fade(fadeIn = show)
 
                     detailsBinding.apply {
-                        listItemYearlyExpensesHeader.showOrHide(show, isExpanded)
+                        listItemYearlyExpensesHeader.showOrHide(show, mIsExpanded)
                         listItemYearlyExpenseDetailsButtonFrame.apply {
                             val target = resources.getDimension(R.dimen.min_touch_target).toInt()
                             revealToHeightIfTrue(show, target, target)
                         }
 
-                        listItemYearlyExpenseDetailsButton.showOrHide(show, isExpanded)
-                        listItemYearlyExpenses.showOrHide(show, isExpanded)
+                        listItemYearlyExpenseDetailsButton.showOrHide(show, mIsExpanded)
+                        listItemYearlyExpenses.showOrHide(show, mIsExpanded)
 
                         mileageBreakdownCard.showOrHide(
-                            show && hasMultipleStdDeductions, isExpanded, GONE
+                            show && hasMultipleStdDeductions, mIsExpanded, GONE
                         )
                         listItemYearlyCpmHeader.showOrHide(
-                            show && !hasMultipleStdDeductions, isExpanded
+                            show && !hasMultipleStdDeductions, mIsExpanded
                         )
                         listItemYearlyCpmDeductionType.showOrHide(
-                            show && !hasMultipleStdDeductions, isExpanded
+                            show && !hasMultipleStdDeductions, mIsExpanded
                         )
                         listItemYearlyCpm.showOrHide(
-                            show && !hasMultipleStdDeductions, isExpanded
+                            show && !hasMultipleStdDeductions, mIsExpanded
                         )
                     }
                 }
 
                 fun getCalculatedExpenses(costPerMile: Float): Float =
-                    item.mileage * costPerMile
+                    mItem.mileage * costPerMile
 
                 // TODO: Refactor.
                 fun getStandardDeductionExpense(): Float {
                     val table = viewModel.standardMileageDeductionTable()
                     var res = 0f
-                    item.monthlies.keys.forEach { mon ->
-                        val stdDedAmount: Float = table[LocalDate.of(item.year, mon, 1)]
-                        res += stdDedAmount * (item.monthlies[mon]?.mileage ?: 0f)
+                    mItem.monthlies.keys.forEach { mon ->
+                        val stdDedAmount: Float = table[LocalDate.of(mItem.year, mon, 1)]
+                        res += stdDedAmount * (mItem.monthlies[mon]?.mileage ?: 0f)
                     }
                     return res
                 }
@@ -252,9 +252,9 @@ class YearlyListFragment :
                     }
 
                 fun getNet(cpm: Float, deductionType: DeductionType): Float =
-                    item.totalPay - getExpenses(deductionType, cpm)
+                    mItem.totalPay - getExpenses(deductionType, cpm)
 
-                fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / item.hours
+                fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / mItem.hours
 
                 detailsBinding.mileageBreakdownCard.visibility = GONE
 
@@ -311,7 +311,7 @@ class YearlyListFragment :
 
             override suspend fun getExpenseValues(): Map<Int, Float> =
                 viewModel.getAnnualCostPerMile(
-                    this@YearlyHolder.item.year,
+                    this@YearlyHolder.mItem.year,
                     deductionType
                 ) ?: emptyMap()
         }

@@ -36,7 +36,6 @@ import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ExpandableView
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.COLLAPSED
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.EXPANDED
@@ -81,11 +80,13 @@ fun View.showOrHide(shouldShow: Boolean, animate: Boolean, elseVisibility: Int =
 fun View.reveal(onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
+
+    visibility = VISIBLE
+
     val lp = layoutParams
     lp.height = max(1, height)
     layoutParams = lp
 
-    visibility = VISIBLE
 
     val startHeight = height
     val endHeight = targetHeight
@@ -105,7 +106,7 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
                 }
             }
         }.apply {
-            duration = ANIMATION_DURATION * abs(heightDuration) / endHeight
+            duration = (ANIMATION_DURATION * abs(heightDuration) / endHeight.toFloat()).toLong()
             fillAfter = true
 
             setAnimationListener(object : AnimationListener {
@@ -321,11 +322,14 @@ fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = nu
 }
 
 fun View.setVisibleIfTrue(boolean: Boolean, elseVisibility: Int = GONE) {
-    visibility = if (boolean) VISIBLE else elseVisibility
-    if (this is ExpandableView) {
-        expandedState = if (boolean) EXPANDED else COLLAPSED
+    val newVisibility = if (boolean) VISIBLE else elseVisibility
+    if (visibility != newVisibility) {
+        visibility = newVisibility
+        if (this is ExpandableView) {
+            expandedState = if (boolean) EXPANDED else COLLAPSED
+        }
+        requestLayout()
     }
-    requestLayout()
 }
 
 fun View.focusAndShowKeyboard() {
@@ -513,11 +517,9 @@ fun View.animateMargin(
             setAnimationListener(object : AnimationListener {
                 override fun onAnimationStart(animation: Animation?) {
                     // Do nothing
-                    debugLog("Starting margin adjust animation $x $width $endMargin")
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    debugLog("Margin adjust animation done $x $width $endMargin")
                     val lp = marginLayoutParams
                     setMarginValue(lp, endMargin)
                     layoutParams = lp
