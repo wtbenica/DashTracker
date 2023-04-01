@@ -124,7 +124,7 @@ private fun MileageBreakdown(yearly: Yearly) {
                 text = LocalContext.current.getStringOrElse(
                     resId = R.string.percent_format,
                     ifInvalid = "-",
-                    yearly.businessMileagePercent * 100
+                    100 - yearly.businessMileagePercent * 100
                 ),
                 modifier = Modifier.weight(.3f),
             )
