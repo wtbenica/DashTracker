@@ -221,11 +221,11 @@ class WeeklyListFragment :
                 val shouldShow = deductionType != DeductionType.NONE
                 binding.listItemSubtitle2Label.fade(shouldShow)
                 binding.listItemSubtitle2.fade(shouldShow)
-                detailsBinding.listItemWeeklyCpmHeader.showOrHide(shouldShow, isExpanded)
-                detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(shouldShow, isExpanded)
-                detailsBinding.listItemWeeklyCpm.showOrHide(shouldShow, isExpanded)
-                detailsBinding.listItemWeeklyExpensesHeader.showOrHide(shouldShow, isExpanded)
-                detailsBinding.listItemWeeklyExpenses.showOrHide(shouldShow, isExpanded)
+                detailsBinding.listItemWeeklyCpmHeader.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemWeeklyCpm.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemWeeklyExpensesHeader.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemWeeklyExpenses.showOrHide(shouldShow, mIsExpanded)
 
                 detailsBinding.listItemWeeklyCpmDeductionType.text =
                     deductionType.fullDesc

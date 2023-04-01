@@ -37,7 +37,6 @@ import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.debugLog
-import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
 import com.wtb.dashTracker.ui.fragment_list_item_base.ExpandableAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
@@ -101,12 +100,14 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 callback?.deductionType?.collectLatest {
-                    deductionType = it
-                    entryAdapter.notifyItemRangeChanged(
-                        0,
-                        entryAdapter.itemCount,
-                        Pair(PayloadField.DEDUCTION, it)
-                    )
+                    if (deductionType != it) {
+                        deductionType = it
+                        entryAdapter.notifyItemRangeChanged(
+                            0,
+                            entryAdapter.itemCount,
+                            Pair(IncomeItemListAdapter.Companion.PayloadField.DEDUCTION, it)
+                        )
+                    }
                 }
             }
         }
@@ -130,7 +131,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
 
     abstract class IncomeItemPagingDataAdapter<T : IncomeListItemType, ExpenseType : Any, HolderType : IncomeItemHolder<T, ExpenseType>>(
         diffCallback: DiffUtil.ItemCallback<T>
-    ) : BaseItemPagingDataAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
+    ) : ListItemFragment.BaseItemPagingDataAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
         override fun onBindViewHolder(
             holder: HolderType,
             position: Int,
@@ -139,6 +140,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             if (payloads.isEmpty()) {
                 super.onBindViewHolder(holder, position, payloads)
             } else {
+                debugLog("onBindViewHolder")
                 holder.updateDeductionType()
                 holder.setExpandedFromPayloads(payloads)
             }
@@ -147,7 +149,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
 
     abstract class IncomeItemListAdapter<T : IncomeListItemType, ExpenseType : Any, HolderType : IncomeItemHolder<T, ExpenseType>>(
         diffCallback: DiffUtil.ItemCallback<T>
-    ) : BaseItemListAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
+    ) : ListItemFragment.BaseItemListAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
         override fun onBindViewHolder(
             holder: HolderType,
             position: Int,
@@ -156,6 +158,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             if (payloads.isEmpty()) {
                 super.onBindViewHolder(holder, position, payloads)
             } else {
+                debugLog("onBindViewHolder")
                 holder.updateDeductionType()
                 holder.setExpandedFromPayloads(payloads)
             }
@@ -169,7 +172,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
     }
 
     abstract class IncomeItemHolder<T : IncomeListItemType, ExpenseValues : Any>(itemView: View) :
-        BaseItemHolder<T>(itemView), View.OnClickListener {
+        ListItemFragment.BaseItemHolder<T>(itemView), View.OnClickListener {
 
         protected val deductionType: DeductionType
             get() = (parentFrag as? IncomeListItemFragment<*, *, *>?)?.deductionType
@@ -195,9 +198,11 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         protected abstract fun onNewExpenseValues()
 
         override fun bind(item: T, payloads: List<Any>?) {
-            super.bind(item, payloads)
+            if (this.item != item) {
+                super.bind(item, payloads)
 
-            launchObservers()
+                launchObservers()
+            }
         }
 
         private fun launchObservers() {

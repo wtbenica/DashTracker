@@ -30,12 +30,15 @@ import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.*
 import com.wtb.dashTracker.R
+import com.wtb.dashTracker.database.models.DashEntry
+import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.extensions.setVisibleIfTrue
 import com.wtb.dashTracker.extensions.transitionBackgroundTo
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -99,7 +102,9 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         listItemFragmentCallback.showToolbarsAndFab()
     }
 
-    abstract class BaseItemListAdapter<ItemType : ListItemType, HolderType: BaseItemHolder<ItemType>>(diffCallback: DiffUtil.ItemCallback<ItemType>) :
+    abstract class BaseItemListAdapter<ItemType : ListItemType, HolderType : BaseItemHolder<ItemType>>(
+        diffCallback: DiffUtil.ItemCallback<ItemType>
+    ) :
         ListAdapter<ItemType, HolderType>(diffCallback), ExpandableAdapter {
 
         override var mExpandedPosition: Int? = null
@@ -118,6 +123,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             if (payloads.isEmpty()) {
                 super.onBindViewHolder(holder, position, payloads)
             } else {
+                debugLog("onBindViewHolder | ListItemFragment")
                 holder.setExpandedFromPayloads(payloads)
             }
         }
@@ -141,7 +147,9 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         ): HolderType
     }
 
-    abstract class BaseItemPagingDataAdapter<ItemType : ListItemType, HolderType: BaseItemHolder<ItemType>>(diffCallback: DiffUtil.ItemCallback<ItemType>) :
+    abstract class BaseItemPagingDataAdapter<ItemType : ListItemType, HolderType : BaseItemHolder<ItemType>>(
+        diffCallback: DiffUtil.ItemCallback<ItemType>
+    ) :
         PagingDataAdapter<ItemType, HolderType>(diffCallback), ExpandableAdapter {
 
         override var mExpandedPosition: Int? = null
@@ -160,6 +168,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             if (payloads.isEmpty()) {
                 super.onBindViewHolder(holder, position, payloads)
             } else {
+                debugLog("onBindViewHolder | ListItemFragment")
                 holder.setExpandedFromPayloads(payloads)
             }
         }
@@ -186,10 +195,10 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         abstract val parentFrag: ListItemFragment
 
         protected lateinit var item: T
-        protected var isExpanded: Boolean = false
+        protected var mIsExpanded: Boolean = false
 
-        private var isInitialized = false
-        private var prevPayload: List<Any>? = null
+        private var mIsInitialized = false
+        private var mPrevPayload: List<Any>? = null
 
         abstract fun updateHeaderFields()
         abstract fun updateDetailsFields()
@@ -199,10 +208,10 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         open fun bind(item: T, payloads: List<Any>? = null) {
-            val prev = if (isInitialized) {
+            val prev = if (mIsInitialized) {
                 this.item
             } else {
-                isInitialized = true
+                mIsInitialized = true
                 null
             }.also {
                 this.item = item
@@ -214,6 +223,8 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                 updateDetailsFields()
             }
 
+            if (item is DashEntry || item is FullEntry)
+                debugLog("bind | ${if (item is DashEntry) item.date else if (item is FullEntry) item.entry.date else "bobo"}")
             setExpandedFromPayloads(emptyList())
         }
 
@@ -263,16 +274,20 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         internal fun setExpandedFromPayloads(payloads: List<Any>) {
-            val lIsExpanded: Boolean? =
+            val isExpanded: Boolean? =
                 (payloads.lastOrNull { it is Pair<*, *> && it.first == PayloadField.EXPANDED } as Pair<*, *>?)?.second as Boolean?
 
-            if (isExpanded != lIsExpanded) {
-                isExpanded =
-                    lIsExpanded ?: ((bindingAdapter as? ExpandableAdapter)?.mExpandedPosition == bindingAdapterPosition)
+            val newExpansion = isExpanded
+                ?: ((bindingAdapter as? ExpandableAdapter)?.mExpandedPosition == bindingAdapterPosition)
 
-                collapseArea.forEach { it.setVisibleIfTrue(isExpanded) }
+            debugLog("setExpandedFromPayloads | self: $mIsExpanded | adapter: $newExpansion | $payloads")
 
-                if (isExpanded) {
+            if (mIsExpanded != newExpansion) {
+                mIsExpanded = newExpansion
+
+                collapseArea.forEach { it.setVisibleIfTrue(mIsExpanded) }
+
+                if (mIsExpanded) {
                     backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
                 } else {
                     backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
@@ -296,6 +311,7 @@ interface ExpandableAdapter {
         get() = object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
+                // update new expanded position
                 mExpandedPosition = mExpandedPosition?.let {
                     if (it >= positionStart)
                         it + itemCount
@@ -306,6 +322,7 @@ interface ExpandableAdapter {
 
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
+                // update new expanded position
                 mExpandedPosition = mExpandedPosition?.let {
                     if (it >= positionStart + itemCount)
                         it - itemCount

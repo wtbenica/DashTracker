@@ -207,26 +207,26 @@ class YearlyListFragment :
                     binding.listItemSubtitle2.fade(fadeIn = show)
 
                     detailsBinding.apply {
-                        listItemYearlyExpensesHeader.showOrHide(show, isExpanded)
+                        listItemYearlyExpensesHeader.showOrHide(show, mIsExpanded)
                         listItemYearlyExpenseDetailsButtonFrame.apply {
                             val target = resources.getDimension(R.dimen.min_touch_target).toInt()
                             revealToHeightIfTrue(show, target, target)
                         }
 
-                        listItemYearlyExpenseDetailsButton.showOrHide(show, isExpanded)
-                        listItemYearlyExpenses.showOrHide(show, isExpanded)
+                        listItemYearlyExpenseDetailsButton.showOrHide(show, mIsExpanded)
+                        listItemYearlyExpenses.showOrHide(show, mIsExpanded)
 
                         mileageBreakdownCard.showOrHide(
-                            show && hasMultipleStdDeductions, isExpanded, GONE
+                            show && hasMultipleStdDeductions, mIsExpanded, GONE
                         )
                         listItemYearlyCpmHeader.showOrHide(
-                            show && !hasMultipleStdDeductions, isExpanded
+                            show && !hasMultipleStdDeductions, mIsExpanded
                         )
                         listItemYearlyCpmDeductionType.showOrHide(
-                            show && !hasMultipleStdDeductions, isExpanded
+                            show && !hasMultipleStdDeductions, mIsExpanded
                         )
                         listItemYearlyCpm.showOrHide(
-                            show && !hasMultipleStdDeductions, isExpanded
+                            show && !hasMultipleStdDeductions, mIsExpanded
                         )
                     }
                 }

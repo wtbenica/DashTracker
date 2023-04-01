@@ -321,11 +321,14 @@ fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = nu
 }
 
 fun View.setVisibleIfTrue(boolean: Boolean, elseVisibility: Int = GONE) {
-    visibility = if (boolean) VISIBLE else elseVisibility
-    if (this is ExpandableView) {
-        expandedState = if (boolean) EXPANDED else COLLAPSED
+    val newVisibility = if (boolean) VISIBLE else elseVisibility
+    if (visibility != newVisibility) {
+        visibility = newVisibility
+        if (this is ExpandableView) {
+            expandedState = if (boolean) EXPANDED else COLLAPSED
+        }
+        requestLayout()
     }
-    requestLayout()
 }
 
 fun View.focusAndShowKeyboard() {
