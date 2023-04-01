@@ -41,13 +41,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.wtb.dashTracker.views.ExpandableLinearLayout
+                <LinearLayout
                     android:id="@+id/adb_title_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="0dp"
                     android:baselineAligned="true"
-                    android:gravity="center_vertical"
+                    android:gravity="center_vertical|fill_horizontal"
                     android:minHeight="@dimen/min_touch_target"
                     android:paddingHorizontal="@dimen/margin_default"
                     tools:layout_marginEnd="@dimen/min_touch_target">
@@ -57,7 +57,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/margin_half"
-                        android:layout_weight="0"
                         android:text="@string/adb_current_dash"
                         android:textAlignment="textStart" />
 
@@ -79,7 +78,7 @@
                         android:layout_height="wrap_content"
                         android:textAlignment="textEnd"
                         tools:text="4h 20m" />
-                </com.wtb.dashTracker.views.ExpandableLinearLayout>
+                </LinearLayout>
 
                 <com.wtb.dashTracker.views.ExpandableImageButton
                     android:id="@+id/btn_stop_active_dash"
