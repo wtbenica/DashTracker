@@ -36,6 +36,8 @@ import androidx.core.view.isVisible
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
+import com.wtb.dashTracker.ui.activity_main.debugLog
+import com.wtb.dashTracker.views.ExpandableTextView
 import com.wtb.dashTracker.views.ExpandableView
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.COLLAPSED
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.EXPANDED
@@ -97,33 +99,32 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
             override fun willChangeBounds(): Boolean = true
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                this@reveal.apply {
-                    val lp1 = layoutParams
-                    lp1.height = (startHeight + heightDuration * interpolatedTime).toInt()
-                    layoutParams = lp1
+                val lp1 = layoutParams
+                lp1.height = (startHeight + heightDuration * interpolatedTime).toInt()
+                layoutParams = lp1
 
-                    requestLayout()
-                }
+                requestLayout()
             }
         }.apply {
             duration = (ANIMATION_DURATION * abs(heightDuration) / endHeight.toFloat()).toLong()
             fillAfter = true
-
+            this@reveal.debugLog(
+                "reveal $duration | $startHeight -> $endHeight",
+                this@reveal is ExpandableTextView
+            )
             setAnimationListener(object : AnimationListener {
                 override fun onAnimationStart(animation: Animation?) {
                     // Do nothing
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    this@reveal.apply {
-                        val lp2 = layoutParams
-                        lp2.height = WRAP_CONTENT
-                        layoutParams = lp2
+                    val lp2 = layoutParams
+                    lp2.height = WRAP_CONTENT
+                    layoutParams = lp2
 
-                        clearAnimation()
-                        requestLayout()
-                        onComplete?.invoke()
-                    }
+                    clearAnimation()
+                    requestLayout()
+                    onComplete?.invoke()
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {
