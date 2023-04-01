@@ -58,10 +58,6 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
     protected var callback: IncomeFragment.IncomeFragmentCallback? = null
 
     protected var deductionType: DeductionType = DeductionType.NONE
-        set(value) {
-            field = value
-            debugLog("Setting income list item fragment deduction type: ${deductionType.fullDesc}")
-        }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -131,37 +127,34 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
 
     abstract class IncomeItemPagingDataAdapter<T : IncomeListItemType, ExpenseType : Any, HolderType : IncomeItemHolder<T, ExpenseType>>(
         diffCallback: DiffUtil.ItemCallback<T>
-    ) : ListItemFragment.BaseItemPagingDataAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
+    ) : BaseItemPagingDataAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
         override fun onBindViewHolder(
             holder: HolderType,
             position: Int,
             payloads: List<Any>
         ) {
-            if (payloads.isEmpty()) {
-                super.onBindViewHolder(holder, position, payloads)
-            } else {
+            if (payloads.isNotEmpty()) {
                 debugLog("onBindViewHolder")
                 holder.updateDeductionType()
-                holder.setExpandedFromPayloads(payloads)
             }
+
+            super.onBindViewHolder(holder, position, payloads)
         }
     }
 
     abstract class IncomeItemListAdapter<T : IncomeListItemType, ExpenseType : Any, HolderType : IncomeItemHolder<T, ExpenseType>>(
         diffCallback: DiffUtil.ItemCallback<T>
-    ) : ListItemFragment.BaseItemListAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
+    ) : BaseItemListAdapter<T, HolderType>(diffCallback), ExpandableAdapter {
         override fun onBindViewHolder(
             holder: HolderType,
             position: Int,
             payloads: List<Any>
         ) {
-            if (payloads.isEmpty()) {
-                super.onBindViewHolder(holder, position, payloads)
-            } else {
-                debugLog("onBindViewHolder")
+            if (payloads.isNotEmpty()) {
                 holder.updateDeductionType()
-                holder.setExpandedFromPayloads(payloads)
             }
+
+            super.onBindViewHolder(holder, position, payloads)
         }
 
         companion object {
@@ -172,7 +165,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
     }
 
     abstract class IncomeItemHolder<T : IncomeListItemType, ExpenseValues : Any>(itemView: View) :
-        ListItemFragment.BaseItemHolder<T>(itemView), View.OnClickListener {
+        BaseItemHolder<T>(itemView), View.OnClickListener {
 
         protected val deductionType: DeductionType
             get() = (parentFrag as? IncomeListItemFragment<*, *, *>?)?.deductionType
@@ -198,7 +191,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         protected abstract fun onNewExpenseValues()
 
         override fun bind(item: T, payloads: List<Any>?) {
-            if (this.item != item) {
+            if (!mIsInitialized || this.mItem != item) {
                 super.bind(item, payloads)
 
                 launchObservers()

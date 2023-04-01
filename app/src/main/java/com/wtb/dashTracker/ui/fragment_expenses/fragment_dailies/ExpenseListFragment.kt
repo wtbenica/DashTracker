@@ -140,7 +140,7 @@ class ExpenseListFragment : ExpenseListItemFragment() {
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog.newInstance(item.id).show(
+                        ExpenseDialog.newInstance(mItem.id).show(
                             childFragmentManager,
                             "edit_details"
                         )
@@ -149,29 +149,29 @@ class ExpenseListFragment : ExpenseListItemFragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.item.id)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.mItem.id)
                             .show(childFragmentManager, null)
                     }
                 }
             }
 
             override fun updateHeaderFields() {
-                if (this.item.isEmpty) {
-                    viewModel.delete(item.expense)
+                if (this.mItem.isEmpty) {
+                    viewModel.delete(mItem.expense)
                 }
 
-                binding.listItemTitle.text = this.item.expense.date.formatted
+                binding.listItemTitle.text = this.mItem.expense.date.formatted
                 binding.listItemTitle2.text =
-                    getStringOrElse(R.string.currency_fmt, "-", this.item.expense.amount)
-                binding.listItemSubtitle.text = this.item.purpose.name
+                    getStringOrElse(R.string.currency_fmt, "-", this.mItem.expense.amount)
+                binding.listItemSubtitle.text = this.mItem.purpose.name
                 binding.listItemPrice.text =
                     getStringOrElse(
                         R.string.gas_price_display,
                         "-",
-                        this.item.expense.pricePerGal
+                        this.mItem.expense.pricePerGal
                     )
                 binding.listItemGallons.text =
-                    getStringOrElse(R.string.float_fmt, "-", this.item.expense.gallons)
+                    getStringOrElse(R.string.float_fmt, "-", this.mItem.expense.gallons)
             }
 
             override fun updateDetailsFields() {}
@@ -194,7 +194,7 @@ class ExpenseListFragment : ExpenseListItemFragment() {
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog.newInstance(item.id).show(
+                        ExpenseDialog.newInstance(mItem.id).show(
                             childFragmentManager,
                             "edit_details"
                         )
@@ -203,17 +203,17 @@ class ExpenseListFragment : ExpenseListItemFragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.item.id)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.mItem.id)
                             .show(childFragmentManager, null)
                     }
                 }
             }
 
             override fun updateHeaderFields() {
-                binding.listItemTitle.text = this.item.expense.date.formatted
+                binding.listItemTitle.text = this.mItem.expense.date.formatted
                 binding.listItemTitle2.text =
-                    getStringOrElse(R.string.currency_fmt, "-", this.item.expense.amount)
-                binding.listItemSubtitle.text = this.item.purpose.name
+                    getStringOrElse(R.string.currency_fmt, "-", this.mItem.expense.amount)
+                binding.listItemSubtitle.text = this.mItem.purpose.name
             }
 
             override fun updateDetailsFields() {}

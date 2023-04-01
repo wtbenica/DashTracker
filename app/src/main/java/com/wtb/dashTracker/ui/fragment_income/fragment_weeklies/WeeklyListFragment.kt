@@ -149,7 +149,7 @@ class WeeklyListFragment :
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        WeeklyDialog.newInstance(this@WeeklyHolder.item.weekly.date)
+                        WeeklyDialog.newInstance(this@WeeklyHolder.mItem.weekly.date)
                             .show(childFragmentManager, "edit_weekly_details")
                     }
                 }
@@ -157,41 +157,41 @@ class WeeklyListFragment :
 
             // BaseItemHolder Overrides
             override fun updateHeaderFields() {
-                if (this.item.isEmpty) {
-                    viewModel.delete(item.weekly)
+                if (this.mItem.isEmpty) {
+                    viewModel.delete(mItem.weekly)
                 } else {
                     binding.listItemBtnEdit.isVisible = showBPAs
 
                     binding.listItemTitle.text =
                         getDateRange(
-                            start = this.item.weekly.date.minusDays(6),
-                            end = this.item.weekly.date
+                            start = this.mItem.weekly.date.minusDays(6),
+                            end = this.mItem.weekly.date
                         )
 
-                    binding.listItemAlert.setVisibleIfTrue(showBPAs && this.item.weekly.isIncomplete)
+                    binding.listItemAlert.setVisibleIfTrue(showBPAs && this.mItem.weekly.isIncomplete)
 
                     binding.listItemTitle2.text =
                         getCurrencyString(
-                            if (this.item.totalPay != 0f) {
-                                this.item.totalPay
+                            if (this.mItem.totalPay != 0f) {
+                                this.mItem.totalPay
                             } else {
                                 null
                             }
                         )
                     binding.listItemSubtitle.text =
-                        getString(R.string.week_number, this.item.weekly.date.weekOfYear)
+                        getString(R.string.week_number, this.mItem.weekly.date.weekOfYear)
                 }
             }
 
             override fun updateDetailsFields() {
-                val basePayAdjust = this.item.weekly.basePayAdjustment
+                val basePayAdjust = this.mItem.weekly.basePayAdjustment
                 detailsBinding.listItemWeeklyAdjust.text =
                     getCurrencyString(basePayAdjust)
-                detailsBinding.listItemRegularPay.text = getCurrencyString(this.item.regularPay)
+                detailsBinding.listItemRegularPay.text = getCurrencyString(this.mItem.regularPay)
                 detailsBinding.listItemWeeklyAdjust.text =
                     getCurrencyString(basePayAdjust)
                 detailsBinding.listItemWeeklyAdjust.setTextColor(
-                    if (this.item.weekly.basePayAdjustment == null) {
+                    if (this.mItem.weekly.basePayAdjustment == null) {
                         requireContext().getAttrColor(R.attr.colorAlert)
                     } else {
                         requireContext().getAttrColor(R.attr.colorTextPrimary)
@@ -200,20 +200,20 @@ class WeeklyListFragment :
 
                 detailsBinding.listItemWeeklyAdjust.setVisibleIfTrue(showBPAs)
                 detailsBinding.labelBasePayAdjust.setVisibleIfTrue(showBPAs)
-                detailsBinding.listItemCashTips.text = getCurrencyString(this.item.cashTips)
-                detailsBinding.listItemOtherPay.text = getCurrencyString(this.item.otherPay)
-                detailsBinding.listItemWeeklyHours.text = getFloatString(this.item.hours)
-                detailsBinding.listItemWeeklyHourly.text = getCurrencyString(this.item.hourly)
-                detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(this.item.avgDelivery)
-                detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(this.item.delPerHour)
+                detailsBinding.listItemCashTips.text = getCurrencyString(this.mItem.cashTips)
+                detailsBinding.listItemOtherPay.text = getCurrencyString(this.mItem.otherPay)
+                detailsBinding.listItemWeeklyHours.text = getFloatString(this.mItem.hours)
+                detailsBinding.listItemWeeklyHourly.text = getCurrencyString(this.mItem.hourly)
+                detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(this.mItem.avgDelivery)
+                detailsBinding.listItemWeeklyHourlyDels.text = getFloatString(this.mItem.delPerHour)
                 detailsBinding.listItemWeeklyMiles.text =
-                    getStringOrElse(R.string.odometer_fmt, "-", this.item.miles)
+                    getStringOrElse(R.string.odometer_fmt, "-", this.mItem.miles)
             }
 
             // IncomeItemHolder Overrides
             override suspend fun getExpenseValues(): Pair<Float, Float> =
                 viewModel.getExpensesAndCostPerMile(
-                    this@WeeklyHolder.item,
+                    this@WeeklyHolder.mItem,
                     deductionType
                 )
 
@@ -238,14 +238,14 @@ class WeeklyListFragment :
                 detailsBinding.listItemWeeklyCpm.text = formatCpm(cpm)
 
                 binding.listItemSubtitle2.text =
-                    getCurrencyString(this@WeeklyHolder.item.getNet(cpm))
+                    getCurrencyString(this@WeeklyHolder.mItem.getNet(cpm))
 
                 detailsBinding.listItemWeeklyHourly.text = getCurrencyString(
-                    this@WeeklyHolder.item.getHourly(cpm)
+                    this@WeeklyHolder.mItem.getHourly(cpm)
                 )
 
                 detailsBinding.listItemWeeklyAvgDel.text = getCurrencyString(
-                    this@WeeklyHolder.item.getAvgDelivery(cpm)
+                    this@WeeklyHolder.mItem.getAvgDelivery(cpm)
                 )
             }
         }

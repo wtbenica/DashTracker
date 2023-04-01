@@ -362,7 +362,6 @@ data class FullEntry(
         other as FullEntry
 
         if (entry != other.entry) return false
-        if (locations != other.locations) return false
 
         return true
     }

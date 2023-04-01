@@ -30,12 +30,8 @@ import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.*
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
-import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.FragItemListBinding
-import com.wtb.dashTracker.extensions.getDimen
-import com.wtb.dashTracker.extensions.setVisibleIfTrue
-import com.wtb.dashTracker.extensions.transitionBackgroundTo
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import com.wtb.dashTracker.ui.activity_main.debugLog
@@ -194,10 +190,10 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         abstract val bgCard: CardView
         abstract val parentFrag: ListItemFragment
 
-        protected lateinit var item: T
+        internal lateinit var mItem: T
         protected var mIsExpanded: Boolean = false
 
-        private var mIsInitialized = false
+        protected var mIsInitialized = false
         private var mPrevPayload: List<Any>? = null
 
         abstract fun updateHeaderFields()
@@ -209,12 +205,12 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
 
         open fun bind(item: T, payloads: List<Any>? = null) {
             val prev = if (mIsInitialized) {
-                this.item
+                this.mItem
             } else {
                 mIsInitialized = true
                 null
             }.also {
-                this.item = item
+                this.mItem = item
             }
 
             if (prev != item) {
@@ -223,8 +219,6 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                 updateDetailsFields()
             }
 
-            if (item is DashEntry || item is FullEntry)
-                debugLog("bind | ${if (item is DashEntry) item.date else if (item is FullEntry) item.entry.date else "bobo"}")
             setExpandedFromPayloads(emptyList())
         }
 
@@ -240,20 +234,20 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
 
                 adapter?.let {
                     previouslyExpandedItemPosition = it.mExpandedPosition
-                    if (bindingAdapterPosition == it.mExpandedPosition) {
+                    if (absoluteAdapterPosition == it.mExpandedPosition) {
                         parentFrag.onItemClosed()
 
                         it.mExpandedPosition = null
                     } else {
                         parentFrag.onItemExpanded()
 
-                        it.mExpandedPosition = bindingAdapterPosition
+                        it.mExpandedPosition = absoluteAdapterPosition
                         val scroller = object : LinearSmoothScroller(parentFrag.requireContext()) {
                             override fun getVerticalSnapPreference(): Int {
                                 return SNAP_TO_START
                             }
                         }.apply {
-                            targetPosition = bindingAdapterPosition
+                            targetPosition = absoluteAdapterPosition
                         }
 
                         parentFrag.recyclerView.layoutManager?.startSmoothScroll(scroller)
@@ -266,24 +260,22 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                         )
                     }
                     bindingAdapter?.notifyItemChanged(
-                        bindingAdapterPosition,
-                        Pair(PayloadField.EXPANDED, bindingAdapterPosition == it.mExpandedPosition)
+                        absoluteAdapterPosition,
+                        Pair(PayloadField.EXPANDED, absoluteAdapterPosition == it.mExpandedPosition)
                     )
                 }
             }
         }
 
         internal fun setExpandedFromPayloads(payloads: List<Any>) {
-            val isExpanded: Boolean? =
+            val isExpandedFromPayloads: Boolean? =
                 (payloads.lastOrNull { it is Pair<*, *> && it.first == PayloadField.EXPANDED } as Pair<*, *>?)?.second as Boolean?
 
-            val newExpansion = isExpanded
-                ?: ((bindingAdapter as? ExpandableAdapter)?.mExpandedPosition == bindingAdapterPosition)
+            val adapterExpandedPosition =
+                (bindingAdapter as? ExpandableAdapter)?.mExpandedPosition == absoluteAdapterPosition
 
-            debugLog("setExpandedFromPayloads | self: $mIsExpanded | adapter: $newExpansion | $payloads")
-
-            if (mIsExpanded != newExpansion) {
-                mIsExpanded = newExpansion
+            if (isExpandedFromPayloads != null || (mIsExpanded != adapterExpandedPosition)) {
+                mIsExpanded = isExpandedFromPayloads ?: adapterExpandedPosition
 
                 collapseArea.forEach { it.setVisibleIfTrue(mIsExpanded) }
 
