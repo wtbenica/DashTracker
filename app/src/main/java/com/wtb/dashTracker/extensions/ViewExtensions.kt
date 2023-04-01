@@ -89,7 +89,7 @@ fun View.reveal(onComplete: (() -> Unit)? = null) {
 
     val startHeight = height
     val endHeight = targetHeight
-    val heightDuration = endHeight - height
+    val heightDuration = endHeight - startHeight
 
     val expandAnimation =
         object : Animation() {
