@@ -57,7 +57,6 @@ interface ExpandableView {
 
     fun mExpand(onComplete: (() -> Unit)? = null) {
         if (this is View) {
-            expandedState = EXPANDING
             reveal {
                 expandedState = EXPANDED
                 onComplete?.invoke()
@@ -67,7 +66,6 @@ interface ExpandableView {
 
     fun mCollapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = null) {
         if (this is View) {
-            expandedState = COLLAPSING
             collapse(endVisibility) {
                 expandedState = COLLAPSED
                 onComplete?.invoke()
@@ -90,9 +88,17 @@ interface ExpandableView {
             doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
 
         when {
-            shouldDoAnyways -> onComplete?.invoke()
-            shouldExpand -> mExpand(onComplete)
-            shouldCollapse -> mCollapse(endVisibility, onComplete)
+            shouldDoAnyways -> {
+                onComplete?.invoke()
+            }
+            shouldExpand -> {
+                expandedState = EXPANDING
+                mExpand(onComplete)
+            }
+            shouldCollapse -> {
+                expandedState = COLLAPSING
+                mCollapse(endVisibility, onComplete)
+            }
         }
     }
 
