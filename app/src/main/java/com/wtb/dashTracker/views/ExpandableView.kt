@@ -26,12 +26,10 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import com.google.android.material.appbar.AppBarLayout
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.reveal
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.*
 
@@ -52,10 +50,10 @@ interface ExpandableView {
         get() = expandedState == COLLAPSED
 
     val needsExpansion: Boolean
-        get() = this is View && height == 0
+        get() = this is View && height == 0 && expandedState != EXPANDING
 
     val needsCollapsion: Boolean
-        get() = this is View && height != 0
+        get() = this is View && height != 0 && expandedState != COLLAPSING
 
     fun mExpand(onComplete: (() -> Unit)? = null) {
         if (this is View) {
@@ -84,22 +82,12 @@ interface ExpandableView {
         addedInfo: Boolean? = null,
         onComplete: (() -> Unit)? = null
     ) {
-        if (this is ExpandableTextView) {
-            debugLog(
-                "Reveal if true $text | show? $shouldShow | View is ${expandedState?.name}. Is it visible? $isVisible. Height? $height. LpHeight? ${layoutParams.height}"
-            )
-        }
-
         val shouldExpand = shouldShow && needsExpansion
 
         val shouldCollapse = !shouldShow && needsCollapsion
 
         val shouldDoAnyways =
             doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
-
-        if (this is ExpandableTextView) {
-            debugLog("Reveal if true  $text | expand? $shouldExpand | collapse? $shouldCollapse | do? $shouldDoAnyways")
-        }
 
         when {
             shouldDoAnyways -> onComplete?.invoke()
