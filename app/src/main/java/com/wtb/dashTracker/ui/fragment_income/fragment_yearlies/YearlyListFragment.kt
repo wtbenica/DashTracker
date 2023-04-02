@@ -124,6 +124,9 @@ class YearlyListFragment :
             private val mileageGridBinding: YearlyMileageGridBinding =
                 YearlyMileageGridBinding.bind(itemView)
 
+            private val hasMultipleStdDeductions =
+                deductionType == DeductionType.IRS_STD && expenseValues.size > 1
+
             // BaseItemHolder Overrides
             override fun updateHeaderFields() {
                 binding.listItemTitle.text = this.mItem.year.toString()
@@ -142,7 +145,40 @@ class YearlyListFragment :
             }
 
             // IncomeItemHolder Overrides
-            override fun onNewExpenseValues() {
+            override fun updateExpenseFieldVisibilities() {
+                binding.listItemSubtitle2Label.fade(fadeIn = shouldShow)
+                binding.listItemSubtitle2.fade(fadeIn = shouldShow)
+
+                detailsBinding.apply {
+                    listItemYearlyExpensesHeader.showOrHide(shouldShow, mIsExpanded)
+                    listItemYearlyExpenseDetailsButtonFrame.apply {
+                        val target = resources.getDimension(R.dimen.min_touch_target).toInt()
+                        revealToHeightIfTrue(shouldShow, target, target)
+                    }
+
+                    listItemYearlyExpenseDetailsButton.showOrHide(shouldShow, mIsExpanded)
+                    listItemYearlyExpenses.showOrHide(shouldShow, mIsExpanded)
+
+                    mileageBreakdownCard.showOrHide(
+                        shouldShow && hasMultipleStdDeductions, mIsExpanded, GONE
+                    )
+                    listItemYearlyCpmHeader.showOrHide(
+                        shouldShow && !hasMultipleStdDeductions, mIsExpanded
+                    )
+                    listItemYearlyCpmDeductionType.showOrHide(
+                        shouldShow && !hasMultipleStdDeductions, mIsExpanded
+                    )
+                    listItemYearlyCpm.showOrHide(
+                        shouldShow && !hasMultipleStdDeductions, mIsExpanded
+                    )
+                }
+
+            }
+
+            override fun updateExpenseFieldValues() {
+                /**
+                 * Update mileage breakdown table
+                 */
                 fun updateMileageBreakdownTable(expenseValues: Map<Int, Float>?) {
                     fun getMileageBreakdownData(cpm: Map<Int, Float>?): MutableMap<Int, Map<MileageBreakdownKey, Float?>> {
                         val res = mutableMapOf<Int, Map<MileageBreakdownKey, Float?>>()
@@ -199,42 +235,9 @@ class YearlyListFragment :
                     }
                 }
 
-                fun updateValues(
-                    show: Boolean = true,
-                    hasMultipleStdDeductions: Boolean = false
-                ) {
-                    binding.listItemSubtitle2Label.fade(fadeIn = show)
-                    binding.listItemSubtitle2.fade(fadeIn = show)
-
-                    detailsBinding.apply {
-                        listItemYearlyExpensesHeader.showOrHide(show, mIsExpanded)
-                        listItemYearlyExpenseDetailsButtonFrame.apply {
-                            val target = resources.getDimension(R.dimen.min_touch_target).toInt()
-                            revealToHeightIfTrue(show, target, target)
-                        }
-
-                        listItemYearlyExpenseDetailsButton.showOrHide(show, mIsExpanded)
-                        listItemYearlyExpenses.showOrHide(show, mIsExpanded)
-
-                        mileageBreakdownCard.showOrHide(
-                            show && hasMultipleStdDeductions, mIsExpanded, GONE
-                        )
-                        listItemYearlyCpmHeader.showOrHide(
-                            show && !hasMultipleStdDeductions, mIsExpanded
-                        )
-                        listItemYearlyCpmDeductionType.showOrHide(
-                            show && !hasMultipleStdDeductions, mIsExpanded
-                        )
-                        listItemYearlyCpm.showOrHide(
-                            show && !hasMultipleStdDeductions, mIsExpanded
-                        )
-                    }
-                }
-
-                fun getCalculatedExpenses(costPerMile: Float): Float =
-                    mItem.mileage * costPerMile
-
-                // TODO: Refactor.
+                /**
+                 * Use IRS Std Deduction to calculate mileage expenses for the year
+                 */
                 fun getStandardDeductionExpense(): Float {
                     val table = viewModel.standardMileageDeductionTable()
                     var res = 0f
@@ -245,10 +248,13 @@ class YearlyListFragment :
                     return res
                 }
 
-                fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f) =
+                /**
+                 * Calculate yearly expenses using the appropriate method according to [deductionType]
+                 */
+                fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f): Float =
                     when (deductionType) {
                         DeductionType.IRS_STD -> getStandardDeductionExpense()
-                        else -> getCalculatedExpenses(costPerMile)
+                        else -> mItem.mileage * costPerMile
                     }
 
                 fun getNet(cpm: Float, deductionType: DeductionType): Float =
@@ -256,56 +262,36 @@ class YearlyListFragment :
 
                 fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / mItem.hours
 
-                detailsBinding.mileageBreakdownCard.visibility = GONE
+                if (hasMultipleStdDeductions) {
+                    updateMileageBreakdownTable(expenseValues)
+                }
 
-                when (deductionType) {
-                    DeductionType.NONE -> updateValues(false)
-                    DeductionType.IRS_STD -> {
-                        val hasMultipleStdDeductions = expenseValues.size > 1
+                if (shouldShow) {
+                    detailsBinding.listItemYearlyCpmDeductionType.text =
+                        deductionType.fullDesc
 
-                        updateValues(
-                            show = true,
-                            hasMultipleStdDeductions = hasMultipleStdDeductions
-                        )
-
-                        if (hasMultipleStdDeductions) {
-                            updateMileageBreakdownTable(expenseValues)
+                    val costPerMile: Float =
+                        if (deductionType == DeductionType.IRS_STD) {
+                            0f
                         } else {
-                            detailsBinding.listItemYearlyCpmDeductionType.text =
-                                deductionType.fullDesc
-
-                            detailsBinding.listItemYearlyCpm.text =
-                                getCpmIrsStdString(expenseValues)
+                            expenseValues.get(12) ?: 0f
                         }
 
-                        detailsBinding.listItemYearlyExpenses.text =
-                            getCurrencyString(getExpenses(deductionType))
+                    detailsBinding.listItemYearlyCpm.text =
+                        if (deductionType == DeductionType.IRS_STD) {
+                            getCpmIrsStdString(expenseValues)
+                        } else {
+                            formatCpm(costPerMile)
+                        }
 
-                        binding.listItemSubtitle2.text =
-                            getCurrencyString(getNet(0f, deductionType))
+                    detailsBinding.listItemYearlyExpenses.text =
+                        getCurrencyString(getExpenses(deductionType, costPerMile))
 
-                        detailsBinding.listItemYearlyHourly.text =
-                            getCurrencyString(getHourly(0f))
-                    }
-                    else -> {
-                        updateValues()
+                    binding.listItemSubtitle2.text =
+                        getCurrencyString(getNet(costPerMile, deductionType))
 
-                        val costPerMile: Float = expenseValues.get(12) ?: 0f
-
-                        detailsBinding.listItemYearlyCpmDeductionType.text =
-                            deductionType.fullDesc
-
-                        detailsBinding.listItemYearlyCpm.text = formatCpm(costPerMile)
-
-                        detailsBinding.listItemYearlyExpenses.text =
-                            getCurrencyString(getExpenses(deductionType, costPerMile))
-
-                        binding.listItemSubtitle2.text =
-                            getCurrencyString(getNet(costPerMile, deductionType))
-
-                        detailsBinding.listItemYearlyHourly.text =
-                            getCurrencyString(getHourly(costPerMile))
-                    }
+                    detailsBinding.listItemYearlyHourly.text =
+                        getCurrencyString(getHourly(costPerMile))
                 }
             }
 

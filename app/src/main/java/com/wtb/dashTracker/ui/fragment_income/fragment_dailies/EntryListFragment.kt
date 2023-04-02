@@ -36,7 +36,6 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.repository.DeductionType.NONE
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
@@ -272,16 +271,17 @@ class EntryListFragment :
             override suspend fun getExpenseValues(): Float =
                 viewModel.getCostPerMile(mItem.entry.date, deductionType)
 
-            override fun onNewExpenseValues() {
-                val shouldShow = deductionType != NONE
+            override fun updateExpenseFieldVisibilities() {
                 binding.listItemSubtitle2Label.fade(shouldShow)
                 binding.listItemSubtitle2.fade(shouldShow)
-                detailsBinding.listItemEntryCpmHeader.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryCpmDeductionType.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryCpm.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryExpensesHeader.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryExpenses.revealIfTrue(shouldShow)
+                detailsBinding.listItemEntryCpmHeader.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemEntryCpmDeductionType.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemEntryCpm.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemEntryExpensesHeader.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemEntryExpenses.showOrHide(shouldShow, mIsExpanded)
+            }
 
+            override fun updateExpenseFieldValues() {
                 detailsBinding.listItemEntryCpmDeductionType.apply {
                     text = deductionType.fullDesc
                 }

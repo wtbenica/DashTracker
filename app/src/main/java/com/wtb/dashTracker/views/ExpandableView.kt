@@ -26,36 +26,36 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.google.android.material.appbar.AppBarLayout
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.reveal
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.*
 
-// TODO: There's got to be a better way of doing this
+// TODO: There's got to be a better way of doing this (even though it's a lot better now)
 interface ExpandableView {
-    val ticketId: Int
-
     var expandedState: ExpandedState?
 
     /**
-     * Prevents calling an onComplete prematurely
+     * Prevents calling an onComplete prematurely. expandedState == EXPANDED
      */
     val viewIsExpanded: Boolean
         get() = expandedState == EXPANDED
 
     /**
-     * Prevents calling an onComplete prematurely
+     * Prevents calling an onComplete prematurely. expandedState = COLLAPSED
      */
     val viewIsCollapsed: Boolean
         get() = expandedState == COLLAPSED
 
-    val isCollapsedOrCollapsing: Boolean
-        get() = expandedState == COLLAPSING || expandedState == COLLAPSED || expandedState == null
+    val needsExpansion: Boolean
+        get() = this is View && height == 0
 
-    val isExpandedOrExpanding: Boolean
-        get() = expandedState == EXPANDING || expandedState == EXPANDED || expandedState == null
+    val needsCollapsion: Boolean
+        get() = this is View && height != 0
 
     fun mExpand(onComplete: (() -> Unit)? = null) {
         if (this is View) {
@@ -81,19 +81,30 @@ interface ExpandableView {
         shouldShow: Boolean = true,
         doAnyways: Boolean = false,
         endVisibility: Int = INVISIBLE,
+        addedInfo: Boolean? = null,
         onComplete: (() -> Unit)? = null
     ) {
-        val shouldExpand = shouldShow // && isCollapsedOrCollapsing
+        if (this is ExpandableTextView) {
+            debugLog(
+                "Reveal if true $text | show? $shouldShow | View is ${expandedState?.name}. Is it visible? $isVisible. Height? $height. LpHeight? ${layoutParams.height}"
+            )
+        }
 
-        val shouldCollapse = !shouldShow // && isExpandedOrExpanding
+        val shouldExpand = shouldShow && needsExpansion
+
+        val shouldCollapse = !shouldShow && needsCollapsion
 
         val shouldDoAnyways =
             doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
 
+        if (this is ExpandableTextView) {
+            debugLog("Reveal if true  $text | expand? $shouldExpand | collapse? $shouldCollapse | do? $shouldDoAnyways")
+        }
+
         when {
+            shouldDoAnyways -> onComplete?.invoke()
             shouldExpand -> mExpand(onComplete)
             shouldCollapse -> mCollapse(endVisibility, onComplete)
-            shouldDoAnyways -> onComplete?.invoke()
         }
     }
 
@@ -114,13 +125,7 @@ open class ExpandableLinearLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableConstraintLayout @JvmOverloads constructor(
@@ -129,13 +134,7 @@ class ExpandableConstraintLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr, defStyleRes), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableGridLayout @JvmOverloads constructor(
@@ -144,13 +143,7 @@ class ExpandableGridLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : GridLayout(context, attrs, defStyleAttr, defStyleRes), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableAppBarLayout @JvmOverloads constructor(
@@ -158,26 +151,14 @@ class ExpandableAppBarLayout @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : AppBarLayout(context, attrs, defStyleAttr), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableTableLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
 ) : TableLayout(context, attrs), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableTextView @JvmOverloads constructor(
@@ -185,16 +166,7 @@ class ExpandableTextView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatTextView(context, attrs, defStyleAttr), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-        set(value) {
-            field = value
-        }
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableButton @JvmOverloads constructor(
@@ -202,13 +174,7 @@ class ExpandableButton @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatButton(context, attrs, defStyleAttr), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableCardView @JvmOverloads constructor(
@@ -216,13 +182,7 @@ class ExpandableCardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.cardViewStyle
 ) : CardView(context, attrs, defStyleAttr), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableImageView @JvmOverloads constructor(
@@ -230,13 +190,7 @@ class ExpandableImageView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatImageView(context, attrs, defStyleAttr), ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 
 class ExpandableImageButton @JvmOverloads constructor(
@@ -245,12 +199,6 @@ class ExpandableImageButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatImageButton(context, attrs, defStyleAttr),
     ExpandableView {
-    override val ticketId: Int = ticketNumber++
-
     override var expandedState: ExpandedState? = null
-
-    companion object {
-        private var ticketNumber: Int = 1
-    }
 }
 

@@ -36,7 +36,6 @@ import com.wtb.dashTracker.extensions.getCpmIrsStdString
 import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.fragment_list_item_base.ExpandableAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
@@ -134,7 +133,6 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             payloads: List<Any>
         ) {
             if (payloads.isNotEmpty()) {
-                debugLog("onBindViewHolder")
                 holder.updateDeductionType()
             }
 
@@ -171,24 +169,30 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             get() = (parentFrag as? IncomeListItemFragment<*, *, *>?)?.deductionType
                 ?: DeductionType.NONE
 
+        protected val shouldShow: Boolean
+            get() = deductionType != DeductionType.NONE
+
         fun updateDeductionType() {
             launchObservers()
-            onNewExpenseValues()
+
+            updateExpenseFieldVisibilities()
+            updateExpenseFieldValues()
         }
 
         private fun updateExpenseValues(values: ExpenseValues) {
             expenseValues = values
 
-            (parentFrag.requireContext() as MainActivity).runOnUiThread {
-                onNewExpenseValues()
-            }
+            updateExpenseFieldVisibilities()
+            updateExpenseFieldValues()
         }
 
         protected abstract var expenseValues: ExpenseValues
 
         protected abstract suspend fun getExpenseValues(): ExpenseValues
 
-        protected abstract fun onNewExpenseValues()
+        protected abstract fun updateExpenseFieldValues()
+
+        protected abstract fun updateExpenseFieldVisibilities()
 
         override fun bind(item: T, payloads: List<Any>?) {
             if (!mIsInitialized || this.mItem != item) {
@@ -196,6 +200,9 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
 
                 launchObservers()
             }
+
+            updateExpenseFieldVisibilities()
+            updateExpenseFieldValues()
         }
 
         private fun launchObservers() {
@@ -203,7 +210,9 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
                 withContext(Dispatchers.Default) {
                     getExpenseValues()
                 }.let { ev: ExpenseValues ->
-                    updateExpenseValues(ev)
+                    (parentFrag.requireContext() as MainActivity).runOnUiThread {
+                        updateExpenseValues(ev)
+                    }
                 }
             }
         }

@@ -34,7 +34,6 @@ import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -119,7 +118,6 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             if (payloads.isEmpty()) {
                 super.onBindViewHolder(holder, position, payloads)
             } else {
-                debugLog("onBindViewHolder | ListItemFragment")
                 holder.setExpandedFromPayloads(payloads)
             }
         }
@@ -164,7 +162,6 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             if (payloads.isEmpty()) {
                 super.onBindViewHolder(holder, position, payloads)
             } else {
-                debugLog("onBindViewHolder | ListItemFragment")
                 holder.setExpandedFromPayloads(payloads)
             }
         }
@@ -204,18 +201,11 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         open fun bind(item: T, payloads: List<Any>? = null) {
-            val prev = if (mIsInitialized) {
-                this.mItem
-            } else {
+            if (!mIsInitialized || this.mItem != item) {
                 mIsInitialized = true
-                null
-            }.also {
                 this.mItem = item
-            }
 
-            if (prev != item) {
                 updateHeaderFields()
-
                 updateDetailsFields()
             }
 

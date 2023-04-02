@@ -217,7 +217,7 @@ class WeeklyListFragment :
                     deductionType
                 )
 
-            override fun onNewExpenseValues() {
+            override fun updateExpenseFieldVisibilities() {
                 val shouldShow = deductionType != DeductionType.NONE
                 binding.listItemSubtitle2Label.fade(shouldShow)
                 binding.listItemSubtitle2.fade(shouldShow)
@@ -226,7 +226,9 @@ class WeeklyListFragment :
                 detailsBinding.listItemWeeklyCpm.showOrHide(shouldShow, mIsExpanded)
                 detailsBinding.listItemWeeklyExpensesHeader.showOrHide(shouldShow, mIsExpanded)
                 detailsBinding.listItemWeeklyExpenses.showOrHide(shouldShow, mIsExpanded)
+            }
 
+            override fun updateExpenseFieldValues() {
                 detailsBinding.listItemWeeklyCpmDeductionType.text =
                     deductionType.fullDesc
 
