@@ -24,6 +24,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -273,7 +274,7 @@ fun SecondaryCard(
 ) {
     OutlinedCard(
         modifier = modifier.fillMaxWidth(),
-        shape = cardShape,
+        shape = cardShape.copy(CornerSize(marginNarrow())),
         colors = cardColors(
             containerColor = MaterialTheme.colorScheme.inverseSurface,
             contentColor = MaterialTheme.colorScheme.onPrimary

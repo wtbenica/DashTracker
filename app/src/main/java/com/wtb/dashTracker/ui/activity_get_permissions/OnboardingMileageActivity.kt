@@ -107,6 +107,7 @@ class OnboardingMileageActivity : ComponentActivity() {
                 && !sharedPrefs.getBoolean(OPT_OUT_NOTIFICATION, false))
         val missingBatteryOptimization = (!hasBatteryPermission()
                 && !sharedPrefs.getBoolean(OPT_OUT_BATTERY_OPTIMIZER, false))
+
         val missingPermissions = mutableListOf(
             showIntroScreen,
             missingLocation,

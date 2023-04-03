@@ -291,7 +291,7 @@ fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = nu
                     height = (startHeight + heightDuration * interpolatedTime).toInt()
                 }
 
-                alpha = interpolatedTime
+                alpha = 1 - interpolatedTime
 
                 requestLayout()
             }

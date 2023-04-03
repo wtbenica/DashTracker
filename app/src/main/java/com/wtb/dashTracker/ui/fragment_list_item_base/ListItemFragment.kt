@@ -228,13 +228,40 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                         parentFrag.onItemClosed()
 
                         it.mExpandedPosition = null
+
+                        previouslyExpandedItemPosition?.let { pos ->
+                            bindingAdapter?.notifyItemChanged(
+                                pos,
+                                Pair(PayloadField.EXPANDED, false)
+                            )
+                        }
                     } else {
                         parentFrag.onItemExpanded()
 
-                        it.mExpandedPosition = absoluteAdapterPosition
                         val scroller = object : LinearSmoothScroller(parentFrag.requireContext()) {
                             override fun getVerticalSnapPreference(): Int {
                                 return SNAP_TO_START
+                            }
+
+                            override fun onStart() {
+                                super.onStart()
+
+                                previouslyExpandedItemPosition?.let { pos ->
+                                    bindingAdapter?.notifyItemChanged(
+                                        pos, Pair(PayloadField.EXPANDED, false)
+                                    )
+                                }
+                            }
+
+                            override fun onStop() {
+                                super.onStop()
+
+                                it.mExpandedPosition = absoluteAdapterPosition
+
+                                bindingAdapter?.notifyItemChanged(
+                                    absoluteAdapterPosition,
+                                    Pair(PayloadField.EXPANDED, true)
+                                )
                             }
                         }.apply {
                             targetPosition = absoluteAdapterPosition
@@ -242,17 +269,6 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
 
                         parentFrag.recyclerView.layoutManager?.startSmoothScroll(scroller)
                     }
-
-                    previouslyExpandedItemPosition?.let { pos ->
-                        bindingAdapter?.notifyItemChanged(
-                            pos,
-                            Pair(PayloadField.EXPANDED, (pos == it.mExpandedPosition))
-                        )
-                    }
-                    bindingAdapter?.notifyItemChanged(
-                        absoluteAdapterPosition,
-                        Pair(PayloadField.EXPANDED, absoluteAdapterPosition == it.mExpandedPosition)
-                    )
                 }
             }
         }

@@ -175,20 +175,25 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         fun updateDeductionType() {
             launchObservers()
 
-            updateExpenseFieldVisibilities()
-            updateExpenseFieldValues()
+            updateExpenseFields()
         }
 
         private fun updateExpenseValues(values: ExpenseValues) {
             expenseValues = values
 
-            updateExpenseFieldVisibilities()
-            updateExpenseFieldValues()
+            updateExpenseFields()
         }
 
         protected abstract var expenseValues: ExpenseValues
 
         protected abstract suspend fun getExpenseValues(): ExpenseValues
+
+        private fun updateExpenseFields() {
+            if (deductionType != DeductionType.NONE) {
+                updateExpenseFieldValues()
+            }
+            updateExpenseFieldVisibilities()
+        }
 
         protected abstract fun updateExpenseFieldValues()
 
@@ -201,8 +206,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
                 launchObservers()
             }
 
-            updateExpenseFieldVisibilities()
-            updateExpenseFieldValues()
+            updateExpenseFields()
         }
 
         private fun launchObservers() {

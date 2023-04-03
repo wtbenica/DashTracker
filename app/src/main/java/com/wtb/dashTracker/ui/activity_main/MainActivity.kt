@@ -107,6 +107,7 @@ import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.dashTracker.views.ActiveDashBar.ActiveDashBarCallback
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState
 import com.wtb.dashTracker.views.DTFloatingActionButton
+import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.EXPANDED
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -127,7 +128,7 @@ private const val APP = "GT_"
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
 
-private var IS_TESTING = false
+private var IS_TESTING = true
 
 private const val DEBUGGING = true
 internal fun Any.debugLog(message: String, condition: Boolean = true) {
@@ -456,6 +457,8 @@ class MainActivity : AuthenticatedActivity(),
                 adb.initialize(this@MainActivity)
 
                 appBarLayout.apply {
+                    expandedState = EXPANDED
+
                     addOnOffsetChangedListener { appBar: AppBarLayout, offset: Int ->
                         val appBarIsHidden = appBar.height + offset == 0
                         val forceShowBottomAppBar =
@@ -480,15 +483,10 @@ class MainActivity : AuthenticatedActivity(),
                             }
                         }
                     }
-//
-//                    viewIsExpanded = true
-//                    viewIsCollapsed = false
+
+
+                    summaryBar.root.expandedState = EXPANDED
                 }
-//
-//                summaryBar.root.apply {
-//                    viewIsExpanded = true
-//                    viewIsCollapsed = false
-//                }
             }
         }
 
