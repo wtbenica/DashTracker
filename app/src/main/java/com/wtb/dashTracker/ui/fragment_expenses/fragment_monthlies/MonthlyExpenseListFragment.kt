@@ -16,11 +16,10 @@
 
 package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthlies
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
@@ -45,16 +44,18 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.ListItemDetailsTableBinding
 import com.wtb.dashTracker.databinding.ListItemHolderBinding
-import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.setVisibleIfTrue
+import com.wtb.dashTracker.extensions.showOrHide
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -65,7 +66,6 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
     private val viewModel: MonthlyExpenseListViewModel by viewModels()
     private var purposes: List<ExpensePurpose>? = null
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

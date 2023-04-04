@@ -224,7 +224,6 @@ class WeeklyListFragment :
                 )
 
             override fun updateExpenseFieldVisibilities() {
-                val shouldShow = deductionType != DeductionType.NONE
                 binding.listItemSubtitle2Label.fade(shouldShow)
                 binding.listItemSubtitle2.fade(shouldShow)
                 detailsBinding.listItemWeeklyCpmHeader.showOrHide(shouldShow)

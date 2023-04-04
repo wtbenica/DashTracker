@@ -167,7 +167,7 @@ class MainActivity : AuthenticatedActivity(),
     private var showingWelcomeScreen = false
 
     @IdRes
-    private var currDestination: Int = R.id.navigation_insights
+    private var currDestination: Int = R.id.navigation_income
 
     /**
      * Flag that prevents [EndDashDialog] from being shown if the active entry was deleted, as
@@ -932,26 +932,17 @@ class MainActivity : AuthenticatedActivity(),
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
-        private var serviceStateChanged = false
+
         internal var serviceState: ADBState = ADBState.INACTIVE
             set(value) {
-                val prev = if (!serviceStateChanged) {
-                    serviceStateChanged = true
-                    null
-                } else {
-                    field
-                }
-
                 field = value
 
-                if (prev == null || prev != field) {
-                    revealAppBarLayout(
-                        shouldShow = currDestination == R.id.navigation_income || field != ADBState.INACTIVE,
-                        lockAppBar = field == ADBState.TRACKING_COLLAPSED || field == ADBState.TRACKING_DISABLED
-                    ) {
-                        updateToolbarAndBottomPadding(slideAppBarDown = false)
-                        updateUi()
-                    }
+                revealAppBarLayout(
+                    shouldShow = currDestination == R.id.navigation_income || field != ADBState.INACTIVE,
+                    lockAppBar = field == ADBState.TRACKING_COLLAPSED || field == ADBState.TRACKING_DISABLED
+                ) {
+                    updateToolbarAndBottomPadding(slideAppBarDown = false)
+                    updateUi()
                 }
             }
 
@@ -972,8 +963,10 @@ class MainActivity : AuthenticatedActivity(),
          */
         internal fun updateUi() {
             fun updateTopAppBarVisibility() {
+                debugLog("updateTopAppBarVisibility")
                 when (serviceState) {
                     ADBState.INACTIVE -> {
+                        debugLog("about to show or hide summary bar | ${currDestination == R.id.navigation_income}")
                         binding.summaryBar.root.showOrHide(
                             shouldShow = currDestination == R.id.navigation_income
                         ) {
@@ -987,11 +980,11 @@ class MainActivity : AuthenticatedActivity(),
                     ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
                     ADBState.TRACKING_FULL -> {
-                        binding.summaryBar.root.showOrHide(
-                            shouldShow = currDestination == R.id.navigation_income
+                        binding.appBarLayout.showOrHide(
+                            shouldShow = true
                         ) {
-                            binding.appBarLayout.showOrHide(
-                                shouldShow = true
+                            binding.summaryBar.root.showOrHide(
+                                shouldShow = currDestination == R.id.navigation_income
                             ) {
                                 if (currDestination == R.id.navigation_income) {
                                     binding.adb.transitionBackgroundTo(R.attr.colorAppBarBg)

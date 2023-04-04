@@ -259,51 +259,106 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                 }
             }
 
+//            if (shouldExpand != mIsExpanded) {
+//                collapseArea.toList().forEachIndexed { index, (it, target) ->
+//                    it.showOrHide(
+//                        shouldExpand,
+//                        animate = true,
+//                        targetSize = target,
+//                        onComplete = if (shouldExpand && index == collapseArea.size - 1) {
+//                            fun() {
+//                                val scroller =
+//                                    object : LinearSmoothScroller(parentFrag.requireContext()) {
+//
+//                                        override fun getVerticalSnapPreference(): Int {
+//                                            return SNAP_TO_START
+//                                        }
+//
+//                                        override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
+//                                            return super.calculateSpeedPerPixel(displayMetrics) * 3
+//                                        }
+//
+//                                        override fun onStart() {
+//                                            super.onStart()
+//                                            this@BaseItemHolder.debugLog("scroller onStart | target: $targetPosition")
+//                                        }
+//
+//                                        override fun onStop() {
+//                                            super.onStop()
+//
+//                                            this@BaseItemHolder.debugLog("scroller onStop")
+//                                            onComplete?.invoke()
+//                                        }
+//                                    }.apply {
+//                                        targetPosition = this@BaseItemHolder.absoluteAdapterPosition
+//                                    }
+//
+//                                parentFrag.recyclerView.layoutManager?.startSmoothScroll(scroller)
+//
+//                                updateBackground()
+//                                mIsExpanded = true
+//                            }
+//                        } else {
+//                            fun() {
+//                                updateBackground()
+//                                mIsExpanded = false
+//                            }
+//                        })
+//                }
+//            }
+
             if (shouldExpand != mIsExpanded) {
-                collapseArea.toList().forEachIndexed { index, (it, target) ->
-                    it.showOrHide(
-                        shouldExpand,
-                        animate = false,
-                        targetSize = target,
-                        onComplete = if (shouldExpand && index == collapseArea.size - 1) {
-                            fun() {
-                                val scroller =
-                                    object : LinearSmoothScroller(parentFrag.requireContext()) {
+                if (shouldExpand) {
+                    val scroller =
+                        object : LinearSmoothScroller(parentFrag.requireContext()) {
 
-                                        override fun getVerticalSnapPreference(): Int {
-                                            return SNAP_TO_START
-                                        }
-
-                                        override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
-                                            return super.calculateSpeedPerPixel(displayMetrics)
-                                        }
-
-                                        override fun onStart() {
-                                            super.onStart()
-                                            debugLog("scroller onStart | target: $targetPosition")
-                                        }
-
-                                        override fun onStop() {
-                                            super.onStop()
-
-                                            debugLog("scroller onStop")
-                                            onComplete?.invoke()
-                                        }
-                                    }.apply {
-                                        targetPosition = this@BaseItemHolder.absoluteAdapterPosition
-                                    }
-
-                                parentFrag.recyclerView.layoutManager?.startSmoothScroll(scroller)
-
-                                updateBackground()
-                                mIsExpanded = true
+                            override fun getVerticalSnapPreference(): Int {
+                                return SNAP_TO_START
                             }
-                        } else {
-                            fun() {
-                                updateBackground()
-                                mIsExpanded = false
+
+                            override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
+                                return super.calculateSpeedPerPixel(displayMetrics) * 3
                             }
-                        })
+
+                            override fun onStart() {
+                                super.onStart()
+                                this@BaseItemHolder.debugLog("scroller onStart | target: $targetPosition")
+                            }
+
+                            override fun onStop() {
+                                super.onStop()
+
+                                this@BaseItemHolder.debugLog("scroller onStop")
+                                collapseArea.toList().forEachIndexed { index, (it, target) ->
+                                    it.showOrHide(
+                                        true,
+                                        animate = true,
+                                        targetSize = target
+                                    )
+                                }
+
+                                onComplete?.invoke()
+                            }
+                        }.apply {
+                            targetPosition = this@BaseItemHolder.absoluteAdapterPosition
+                        }
+
+                    parentFrag.recyclerView.layoutManager?.startSmoothScroll(scroller)
+
+                    updateBackground()
+                    mIsExpanded = true
+                } else {
+                    updateBackground()
+
+                    collapseArea.toList().forEachIndexed { index, (it, target) ->
+                        it.showOrHide(
+                            false,
+                            animate = false,
+                            targetSize = target
+                        )
+                    }
+
+                    mIsExpanded = false
                 }
             }
         }

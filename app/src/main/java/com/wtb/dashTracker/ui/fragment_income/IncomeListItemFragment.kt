@@ -32,18 +32,24 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.wtb.dashTracker.BuildConfig
+import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.extensions.getCpmIrsStdString
 import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
+import com.wtb.dashTracker.ui.fragment_income.fragment_weeklies.WeeklyListFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ExpandableAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * Contains controls for income fragment options menu
@@ -129,6 +135,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             payloads: List<Any>
         ) {
             if (payloads.isNotEmpty()) {
+                debugLog("onBindViewHolder | $payloads | updateDeductionType", this is WeeklyListFragment.FullWeeklyAdapter)
                 holder.updateDeductionType()
             }
 
@@ -158,7 +165,9 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         }
     }
 
-    abstract class IncomeItemHolder<T : IncomeListItemType, ExpenseValues : Any>(itemView: View) :
+    abstract class IncomeItemHolder<T : IncomeListItemType, ExpenseValues : Any>(
+        itemView: View
+    ) :
         BaseItemHolder<T>(itemView), View.OnClickListener {
 
         protected abstract val holderDeductionTypeFlow: StateFlow<DeductionType>
@@ -212,10 +221,15 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         override fun bind(item: T, payloads: List<Any>?) {
             if (!mIsInitialized || this.mItem != item) {
                 super.bind(item, payloads)
-
+                if (item is FullWeekly) {
+                    debugLog("bind | first time | ${item.weekly.date}")
+                }
                 launchObservers()
             }
 
+            if (item is FullWeekly) {
+                debugLog("bind | ${item.weekly.date} | updateExpenseFields")
+            }
             updateExpenseFields()
         }
 
@@ -225,13 +239,11 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
          */
         private fun launchObservers() {
             CoroutineScope(Dispatchers.Default).launch {
-                withContext(Dispatchers.Default) {
-                    holderDeductionTypeFlow.collectLatest { dt ->
-                        deductionType = dt
-                        getExpenseValues(dt).let { ev ->
-                            (parentFrag.requireContext() as MainActivity).runOnUiThread {
-                                updateExpenseValues(ev)
-                            }
+                holderDeductionTypeFlow.collectLatest { dt ->
+                    deductionType = dt
+                    getExpenseValues(dt).let { ev ->
+                        (parentFrag.requireContext() as MainActivity).runOnUiThread {
+                            updateExpenseValues(ev)
                         }
                     }
                 }

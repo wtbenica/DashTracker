@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_income.fragment_yearlies
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
@@ -49,12 +48,12 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogMileageBreakdown
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.aggregate_list_items.Yearly
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Month
-import java.util.*
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -67,7 +66,6 @@ class YearlyListFragment :
 
     private val viewModel: YearlyListViewModel by viewModels()
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

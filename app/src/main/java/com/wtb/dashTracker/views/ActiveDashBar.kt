@@ -30,6 +30,7 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -82,6 +83,7 @@ class ActiveDashBar @JvmOverloads constructor(
         serviceState: ADBState,
         onComplete: (() -> Unit)? = null
     ) {
+        debugLog("onServiceStateUpdated")
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
@@ -91,6 +93,13 @@ class ActiveDashBar @JvmOverloads constructor(
                 }
                 TRACKING_FULL -> { // Always show expanded details
                     startTrackingIndicator()
+                    root.visibility = VISIBLE
+
+                    activeDashDetails.showOrHide(
+                        shouldShow = true
+                    ) {
+                        onComplete?.invoke()
+                    }
 
                     adbTitleBar.fadeAndGo(
                         expandMargin = false,
@@ -102,14 +111,16 @@ class ActiveDashBar @JvmOverloads constructor(
 
                     activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     callback?.revealAppBarLayout(shouldShow = true)
+                }
+                else -> {
                     root.visibility = VISIBLE
+
                     activeDashDetails.showOrHide(
-                        shouldShow = true
+                        shouldShow = false
                     ) {
                         onComplete?.invoke()
                     }
-                }
-                else -> {
+
                     adbTitleBar.fadeAndGo(
                         expandMargin = true,
                         targetMargin = resources.getDimension(R.dimen.min_touch_target),
@@ -120,13 +131,6 @@ class ActiveDashBar @JvmOverloads constructor(
 
                     activeDashDetailsTopSpacer.setVisibleIfTrue(false)
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
-                    root.visibility = VISIBLE
-                    activeDashDetails.showOrHide(
-                        shouldShow = false
-                    ) {
-                        onComplete?.invoke()
-                    }
-
 
                     when (serviceState) {
                         TRACKING_COLLAPSED -> { // Show collapsed
