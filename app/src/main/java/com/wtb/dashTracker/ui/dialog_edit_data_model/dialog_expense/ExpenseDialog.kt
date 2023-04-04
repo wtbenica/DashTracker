@@ -128,7 +128,7 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                         id: Long
                     ) {
                         val purpose = parent?.getItemAtPosition(position) as ExpensePurpose?
-                        fragExpensePriceLbl.revealIfTrue(purpose?.purposeId == GAS.id)
+                        fragExpensePriceLbl.showOrHide(purpose?.purposeId == GAS.id)
                         fragExpensePrice.revealToHeightIfTrue(
                             shouldExpand = purpose?.purposeId == GAS.id,
                             toHeight = resources.getDimension(R.dimen.min_touch_target).toInt(),

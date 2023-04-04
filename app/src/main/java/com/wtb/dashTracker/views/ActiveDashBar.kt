@@ -101,7 +101,7 @@ class ActiveDashBar @JvmOverloads constructor(
                     activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     callback?.revealAppBarLayout(shouldShow = true)
                     root.visibility = VISIBLE
-                    activeDashDetails.revealIfTrue(
+                    activeDashDetails.showOrHide(
                         shouldShow = true,
                         doAnyways = true
                     ) {
@@ -120,7 +120,7 @@ class ActiveDashBar @JvmOverloads constructor(
                     activeDashDetailsTopSpacer.setVisibleIfTrue(false)
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
                     root.visibility = VISIBLE
-                    activeDashDetails.revealIfTrue(
+                    activeDashDetails.showOrHide(
                         shouldShow = false,
                         doAnyways = true
                     ) {

@@ -20,6 +20,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup.INVISIBLE
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.GridLayout
 import android.widget.LinearLayout
@@ -30,8 +31,13 @@ import com.google.android.material.appbar.AppBarLayout
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.extensions.collapse
 import com.wtb.dashTracker.extensions.reveal
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState
 import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // TODO: There's got to be a better way of doing this (even though it's a lot better now)
 interface ExpandableView {
@@ -50,7 +56,7 @@ interface ExpandableView {
         get() = expandedState == COLLAPSED
 
     val needsExpansion: Boolean
-        get() = this is View && height == 0 && expandedState != EXPANDING
+        get() = this is View && height == 0 && layoutParams.height != WRAP_CONTENT && expandedState != EXPANDING
 
     val needsCollapsion: Boolean
         get() = this is View && height != 0 && expandedState != COLLAPSING
@@ -59,6 +65,10 @@ interface ExpandableView {
         if (this is View) {
             reveal {
                 expandedState = EXPANDED
+                debugLog(
+                    "Setting expandedState to EXPANDED.",
+                    this is ExpandableTextView && text == "$46.50"
+                )
                 onComplete?.invoke()
             }
         }
@@ -73,30 +83,58 @@ interface ExpandableView {
         }
     }
 
-    fun revealIfTrue(
+    fun showOrHide(
         shouldShow: Boolean = true,
         doAnyways: Boolean = false,
         endVisibility: Int = INVISIBLE,
         addedInfo: Boolean? = null,
         onComplete: (() -> Unit)? = null
     ) {
-        val shouldExpand = shouldShow && needsExpansion
+        val shouldExpand = shouldShow
 
-        val shouldCollapse = !shouldShow && needsCollapsion
+        val shouldCollapse = !shouldShow
 
         val shouldDoAnyways =
             doAnyways && (shouldShow && viewIsExpanded) || (!shouldShow && viewIsCollapsed)
 
+        val trying = if (shouldShow) "Expand" else "Collapse"
+        val doing = when {
+            shouldDoAnyways -> "DOING ANYWAYS"
+            shouldExpand -> "EXPAND"
+            shouldCollapse -> "COLLAPSE"
+            else -> "NOTHIN'"
+        }
+        debugLog(
+            "showOrHide | Trying to $trying. Doing $doing. State is ${expandedState?.name}",
+            this is ExpandableTextView && text == "$46.50"
+        )
+
         when {
             shouldDoAnyways -> {
+                debugLog(
+                    "showOrHide | doAnyways. State is ${expandedState?.name}",
+                    this is ExpandableTextView && text == "$46.50"
+                )
                 onComplete?.invoke()
             }
             shouldExpand -> {
+                debugLog(
+                    "showOrHide | shouldExpand. State is ${expandedState?.name}",
+                    this is ExpandableTextView && text == "$46.50"
+                )
                 expandedState = EXPANDING
                 mExpand(onComplete)
             }
             shouldCollapse -> {
+                debugLog(
+                    "showOrHide | shouldCollapse. State is ${expandedState?.name}",
+                    this is ExpandableTextView && text == "$46.50"
+                )
                 expandedState = COLLAPSING
+                CoroutineScope(Dispatchers.Default).launch {
+                    delay(500L)
+                    expandedState = COLLAPSED
+                }
                 mCollapse(endVisibility, onComplete)
             }
         }
@@ -161,6 +199,12 @@ class ExpandableTextView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : androidx.appcompat.widget.AppCompatTextView(context, attrs, defStyleAttr), ExpandableView {
     override var expandedState: ExpandedState? = null
+        set(value) {
+            if (text == "$46.50") {
+                debugLog("Setting Expanded State: $field <- $value")
+            }
+            field = value
+        }
 }
 
 class ExpandableButton @JvmOverloads constructor(

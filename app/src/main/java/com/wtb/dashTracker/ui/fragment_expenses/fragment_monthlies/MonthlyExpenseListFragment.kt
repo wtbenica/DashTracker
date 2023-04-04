@@ -138,9 +138,9 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
 
                     listItemTitle2.text = getCurrencyString(mItem.total)
 
-                    listItemSubtitle.revealIfTrue(false)
-                    listItemSubtitle2.revealIfTrue(false)
-                    listItemSubtitle2Label.revealIfTrue(false)
+                    listItemSubtitle.showOrHide(false)
+                    listItemSubtitle2.showOrHide(false)
+                    listItemSubtitle2Label.showOrHide(false)
 
                     listItemBtnEdit.visibility = GONE
                     listItemBtnDelete.visibility = GONE

@@ -49,6 +49,7 @@ import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.aggregate_list_items.Yearly
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 import java.time.Month
@@ -108,6 +109,9 @@ class YearlyListFragment :
 
             // IncomeItemHolder Overrides
             override var expenseValues: Map<Int, Float> = emptyMap()
+
+            override val holderDeductionTypeFlow: StateFlow<DeductionType>
+                get() = incomeDeductionTypeFlow
 
             private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
 
@@ -295,7 +299,7 @@ class YearlyListFragment :
                 }
             }
 
-            override suspend fun getExpenseValues(): Map<Int, Float> =
+            override suspend fun getExpenseValues(deductionType: DeductionType): Map<Int, Float> =
                 viewModel.getAnnualCostPerMile(
                     this@YearlyHolder.mItem.year,
                     deductionType

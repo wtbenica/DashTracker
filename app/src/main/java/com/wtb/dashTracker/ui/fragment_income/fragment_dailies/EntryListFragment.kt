@@ -36,6 +36,7 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
@@ -50,6 +51,7 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Modific
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -151,6 +153,9 @@ class EntryListFragment :
             private val binding = ListItemEntryBinding.bind(itemView)
 
             private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
+
+            override val holderDeductionTypeFlow: StateFlow<DeductionType>
+                get() = incomeDeductionTypeFlow
 
             init {
                 binding.listItemBtnEdit.apply {
@@ -268,7 +273,7 @@ class EntryListFragment :
             }
 
             // IncomeItemHolder Overrides
-            override suspend fun getExpenseValues(): Float =
+            override suspend fun getExpenseValues(deductionType: DeductionType): Float =
                 viewModel.getCostPerMile(mItem.entry.date, deductionType)
 
             override fun updateExpenseFieldVisibilities() {

@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_income
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +24,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -35,11 +35,14 @@ import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.extensions.getCpmIrsStdString
 import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.activity_main.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
 import com.wtb.dashTracker.ui.fragment_list_item_base.ExpandableAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -52,16 +55,17 @@ import kotlinx.coroutines.flow.collectLatest
 abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemType, ExpenseValues : Any, HolderType : IncomeListItemFragment.IncomeItemHolder<T, ExpenseValues>> :
     ListItemFragment() {
 
+    private val deductionTypeViewModel: DeductionTypeViewModel by activityViewModels()
+
+    val incomeDeductionTypeFlow: StateFlow<DeductionType>
+        get() = deductionTypeViewModel.deductionType
+
     abstract val entryAdapter: RecyclerView.Adapter<HolderType>
-
-    protected var callback: IncomeFragment.IncomeFragmentCallback? = null
-
-    protected var deductionType: DeductionType = DeductionType.NONE
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        callback = context as IncomeFragment.IncomeFragmentCallback
+    override fun onResume() {
+        super.onResume()
+        (entryAdapter as? ExpandableAdapter)?.mExpandedPosition?.let {
+            entryAdapter.notifyItemChanged(it, Pair(PayloadField.EXPANDED, true))
+        }
     }
 
     override fun onCreateView(
@@ -94,23 +98,15 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                callback?.deductionType?.collectLatest {
-                    if (deductionType != it) {
-                        deductionType = it
-                        entryAdapter.notifyItemRangeChanged(
-                            0,
-                            entryAdapter.itemCount,
-                            Pair(IncomeItemListAdapter.Companion.PayloadField.DEDUCTION, it)
-                        )
-                    }
+                deductionTypeViewModel.deductionType.collectLatest {
+                    entryAdapter.notifyItemRangeChanged(
+                        0,
+                        entryAdapter.itemCount,
+                        Pair(PayloadField.DEDUCTION, it)
+                    )
                 }
             }
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback = null
     }
 
     override fun onItemExpanded() {
@@ -119,7 +115,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
     }
 
     protected fun formatCpm(cpm: Float): String =
-        if (deductionType == DeductionType.IRS_STD)
+        if (incomeDeductionTypeFlow.value == DeductionType.IRS_STD)
             getCpmIrsStdString(cpm)
         else
             getCpmString(cpm)
@@ -165,29 +161,37 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
     abstract class IncomeItemHolder<T : IncomeListItemType, ExpenseValues : Any>(itemView: View) :
         BaseItemHolder<T>(itemView), View.OnClickListener {
 
-        protected val deductionType: DeductionType
-            get() = (parentFrag as? IncomeListItemFragment<*, *, *>?)?.deductionType
-                ?: DeductionType.NONE
+        protected abstract val holderDeductionTypeFlow: StateFlow<DeductionType>
+        protected var deductionType: DeductionType = DeductionType.NONE
 
         protected val shouldShow: Boolean
             get() = deductionType != DeductionType.NONE
 
+        protected abstract var expenseValues: ExpenseValues
+
+        protected abstract suspend fun getExpenseValues(deductionType: DeductionType): ExpenseValues
+
+        /**
+         * Calls [launchObservers] and [updateExpenseFields]
+         */
         fun updateDeductionType() {
             launchObservers()
 
             updateExpenseFields()
         }
 
+        /**
+         * Saves the result of [getExpenseValues] to [expenseValues] and calls [updateExpenseFields]
+         */
         private fun updateExpenseValues(values: ExpenseValues) {
             expenseValues = values
 
             updateExpenseFields()
         }
 
-        protected abstract var expenseValues: ExpenseValues
-
-        protected abstract suspend fun getExpenseValues(): ExpenseValues
-
+        /**
+         * Calls [updateExpenseFieldValues] and [updateExpenseFieldVisibilities]
+         */
         private fun updateExpenseFields() {
             if (deductionType != DeductionType.NONE) {
                 updateExpenseFieldValues()
@@ -195,8 +199,14 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             updateExpenseFieldVisibilities()
         }
 
+        /**
+         * Fills in expense field values
+         */
         protected abstract fun updateExpenseFieldValues()
 
+        /**
+         * Update expense field visibilities
+         */
         protected abstract fun updateExpenseFieldVisibilities()
 
         override fun bind(item: T, payloads: List<Any>?) {
@@ -209,13 +219,20 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             updateExpenseFields()
         }
 
+        /**
+         * Observe [holderDeductionTypeFlow] and calls [getExpenseValues]/[updateExpenseValues] when
+         * its value changes
+         */
         private fun launchObservers() {
             CoroutineScope(Dispatchers.Default).launch {
                 withContext(Dispatchers.Default) {
-                    getExpenseValues()
-                }.let { ev: ExpenseValues ->
-                    (parentFrag.requireContext() as MainActivity).runOnUiThread {
-                        updateExpenseValues(ev)
+                    holderDeductionTypeFlow.collectLatest { dt ->
+                        deductionType = dt
+                        getExpenseValues(dt).let { ev ->
+                            (parentFrag.requireContext() as MainActivity).runOnUiThread {
+                                updateExpenseValues(ev)
+                            }
+                        }
                     }
                 }
             }

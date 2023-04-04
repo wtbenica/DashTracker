@@ -96,7 +96,6 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialo
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.fragment_dailies.ExpenseListFragment
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment.IncomeFragmentCallback
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
@@ -116,7 +115,6 @@ import dev.benica.mileagetracker.LocationService
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.time.LocalDate
@@ -128,7 +126,7 @@ private const val APP = "GT_"
 internal val Any.TAG: String
     get() = APP + this::class.simpleName
 
-private var IS_TESTING = true
+private var IS_TESTING = false
 
 private const val DEBUGGING = true
 internal fun Any.debugLog(message: String, condition: Boolean = true) {
@@ -153,15 +151,14 @@ internal fun Any.errorLog(message: String) {
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class MainActivity : AuthenticatedActivity(),
-    IncomeFragmentCallback,
     ActiveDashBarCallback,
     ListItemFragment.ListItemFragmentCallback {
     private val viewModel: MainActivityViewModel by viewModels()
 
-    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
-    override val deductionType: StateFlow<DeductionType>
-        get() = deductionTypeViewModel.deductionType
-
+    //    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
+//    override val deductionType: StateFlow<DeductionType>
+//        get() = deductionTypeViewModel.deductionType
+//
     // Bindings
     internal lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
@@ -729,7 +726,7 @@ class MainActivity : AuthenticatedActivity(),
         lockAppBar: Boolean,
         onComplete: (() -> Unit)?
     ) {
-        binding.appBarLayout.revealIfTrue(
+        binding.appBarLayout.showOrHide(
             shouldShow = shouldShow,
             doAnyways = doAnyways
         ) {
@@ -744,10 +741,10 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     // IncomeFragmentCallback
-    override fun setDeductionType(dType: DeductionType) {
-        deductionTypeViewModel.setDeductionType(dType)
-    }
-
+//    override fun setDeductionType(dType: DeductionType) {
+//        deductionTypeViewModel.setDeductionType(dType)
+//    }
+//
     // ListItemFragmentCallback overrides
     override fun hideToolbarsAndFab(hideToolbar: Boolean, hideFab: Boolean) {
         isShowingOrHidingToolbars = true
@@ -981,11 +978,11 @@ class MainActivity : AuthenticatedActivity(),
             fun updateTopAppBarVisibility() {
                 when (serviceState) {
                     ADBState.INACTIVE -> {
-                        binding.summaryBar.root.revealIfTrue(
+                        binding.summaryBar.root.showOrHide(
                             shouldShow = true,
                             doAnyways = true
                         ) {
-                            binding.appBarLayout.revealIfTrue(
+                            binding.appBarLayout.showOrHide(
                                 shouldShow = currDestination == R.id.navigation_income,
                                 doAnyways = true
                             ) {
@@ -996,11 +993,11 @@ class MainActivity : AuthenticatedActivity(),
                     ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
                     ADBState.TRACKING_FULL -> {
-                        binding.summaryBar.root.revealIfTrue(
+                        binding.summaryBar.root.showOrHide(
                             shouldShow = currDestination == R.id.navigation_income,
                             doAnyways = true
                         ) {
-                            binding.appBarLayout.revealIfTrue(
+                            binding.appBarLayout.showOrHide(
                                 shouldShow = true,
                                 doAnyways = true
                             ) {

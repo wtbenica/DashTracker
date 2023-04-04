@@ -34,6 +34,7 @@ import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -190,7 +191,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         internal lateinit var mItem: T
         protected var mIsExpanded: Boolean = false
 
-        protected var mIsInitialized = false
+        protected var mIsInitialized: Boolean = false
         private var mPrevPayload: List<Any>? = null
 
         abstract fun updateHeaderFields()
@@ -274,22 +275,21 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         internal fun setExpandedFromPayloads(payloads: List<Any>) {
+            debugLog("sefp: $payloads")
             val isExpandedFromPayloads: Boolean? =
                 (payloads.lastOrNull { it is Pair<*, *> && it.first == PayloadField.EXPANDED } as Pair<*, *>?)?.second as Boolean?
 
             val adapterExpandedPosition =
                 (bindingAdapter as? ExpandableAdapter)?.mExpandedPosition == absoluteAdapterPosition
 
-            if (isExpandedFromPayloads != null || (mIsExpanded != adapterExpandedPosition)) {
-                mIsExpanded = isExpandedFromPayloads ?: adapterExpandedPosition
+            mIsExpanded = (isExpandedFromPayloads ?: adapterExpandedPosition)
 
-                collapseArea.forEach { it.setVisibleIfTrue(mIsExpanded) }
+            collapseArea.forEach { it.showOrHide(mIsExpanded, false) }
 
-                if (mIsExpanded) {
-                    backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
-                } else {
-                    backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
-                }
+            if (mIsExpanded) {
+                backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
+            } else {
+                backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
             }
         }
     }

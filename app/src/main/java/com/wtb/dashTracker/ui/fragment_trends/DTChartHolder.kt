@@ -134,11 +134,11 @@ abstract class DTChart @JvmOverloads constructor(
     abstract val filterTable: ExpandableTableLayout
 
     fun hideFilters(onComplete: (() -> Unit)? = null) {
-        filterTable.revealIfTrue(false, true) { onComplete?.invoke() }
+        filterTable.showOrHide(false, true) { onComplete?.invoke() }
     }
 
     fun showFilters(onComplete: (() -> Unit)? = null) {
-        filterTable.revealIfTrue(true, true) { onComplete?.invoke() }
+        filterTable.showOrHide(true, true) { onComplete?.invoke() }
     }
 
 

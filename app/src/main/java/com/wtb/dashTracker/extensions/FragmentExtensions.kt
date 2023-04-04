@@ -27,7 +27,7 @@ import java.time.LocalDateTime
  * with [resId] and [args]
  */
 fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?): String =
-    if (args.map { it != null }.reduce { acc, b -> acc && b })
+    if (args.map { it != null && (it !is Float || !it.isNaN()) }.reduce { acc, b -> acc && b })
         getString(resId, *args)
     else
         ifNull

@@ -114,7 +114,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="invisible"
-                tools:visibility="invisible"
+                tools:visibility="visible"
                 android:orientation="vertical"
                 android:paddingHorizontal="@dimen/margin_default"
                 android:paddingVertical="@dimen/margin_default"

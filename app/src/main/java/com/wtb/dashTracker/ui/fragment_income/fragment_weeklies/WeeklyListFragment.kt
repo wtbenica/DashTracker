@@ -49,6 +49,7 @@ import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 
 @ExperimentalAnimationApi
@@ -61,6 +62,7 @@ class WeeklyListFragment :
     override val entryAdapter: FullWeeklyAdapter = FullWeeklyAdapter().apply {
         registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                // TODO: Is this on purpose? is it that when loading it takes list to the end? check it out one day
                 binding.itemListRecyclerView.scrollToPosition(positionStart)
             }
         })
@@ -138,6 +140,9 @@ class WeeklyListFragment :
             // IncomeItemHolder Overrides
             override var expenseValues: Pair<Float, Float> = Pair(0f, 0f)
 
+            override val holderDeductionTypeFlow: StateFlow<DeductionType>
+                get() = incomeDeductionTypeFlow
+
             private val binding: ListItemWeeklyBinding = ListItemWeeklyBinding.bind(itemView)
 
             private val detailsBinding: ListItemWeeklyDetailsTableBinding =
@@ -211,7 +216,7 @@ class WeeklyListFragment :
             }
 
             // IncomeItemHolder Overrides
-            override suspend fun getExpenseValues(): Pair<Float, Float> =
+            override suspend fun getExpenseValues(deductionType: DeductionType): Pair<Float, Float> =
                 viewModel.getExpensesAndCostPerMile(
                     this@WeeklyHolder.mItem,
                     deductionType

@@ -49,7 +49,7 @@ open class ConfirmationDialogImport(val actionImport: () -> Unit) : FullWidthDia
                 R.drawable.ic_arrow_collapse
             binding.importNotesBtn.icon = AppCompatResources.getDrawable(requireContext(), rs)
 
-            binding.modifiedInfoText.revealIfTrue(binding.modifiedInfoText.visibility == GONE)
+            binding.modifiedInfoText.showOrHide(binding.modifiedInfoText.visibility == GONE)
         }
 
         binding.noButton.apply {
