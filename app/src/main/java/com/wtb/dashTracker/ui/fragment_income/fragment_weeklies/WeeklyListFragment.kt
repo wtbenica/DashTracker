@@ -190,6 +190,7 @@ class WeeklyListFragment :
 
             override fun updateDetailsFields() {
                 val basePayAdjust = this.mItem.weekly.basePayAdjustment
+
                 detailsBinding.listItemWeeklyAdjust.text =
                     getCurrencyString(basePayAdjust)
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.mItem.regularPay)
@@ -234,18 +235,18 @@ class WeeklyListFragment :
             }
 
             override fun updateExpenseFieldValues() {
-                detailsBinding.listItemWeeklyCpmDeductionType.text =
-                    deductionType.fullDesc
-
                 val (expenses, cpm) = expenseValues
-
-                detailsBinding.listItemWeeklyExpenses.text =
-                    getCurrencyString(expenses)
-
-                detailsBinding.listItemWeeklyCpm.text = formatCpm(cpm)
 
                 binding.listItemSubtitle2.text =
                     getCurrencyString(this@WeeklyHolder.mItem.getNet(cpm))
+
+                detailsBinding.listItemWeeklyCpmDeductionType.text =
+                    deductionType.fullDesc
+
+                detailsBinding.listItemWeeklyCpm.text = formatCpm(cpm)
+
+                detailsBinding.listItemWeeklyExpenses.text =
+                    getCurrencyString(expenses)
 
                 detailsBinding.listItemWeeklyHourly.text = getCurrencyString(
                     this@WeeklyHolder.mItem.getHourly(cpm)
