@@ -190,7 +190,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
     @Suppress("LeakingThis")
     abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
         RecyclerView.ViewHolder(itemView), OnClickListener {
-        abstract val collapseArea: Array<View>
+        abstract val collapseArea: Map<View, Int?>
         abstract val backgroundArea: ViewGroup
         abstract val bgCard: CardView
         abstract val parentFrag: ListItemFragment
@@ -251,7 +251,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         private fun expandListItem(shouldExpand: Boolean, onComplete: (() -> Unit)? = null) {
-            fun updateBackground(isExpanded: Boolean) {
+            fun updateBackground() {
                 if (shouldExpand) {
                     backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
                 } else {
@@ -260,11 +260,12 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             }
 
             if (shouldExpand != mIsExpanded) {
-                collapseArea.forEach {
+                collapseArea.toList().forEachIndexed { index, (it, target) ->
                     it.showOrHide(
                         shouldExpand,
                         animate = false,
-                        onComplete = if (shouldExpand && it == collapseArea.last()) {
+                        targetSize = target,
+                        onComplete = if (shouldExpand && index == collapseArea.size - 1) {
                             fun() {
                                 val scroller =
                                     object : LinearSmoothScroller(parentFrag.requireContext()) {
@@ -294,12 +295,12 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
 
                                 parentFrag.recyclerView.layoutManager?.startSmoothScroll(scroller)
 
-                                updateBackground(isExpanded = true)
+                                updateBackground()
                                 mIsExpanded = true
                             }
                         } else {
                             fun() {
-                                updateBackground(isExpanded = false)
+                                updateBackground()
                                 mIsExpanded = false
                             }
                         })

@@ -119,8 +119,8 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
             private val binding = ListItemHolderBinding.bind(itemView)
             private val detailsBinding = ListItemDetailsTableBinding.bind(itemView)
 
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.listItemDetails)
+            override val collapseArea: Map<View, Int?>
+                get() = mapOf(binding.listItemDetails to null)
 
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper

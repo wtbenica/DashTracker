@@ -96,8 +96,8 @@ class YearlyListFragment :
                 .inflate(R.layout.list_item_yearly, parent, false)
         ) {
             // BaseItemHolder Overrides
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.listItemDetails)
+            override val collapseArea: Map<View, Int?>
+                get() = mapOf(binding.listItemDetails to null)
 
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
@@ -160,30 +160,34 @@ class YearlyListFragment :
                 binding.listItemSubtitle2.fade(fadeIn = shouldShow)
 
                 detailsBinding.apply {
-                    listItemYearlyExpensesHeader.showOrHide(shouldShow)
+                    listItemYearlyExpensesHeader.showOrHide(shouldShow = shouldShow)
                     listItemYearlyExpenseDetailsButtonFrame.apply {
                         val target = resources.getDimension(R.dimen.min_touch_target).toInt()
-                        revealToHeightIfTrue(shouldShow, target, target)
+                        revealToHeightIfTrue(
+                            shouldExpand = shouldShow,
+                            toHeight = target,
+                            toWidth = target
+                        )
                     }
 
-                    listItemYearlyExpenseDetailsButton.showOrHide(shouldShow)
-                    listItemYearlyExpenses.showOrHide(shouldShow)
+                    listItemYearlyExpenseDetailsButton.showOrHide(shouldShow = shouldShow)
+                    listItemYearlyExpenses.showOrHide(shouldShow = shouldShow)
 
                     mileageBreakdownCard.showOrHide(
-                        shouldShow && hasMultipleStdDeductions, GONE, mIsExpanded
-                    )
-                    listItemYearlyCpmHeader.showOrHide(
-                        shouldShow && !hasMultipleStdDeductions
-                    )
-                    listItemYearlyCpmDeductionType.showOrHide(
-                        shouldShow && !hasMultipleStdDeductions
-                    )
-                    listItemYearlyCpm.showOrHide(
-                        shouldShow && !hasMultipleStdDeductions
+                        shouldShow = shouldShow && hasMultipleStdDeductions,
+                        onHiddenVisibility = GONE,
+                        animate = mIsExpanded
                     )
 
-                    debugLog("Show mileage breakdown? $hasMultipleStdDeductions | ${expenseValues.size} $expenseValues | ${deductionType == DeductionType.IRS_STD}${deductionType.name}")
-                    mileageBreakdownCard.showOrHide(hasMultipleStdDeductions, GONE)
+                    listItemYearlyCpmHeader.showOrHide(
+                        shouldShow = shouldShow && !hasMultipleStdDeductions
+                    )
+                    listItemYearlyCpmDeductionType.showOrHide(
+                        shouldShow = shouldShow && !hasMultipleStdDeductions
+                    )
+                    listItemYearlyCpm.showOrHide(
+                        shouldShow = shouldShow && !hasMultipleStdDeductions
+                    )
                 }
 
             }

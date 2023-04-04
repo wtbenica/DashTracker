@@ -71,6 +71,7 @@ private val View.targetHeight: Int
 
 fun View.showOrHide(
     shouldShow: Boolean,
+    targetSize: Int? = null,
     onHiddenVisibility: Int = INVISIBLE,
     animate: Boolean = true,
     onComplete: (() -> Unit)? = null
@@ -83,7 +84,12 @@ fun View.showOrHide(
     }
 
     val startHeight = max(1, height)
-    val endHeight = if (shouldShow) targetHeight else 0
+    val endHeight = if (shouldShow) {
+        targetSize ?: targetHeight
+    } else {
+        0
+    }
+
     val heightDuration = endHeight - startHeight
 
     if (animate) {
@@ -104,7 +110,7 @@ fun View.showOrHide(
                     }
                 } else {
                     updateLayoutParams {
-                        height = WRAP_CONTENT
+                        height = targetSize ?: WRAP_CONTENT
                     }
                 }
                 requestLayout()
@@ -112,7 +118,11 @@ fun View.showOrHide(
             }
     } else {
         updateLayoutParams {
-            height = if (shouldShow) WRAP_CONTENT else 0
+            height = if (shouldShow) {
+                targetSize ?: WRAP_CONTENT
+            } else {
+                0
+            }
         }
         visibility = if (shouldShow) VISIBLE else onHiddenVisibility
         onComplete?.invoke()
@@ -370,7 +380,7 @@ fun View.fade(
 ) {
     animate()
         .alpha(if (fadeIn) 1f else 0f)
-        .setListener(object: Animator.AnimatorListener {
+        .setListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
                 // Do nothing
             }

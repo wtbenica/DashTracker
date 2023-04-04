@@ -100,9 +100,10 @@ class ExpenseListFragment : ExpenseListItemFragment() {
     }
 
     @ExperimentalAnimationApi
-    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense, ExpenseAdapter.ExpenseHolder>(
-        DIFF_CALLBACK
-    ) {
+    inner class ExpenseAdapter :
+        BaseItemPagingDataAdapter<FullExpense, ExpenseAdapter.ExpenseHolder>(
+            DIFF_CALLBACK
+        ) {
         override fun getViewHolder(parent: ViewGroup, viewType: Int?): ExpenseHolder =
             when (viewType) {
                 0 -> GasExpenseHolder(parent)
@@ -126,12 +127,16 @@ class ExpenseListFragment : ExpenseListItemFragment() {
         ), View.OnClickListener {
             private val binding: ListItemExpenseBinding = ListItemExpenseBinding.bind(itemView)
 
-            override val collapseArea: Array<View>
-                get() = arrayOf(
-                    binding.listItemDetailsCard,
-                    binding.listItemBtnDelete,
-                    binding.listItemBtnEdit
-                )
+            override val collapseArea: Map<View, Int?>
+                get() {
+                    val minTouchTarget = resources.getDimension(R.dimen.min_touch_target)
+                        .toInt()
+                    return mapOf(
+                        binding.listItemDetailsCard to null,
+                        binding.listItemBtnDelete to minTouchTarget,
+                        binding.listItemBtnEdit to minTouchTarget
+                    )
+                }
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
             override val bgCard: CardView
@@ -184,8 +189,8 @@ class ExpenseListFragment : ExpenseListItemFragment() {
             private val binding: ListItemExpenseNonGasBinding =
                 ListItemExpenseNonGasBinding.bind(itemView)
 
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.buttonBox)
+            override val collapseArea: Map<View, Int?>
+                get() = mapOf(binding.buttonBox to null)
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
             override val bgCard: CardView
