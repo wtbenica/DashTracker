@@ -43,6 +43,7 @@ import com.wtb.dashTracker.databinding.YearlyMileageGridBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
+import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExpenseBreakdown
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogMileageBreakdown
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
@@ -128,8 +129,13 @@ class YearlyListFragment :
             private val mileageGridBinding: YearlyMileageGridBinding =
                 YearlyMileageGridBinding.bind(itemView)
 
-            private val hasMultipleStdDeductions =
-                deductionType == DeductionType.IRS_STD && expenseValues.size > 1
+            private val hasMultipleStdDeductions: Boolean
+                get() {
+                    val irsStd = deductionType == DeductionType.IRS_STD
+                    val multValues = expenseValues.size > 1
+                    debugLog("irs? $irsStd | mult? $multValues | res? ${irsStd && multValues}")
+                    return irsStd && multValues
+                }
 
             // BaseItemHolder Overrides
             override fun updateHeaderFields() {
@@ -175,6 +181,9 @@ class YearlyListFragment :
                     listItemYearlyCpm.showOrHide(
                         shouldShow && !hasMultipleStdDeductions
                     )
+
+                    debugLog("Show mileage breakdown? $hasMultipleStdDeductions | ${expenseValues.size} $expenseValues | ${deductionType == DeductionType.IRS_STD}${deductionType.name}")
+                    mileageBreakdownCard.showOrHide(hasMultipleStdDeductions, GONE)
                 }
 
             }
@@ -240,26 +249,27 @@ class YearlyListFragment :
                 }
 
                 /**
-                 * Use IRS Std Deduction to calculate mileage expenses for the year
-                 */
-                fun getStandardDeductionExpense(): Float {
-                    val table = viewModel.standardMileageDeductionTable()
-                    var res = 0f
-                    mItem.monthlies.keys.forEach { mon ->
-                        val stdDedAmount: Float = table[LocalDate.of(mItem.year, mon, 1)]
-                        res += stdDedAmount * (mItem.monthlies[mon]?.mileage ?: 0f)
-                    }
-                    return res
-                }
-
-                /**
                  * Calculate yearly expenses using the appropriate method according to [deductionType]
                  */
-                fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f): Float =
-                    when (deductionType) {
+                fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f): Float {
+                    /**
+                     * Use IRS Std Deduction to calculate mileage expenses for the year
+                     */
+                    fun getStandardDeductionExpense(): Float {
+                        val table = viewModel.standardMileageDeductionTable()
+                        var res = 0f
+                        mItem.monthlies.keys.forEach { mon ->
+                            val stdDedAmount: Float = table[LocalDate.of(mItem.year, mon, 1)]
+                            res += stdDedAmount * (mItem.monthlies[mon]?.mileage ?: 0f)
+                        }
+                        return res
+                    }
+
+                    return when (deductionType) {
                         DeductionType.IRS_STD -> getStandardDeductionExpense()
                         else -> mItem.mileage * costPerMile
                     }
+                }
 
                 fun getNet(cpm: Float, deductionType: DeductionType): Float =
                     mItem.totalPay - getExpenses(deductionType, cpm)
