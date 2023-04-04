@@ -226,11 +226,11 @@ class WeeklyListFragment :
                 val shouldShow = deductionType != DeductionType.NONE
                 binding.listItemSubtitle2Label.fade(shouldShow)
                 binding.listItemSubtitle2.fade(shouldShow)
-                detailsBinding.listItemWeeklyCpmHeader.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemWeeklyCpm.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemWeeklyExpensesHeader.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemWeeklyExpenses.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemWeeklyCpmHeader.showOrHide(shouldShow)
+                detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(shouldShow)
+                detailsBinding.listItemWeeklyCpm.showOrHide(shouldShow)
+                detailsBinding.listItemWeeklyExpensesHeader.showOrHide(shouldShow)
+                detailsBinding.listItemWeeklyExpenses.showOrHide(shouldShow)
             }
 
             override fun updateExpenseFieldValues() {

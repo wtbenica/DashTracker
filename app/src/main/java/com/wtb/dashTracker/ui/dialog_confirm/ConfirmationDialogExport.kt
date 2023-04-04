@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.DialogFragConfirmExportBinding
+import com.wtb.dashTracker.extensions.showOrHide
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 
 

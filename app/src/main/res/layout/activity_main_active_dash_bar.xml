@@ -15,7 +15,7 @@
   -->
 
 <!-- Don't add vertical margins, it messes up the hiding on scroll -->
-<com.wtb.dashTracker.views.ExpandableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -80,7 +80,7 @@
                         tools:text="4h 20m" />
                 </LinearLayout>
 
-                <com.wtb.dashTracker.views.ExpandableImageButton
+                <ImageButton
                     android:id="@+id/btn_stop_active_dash"
                     style="@style/DialogImageButton"
                     android:layout_gravity="center_vertical|end"
@@ -100,7 +100,7 @@
                 android:layout_rowWeight="1"
                 android:layout_columnWeight="1" />
 
-            <com.wtb.dashTracker.views.ExpandableGridLayout
+            <GridLayout
                 android:id="@+id/active_dash_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -171,7 +171,7 @@
                     android:layout_row="1"
                     android:layout_column="4"
                     tools:text="$14.75" />
-            </com.wtb.dashTracker.views.ExpandableGridLayout>
+            </GridLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-</com.wtb.dashTracker.views.ExpandableLinearLayout>
+</LinearLayout>

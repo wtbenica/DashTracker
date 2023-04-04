@@ -20,6 +20,8 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.annotation.AttrRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +41,7 @@ class ActiveDashBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = 0
-) : ExpandableLinearLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val binding: ActivityMainActiveDashBarBinding
     private var callback: ActiveDashBarCallback? = null
@@ -94,7 +96,7 @@ class ActiveDashBar @JvmOverloads constructor(
                         expandMargin = false,
                         targetMargin = resources.getDimension(R.dimen.min_touch_target),
                         fadingView = btnStopActiveDash,
-                        getMarginValue = MarginLayoutParams::getMarginEnd,
+                        getMarginValue = ViewGroup.MarginLayoutParams::getMarginEnd,
                         setMarginValue = MarginLayoutParams::setMarginEnd
                     )
 
@@ -102,8 +104,7 @@ class ActiveDashBar @JvmOverloads constructor(
                     callback?.revealAppBarLayout(shouldShow = true)
                     root.visibility = VISIBLE
                     activeDashDetails.showOrHide(
-                        shouldShow = true,
-                        doAnyways = true
+                        shouldShow = true
                     ) {
                         onComplete?.invoke()
                     }
@@ -121,8 +122,7 @@ class ActiveDashBar @JvmOverloads constructor(
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
                     root.visibility = VISIBLE
                     activeDashDetails.showOrHide(
-                        shouldShow = false,
-                        doAnyways = true
+                        shouldShow = false
                     ) {
                         onComplete?.invoke()
                     }

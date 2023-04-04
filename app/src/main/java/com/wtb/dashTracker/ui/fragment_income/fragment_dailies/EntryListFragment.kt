@@ -279,11 +279,11 @@ class EntryListFragment :
             override fun updateExpenseFieldVisibilities() {
                 binding.listItemSubtitle2Label.fade(shouldShow)
                 binding.listItemSubtitle2.fade(shouldShow)
-                detailsBinding.listItemEntryCpmHeader.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemEntryCpmDeductionType.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemEntryCpm.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemEntryExpensesHeader.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemEntryExpenses.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemEntryCpmHeader.showOrHide(shouldShow)
+                detailsBinding.listItemEntryCpmDeductionType.showOrHide(shouldShow)
+                detailsBinding.listItemEntryCpm.showOrHide(shouldShow)
+                detailsBinding.listItemEntryExpensesHeader.showOrHide(shouldShow)
+                detailsBinding.listItemEntryExpenses.showOrHide(shouldShow)
             }
 
             override fun updateExpenseFieldValues() {

@@ -106,7 +106,6 @@ import com.wtb.dashTracker.views.ActiveDashBar
 import com.wtb.dashTracker.views.ActiveDashBar.ActiveDashBarCallback
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState
 import com.wtb.dashTracker.views.DTFloatingActionButton
-import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.EXPANDED
 import com.wtb.notificationutil.NotificationUtils
 import dev.benica.csvutil.CSVUtils
 import dev.benica.csvutil.ModelMap
@@ -454,8 +453,6 @@ class MainActivity : AuthenticatedActivity(),
                 adb.initialize(this@MainActivity)
 
                 appBarLayout.apply {
-                    expandedState = EXPANDED
-
                     addOnOffsetChangedListener { appBar: AppBarLayout, offset: Int ->
                         val appBarIsHidden = appBar.height + offset == 0
                         val forceShowBottomAppBar =
@@ -480,9 +477,6 @@ class MainActivity : AuthenticatedActivity(),
                             }
                         }
                     }
-
-
-                    summaryBar.root.expandedState = EXPANDED
                 }
             }
         }
@@ -726,10 +720,7 @@ class MainActivity : AuthenticatedActivity(),
         lockAppBar: Boolean,
         onComplete: (() -> Unit)?
     ) {
-        binding.appBarLayout.showOrHide(
-            shouldShow = shouldShow,
-            doAnyways = doAnyways
-        ) {
+        binding.appBarLayout.showOrHide(shouldShow = shouldShow) {
             (binding.summaryBar.root.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                 if (lockAppBar) {
                     SCROLL_FLAG_NO_SCROLL
@@ -740,11 +731,6 @@ class MainActivity : AuthenticatedActivity(),
         }
     }
 
-    // IncomeFragmentCallback
-//    override fun setDeductionType(dType: DeductionType) {
-//        deductionTypeViewModel.setDeductionType(dType)
-//    }
-//
     // ListItemFragmentCallback overrides
     override fun hideToolbarsAndFab(hideToolbar: Boolean, hideFab: Boolean) {
         isShowingOrHidingToolbars = true
@@ -946,15 +932,26 @@ class MainActivity : AuthenticatedActivity(),
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
+        private var serviceStateChanged = false
         internal var serviceState: ADBState = ADBState.INACTIVE
             set(value) {
+                val prev = if (!serviceStateChanged) {
+                    serviceStateChanged = true
+                    null
+                } else {
+                    field
+                }
+
                 field = value
-                revealAppBarLayout(
-                    shouldShow = currDestination == R.id.navigation_income || field != ADBState.INACTIVE,
-                    lockAppBar = field == ADBState.TRACKING_COLLAPSED || field == ADBState.TRACKING_DISABLED
-                ) {
-                    updateToolbarAndBottomPadding(slideAppBarDown = false)
-                    updateUi()
+
+                if (prev == null || prev != field) {
+                    revealAppBarLayout(
+                        shouldShow = currDestination == R.id.navigation_income || field != ADBState.INACTIVE,
+                        lockAppBar = field == ADBState.TRACKING_COLLAPSED || field == ADBState.TRACKING_DISABLED
+                    ) {
+                        updateToolbarAndBottomPadding(slideAppBarDown = false)
+                        updateUi()
+                    }
                 }
             }
 
@@ -970,7 +967,6 @@ class MainActivity : AuthenticatedActivity(),
                 )
         }
 
-
         /**
          * Animate fab icon and adb visibility depending on [serviceState].
          */
@@ -979,12 +975,10 @@ class MainActivity : AuthenticatedActivity(),
                 when (serviceState) {
                     ADBState.INACTIVE -> {
                         binding.summaryBar.root.showOrHide(
-                            shouldShow = true,
-                            doAnyways = true
+                            shouldShow = currDestination == R.id.navigation_income
                         ) {
                             binding.appBarLayout.showOrHide(
-                                shouldShow = currDestination == R.id.navigation_income,
-                                doAnyways = true
+                                shouldShow = currDestination == R.id.navigation_income
                             ) {
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
@@ -994,12 +988,10 @@ class MainActivity : AuthenticatedActivity(),
                     ADBState.TRACKING_COLLAPSED,
                     ADBState.TRACKING_FULL -> {
                         binding.summaryBar.root.showOrHide(
-                            shouldShow = currDestination == R.id.navigation_income,
-                            doAnyways = true
+                            shouldShow = currDestination == R.id.navigation_income
                         ) {
                             binding.appBarLayout.showOrHide(
-                                shouldShow = true,
-                                doAnyways = true
+                                shouldShow = true
                             ) {
                                 if (currDestination == R.id.navigation_income) {
                                     binding.adb.transitionBackgroundTo(R.attr.colorAppBarBg)

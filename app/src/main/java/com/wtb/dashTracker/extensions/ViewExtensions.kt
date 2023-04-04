@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.extensions
 
+import android.animation.Animator
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
@@ -37,12 +38,6 @@ import androidx.core.view.updateLayoutParams
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.wtb.dashTracker.ui.activity_main.debugLog
-import com.wtb.dashTracker.views.ExpandableTextView
-import com.wtb.dashTracker.views.ExpandableView
-import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.COLLAPSED
-import com.wtb.dashTracker.views.ExpandableView.Companion.ExpandedState.EXPANDED
-import com.wtb.dashTracker.views.ExpandableView.Companion.marginLayoutParams
 import java.lang.Integer.max
 import kotlin.math.abs
 import kotlin.reflect.KFunction1
@@ -76,10 +71,10 @@ private val View.targetHeight: Int
 
 fun View.showOrHide(
     shouldShow: Boolean,
+    onHiddenVisibility: Int = INVISIBLE,
     animate: Boolean = true,
-    onHiddenVisibility: Int = GONE,
     onComplete: (() -> Unit)? = null
-): Unit {
+) {
     if (shouldShow) {
         visibility = VISIBLE
         updateLayoutParams {
@@ -101,6 +96,7 @@ fun View.showOrHide(
             }
             .setDuration(ANIMATION_DURATION)
             .withEndAction {
+                clearAnimation()
                 if (!shouldShow) {
                     visibility = onHiddenVisibility
                     updateLayoutParams {
@@ -119,92 +115,9 @@ fun View.showOrHide(
             height = if (shouldShow) WRAP_CONTENT else 0
         }
         visibility = if (shouldShow) VISIBLE else onHiddenVisibility
+        onComplete?.invoke()
     }
 
-}
-
-var i = 0
-fun View.reveal(onComplete: (() -> Unit)? = null) {
-    animation?.cancel()
-    clearAnimation()
-
-    visibility = VISIBLE
-
-    updateLayoutParams {
-        height = max(1, height)
-    }
-
-    val startHeight = max(1, height)
-    val endHeight = targetHeight
-    val heightDuration = endHeight - startHeight
-
-    val expandAnimation =
-        object : Animation() {
-            var onCompleteCalled = false
-
-            fun callOnComplete() {
-                if (!onCompleteCalled) {
-                    debugLog(
-                        "Calling onComplete.",
-                        this@reveal is ExpandableTextView && this@reveal.text == "$46.50"
-                    )
-                    onCompleteCalled = true
-                    onComplete?.invoke()
-
-                    clearAnimation()
-                    invalidate()
-                    requestLayout()
-                }
-            }
-
-            override fun willChangeBounds(): Boolean = true
-
-            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                super.applyTransformation(interpolatedTime, t)
-                updateLayoutParams {
-                    height = (startHeight + heightDuration * interpolatedTime).toInt()
-                }
-                alpha = interpolatedTime
-                requestLayout()
-
-                if (interpolatedTime >= 1f) {
-                    callOnComplete()
-                }
-            }
-        }.apply {
-            duration = (ANIMATION_DURATION * abs(heightDuration) / endHeight.toFloat()).toLong()
-
-            setAnimationListener(object : AnimationListener {
-                override fun onAnimationStart(animation: Animation?) {
-                    // Do nothing
-                    debugLog(
-                        "Starting animation.",
-                        this@reveal is ExpandableTextView && text == "$46.50"
-                    )
-                }
-
-                override fun onAnimationEnd(animation: Animation?) {
-                    updateLayoutParams {
-                        height = WRAP_CONTENT
-                    }
-
-                    alpha = 1f
-
-                    this@apply.callOnComplete()
-                }
-
-                override fun onAnimationRepeat(animation: Animation?) {
-                    // Do nothing
-                }
-            })
-        }
-
-    debugLog(
-        "About to start expand animation. $startHeight -> $endHeight over ${expandAnimation.duration}",
-        this is ExpandableTextView && text == "$46.50"
-    )
-
-    startAnimation(expandAnimation)
 }
 
 fun View.animateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)? = null) {
@@ -332,73 +245,7 @@ fun View.revealToHeightIfTrue(
             targetWidth = toWidth,
         )
     } else if (!shouldExpand && isVisible) {
-        collapse()
-    }
-}
-
-fun View.collapse(endVisibility: Int = INVISIBLE, onComplete: (() -> Unit)? = null) {
-    animation?.cancel()
-    clearAnimation()
-
-    val startHeight = measuredHeight
-    val endHeight = 0
-    val heightDuration = endHeight - startHeight
-
-    updateLayoutParams {
-        height = startHeight
-    }
-
-    val collapseAnimation = object : Animation() {
-        override fun willChangeBounds(): Boolean = true
-
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            super.applyTransformation(interpolatedTime, t)
-            this@collapse.apply {
-                updateLayoutParams {
-                    height = (startHeight + heightDuration * interpolatedTime).toInt()
-                }
-
-                alpha = 1 - interpolatedTime
-
-                requestLayout()
-            }
-        }
-    }.apply {
-        duration = if (startHeight == 0) {
-            ANIMATION_DURATION // TODO: is this so that it will call onAnimationEnd? Don't remember why
-        } else {
-            ANIMATION_DURATION * abs(heightDuration) / startHeight
-        }
-
-        setAnimationListener(object : AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-                // Do nothing
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
-                updateLayoutParams {
-                    height = 0
-                }
-
-                alpha = 0f
-
-                visibility = endVisibility
-                clearAnimation()
-                requestLayout()
-                onComplete?.invoke()
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) {
-                // Do nothing
-            }
-        })
-    }
-
-    if (startHeight > 0) {
-        startAnimation(collapseAnimation)
-    } else {
-        visibility = endVisibility
-        onComplete?.invoke()
+        showOrHide(false)
     }
 }
 
@@ -406,9 +253,6 @@ fun View.setVisibleIfTrue(boolean: Boolean, elseVisibility: Int = GONE) {
     val newVisibility = if (boolean) VISIBLE else elseVisibility
     if (visibility != newVisibility) {
         visibility = newVisibility
-        if (this is ExpandableView) {
-            expandedState = if (boolean) EXPANDED else COLLAPSED
-        }
         requestLayout()
     }
 }
@@ -517,12 +361,33 @@ fun MaterialButton.rotateUp() {
     startAnimation(animation)
 }
 
+val View.marginLayoutParams: MarginLayoutParams
+    get() = layoutParams as MarginLayoutParams
+
 fun View.fade(
     fadeIn: Boolean,
     doNext: (() -> Unit)? = null
 ) {
     animate()
         .alpha(if (fadeIn) 1f else 0f)
+        .setListener(object: Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                // Do nothing
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                doNext?.invoke()
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+                // Do nothing
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+                // Do nothing
+            }
+
+        })
 }
 
 fun View.animateMargin(

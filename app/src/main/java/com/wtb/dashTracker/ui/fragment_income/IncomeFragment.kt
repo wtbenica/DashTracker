@@ -36,6 +36,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragIncomeBinding
+import com.wtb.dashTracker.extensions.showOrHide
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
