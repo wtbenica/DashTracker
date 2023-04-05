@@ -33,8 +33,8 @@
         android:layout_rowSpan="4"
         android:layout_rowWeight="1"
         android:layout_column="2"
-        android:layout_marginStart="@dimen/margin_half"
-        android:layout_marginEnd="@dimen/margin_half"
+        android:layout_marginStart="@dimen/margin_narrow"
+        android:layout_marginEnd="@dimen/margin_narrow"
         android:background="?attr/colorActiveDashBarBg" />
 
     <androidx.legacy.widget.Space
