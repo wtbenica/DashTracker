@@ -259,54 +259,6 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                 }
             }
 
-//            if (shouldExpand != mIsExpanded) {
-//                collapseArea.toList().forEachIndexed { index, (it, target) ->
-//                    it.showOrHide(
-//                        shouldExpand,
-//                        animate = true,
-//                        targetSize = target,
-//                        onComplete = if (shouldExpand && index == collapseArea.size - 1) {
-//                            fun() {
-//                                val scroller =
-//                                    object : LinearSmoothScroller(parentFrag.requireContext()) {
-//
-//                                        override fun getVerticalSnapPreference(): Int {
-//                                            return SNAP_TO_START
-//                                        }
-//
-//                                        override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
-//                                            return super.calculateSpeedPerPixel(displayMetrics) * 3
-//                                        }
-//
-//                                        override fun onStart() {
-//                                            super.onStart()
-//                                            this@BaseItemHolder.debugLog("scroller onStart | target: $targetPosition")
-//                                        }
-//
-//                                        override fun onStop() {
-//                                            super.onStop()
-//
-//                                            this@BaseItemHolder.debugLog("scroller onStop")
-//                                            onComplete?.invoke()
-//                                        }
-//                                    }.apply {
-//                                        targetPosition = this@BaseItemHolder.absoluteAdapterPosition
-//                                    }
-//
-//                                parentFrag.recyclerView.layoutManager?.startSmoothScroll(scroller)
-//
-//                                updateBackground()
-//                                mIsExpanded = true
-//                            }
-//                        } else {
-//                            fun() {
-//                                updateBackground()
-//                                mIsExpanded = false
-//                            }
-//                        })
-//                }
-//            }
-
             if (shouldExpand != mIsExpanded) {
                 if (shouldExpand) {
                     val firstVisibleItemPosition: Int
@@ -337,9 +289,9 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                                     super.onStop()
 
                                     this@BaseItemHolder.debugLog("scroller onStop")
-                                    collapseArea.toList().forEachIndexed { index, (it, target) ->
+                                    collapseArea.toList().forEach { (it, target) ->
                                         it.showOrHide(
-                                            true,
+                                            shouldShow = true,
                                             animate = true,
                                             targetSize = target
                                         )
@@ -356,9 +308,9 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                         updateBackground()
                         mIsExpanded = true
                     } else {
-                        collapseArea.toList().forEachIndexed { index, (it, target) ->
+                        collapseArea.toList().forEach { (it, target) ->
                             it.showOrHide(
-                                true,
+                                shouldShow = true,
                                 animate = false,
                                 targetSize = target
                             )
@@ -374,7 +326,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
 
                     collapseArea.toList().forEachIndexed { index, (it, target) ->
                         it.showOrHide(
-                            false,
+                            shouldShow = false,
                             animate = false,
                             targetSize = target
                         )

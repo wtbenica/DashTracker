@@ -19,7 +19,6 @@ package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthlies
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
@@ -90,7 +89,9 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
     }
 
     inner class MonthlyExpenseAdapter :
-        BaseItemListAdapter<MonthlyExpenses, MonthlyExpenseAdapter.MonthlyExpenseHolder>(DIFF_CALLBACK) {
+        BaseItemListAdapter<MonthlyExpenses, MonthlyExpenseAdapter.MonthlyExpenseHolder>(
+            DIFF_CALLBACK
+        ) {
 
         override fun onBindViewHolder(
             holder: MonthlyExpenseHolder,
@@ -138,12 +139,9 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
 
                     listItemTitle2.text = getCurrencyString(mItem.total)
 
-                    listItemSubtitle.showOrHide(false)
-                    listItemSubtitle2.showOrHide(false)
-                    listItemSubtitle2Label.showOrHide(false)
-
-                    listItemBtnEdit.visibility = GONE
-                    listItemBtnDelete.visibility = GONE
+                    listItemSubtitle.showOrHide(false, animate = false)
+                    listItemSubtitle2.showOrHide(false, animate = false)
+                    listItemSubtitle2Label.showOrHide(false, animate = false)
                 }
             }
 

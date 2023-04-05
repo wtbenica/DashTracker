@@ -92,8 +92,7 @@
             style="@style/DetailsTable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout_height="100dp"
-            tools:visibility="gone" />
+            tools:layout_height="100dp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
 

@@ -127,18 +127,18 @@
                 android:layout_marginBottom="@dimen/margin_half"
                 android:contentDescription="@string/content_desc_remove"
                 android:src="@drawable/ic_action_delete"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/list_item_btn_edit"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:visibility="gone" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <ImageButton
                 android:id="@+id/list_item_btn_edit"
                 style="@style/ListItemButton"
                 android:contentDescription="@string/content_desc_edit_button"
                 android:src="@drawable/ic_action_edit"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:visibility="gone"/>
+                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

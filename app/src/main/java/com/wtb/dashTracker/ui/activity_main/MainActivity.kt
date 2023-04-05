@@ -154,10 +154,6 @@ class MainActivity : AuthenticatedActivity(),
     ListItemFragment.ListItemFragmentCallback {
     private val viewModel: MainActivityViewModel by viewModels()
 
-    //    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
-//    override val deductionType: StateFlow<DeductionType>
-//        get() = deductionTypeViewModel.deductionType
-//
     // Bindings
     internal lateinit var binding: ActivityMainBinding
     private lateinit var mAdView: AdView
