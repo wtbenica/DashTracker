@@ -962,17 +962,17 @@ class MainActivity : AuthenticatedActivity(),
          * Animate fab icon and adb visibility depending on [serviceState].
          */
         internal fun updateUi() {
-            fun updateTopAppBarVisibility() {
+            fun updateTopAppBarVisibility(onComplete: (() -> Unit)? = null) {
                 debugLog("updateTopAppBarVisibility")
                 when (serviceState) {
                     ADBState.INACTIVE -> {
-                        debugLog("about to show or hide summary bar | ${currDestination == R.id.navigation_income}")
                         binding.summaryBar.root.showOrHide(
                             shouldShow = currDestination == R.id.navigation_income
                         ) {
                             binding.appBarLayout.showOrHide(
                                 shouldShow = currDestination == R.id.navigation_income
                             ) {
+                                onComplete?.invoke()
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
@@ -981,7 +981,8 @@ class MainActivity : AuthenticatedActivity(),
                     ADBState.TRACKING_COLLAPSED,
                     ADBState.TRACKING_FULL -> {
                         binding.appBarLayout.showOrHide(
-                            shouldShow = true
+                            shouldShow = true,
+                            animate = false
                         ) {
                             binding.summaryBar.root.showOrHide(
                                 shouldShow = currDestination == R.id.navigation_income
@@ -992,6 +993,7 @@ class MainActivity : AuthenticatedActivity(),
                                     binding.adb.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                                 }
 
+                                onComplete?.invoke()
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
@@ -999,8 +1001,9 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
-            binding.adb.onServiceStateUpdated(serviceState)
-            updateTopAppBarVisibility()
+            updateTopAppBarVisibility {
+                binding.adb.onServiceStateUpdated(serviceState)
+            }
 
             binding.fab.updateIcon(
                 currFragId = currDestination,

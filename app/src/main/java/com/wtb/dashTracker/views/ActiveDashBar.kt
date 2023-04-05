@@ -87,60 +87,60 @@ class ActiveDashBar @JvmOverloads constructor(
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
-                    root.visibility = GONE
-                    flashingIndicator.pause()
-                    onComplete?.invoke()
+                    root.showOrHide(false) {
+                        flashingIndicator.pause()
+                        onComplete?.invoke()
+                    }
                 }
                 TRACKING_FULL -> { // Always show expanded details
                     startTrackingIndicator()
-                    root.visibility = VISIBLE
-
-                    activeDashDetails.showOrHide(
-                        shouldShow = true
-                    ) {
-                        onComplete?.invoke()
-                    }
-
-                    adbTitleBar.fadeAndGo(
-                        expandMargin = false,
-                        targetMargin = resources.getDimension(R.dimen.min_touch_target),
-                        fadingView = btnStopActiveDash,
-                        getMarginValue = ViewGroup.MarginLayoutParams::getMarginEnd,
-                        setMarginValue = MarginLayoutParams::setMarginEnd
-                    )
-
-                    activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     callback?.revealAppBarLayout(shouldShow = true)
+                    root.showOrHide(true) {
+                        activeDashDetails.showOrHide(shouldShow = true) {
+                            onComplete?.invoke()
+                        }
+
+                        adbTitleBar.fadeAndGo(
+                            expandMargin = false,
+                            targetMargin = resources.getDimension(R.dimen.min_touch_target),
+                            fadingView = btnStopActiveDash,
+                            getMarginValue = ViewGroup.MarginLayoutParams::getMarginEnd,
+                            setMarginValue = MarginLayoutParams::setMarginEnd
+                        )
+
+                        activeDashDetailsTopSpacer.setVisibleIfTrue(true)
+                    }
                 }
                 else -> {
-                    root.visibility = VISIBLE
-
-                    activeDashDetails.showOrHide(
-                        shouldShow = false
-                    ) {
-                        onComplete?.invoke()
-                    }
-
-                    adbTitleBar.fadeAndGo(
-                        expandMargin = true,
-                        targetMargin = resources.getDimension(R.dimen.min_touch_target),
-                        fadingView = btnStopActiveDash,
-                        getMarginValue = MarginLayoutParams::getMarginEnd,
-                        setMarginValue = MarginLayoutParams::setMarginEnd
-                    )
-
-                    activeDashDetailsTopSpacer.setVisibleIfTrue(false)
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
+                    root.showOrHide(true) {
 
-                    when (serviceState) {
-                        TRACKING_COLLAPSED -> { // Show collapsed
-                            startTrackingIndicator()
+                        activeDashDetails.showOrHide(
+                            shouldShow = false
+                        ) {
+                            onComplete?.invoke()
                         }
 
-                        TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
-                            stopTrackingIndicator()
+                        adbTitleBar.fadeAndGo(
+                            expandMargin = true,
+                            targetMargin = resources.getDimension(R.dimen.min_touch_target),
+                            fadingView = btnStopActiveDash,
+                            getMarginValue = MarginLayoutParams::getMarginEnd,
+                            setMarginValue = MarginLayoutParams::setMarginEnd
+                        )
+
+                        activeDashDetailsTopSpacer.setVisibleIfTrue(false)
+
+                        when (serviceState) {
+                            TRACKING_COLLAPSED -> { // Show collapsed
+                                startTrackingIndicator()
+                            }
+
+                            TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
+                                stopTrackingIndicator()
+                            }
+                            else -> {}
                         }
-                        else -> {}
                     }
                 }
             }
