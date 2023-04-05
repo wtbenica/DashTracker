@@ -53,10 +53,10 @@
                 android:layout_height="wrap_content"
                 android:minHeight="@dimen/min_touch_target"
                 android:visibility="gone"
-                tools:visibility="visible"
                 app:cardBackgroundColor="@android:color/transparent"
                 app:cardElevation="0dp"
-                app:layout_scrollFlags="noScroll" />
+                app:layout_scrollFlags="noScroll"
+                tools:visibility="visible" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.fragment.app.FragmentContainerView
