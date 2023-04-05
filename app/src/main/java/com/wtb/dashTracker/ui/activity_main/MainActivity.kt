@@ -96,7 +96,6 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialo
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_weekly.WeeklyDialog
 import com.wtb.dashTracker.ui.fragment_expenses.fragment_dailies.ExpenseListFragment
 import com.wtb.dashTracker.ui.fragment_income.IncomeFragment
-import com.wtb.dashTracker.ui.fragment_income.IncomeFragment.IncomeFragmentCallback
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.LOCATION_ENABLED
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
@@ -115,7 +114,6 @@ import dev.benica.mileagetracker.LocationService
 import dev.benica.mileagetracker.LocationService.ServiceState
 import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.time.LocalDate
@@ -152,14 +150,9 @@ internal fun Any.errorLog(message: String) {
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class MainActivity : AuthenticatedActivity(),
-    IncomeFragmentCallback,
     ActiveDashBarCallback,
     ListItemFragment.ListItemFragmentCallback {
     private val viewModel: MainActivityViewModel by viewModels()
-
-    private val deductionTypeViewModel: DeductionTypeViewModel by viewModels()
-    override val deductionType: StateFlow<DeductionType>
-        get() = deductionTypeViewModel.deductionType
 
     // Bindings
     internal lateinit var binding: ActivityMainBinding
@@ -170,7 +163,7 @@ class MainActivity : AuthenticatedActivity(),
     private var showingWelcomeScreen = false
 
     @IdRes
-    private var currDestination: Int = R.id.navigation_insights
+    private var currDestination: Int = R.id.navigation_income
 
     /**
      * Flag that prevents [EndDashDialog] from being shown if the active entry was deleted, as
@@ -480,15 +473,7 @@ class MainActivity : AuthenticatedActivity(),
                             }
                         }
                     }
-//
-//                    viewIsExpanded = true
-//                    viewIsCollapsed = false
                 }
-//
-//                summaryBar.root.apply {
-//                    viewIsExpanded = true
-//                    viewIsCollapsed = false
-//                }
             }
         }
 
@@ -731,10 +716,7 @@ class MainActivity : AuthenticatedActivity(),
         lockAppBar: Boolean,
         onComplete: (() -> Unit)?
     ) {
-        binding.appBarLayout.revealIfTrue(
-            shouldShow = shouldShow,
-            doAnyways = doAnyways
-        ) {
+        binding.appBarLayout.showOrHide(shouldShow = shouldShow) {
             (binding.summaryBar.root.layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                 if (lockAppBar) {
                     SCROLL_FLAG_NO_SCROLL
@@ -743,11 +725,6 @@ class MainActivity : AuthenticatedActivity(),
                 }
             onComplete?.invoke()
         }
-    }
-
-    // IncomeFragmentCallback
-    override fun setDeductionType(dType: DeductionType) {
-        deductionTypeViewModel.setDeductionType(dType)
     }
 
     // ListItemFragmentCallback overrides
@@ -951,9 +928,11 @@ class MainActivity : AuthenticatedActivity(),
         private val activeEntryId: Long?
             get() = activeEntry?.entry?.entryId
         internal var activeCpm: Float? = 0f
+
         internal var serviceState: ADBState = ADBState.INACTIVE
             set(value) {
                 field = value
+
                 revealAppBarLayout(
                     shouldShow = currDestination == R.id.navigation_income || field != ADBState.INACTIVE,
                     lockAppBar = field == ADBState.TRACKING_COLLAPSED || field == ADBState.TRACKING_DISABLED
@@ -975,22 +954,21 @@ class MainActivity : AuthenticatedActivity(),
                 )
         }
 
-
         /**
          * Animate fab icon and adb visibility depending on [serviceState].
          */
         internal fun updateUi() {
-            fun updateTopAppBarVisibility() {
+            fun updateTopAppBarVisibility(onComplete: (() -> Unit)? = null) {
+               
                 when (serviceState) {
                     ADBState.INACTIVE -> {
-                        binding.summaryBar.root.revealIfTrue(
-                            shouldShow = true,
-                            doAnyways = true
+                        binding.summaryBar.root.showOrHide(
+                            shouldShow = currDestination == R.id.navigation_income
                         ) {
-                            binding.appBarLayout.revealIfTrue(
-                                shouldShow = currDestination == R.id.navigation_income,
-                                doAnyways = true
+                            binding.appBarLayout.showOrHide(
+                                shouldShow = currDestination == R.id.navigation_income
                             ) {
+                                onComplete?.invoke()
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
@@ -998,13 +976,12 @@ class MainActivity : AuthenticatedActivity(),
                     ADBState.TRACKING_DISABLED,
                     ADBState.TRACKING_COLLAPSED,
                     ADBState.TRACKING_FULL -> {
-                        binding.summaryBar.root.revealIfTrue(
-                            shouldShow = currDestination == R.id.navigation_income,
-                            doAnyways = true
+                        binding.appBarLayout.showOrHide(
+                            shouldShow = true,
+                            animate = false
                         ) {
-                            binding.appBarLayout.revealIfTrue(
-                                shouldShow = true,
-                                doAnyways = true
+                            binding.summaryBar.root.showOrHide(
+                                shouldShow = currDestination == R.id.navigation_income
                             ) {
                                 if (currDestination == R.id.navigation_income) {
                                     binding.adb.transitionBackgroundTo(R.attr.colorAppBarBg)
@@ -1012,6 +989,7 @@ class MainActivity : AuthenticatedActivity(),
                                     binding.adb.transitionBackgroundTo(R.attr.colorActiveDashBarBg)
                                 }
 
+                                onComplete?.invoke()
                                 updateToolbarAndBottomPadding(slideAppBarDown = false)
                             }
                         }
@@ -1019,8 +997,9 @@ class MainActivity : AuthenticatedActivity(),
                 }
             }
 
-            binding.adb.onServiceStateUpdated(serviceState)
-            updateTopAppBarVisibility()
+            updateTopAppBarVisibility {
+                binding.adb.onServiceStateUpdated(serviceState)
+            }
 
             binding.fab.updateIcon(
                 currFragId = currDestination,

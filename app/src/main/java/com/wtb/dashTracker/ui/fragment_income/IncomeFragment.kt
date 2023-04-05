@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_income
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -36,7 +36,9 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragIncomeBinding
+import com.wtb.dashTracker.extensions.showOrHide
 import com.wtb.dashTracker.repository.DeductionType
+import com.wtb.dashTracker.ui.activity_main.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.Companion.REQ_KEY_INCOME_LIST_ITEM_SELECTED
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeListItemFragmentCallback
@@ -48,7 +50,6 @@ import com.wtb.dashTracker.ui.fragment_income.fragment_yearlies.YearlyListFragme
 import com.wtb.dashTracker.ui.fragment_income.fragment_yearlies.YearlyListFragment.YearlyListFragmentCallback
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -73,10 +74,15 @@ class IncomeFragment : Fragment(),
     override val isAtTop: Boolean
         get() = currentFragment?.isAtTop ?: false
 
+    private val deductionTypeViewModel: DeductionTypeViewModel by activityViewModels()
+
+    private fun setDeductionType(dType: DeductionType) {
+        deductionTypeViewModel.setDeductionType(dType)
+    }
+
     // Private variables
     private lateinit var binding: FragIncomeBinding
 
-    private lateinit var callback: IncomeFragmentCallback
     private var cpmButtonText: String? = null
 
     /**
@@ -88,11 +94,6 @@ class IncomeFragment : Fragment(),
      * Current fragment - set by OnTabSelected using [fragments] and [TabLayout.Tab.position]
      */
     private var currentFragment: ScrollableFragment? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = (context as IncomeFragmentCallback)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,26 +149,28 @@ class IncomeFragment : Fragment(),
 
         binding.buttonGroupDeductionType.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) {
-                when (checkedId) {
-                    R.id.none_button -> {
-                        callback.setDeductionType(DeductionType.NONE)
-                    }
+                val deductionType = when (checkedId) {
                     R.id.gas_button -> {
-                        callback.setDeductionType(DeductionType.GAS_ONLY)
+                        DeductionType.GAS_ONLY
                     }
                     R.id.actual_button -> {
-                        callback.setDeductionType(DeductionType.ALL_EXPENSES)
+                        DeductionType.ALL_EXPENSES
                     }
                     R.id.standard_button -> {
-                        callback.setDeductionType(DeductionType.IRS_STD)
+                        DeductionType.IRS_STD
+                    }
+                    else -> {
+                        DeductionType.NONE
                     }
                 }
+
+                setDeductionType(deductionType)
             }
         }
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                callback.deductionType.collectLatest {
+                deductionTypeViewModel.deductionType.collectLatest {
                     cpmButtonText = getString(R.string.lbl_cpm) +
                             if (it == DeductionType.NONE) {
                                 ""
@@ -191,13 +194,13 @@ class IncomeFragment : Fragment(),
     }
 
     private fun showOptionsMenu() {
-        binding.filterBoxCollapsableArea.revealIfTrue(true)
+        binding.filterBoxCollapsableArea.showOrHide(true)
         binding.expandArrow.setImageResource(R.drawable.ic_arrow_collapse)
         binding.selectCpm.visibility = GONE
     }
 
     private fun hideOptionsMenu() {
-        binding.filterBoxCollapsableArea.revealIfTrue(false)
+        binding.filterBoxCollapsableArea.showOrHide(false)
         binding.expandArrow.setImageResource(R.drawable.ic_arrow_expand)
         binding.selectCpm.visibility = VISIBLE
         binding.selectCpm.text = cpmButtonText
@@ -232,10 +235,5 @@ class IncomeFragment : Fragment(),
                 .also {
                     fragments[position] = it
                 }
-    }
-
-    interface IncomeFragmentCallback {
-        fun setDeductionType(dType: DeductionType)
-        val deductionType: StateFlow<DeductionType>
     }
 }

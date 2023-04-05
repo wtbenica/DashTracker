@@ -66,16 +66,14 @@ class WeeklyViewModel : ListItemViewModel<Weekly>() {
     ): Pair<Float, Float> =
         CoroutineScope(Dispatchers.Default).async {
             var expenses = 0f
-            withContext(Dispatchers.Default) {
-                compWeekly.entries.forEach { entry ->
-                    withContext(Dispatchers.Default) {
-                        repository.getCostPerMile(entry.date, deductionType)
-                    }.let { cpm: Float? ->
-                        expenses += entry.getExpenses(cpm ?: 0f)
-                    }
-                }.let {
-                    return@let Pair(expenses, expenses / compWeekly.miles)
+            compWeekly.entries.forEach { entry ->
+                withContext(Dispatchers.Default) {
+                    repository.getCostPerMile(entry.date, deductionType)
+                }.let { cpm: Float? ->
+                    expenses += entry.getExpenses(cpm ?: 0f)
                 }
+            }.let {
+                return@let Pair(expenses, expenses / compWeekly.miles)
             }
         }.await()
 }

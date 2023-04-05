@@ -140,7 +140,7 @@
     <style name="Base.DasherCompanion">
         <item name="colorUi">?attr/colorPrimary</item>
         <item name="colorUIBackground">?attr/colorOnSecondary</item>
-        <item name="colorDisabled">@color/brick</item>
+        <item name="colorDisabled">?attr/colorSecondary</item>
         <item name="colorDisabledFaded">?attr/colorSecondaryFaded</item>
 
         <!-- Status bar color. -->
@@ -165,8 +165,8 @@
         <item name="colorTextSecondary">?attr/colorOnSecondary</item>
         <item name="colorTextSecondaryDisabled">?attr/colorOnSecondaryVariant</item>
 
-        <item name="colorSurface">@color/secondary_text_color</item>
-        <item name="colorOnSurface">@color/primary_text_color</item>
+        <item name="colorSurface">?attr/colorOnSecondary</item>
+        <item name="colorOnSurface">?attr/colorOnPrimary</item>
 
         <item name="colorTabItemRipple">?attr/colorSecondaryVariant</item>
 
@@ -234,7 +234,6 @@
 
         <item name="colorListItemTitle">?attr/colorTextPrimary</item>
         <item name="colorListItemSubtitle">?attr/colorTextPrimaryDisabled</item>
-
         <item name="colorListItemButtonBg">?attr/colorPrimaryFaded</item>
         <item name="colorListItemButtonIcon">?attr/colorPrimaryDark</item>
         <item name="colorListItemButtonOutline">?attr/colorPrimaryDark</item>
@@ -308,6 +307,7 @@
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>
         <item name="colorDatePickerNavButton">@color/dark</item>
+        <!-- TODO: should these be colors or references?        -->
         <item name="colorDatePickerBackground">?attr/colorSurface</item>
         <item name="colorDatePickerText">?attr/colorOnSurface</item>
     </style>

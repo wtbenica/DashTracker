@@ -43,9 +43,10 @@
         <item name="android:layout_columnWeight">1</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/margin_narrow</item>
         <item name="android:textSize">?attr/textSizeItemSecondaryValue</item>
         <item name="android:textColor">?attr/colorRowValueSecondaryText</item>
-        <item name="android:textAlignment">center</item>
+        <item name="android:textAlignment">textStart</item>
         <item name="android:gravity">bottom</item>
     </style>
 

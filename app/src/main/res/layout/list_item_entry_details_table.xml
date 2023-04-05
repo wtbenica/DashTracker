@@ -130,7 +130,7 @@
                 tools:text="41" />
 
             <!-- Row 2 -->
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_entry_cpm_header"
                 style="@style/HeaderStyle"
                 android:layout_height="0dp"
@@ -141,7 +141,7 @@
                 tools:layout_height="wrap_content"
                 tools:visibility="visible" />
 
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_entry_cpm_deduction_type"
                 style="@style/SecondaryValueStyle"
                 android:layout_height="0dp"
@@ -152,7 +152,7 @@
                 tools:text="Gas Only"
                 tools:visibility="visible" />
 
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_entry_cpm"
                 style="@style/ValueStyle"
                 android:layout_height="0dp"
@@ -164,7 +164,7 @@
                 tools:visibility="visible" />
 
             <!-- Row 3 -->
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_entry_expenses_header"
                 style="@style/HeaderStyle"
                 android:layout_height="0dp"
@@ -175,7 +175,7 @@
                 tools:layout_height="wrap_content"
                 tools:visibility="visible" />
 
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_entry_expenses"
                 style="@style/ValueStyle"
                 android:layout_height="0dp"

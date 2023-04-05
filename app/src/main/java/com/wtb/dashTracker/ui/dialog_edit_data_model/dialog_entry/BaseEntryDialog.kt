@@ -379,9 +379,9 @@ abstract class BaseEntryDialog : EditDataModelDialog<DashEntry, DialogFragEntryB
 
     protected fun setUpdateMileageButtonVisibility() {
         binding.apply {
-            fragEntryTotalMileageRow.revealIfTrue(fragEntryStartMileage.text.isNotBlank() && fragEntryEndMileage.text.isNotBlank())
+            fragEntryTotalMileageRow.showOrHide(fragEntryStartMileage.text.isNotBlank() && fragEntryEndMileage.text.isNotBlank())
 
-            fragEntryCheckboxUseTrackedMileage.revealIfTrue(!totalMileageMatchesTrackedMileage)
+            fragEntryCheckboxUseTrackedMileage.showOrHide(!totalMileageMatchesTrackedMileage)
 
             fragEntrySpace.setVisibleIfTrue(totalMileageMatchesTrackedMileage)
         }

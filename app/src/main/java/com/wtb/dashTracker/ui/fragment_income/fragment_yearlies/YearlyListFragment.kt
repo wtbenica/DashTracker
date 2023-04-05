@@ -16,7 +16,6 @@
 
 package com.wtb.dashTracker.ui.fragment_income.fragment_yearlies
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
@@ -48,11 +47,12 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogMileageBreakdown
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.aggregate_list_items.Yearly
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Month
-import java.util.*
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -65,7 +65,6 @@ class YearlyListFragment :
 
     private val viewModel: YearlyListViewModel by viewModels()
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -94,8 +93,8 @@ class YearlyListFragment :
                 .inflate(R.layout.list_item_yearly, parent, false)
         ) {
             // BaseItemHolder Overrides
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.listItemDetails)
+            override val collapseArea: Map<View, Int?>
+                get() = mapOf(binding.listItemDetails to null)
 
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
@@ -108,6 +107,9 @@ class YearlyListFragment :
 
             // IncomeItemHolder Overrides
             override var expenseValues: Map<Int, Float> = emptyMap()
+
+            override val holderDeductionTypeFlow: StateFlow<DeductionType>
+                get() = incomeDeductionTypeFlow
 
             private val binding: ListItemYearlyBinding = ListItemYearlyBinding.bind(itemView)
 
@@ -123,6 +125,13 @@ class YearlyListFragment :
 
             private val mileageGridBinding: YearlyMileageGridBinding =
                 YearlyMileageGridBinding.bind(itemView)
+
+            private val hasMultipleStdDeductions: Boolean
+                get() {
+                    val irsStd = deductionType == DeductionType.IRS_STD
+                    val multValues = expenseValues.size > 1
+                    return irsStd && multValues
+                }
 
             // BaseItemHolder Overrides
             override fun updateHeaderFields() {
@@ -142,7 +151,47 @@ class YearlyListFragment :
             }
 
             // IncomeItemHolder Overrides
-            override fun onNewExpenseValues() {
+            override fun updateExpenseFieldVisibilities() {
+                binding.listItemSubtitle2Label.fade(fadeIn = shouldShow)
+                binding.listItemSubtitle2.fade(fadeIn = shouldShow)
+
+                detailsBinding.apply {
+                    listItemYearlyExpensesHeader.showOrHide(shouldShow = shouldShow)
+                    listItemYearlyExpenseDetailsButtonFrame.apply {
+                        val target = resources.getDimension(R.dimen.min_touch_target).toInt()
+                        revealToHeightIfTrue(
+                            shouldExpand = shouldShow,
+                            toHeight = target,
+                            toWidth = target
+                        )
+                    }
+
+                    listItemYearlyExpenseDetailsButton.showOrHide(shouldShow = shouldShow)
+                    listItemYearlyExpenses.showOrHide(shouldShow = shouldShow)
+
+                    mileageBreakdownCard.showOrHide(
+                        shouldShow = shouldShow && hasMultipleStdDeductions,
+                        onHiddenVisibility = GONE,
+                        animate = mIsExpanded
+                    )
+
+                    listItemYearlyCpmHeader.showOrHide(
+                        shouldShow = shouldShow && !hasMultipleStdDeductions
+                    )
+                    listItemYearlyCpmDeductionType.showOrHide(
+                        shouldShow = shouldShow && !hasMultipleStdDeductions
+                    )
+                    listItemYearlyCpm.showOrHide(
+                        shouldShow = shouldShow && !hasMultipleStdDeductions
+                    )
+                }
+
+            }
+
+            override fun updateExpenseFieldValues() {
+                /**
+                 * Update mileage breakdown table
+                 */
                 fun updateMileageBreakdownTable(expenseValues: Map<Int, Float>?) {
                     fun getMileageBreakdownData(cpm: Map<Int, Float>?): MutableMap<Int, Map<MileageBreakdownKey, Float?>> {
                         val res = mutableMapOf<Int, Map<MileageBreakdownKey, Float?>>()
@@ -199,117 +248,68 @@ class YearlyListFragment :
                     }
                 }
 
-                fun updateValues(
-                    show: Boolean = true,
-                    hasMultipleStdDeductions: Boolean = false
-                ) {
-                    binding.listItemSubtitle2Label.fade(fadeIn = show)
-                    binding.listItemSubtitle2.fade(fadeIn = show)
-
-                    detailsBinding.apply {
-                        listItemYearlyExpensesHeader.showOrHide(show, mIsExpanded)
-                        listItemYearlyExpenseDetailsButtonFrame.apply {
-                            val target = resources.getDimension(R.dimen.min_touch_target).toInt()
-                            revealToHeightIfTrue(show, target, target)
+                /**
+                 * Calculate yearly expenses using the appropriate method according to [deductionType]
+                 */
+                fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f): Float {
+                    /**
+                     * Use IRS Std Deduction to calculate mileage expenses for the year
+                     */
+                    fun getStandardDeductionExpense(): Float {
+                        val table = viewModel.standardMileageDeductionTable()
+                        var res = 0f
+                        mItem.monthlies.keys.forEach { mon ->
+                            val stdDedAmount: Float = table[LocalDate.of(mItem.year, mon, 1)]
+                            res += stdDedAmount * (mItem.monthlies[mon]?.mileage ?: 0f)
                         }
-
-                        listItemYearlyExpenseDetailsButton.showOrHide(show, mIsExpanded)
-                        listItemYearlyExpenses.showOrHide(show, mIsExpanded)
-
-                        mileageBreakdownCard.showOrHide(
-                            show && hasMultipleStdDeductions, mIsExpanded, GONE
-                        )
-                        listItemYearlyCpmHeader.showOrHide(
-                            show && !hasMultipleStdDeductions, mIsExpanded
-                        )
-                        listItemYearlyCpmDeductionType.showOrHide(
-                            show && !hasMultipleStdDeductions, mIsExpanded
-                        )
-                        listItemYearlyCpm.showOrHide(
-                            show && !hasMultipleStdDeductions, mIsExpanded
-                        )
+                        return res
                     }
-                }
 
-                fun getCalculatedExpenses(costPerMile: Float): Float =
-                    mItem.mileage * costPerMile
-
-                // TODO: Refactor.
-                fun getStandardDeductionExpense(): Float {
-                    val table = viewModel.standardMileageDeductionTable()
-                    var res = 0f
-                    mItem.monthlies.keys.forEach { mon ->
-                        val stdDedAmount: Float = table[LocalDate.of(mItem.year, mon, 1)]
-                        res += stdDedAmount * (mItem.monthlies[mon]?.mileage ?: 0f)
-                    }
-                    return res
-                }
-
-                fun getExpenses(deductionType: DeductionType, costPerMile: Float = 0f) =
-                    when (deductionType) {
+                    return when (deductionType) {
                         DeductionType.IRS_STD -> getStandardDeductionExpense()
-                        else -> getCalculatedExpenses(costPerMile)
+                        else -> mItem.mileage * costPerMile
                     }
+                }
 
                 fun getNet(cpm: Float, deductionType: DeductionType): Float =
                     mItem.totalPay - getExpenses(deductionType, cpm)
 
                 fun getHourly(cpm: Float): Float = getNet(cpm, deductionType) / mItem.hours
 
-                detailsBinding.mileageBreakdownCard.visibility = GONE
+                if (hasMultipleStdDeductions) {
+                    updateMileageBreakdownTable(expenseValues)
+                }
 
-                when (deductionType) {
-                    DeductionType.NONE -> updateValues(false)
-                    DeductionType.IRS_STD -> {
-                        val hasMultipleStdDeductions = expenseValues.size > 1
+                if (shouldShow) {
+                    detailsBinding.listItemYearlyCpmDeductionType.text =
+                        deductionType.fullDesc
 
-                        updateValues(
-                            show = true,
-                            hasMultipleStdDeductions = hasMultipleStdDeductions
-                        )
-
-                        if (hasMultipleStdDeductions) {
-                            updateMileageBreakdownTable(expenseValues)
+                    val costPerMile: Float =
+                        if (deductionType == DeductionType.IRS_STD) {
+                            0f
                         } else {
-                            detailsBinding.listItemYearlyCpmDeductionType.text =
-                                deductionType.fullDesc
-
-                            detailsBinding.listItemYearlyCpm.text =
-                                getCpmIrsStdString(expenseValues)
+                            expenseValues.get(12) ?: 0f
                         }
 
-                        detailsBinding.listItemYearlyExpenses.text =
-                            getCurrencyString(getExpenses(deductionType))
+                    detailsBinding.listItemYearlyCpm.text =
+                        if (deductionType == DeductionType.IRS_STD) {
+                            getCpmIrsStdString(expenseValues)
+                        } else {
+                            formatCpm(costPerMile)
+                        }
 
-                        binding.listItemSubtitle2.text =
-                            getCurrencyString(getNet(0f, deductionType))
+                    detailsBinding.listItemYearlyExpenses.text =
+                        getCurrencyString(getExpenses(deductionType, costPerMile))
 
-                        detailsBinding.listItemYearlyHourly.text =
-                            getCurrencyString(getHourly(0f))
-                    }
-                    else -> {
-                        updateValues()
+                    binding.listItemSubtitle2.text =
+                        getCurrencyString(getNet(costPerMile, deductionType))
 
-                        val costPerMile: Float = expenseValues.get(12) ?: 0f
-
-                        detailsBinding.listItemYearlyCpmDeductionType.text =
-                            deductionType.fullDesc
-
-                        detailsBinding.listItemYearlyCpm.text = formatCpm(costPerMile)
-
-                        detailsBinding.listItemYearlyExpenses.text =
-                            getCurrencyString(getExpenses(deductionType, costPerMile))
-
-                        binding.listItemSubtitle2.text =
-                            getCurrencyString(getNet(costPerMile, deductionType))
-
-                        detailsBinding.listItemYearlyHourly.text =
-                            getCurrencyString(getHourly(costPerMile))
-                    }
+                    detailsBinding.listItemYearlyHourly.text =
+                        getCurrencyString(getHourly(costPerMile))
                 }
             }
 
-            override suspend fun getExpenseValues(): Map<Int, Float> =
+            override suspend fun getExpenseValues(deductionType: DeductionType): Map<Int, Float> =
                 viewModel.getAnnualCostPerMile(
                     this@YearlyHolder.mItem.year,
                     deductionType

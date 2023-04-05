@@ -24,7 +24,7 @@
         android:id="@+id/navigation_income"
         android:name="com.wtb.dashTracker.ui.fragment_income.IncomeFragment"
         android:label="@string/frag_title_income"
-        tools:layout="@layout/frag_item_list">
+        tools:layout="@layout/frag_income">
 
         <action
             android:id="@+id/action_income_to_insights"
@@ -70,7 +70,7 @@
         android:id="@+id/navigation_expenses"
         android:name="com.wtb.dashTracker.ui.fragment_expenses.ExpenseFragment"
         android:label="@string/frag_title_expenses"
-        tools:layout="@layout/frag_item_list">
+        tools:layout="@layout/frag_expense">
 
         <action
             android:id="@+id/action_expenses_to_income"

@@ -21,6 +21,7 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import android.widget.TableLayout
 import androidx.annotation.DimenRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -32,7 +33,7 @@ import com.wtb.dashTracker.database.daos.TransactionDao.NewCpm
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.databinding.ChartHolderBinding
-import com.wtb.dashTracker.views.ExpandableTableLayout
+import com.wtb.dashTracker.extensions.showOrHide
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
@@ -131,14 +132,14 @@ abstract class DTChart @JvmOverloads constructor(
     @StringRes val subtitle: Int? = null
 ) : LinearLayout(context, attrSet, defStyleAttr) {
 
-    abstract val filterTable: ExpandableTableLayout
+    abstract val filterTable: TableLayout
 
     fun hideFilters(onComplete: (() -> Unit)? = null) {
-        filterTable.revealIfTrue(false, true) { onComplete?.invoke() }
+        filterTable.showOrHide(false) { onComplete?.invoke() }
     }
 
     fun showFilters(onComplete: (() -> Unit)? = null) {
-        filterTable.revealIfTrue(true, true) { onComplete?.invoke() }
+        filterTable.showOrHide(true) { onComplete?.invoke() }
     }
 
 

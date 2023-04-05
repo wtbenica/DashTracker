@@ -20,6 +20,8 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.annotation.AttrRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +41,7 @@ class ActiveDashBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = 0
-) : ExpandableLinearLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val binding: ActivityMainActiveDashBarBinding
     private var callback: ActiveDashBarCallback? = null
@@ -80,63 +82,64 @@ class ActiveDashBar @JvmOverloads constructor(
         serviceState: ADBState,
         onComplete: (() -> Unit)? = null
     ) {
+
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse
-                    root.visibility = GONE
-                    flashingIndicator.pause()
-                    onComplete?.invoke()
+                    root.showOrHide(false) {
+                        flashingIndicator.pause()
+                        onComplete?.invoke()
+                    }
                 }
                 TRACKING_FULL -> { // Always show expanded details
                     startTrackingIndicator()
-
-                    adbTitleBar.fadeAndGo(
-                        expandMargin = false,
-                        targetMargin = resources.getDimension(R.dimen.min_touch_target),
-                        fadingView = btnStopActiveDash,
-                        getMarginValue = MarginLayoutParams::getMarginEnd,
-                        setMarginValue = MarginLayoutParams::setMarginEnd
-                    )
-
-                    activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     callback?.revealAppBarLayout(shouldShow = true)
-                    root.visibility = VISIBLE
-                    activeDashDetails.revealIfTrue(
-                        shouldShow = true,
-                        doAnyways = true
-                    ) {
-                        onComplete?.invoke()
+                    root.showOrHide(true) {
+                        activeDashDetails.showOrHide(shouldShow = true) {
+                            onComplete?.invoke()
+                        }
+
+                        adbTitleBar.fadeAndGo(
+                            expandMargin = false,
+                            targetMargin = resources.getDimension(R.dimen.min_touch_target),
+                            fadingView = btnStopActiveDash,
+                            getMarginValue = ViewGroup.MarginLayoutParams::getMarginEnd,
+                            setMarginValue = MarginLayoutParams::setMarginEnd
+                        )
+
+                        activeDashDetailsTopSpacer.setVisibleIfTrue(true)
                     }
                 }
                 else -> {
-                    adbTitleBar.fadeAndGo(
-                        expandMargin = true,
-                        targetMargin = resources.getDimension(R.dimen.min_touch_target),
-                        fadingView = btnStopActiveDash,
-                        getMarginValue = MarginLayoutParams::getMarginEnd,
-                        setMarginValue = MarginLayoutParams::setMarginEnd
-                    )
-
-                    activeDashDetailsTopSpacer.setVisibleIfTrue(false)
                     callback?.revealAppBarLayout(shouldShow = true, lockAppBar = true)
-                    root.visibility = VISIBLE
-                    activeDashDetails.revealIfTrue(
-                        shouldShow = false,
-                        doAnyways = true
-                    ) {
-                        onComplete?.invoke()
-                    }
+                    root.showOrHide(true) {
 
-
-                    when (serviceState) {
-                        TRACKING_COLLAPSED -> { // Show collapsed
-                            startTrackingIndicator()
+                        activeDashDetails.showOrHide(
+                            shouldShow = false
+                        ) {
+                            onComplete?.invoke()
                         }
 
-                        TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
-                            stopTrackingIndicator()
+                        adbTitleBar.fadeAndGo(
+                            expandMargin = true,
+                            targetMargin = resources.getDimension(R.dimen.min_touch_target),
+                            fadingView = btnStopActiveDash,
+                            getMarginValue = MarginLayoutParams::getMarginEnd,
+                            setMarginValue = MarginLayoutParams::setMarginEnd
+                        )
+
+                        activeDashDetailsTopSpacer.setVisibleIfTrue(false)
+
+                        when (serviceState) {
+                            TRACKING_COLLAPSED -> { // Show collapsed
+                                startTrackingIndicator()
+                            }
+
+                            TRACKING_DISABLED -> { // Show collapsed and stop tracking indicator
+                                stopTrackingIndicator()
+                            }
+                            else -> {}
                         }
-                        else -> {}
                     }
                 }
             }

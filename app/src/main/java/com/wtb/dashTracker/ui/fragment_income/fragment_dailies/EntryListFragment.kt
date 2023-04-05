@@ -36,7 +36,7 @@ import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ListItemEntryBinding
 import com.wtb.dashTracker.databinding.ListItemEntryDetailsTableBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.repository.DeductionType.NONE
+import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDeleteDialog
@@ -51,6 +51,7 @@ import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Modific
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_entry.EntryDialog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -134,8 +135,8 @@ class EntryListFragment :
             LayoutInflater.from(context).inflate(R.layout.list_item_entry, parent, false)
         ) {
             // BaseItemHolder Overrides
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.listItemDetails)
+            override val collapseArea: Map<View, Int?>
+                get() = mapOf(binding.listItemDetails to null)
 
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
@@ -152,6 +153,9 @@ class EntryListFragment :
             private val binding = ListItemEntryBinding.bind(itemView)
 
             private val detailsBinding = ListItemEntryDetailsTableBinding.bind(itemView)
+
+            override val holderDeductionTypeFlow: StateFlow<DeductionType>
+                get() = incomeDeductionTypeFlow
 
             init {
                 binding.listItemBtnEdit.apply {
@@ -269,19 +273,20 @@ class EntryListFragment :
             }
 
             // IncomeItemHolder Overrides
-            override suspend fun getExpenseValues(): Float =
+            override suspend fun getExpenseValues(deductionType: DeductionType): Float =
                 viewModel.getCostPerMile(mItem.entry.date, deductionType)
 
-            override fun onNewExpenseValues() {
-                val shouldShow = deductionType != NONE
+            override fun updateExpenseFieldVisibilities() {
                 binding.listItemSubtitle2Label.fade(shouldShow)
                 binding.listItemSubtitle2.fade(shouldShow)
-                detailsBinding.listItemEntryCpmHeader.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryCpmDeductionType.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryCpm.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryExpensesHeader.revealIfTrue(shouldShow)
-                detailsBinding.listItemEntryExpenses.revealIfTrue(shouldShow)
+                detailsBinding.listItemEntryCpmHeader.showOrHide(shouldShow)
+                detailsBinding.listItemEntryCpmDeductionType.showOrHide(shouldShow)
+                detailsBinding.listItemEntryCpm.showOrHide(shouldShow)
+                detailsBinding.listItemEntryExpensesHeader.showOrHide(shouldShow)
+                detailsBinding.listItemEntryExpenses.showOrHide(shouldShow)
+            }
 
+            override fun updateExpenseFieldValues() {
                 detailsBinding.listItemEntryCpmDeductionType.apply {
                     text = deductionType.fullDesc
                 }

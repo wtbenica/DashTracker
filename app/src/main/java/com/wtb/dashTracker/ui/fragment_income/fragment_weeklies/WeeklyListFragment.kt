@@ -49,6 +49,7 @@ import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.util.PermissionsHelper.Companion.PREF_SHOW_BASE_PAY_ADJUSTS
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 
 @ExperimentalAnimationApi
@@ -61,6 +62,7 @@ class WeeklyListFragment :
     override val entryAdapter: FullWeeklyAdapter = FullWeeklyAdapter().apply {
         registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                // TODO: Is this on purpose? is it that when loading it takes list to the end? check it out one day
                 binding.itemListRecyclerView.scrollToPosition(positionStart)
             }
         })
@@ -123,8 +125,8 @@ class WeeklyListFragment :
             ) {
 
             // BaseItemHolder Overrides
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.listItemDetails)
+            override val collapseArea: Map<View, Int?>
+                get() = mapOf(binding.listItemDetails to null)
 
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
@@ -137,6 +139,9 @@ class WeeklyListFragment :
 
             // IncomeItemHolder Overrides
             override var expenseValues: Pair<Float, Float> = Pair(0f, 0f)
+
+            override val holderDeductionTypeFlow: StateFlow<DeductionType>
+                get() = incomeDeductionTypeFlow
 
             private val binding: ListItemWeeklyBinding = ListItemWeeklyBinding.bind(itemView)
 
@@ -185,6 +190,7 @@ class WeeklyListFragment :
 
             override fun updateDetailsFields() {
                 val basePayAdjust = this.mItem.weekly.basePayAdjustment
+
                 detailsBinding.listItemWeeklyAdjust.text =
                     getCurrencyString(basePayAdjust)
                 detailsBinding.listItemRegularPay.text = getCurrencyString(this.mItem.regularPay)
@@ -211,34 +217,35 @@ class WeeklyListFragment :
             }
 
             // IncomeItemHolder Overrides
-            override suspend fun getExpenseValues(): Pair<Float, Float> =
+            override suspend fun getExpenseValues(deductionType: DeductionType): Pair<Float, Float> =
                 viewModel.getExpensesAndCostPerMile(
                     this@WeeklyHolder.mItem,
                     deductionType
                 )
 
-            override fun onNewExpenseValues() {
-                val shouldShow = deductionType != DeductionType.NONE
+            override fun updateExpenseFieldVisibilities() {
                 binding.listItemSubtitle2Label.fade(shouldShow)
                 binding.listItemSubtitle2.fade(shouldShow)
-                detailsBinding.listItemWeeklyCpmHeader.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemWeeklyCpm.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemWeeklyExpensesHeader.showOrHide(shouldShow, mIsExpanded)
-                detailsBinding.listItemWeeklyExpenses.showOrHide(shouldShow, mIsExpanded)
+                detailsBinding.listItemWeeklyCpmHeader.showOrHide(shouldShow)
+                detailsBinding.listItemWeeklyCpmDeductionType.showOrHide(shouldShow)
+                detailsBinding.listItemWeeklyCpm.showOrHide(shouldShow)
+                detailsBinding.listItemWeeklyExpensesHeader.showOrHide(shouldShow)
+                detailsBinding.listItemWeeklyExpenses.showOrHide(shouldShow)
+            }
+
+            override fun updateExpenseFieldValues() {
+                val (expenses, cpm) = expenseValues
+
+                binding.listItemSubtitle2.text =
+                    getCurrencyString(this@WeeklyHolder.mItem.getNet(cpm))
 
                 detailsBinding.listItemWeeklyCpmDeductionType.text =
                     deductionType.fullDesc
 
-                val (expenses, cpm) = expenseValues
+                detailsBinding.listItemWeeklyCpm.text = formatCpm(cpm)
 
                 detailsBinding.listItemWeeklyExpenses.text =
                     getCurrencyString(expenses)
-
-                detailsBinding.listItemWeeklyCpm.text = formatCpm(cpm)
-
-                binding.listItemSubtitle2.text =
-                    getCurrencyString(this@WeeklyHolder.mItem.getNet(cpm))
 
                 detailsBinding.listItemWeeklyHourly.text = getCurrencyString(
                     this@WeeklyHolder.mItem.getHourly(cpm)

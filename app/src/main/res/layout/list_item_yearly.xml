@@ -32,7 +32,7 @@
             android:id="@+id/list_item_header"
             style="@style/ListItemHeader">
 
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_title"
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_marginEnd="@dimen/margin_half"
@@ -40,7 +40,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="2021" />
 
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_title_2"
                 style="@style/ListItemHeaderTextView.Title"
                 android:layout_width="0dp"
@@ -51,7 +51,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="$2081.25" />
 
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_subtitle_2_label"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_marginEnd="@dimen/margin_half"
@@ -61,7 +61,7 @@
                 app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2"
                 tools:alpha="1" />
 
-            <com.wtb.dashTracker.views.ExpandableTextView
+            <TextView
                 android:id="@+id/list_item_subtitle_2"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:alpha="0"
