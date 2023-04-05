@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.SeekBar
+import android.widget.TableLayout
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -44,7 +45,6 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.views.ExpandableTableLayout
 import com.wtb.dashTracker.views.WeeklyLineChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.lang.Integer.min
@@ -112,7 +112,13 @@ class CpmChart(
             setDrawBorders(true)
             valueFormatter = object : ValueFormatter() {
                 override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                    return context.getString(R.string.cpm_unit, value)
+                    return context.getString(
+                        if (selectedDeductionType == DeductionType.IRS_STD) {
+                            R.string.irs_cpm_unit
+                        } else {
+                            R.string.cpm_unit
+                        }, value
+                    )
                 }
             }
         }
@@ -166,7 +172,7 @@ class CpmChart(
         binding.buttonGroupDeductionType.addOnButtonCheckedListener { _, _, _ -> update() }
     }
 
-    override val filterTable: ExpandableTableLayout
+    override val filterTable: TableLayout
         get() = binding.tableFilters
 
     override fun update(

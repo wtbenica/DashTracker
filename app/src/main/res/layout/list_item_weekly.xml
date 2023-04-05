@@ -70,18 +70,20 @@
                 android:id="@+id/list_item_subtitle_2_label"
                 style="@style/ListItemHeaderTextView.Subtitle"
                 android:layout_marginEnd="@dimen/margin_half"
+                android:alpha="0"
                 android:text="@string/list_item_label_net"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/list_item_subtitle_2"
-                tools:visibility="visible" />
+                tools:alpha="1" />
 
             <TextView
                 android:id="@+id/list_item_subtitle_2"
                 style="@style/ListItemHeaderTextView.Subtitle"
+                android:alpha="0"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/list_item_title"
+                tools:alpha="1"
                 tools:text="$24.32" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

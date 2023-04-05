@@ -18,7 +18,7 @@
   -->
 
 <!-- Don't add vertical margins, it messes up the hiding on scroll -->
-<com.wtb.dashTracker.views.ExpandableGridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -33,8 +33,8 @@
         android:layout_rowSpan="4"
         android:layout_rowWeight="1"
         android:layout_column="2"
-        android:layout_marginStart="@dimen/margin_half"
-        android:layout_marginEnd="@dimen/margin_half"
+        android:layout_marginStart="@dimen/margin_narrow"
+        android:layout_marginEnd="@dimen/margin_narrow"
         android:background="?attr/colorActiveDashBarBg" />
 
     <androidx.legacy.widget.Space
@@ -153,4 +153,4 @@
         android:layout_columnWeight="1"
         android:layout_marginEnd="@dimen/margin_half"
         tools:text="$451.11" />
-</com.wtb.dashTracker.views.ExpandableGridLayout>
+</GridLayout>

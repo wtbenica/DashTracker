@@ -99,4 +99,9 @@ val LocalDate.endOfWeek: LocalDate get() = dateOfNextDayOfWeek(DayOfWeek.SUNDAY)
 val LocalDate.weekOfYear: Int get() = endOfWeek.dayOfYear / 7 + 1
 
 
+fun LocalDate.isPreviousMonth(other: LocalDate): Boolean {
+    return this.minusMonths(1) == other
+}
+
+
 

@@ -27,7 +27,7 @@ import java.time.LocalDateTime
  * with [resId] and [args]
  */
 fun Fragment.getStringOrElse(@StringRes resId: Int, ifNull: String, vararg args: Any?): String =
-    if (args.map { it != null }.reduce { acc, b -> acc && b })
+    if (args.map { it != null && (it !is Float || !it.isNaN()) }.reduce { acc, b -> acc && b })
         getString(resId, *args)
     else
         ifNull
@@ -44,6 +44,8 @@ fun Fragment.getCpmString(value: Float?): String =
     else
         getStringOrElse(R.string.cpm_unit, "-", value)
 
+fun Fragment.getCpmIrsStdString(value: Float?) = getCpmIrsStdString(mapOf(12 to (value ?: 0f)))
+
 fun Fragment.getCpmIrsStdString(value: Map<Int, Float>?): String =
     if (value == null) {
         getString(R.string.blank_currency)
@@ -54,7 +56,7 @@ fun Fragment.getCpmIrsStdString(value: Map<Int, Float>?): String =
                 res.append("/")
             }
 
-            res.append(getStringOrElse(R.string.cpm_unit, "-", value[it]))
+            res.append(getStringOrElse(R.string.irs_cpm_unit, "-", value[it]))
         }
         res.toString()
     }

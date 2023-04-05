@@ -192,6 +192,7 @@
         <!-- datetime picker -->
         <item name="colorDatePickerSelected">@color/regular</item>
         <item name="colorDatePickerNavButton">@color/dark</item>
+        <!-- TODO: should these be colors or references?        -->
         <item name="colorDatePickerBackground">?attr/colorSurface</item>
         <item name="colorDatePickerText">?attr/colorOnSurface</item>
     </style>

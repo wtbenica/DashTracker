@@ -16,16 +16,17 @@
 
 package com.wtb.dashTracker.extensions
 
+import android.animation.Animator
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.ViewTreeObserver
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
@@ -33,12 +34,17 @@ import android.view.animation.Transformation
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import java.lang.Integer.max
-import kotlin.reflect.KProperty1
+import kotlin.math.abs
+import kotlin.reflect.KFunction1
+import kotlin.reflect.KFunction2
+
+internal const val ANIMATION_DURATION = 300L
+private const val COLOR_TRANSITION_ANIMATION = 100L
 
 fun View.isTouchTarget(ev: MotionEvent?): Boolean {
     val x = ev?.x?.toInt()
@@ -55,71 +61,89 @@ fun View.isTouchTarget(ev: MotionEvent?): Boolean {
 private val View.targetHeight: Int
     get() {
         val matchParentMeasureSpec =
-            View.MeasureSpec.makeMeasureSpec((parent as View).width, View.MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec((parent as View).width, MeasureSpec.EXACTLY)
         val wrapContentMeasureSpec =
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
         measure(matchParentMeasureSpec, wrapContentMeasureSpec)
+
         return measuredHeight
     }
 
-internal const val ANIMATION_DURATION = 300L
+fun View.showOrHide(
+    shouldShow: Boolean,
+    targetSize: Int? = null,
+    onHiddenVisibility: Int = INVISIBLE,
+    animate: Boolean = true,
+    onComplete: (() -> Unit)? = null
+) {
+    if (shouldShow) {
+        visibility = VISIBLE
+        updateLayoutParams {
+            height = max(1, this@showOrHide.height)
+        }
+    }
 
-fun View.animateValue(property: KProperty1<View, Int>, from: Int, to: Int) {
+    val startHeight = max(1, height)
+    val endHeight = if (shouldShow) {
+        targetSize ?: targetHeight
+    } else {
+        0
+    }
 
-}
-fun View.reveal(onComplete: (() -> Unit)? = null) {
-    animation?.cancel()
-    clearAnimation()
-    layoutParams.height = max(1, layoutParams.height)
-    visibility = VISIBLE
+    val heightDuration = endHeight - startHeight
 
-    val expandAnimation =
-        object : Animation() {
-            override fun willChangeBounds(): Boolean = true
-
-            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                this@reveal.apply {
-                    layoutParams.height = (targetHeight * interpolatedTime).toInt()
-                    requestLayout()
+    if (animate) {
+        animate()
+            .alpha(if (shouldShow) 1f else 0f)
+            .setUpdateListener {
+                updateLayoutParams {
+                    height = (startHeight + heightDuration * it.animatedFraction).toInt()
                 }
             }
-        }.apply {
-            duration = ANIMATION_DURATION
-            fillAfter = true
-
-            setAnimationListener(object : AnimationListener {
-                override fun onAnimationStart(animation: Animation?) {
-                    // Do nothing
-                }
-
-                override fun onAnimationEnd(animation: Animation?) {
-                    this@reveal.apply {
-                        layoutParams.height = WRAP_CONTENT
-                        clearAnimation()
-                        requestLayout()
-                        onComplete?.invoke()
+            .setDuration(ANIMATION_DURATION)
+            .withEndAction {
+                clearAnimation()
+                if (!shouldShow) {
+                    visibility = onHiddenVisibility
+                    updateLayoutParams {
+                        height = 0
+                    }
+                } else {
+                    updateLayoutParams {
+                        height = targetSize ?: WRAP_CONTENT
                     }
                 }
-
-                override fun onAnimationRepeat(animation: Animation?) {
-                    // Do nothing
-                }
-            })
+                requestLayout()
+                onComplete?.invoke()
+            }
+    } else {
+        updateLayoutParams {
+            height = if (shouldShow) {
+                targetSize ?: WRAP_CONTENT
+            } else {
+                0
+            }
         }
+        visibility = if (shouldShow) VISIBLE else onHiddenVisibility
+        onComplete?.invoke()
+    }
 
-    startAnimation(expandAnimation)
 }
 
-fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
+fun View.animateTo(targetHeight: Int?, targetWidth: Int?, onComplete: (() -> Unit)? = null) {
     animation?.cancel()
     clearAnimation()
     if ((targetHeight == 0 && height == 0) || (targetWidth == 0 && width == 0)) {
-        this.debugLog("shrinking but already gone")
-        visibility = GONE
-        targetHeight?.let { layoutParams.height = it }
-        targetWidth?.let { layoutParams.width = it }
+        visibility = INVISIBLE
+        updateLayoutParams {
+            targetHeight?.let { height = it }
+            targetWidth?.let { width = it }
+        }
     } else {
-        layoutParams.height = max(1, layoutParams.height)
+        updateLayoutParams {
+            height = max(1, layoutParams.height)
+        }
+
         visibility = VISIBLE
 
         var widthMeasureSpec = layoutParams.width
@@ -129,19 +153,19 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
             when (targetWidth) {
                 MATCH_PARENT -> {
                     specWidth = (parent as View).width
-                    specWidthMode = View.MeasureSpec.EXACTLY
+                    specWidthMode = MeasureSpec.EXACTLY
                 }
                 WRAP_CONTENT -> {
                     specWidth = 0
-                    specWidthMode = View.MeasureSpec.UNSPECIFIED
+                    specWidthMode = MeasureSpec.UNSPECIFIED
                 }
                 else -> {
                     specWidth = targetWidth
-                    specWidthMode = View.MeasureSpec.EXACTLY
+                    specWidthMode = MeasureSpec.EXACTLY
                 }
             }
 
-            widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(specWidth, specWidthMode)
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(specWidth, specWidthMode)
         }
 
         var heightMeasureSpec: Int = layoutParams.height
@@ -151,19 +175,19 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
             when (targetHeight) {
                 MATCH_PARENT -> {
                     specHeight = (parent as View).width
-                    specHeightMode = View.MeasureSpec.EXACTLY
+                    specHeightMode = MeasureSpec.EXACTLY
                 }
                 WRAP_CONTENT -> {
                     specHeight = 0
-                    specHeightMode = View.MeasureSpec.UNSPECIFIED
+                    specHeightMode = MeasureSpec.UNSPECIFIED
                 }
                 else -> {
                     specHeight = targetHeight
-                    specHeightMode = View.MeasureSpec.EXACTLY
+                    specHeightMode = MeasureSpec.EXACTLY
                 }
             }
 
-            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(specHeight, specHeightMode)
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(specHeight, specHeightMode)
         }
 
         measure(widthMeasureSpec, heightMeasureSpec)
@@ -178,8 +202,12 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
             override fun willChangeBounds(): Boolean = true
 
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                layoutParams.height = initHeight + (deltaHeight * interpolatedTime).toInt()
-                layoutParams.width = initWidth + (deltaWidth * interpolatedTime).toInt()
+                super.applyTransformation(interpolatedTime, t)
+                updateLayoutParams {
+                    height = (initHeight + deltaHeight * interpolatedTime).toInt()
+                    width = (initWidth + deltaWidth * interpolatedTime).toInt()
+                }
+
                 requestLayout()
             }
         }.apply {
@@ -192,13 +220,17 @@ fun View.animateTo(targetHeight: Int?, targetWidth: Int?) {
 
                 override fun onAnimationEnd(animation: Animation?) {
                     this@animateTo.apply {
-                        layoutParams.height = initHeight + deltaHeight
-                        layoutParams.width = initWidth + deltaWidth
+                        updateLayoutParams {
+                            height = initHeight + deltaHeight
+                            width = initWidth + deltaWidth
+                        }
+
                         clearAnimation()
                         if (height == 0 || width == 0) {
-                            visibility = GONE
+                            visibility = INVISIBLE
                         }
                         requestLayout()
+                        onComplete?.invoke()
                     }
                 }
 
@@ -223,59 +255,16 @@ fun View.revealToHeightIfTrue(
             targetWidth = toWidth,
         )
     } else if (!shouldExpand && isVisible) {
-        collapse()
+        showOrHide(false)
     }
 }
 
-fun View.collapse(onComplete: (() -> Unit)? = null) {
-    animation?.cancel()
-    clearAnimation()
-    val initHeight = measuredHeight
-
-    val collapseAnimation = object : Animation() {
-        override fun willChangeBounds(): Boolean = true
-
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            this@collapse.apply {
-                layoutParams.height = initHeight - (initHeight * interpolatedTime).toInt()
-                requestLayout()
-            }
-        }
-    }.apply {
-        duration = ANIMATION_DURATION
-
-        setAnimationListener(object : AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-                // Do nothing
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
-                this@collapse.apply {
-                    layoutParams.height = 0
-                    visibility = GONE
-                    clearAnimation()
-                    requestLayout()
-                    onComplete?.invoke()
-                }
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) {
-                // Do nothing
-            }
-        })
+fun View.setVisibleIfTrue(boolean: Boolean, elseVisibility: Int = GONE) {
+    val newVisibility = if (boolean) VISIBLE else elseVisibility
+    if (visibility != newVisibility) {
+        visibility = newVisibility
+        requestLayout()
     }
-
-    if (initHeight > 0)
-        startAnimation(collapseAnimation)
-    else {
-        visibility = GONE
-        onComplete?.invoke()
-    }
-}
-
-fun View.setVisibleIfTrue(boolean: Boolean) {
-    visibility = if (boolean) VISIBLE else GONE
-    requestLayout()
 }
 
 fun View.focusAndShowKeyboard() {
@@ -307,8 +296,6 @@ fun View.focusAndShowKeyboard() {
 }
 
 fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
-    val initHeight = measuredHeight
-
     val colorFrom = MaterialColors.getColor(this, from)
     val colorTo = MaterialColors.getColor(this, to)
     val colorAnimation: ValueAnimator = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
@@ -325,8 +312,6 @@ fun View.transitionBackground(@AttrRes from: Int, @AttrRes to: Int) {
 }
 
 fun View.transitionBackgroundTo(@AttrRes to: Int) {
-    val initHeight = measuredHeight
-
     val bgColor = when (background) {
         is ColorDrawable -> (background as ColorDrawable?)?.color
         is MaterialShapeDrawable -> (background as MaterialShapeDrawable?)?.fillColor?.defaultColor
@@ -337,7 +322,7 @@ fun View.transitionBackgroundTo(@AttrRes to: Int) {
 
     val colorAnimation: ValueAnimator =
         ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
-            duration = ANIMATION_DURATION
+            duration = COLOR_TRANSITION_ANIMATION
         }
 
     colorAnimation.addUpdateListener {
@@ -384,4 +369,116 @@ fun MaterialButton.rotateUp() {
     }
 
     startAnimation(animation)
+}
+
+val View.marginLayoutParams: MarginLayoutParams
+    get() = layoutParams as MarginLayoutParams
+
+fun View.fade(
+    fadeIn: Boolean,
+    doNext: (() -> Unit)? = null
+) {
+    animate()
+        .alpha(if (fadeIn) 1f else 0f)
+        .setListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                // Do nothing
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                doNext?.invoke()
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+                // Do nothing
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+                // Do nothing
+            }
+
+        })
+}
+
+fun View.animateMargin(
+    expand: Boolean,
+    marginFullSize: Float,
+    getMarginValue: KFunction1<MarginLayoutParams, Int>,
+    setMarginValue: KFunction2<MarginLayoutParams, Int, Unit>,
+    doNext: (() -> Unit)? = null
+) {
+    animation?.cancel()
+    clearAnimation()
+
+    val startingMargin = getMarginValue(marginLayoutParams)
+    val endMargin = if (expand) marginFullSize.toInt() else 0
+    val marginDuration = endMargin - startingMargin
+
+    val animation =
+        object : Animation() {
+            override fun willChangeBounds(): Boolean = true
+
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+                updateLayoutParams<MarginLayoutParams> {
+                    setMarginValue(
+                        this,
+                        (startingMargin + marginDuration * interpolatedTime).toInt()
+                    )
+                }
+
+                requestLayout()
+            }
+        }.apply {
+            duration =
+                (ANIMATION_DURATION * abs(marginDuration) / marginFullSize).toLong()
+            fillAfter = true
+
+            setAnimationListener(object : AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+                    // Do nothing
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    updateLayoutParams<MarginLayoutParams> {
+                        setMarginValue(this, endMargin)
+                    }
+
+                    clearAnimation()
+                    requestLayout()
+                    doNext?.invoke()
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+                    // Do nothing
+                }
+            })
+        }
+
+    startAnimation(animation)
+}
+
+fun View.fadeAndGo(
+    expandMargin: Boolean,
+    targetMargin: Float,
+    fadingView: View,
+    getMarginValue: KFunction1<MarginLayoutParams, Int>,
+    setMarginValue: KFunction2<MarginLayoutParams, Int, Unit>
+) {
+    val shouldExpand =
+        expandMargin && (getMarginValue(marginLayoutParams) < targetMargin)
+
+    val shouldCollapse =
+        !expandMargin && (getMarginValue(marginLayoutParams) > 0)
+
+    when {
+        shouldExpand || shouldCollapse -> {
+            animateMargin(
+                expand = expandMargin,
+                marginFullSize = targetMargin,
+                getMarginValue = getMarginValue,
+                setMarginValue = setMarginValue
+            )
+            fadingView.fade(fadeIn = expandMargin)
+        }
+    }
 }

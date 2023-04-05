@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthly_expenses
+package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthlies
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.ExpensePurpose
@@ -28,6 +31,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class MonthlyExpenseListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()

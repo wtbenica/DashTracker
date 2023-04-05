@@ -109,14 +109,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/frag_income_tab_layout">
 
-            <com.wtb.dashTracker.views.ExpandableLinearLayout
+            <LinearLayout
                 android:id="@+id/filter_box_collapsable_area"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 android:paddingHorizontal="@dimen/margin_default"
                 android:paddingVertical="@dimen/margin_default"
-                android:visibility="gone"
+                android:visibility="invisible"
+                tools:ignore="Suspicious0dp"
+                tools:layout_height="wrap_content"
                 tools:visibility="visible">
 
                 <TextView
@@ -155,7 +157,7 @@
                         style="@style/MaterialToggleButton"
                         android:text="@string/expense_purpose_standard" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
-            </com.wtb.dashTracker.views.ExpandableLinearLayout>
+            </LinearLayout>
 
             <View
                 android:id="@+id/divider_2"
@@ -178,6 +180,7 @@
         android:id="@+id/frag_income_view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        tools:layout="@layout/frag_item_list"
         android:layout_weight="1"
         android:background="?attr/colorUIBackground"
         app:layout_constraintBottom_toBottomOf="parent"

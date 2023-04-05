@@ -56,7 +56,7 @@
             android:layout_gravity="bottom"
             app:cardCornerRadius="?attr/listItemCornerRadius">
 
-            <com.wtb.dashTracker.views.ExpandableTableLayout
+            <TableLayout
                 android:id="@+id/table_filters"
                 style="@style/ChartTunerTable"
                 tools:visibility="visible">
@@ -111,7 +111,7 @@
 
                     </com.google.android.material.button.MaterialButtonToggleGroup>
                 </TableRow>
-            </com.wtb.dashTracker.views.ExpandableTableLayout>
+            </TableLayout>
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 </merge>

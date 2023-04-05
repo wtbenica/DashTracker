@@ -16,6 +16,9 @@
 
 package com.wtb.dashTracker.ui.fragment_trends
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.FullWeekly
@@ -25,6 +28,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class ChartsViewModel : ViewModel() {
     companion object {
@@ -43,16 +49,14 @@ class ChartsViewModel : ViewModel() {
     ): Pair<Float, Float> =
         CoroutineScope(Dispatchers.Default).async {
             var expenses = 0f
-            withContext(Dispatchers.Default) {
-                compWeekly.entries.forEach { entry ->
-                    withContext(Dispatchers.Default) {
-                        repository.getCostPerMile(entry.date, deductionType)
-                    }.let { cpm: Float? ->
-                        expenses += entry.getExpenses(cpm ?: 0f)
-                    }
-                }.let {
-                    return@let Pair(expenses, expenses / compWeekly.miles)
+            compWeekly.entries.forEach { entry ->
+                withContext(Dispatchers.Default) {
+                    repository.getCostPerMile(entry.date, deductionType)
+                }.let { cpm: Float? ->
+                    expenses += entry.getExpenses(cpm ?: 0f)
                 }
+            }.let {
+                return@let Pair(expenses, expenses / compWeekly.miles)
             }
         }.await()
 

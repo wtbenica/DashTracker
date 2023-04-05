@@ -45,7 +45,7 @@ import com.wtb.dashTracker.extensions.getDimen
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
-import com.wtb.dashTracker.views.ExpandableTableLayout
+import android.widget.TableLayout
 import com.wtb.dashTracker.views.WeeklyBarChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.LocalDate
@@ -208,7 +208,7 @@ class HourlyBarChart(
         }
     }
 
-    override val filterTable: ExpandableTableLayout
+    override val filterTable: TableLayout
         get() = binding.tableFilters
 
     override fun update(
@@ -250,7 +250,7 @@ class HourlyBarChart(
                 val dec = map[de.date] ?: DashEntryCollector(0f, 0, 0f, 0f)
                 dec.totalHours += de.totalHours ?: 0f
                 dec.numDeliveries += de.numDeliveries ?: 0
-                dec.totalEarned += de.totalEarned ?: 0f
+                dec.totalEarned += de.totalEarned
                 dec.mileage += de.mileage ?: 0f
                 map[de.date] = dec
                 map

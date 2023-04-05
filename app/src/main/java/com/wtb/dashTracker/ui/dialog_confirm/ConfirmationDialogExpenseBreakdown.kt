@@ -49,7 +49,7 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.ui.activity_welcome.ui.composables.marginDefault
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
-import com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.Yearly
+import com.wtb.dashTracker.ui.fragment_list_item_base.aggregate_list_items.Yearly
 import com.wtb.dashTracker.ui.fragment_trends.FullWidthDialogFragment
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -86,6 +86,9 @@ class ConfirmationDialogExpenseBreakdown(private val yearly: Yearly) : FullWidth
     }
 }
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 @Composable
 fun ExpenseBreakdownTable(yearly: Yearly) {
@@ -134,7 +137,9 @@ fun ExpenseBreakdownTable(yearly: Yearly) {
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 @Preview
 @Composable

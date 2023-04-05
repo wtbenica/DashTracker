@@ -17,6 +17,7 @@
 package com.wtb.dashTracker.ui.fragment_list_item_base
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
@@ -31,11 +32,10 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.*
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.databinding.FragItemListBinding
-import com.wtb.dashTracker.extensions.getDimen
-import com.wtb.dashTracker.extensions.setVisibleIfTrue
-import com.wtb.dashTracker.extensions.transitionBackgroundTo
+import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
+import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -90,9 +90,18 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         return binding.root
     }
 
-    abstract inner class BaseItemListAdapter<ItemType : ListItemType>(diffCallback: DiffUtil.ItemCallback<ItemType>) :
-        ListAdapter<ItemType, BaseItemHolder<ItemType>>(diffCallback),
-        ExpandableAdapter {
+    protected open fun onItemExpanded() {
+        listItemFragmentCallback.hideToolbarsAndFab(hideToolbar = !allItemsAreShowing)
+    }
+
+    protected open fun onItemClosed() {
+        listItemFragmentCallback.showToolbarsAndFab()
+    }
+
+    abstract class BaseItemListAdapter<ItemType : ListItemType, HolderType : BaseItemHolder<ItemType>>(
+        diffCallback: DiffUtil.ItemCallback<ItemType>
+    ) :
+        ListAdapter<ItemType, HolderType>(diffCallback), ExpandableAdapter {
 
         override var mExpandedPosition: Int? = null
 
@@ -103,24 +112,20 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         override fun onBindViewHolder(
-            holder: BaseItemHolder<ItemType>,
+            holder: HolderType,
             position: Int,
             payloads: List<Any>
         ) {
-            super.onBindViewHolder(holder, position, payloads)
-            val itemIsExpanded = if (position == mExpandedPosition) {
-                VISIBLE
+            if (payloads.isEmpty()) {
+                super.onBindViewHolder(holder, position, payloads)
             } else {
-                GONE
-            }
-            val newPayloads = listOf(itemIsExpanded) + payloads
-            getItem(position)?.let {
-                holder.bind(it, newPayloads)
+
+                holder.setExpandedFromPayloads(payloads)
             }
         }
 
         override fun onBindViewHolder(
-            holder: BaseItemHolder<ItemType>,
+            holder: HolderType,
             position: Int
         ) {
             getItem(position)?.let { holder.bind(it) }
@@ -129,17 +134,19 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): BaseItemHolder<ItemType> =
+        ): HolderType =
             getViewHolder(parent, viewType)
 
         abstract fun getViewHolder(
             parent: ViewGroup,
             viewType: Int? = null
-        ): BaseItemHolder<ItemType>
+        ): HolderType
     }
 
-    abstract inner class BaseItemPagingDataAdapter<T : ListItemType>(diffCallback: DiffUtil.ItemCallback<T>) :
-        PagingDataAdapter<T, BaseItemHolder<T>>(diffCallback), ExpandableAdapter {
+    abstract class BaseItemPagingDataAdapter<ItemType : ListItemType, HolderType : BaseItemHolder<ItemType>>(
+        diffCallback: DiffUtil.ItemCallback<ItemType>
+    ) :
+        PagingDataAdapter<ItemType, HolderType>(diffCallback), ExpandableAdapter {
 
         override var mExpandedPosition: Int? = null
 
@@ -150,105 +157,189 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         }
 
         override fun onBindViewHolder(
-            holder: BaseItemHolder<T>,
+            holder: HolderType,
             position: Int,
             payloads: List<Any>
         ) {
-            super.onBindViewHolder(holder, position, payloads)
-            val itemIsExpanded = if (position == mExpandedPosition) {
-                VISIBLE
+            if (payloads.isEmpty()) {
+                super.onBindViewHolder(holder, position, payloads)
             } else {
-                GONE
-            }
-            val newPayloads = listOf(itemIsExpanded) + payloads
-            getItem(position)?.let {
-                holder.bind(it, newPayloads)
+
+                holder.setExpandedFromPayloads(payloads)
             }
         }
 
-        override fun onBindViewHolder(holder: BaseItemHolder<T>, position: Int) {
+        override fun onBindViewHolder(holder: HolderType, position: Int) {
             getItem(position)?.let { holder.bind(it) }
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<T> =
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderType =
             getViewHolder(parent, viewType)
 
-        abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): BaseItemHolder<T>
+        abstract fun getViewHolder(parent: ViewGroup, viewType: Int? = null): HolderType
     }
 
     /**
      * Implements collapsing-details-area for list items
      */
     @Suppress("LeakingThis")
-    abstract inner class BaseItemHolder<T : ListItemType>(itemView: View) :
+    abstract class BaseItemHolder<T : ListItemType>(itemView: View) :
         RecyclerView.ViewHolder(itemView), OnClickListener {
-        protected lateinit var item: T
-        abstract val collapseArea: Array<View>
+        abstract val collapseArea: Map<View, Int?>
         abstract val backgroundArea: ViewGroup
         abstract val bgCard: CardView
+        abstract val parentFrag: ListItemFragment
 
-        abstract fun bind(item: T, payloads: List<Any>? = null)
+        internal lateinit var mItem: T
+        protected var mIsExpanded: Boolean = false
+
+        protected var mIsInitialized: Boolean = false
+        private var mPrevPayload: List<Any>? = null
+
+        abstract fun updateHeaderFields()
+        abstract fun updateDetailsFields()
 
         init {
             itemView.setOnClickListener(this)
         }
 
+        open fun bind(item: T, payloads: List<Any>? = null) {
+            if (!mIsInitialized || this.mItem != item) {
+                mIsInitialized = true
+                this.mItem = item
+
+                updateHeaderFields()
+                updateDetailsFields()
+            }
+
+            setExpandedFromPayloads(emptyList())
+        }
+
         override fun onClick(v: View?) {
             if (bindingAdapter is ExpandableAdapter) {
-                var prev: Int? = null
 
-                val adapter: ExpandableAdapter? = when (bindingAdapter) {
-                    is ListItemFragment.BaseItemPagingDataAdapter<*> -> bindingAdapter as ListItemFragment.BaseItemPagingDataAdapter<*>
-                    is ListItemFragment.BaseItemListAdapter<*> -> bindingAdapter as ListItemFragment.BaseItemListAdapter<*>
-                    else -> null
-                }
+                (bindingAdapter as? ExpandableAdapter)?.let { adapter ->
+                    val previouslyExpandedItemPosition: Int? = adapter.mExpandedPosition
 
-                adapter?.let {
-                    prev = it.mExpandedPosition
-                    if (bindingAdapterPosition == it.mExpandedPosition) {
-                        onItemClosed()
+                    if (bindingAdapterPosition == adapter.mExpandedPosition) { // item is expanded
+                        parentFrag.onItemClosed()
 
-                        it.mExpandedPosition = null
-                    } else {
-                        onItemExpanded()
+                        adapter.mExpandedPosition = null
 
-                        it.mExpandedPosition = (bindingAdapterPosition)
-                        val scroller = object : LinearSmoothScroller(context) {
-                            override fun getVerticalSnapPreference(): Int {
-                                return SNAP_TO_START
-                            }
-                        }.apply {
-                            targetPosition = bindingAdapterPosition
+                        expandListItem(false)
+                    } else { // item is not expanded
+                        parentFrag.onItemExpanded()
+
+                        adapter.mExpandedPosition = bindingAdapterPosition
+
+                        expandListItem(true)
+
+                        previouslyExpandedItemPosition?.let { pos -> // need to close previous item
+                            (adapter as? RecyclerView.Adapter<*>)?.notifyItemChanged(
+                                pos,
+                                Pair(PayloadField.EXPANDED, false)
+                            )
                         }
-
-                        recyclerView.layoutManager?.startSmoothScroll(scroller)
                     }
                 }
-
-                prev?.let { bindingAdapter?.notifyItemChanged(it) }
-                bindingAdapter?.notifyItemChanged(bindingAdapterPosition)
             }
         }
 
-        protected fun setVisibilityFromPayloads(payloads: List<Any>?) {
-            val showDetails = payloads?.getOrNull(0) == VISIBLE
+        private fun expandListItem(shouldExpand: Boolean, onComplete: (() -> Unit)? = null) {
+            fun updateBackground() {
+                if (shouldExpand) {
+                    backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
+                } else {
+                    backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
+                }
+            }
 
-            collapseArea.forEach { it.setVisibleIfTrue(showDetails) }
+            if (shouldExpand != mIsExpanded) {
+                if (shouldExpand) {
+                    val firstVisibleItemPosition: Int
+                    val lastVisibleItemPosition: Int
 
-            if (showDetails) {
-                backgroundArea.transitionBackgroundTo(R.attr.colorListItemExpanded)
-            } else {
-                backgroundArea.transitionBackgroundTo(R.attr.colorListItem)
+                    (parentFrag.recyclerView.layoutManager as? LinearLayoutManager).let {
+                        firstVisibleItemPosition =
+                            it?.findFirstVisibleItemPosition() ?: Int.MAX_VALUE
+                        lastVisibleItemPosition = it?.findLastVisibleItemPosition() ?: Int.MIN_VALUE
+                    }
+                    if (bindingAdapterPosition in firstVisibleItemPosition..lastVisibleItemPosition) {
+                        val scroller =
+                            object : LinearSmoothScroller(parentFrag.requireContext()) {
+
+                                override fun getVerticalSnapPreference(): Int {
+                                    return SNAP_TO_START
+                                }
+
+                                override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
+                                    return super.calculateSpeedPerPixel(displayMetrics) * 3
+                                }
+
+                                override fun onStop() {
+                                    super.onStop()
+
+                                    collapseArea.toList().forEach { (it, target) ->
+                                        it.showOrHide(
+                                            shouldShow = true,
+                                            animate = true,
+                                            targetSize = target
+                                        )
+                                    }
+
+                                    onComplete?.invoke()
+                                }
+                            }.apply {
+                                targetPosition = this@BaseItemHolder.absoluteAdapterPosition
+                            }
+
+                        parentFrag.recyclerView.layoutManager?.startSmoothScroll(scroller)
+
+                        updateBackground()
+                        mIsExpanded = true
+                    } else {
+                        collapseArea.toList().forEach { (it, target) ->
+                            it.showOrHide(
+                                shouldShow = true,
+                                animate = false,
+                                targetSize = target
+                            )
+                        }
+
+                        onComplete?.invoke()
+
+                        updateBackground()
+                        mIsExpanded = true
+                    }
+                } else {
+                    updateBackground()
+
+                    collapseArea.toList().forEachIndexed { index, (it, target) ->
+                        it.showOrHide(
+                            shouldShow = false,
+                            animate = false,
+                            targetSize = target
+                        )
+                    }
+
+                    mIsExpanded = false
+                }
             }
         }
-    }
 
-    protected open fun onItemExpanded() {
-        listItemFragmentCallback.hideToolbarsAndFab(hideToolbar = !allItemsAreShowing)
-    }
+        internal fun setExpandedFromPayloads(payloads: List<Any>) {
+            val shouldExpandFromPayload: Boolean? =
+                (payloads.lastOrNull { it is Pair<*, *> && it.first == PayloadField.EXPANDED } as Pair<*, *>?)?.second as Boolean?
 
-    protected open fun onItemClosed() {
-        listItemFragmentCallback.showToolbarsAndFab()
+            val shouldExpand: Boolean =
+                if (shouldExpandFromPayload is Boolean) {
+                    shouldExpandFromPayload
+                } else {
+                    (bindingAdapter as? ExpandableAdapter)?.mExpandedPosition == bindingAdapterPosition
+                }
+
+            expandListItem(shouldExpand)
+        }
     }
 
     interface ListItemFragmentCallback {
@@ -266,6 +357,7 @@ interface ExpandableAdapter {
         get() = object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
+                // update new expanded position
                 mExpandedPosition = mExpandedPosition?.let {
                     if (it >= positionStart)
                         it + itemCount
@@ -276,6 +368,7 @@ interface ExpandableAdapter {
 
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
+                // update new expanded position
                 mExpandedPosition = mExpandedPosition?.let {
                     if (it >= positionStart + itemCount)
                         it - itemCount

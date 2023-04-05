@@ -69,14 +69,14 @@
                 android:text="@string/header_mileage"
                 android:textAlignment="textEnd" />
 
-            <com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.ValueTextView
+            <com.wtb.dashTracker.ui.fragment_income.fragment_yearlies.ValueTextView
                 android:layout_row="1"
                 android:layout_column="0"
                 android:layout_columnWeight="1"
                 android:padding="0dp"
                 android:text="Hello" />
 
-            <com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.HeaderTextView
+            <com.wtb.dashTracker.ui.fragment_income.fragment_yearlies.HeaderTextView
                 android:layout_row="1"
                 android:layout_column="1"
                 android:layout_columnWeight="1"
@@ -84,7 +84,7 @@
                 android:text="Nono"
                 android:textAlignment="textEnd" />
 
-            <com.wtb.dashTracker.ui.fragment_list_item_base.fragment_yearlies.ValueTextView
+            <com.wtb.dashTracker.ui.fragment_income.fragment_yearlies.ValueTextView
                 android:layout_row="1"
                 android:layout_column="2"
                 android:layout_columnWeight="1"

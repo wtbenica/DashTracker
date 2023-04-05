@@ -16,6 +16,9 @@
 
 package com.wtb.dashTracker.ui.fragment_expenses
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.wtb.dashTracker.database.models.Expense
@@ -24,6 +27,9 @@ import com.wtb.dashTracker.repository.Repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class ExpenseListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()

@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_list_item_base.fragment_dailies
+package com.wtb.dashTracker.ui.fragment_income.fragment_dailies
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.wtb.dashTracker.database.models.DashEntry
@@ -26,6 +29,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class EntryListViewModel : ViewModel() {
     private val repository: Repository = Repository.get()
@@ -36,6 +42,6 @@ class EntryListViewModel : ViewModel() {
 
     fun deleteEntryById(id: Long): Unit = repository.deleteEntryById(id)
 
-    suspend fun getCostPerMile(date: LocalDate, deductionType: DeductionType): Float =
-        repository.getCostPerMile(date, deductionType)
+    suspend fun getCostPerMile(date: LocalDate, deduction: DeductionType): Float =
+        repository.getCostPerMile(date, deduction)
 }

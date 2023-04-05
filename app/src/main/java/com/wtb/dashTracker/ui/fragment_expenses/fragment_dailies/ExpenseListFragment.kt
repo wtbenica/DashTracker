@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Wesley T. Benica
+ * Copyright 2023 Wesley T. Benica
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_expenses
+package com.wtb.dashTracker.ui.fragment_expenses.fragment_dailies
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -42,6 +42,9 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_EXTRA_ITEM_ID
 import com.wtb.dashTracker.ui.dialog_confirm.SimpleConfirmationDialog.Companion.ARG_IS_CONFIRMED
 import com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense.ExpenseDialog
+import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListItemFragment
+import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListViewModel
+import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -97,8 +100,11 @@ class ExpenseListFragment : ExpenseListItemFragment() {
     }
 
     @ExperimentalAnimationApi
-    inner class ExpenseAdapter : BaseItemPagingDataAdapter<FullExpense>(DIFF_CALLBACK) {
-        override fun getViewHolder(parent: ViewGroup, viewType: Int?): BaseItemHolder<FullExpense> =
+    inner class ExpenseAdapter :
+        BaseItemPagingDataAdapter<FullExpense, ExpenseAdapter.ExpenseHolder>(
+            DIFF_CALLBACK
+        ) {
+        override fun getViewHolder(parent: ViewGroup, viewType: Int?): ExpenseHolder =
             when (viewType) {
                 0 -> GasExpenseHolder(parent)
                 else -> OtherExpenseHolder(parent)
@@ -110,7 +116,10 @@ class ExpenseListFragment : ExpenseListItemFragment() {
                 else -> 1
             }
 
-        abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView)
+        abstract inner class ExpenseHolder(itemView: View) : BaseItemHolder<FullExpense>(itemView) {
+            override val parentFrag: ListItemFragment
+                get() = this@ExpenseListFragment
+        }
 
         @ExperimentalAnimationApi
         inner class GasExpenseHolder(parent: ViewGroup) : ExpenseHolder(
@@ -118,12 +127,16 @@ class ExpenseListFragment : ExpenseListItemFragment() {
         ), View.OnClickListener {
             private val binding: ListItemExpenseBinding = ListItemExpenseBinding.bind(itemView)
 
-            override val collapseArea: Array<View>
-                get() = arrayOf(
-                    binding.listItemDetailsCard,
-                    binding.listItemBtnDelete,
-                    binding.listItemBtnEdit
-                )
+            override val collapseArea: Map<View, Int?>
+                get() {
+                    val minTouchTarget = resources.getDimension(R.dimen.min_touch_target)
+                        .toInt()
+                    return mapOf(
+                        binding.listItemDetailsCard to null,
+                        binding.listItemBtnDelete to minTouchTarget,
+                        binding.listItemBtnEdit to minTouchTarget
+                    )
+                }
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
             override val bgCard: CardView
@@ -132,7 +145,7 @@ class ExpenseListFragment : ExpenseListItemFragment() {
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog.newInstance(item.id).show(
+                        ExpenseDialog.newInstance(mItem.id).show(
                             childFragmentManager,
                             "edit_details"
                         )
@@ -141,45 +154,43 @@ class ExpenseListFragment : ExpenseListItemFragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.item.id)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@GasExpenseHolder.mItem.id)
                             .show(childFragmentManager, null)
                     }
                 }
             }
 
-            override fun bind(item: FullExpense, payloads: List<Any>?) {
-                this.item = item
-
-                if (this.item.isEmpty) {
-                    viewModel.delete(item.expense)
+            override fun updateHeaderFields() {
+                if (this.mItem.isEmpty) {
+                    viewModel.delete(mItem.expense)
                 }
 
-                binding.listItemTitle.text = this.item.expense.date.formatted
+                binding.listItemTitle.text = this.mItem.expense.date.formatted
                 binding.listItemTitle2.text =
-                    getStringOrElse(R.string.currency_fmt, "-", this.item.expense.amount)
-                binding.listItemSubtitle.text = this.item.purpose.name
+                    getStringOrElse(R.string.currency_fmt, "-", this.mItem.expense.amount)
+                binding.listItemSubtitle.text = this.mItem.purpose.name
                 binding.listItemPrice.text =
                     getStringOrElse(
                         R.string.gas_price_display,
                         "-",
-                        this.item.expense.pricePerGal
+                        this.mItem.expense.pricePerGal
                     )
                 binding.listItemGallons.text =
-                    getStringOrElse(R.string.float_fmt, "-", this.item.expense.gallons)
-
-                setVisibilityFromPayloads(payloads)
+                    getStringOrElse(R.string.float_fmt, "-", this.mItem.expense.gallons)
             }
+
+            override fun updateDetailsFields() {}
         }
 
         @ExperimentalAnimationApi
-        inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseAdapter.ExpenseHolder(
+        inner class OtherExpenseHolder(parent: ViewGroup) : ExpenseHolder(
             LayoutInflater.from(context).inflate(R.layout.list_item_expense_non_gas, parent, false)
         ), View.OnClickListener {
             private val binding: ListItemExpenseNonGasBinding =
                 ListItemExpenseNonGasBinding.bind(itemView)
 
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.buttonBox)
+            override val collapseArea: Map<View, Int?>
+                get() = mapOf(binding.buttonBox to null)
             override val backgroundArea: ViewGroup
                 get() = binding.listItemWrapper
             override val bgCard: CardView
@@ -188,7 +199,7 @@ class ExpenseListFragment : ExpenseListItemFragment() {
             init {
                 binding.listItemBtnEdit.apply {
                     setOnClickListener {
-                        ExpenseDialog.newInstance(item.id).show(
+                        ExpenseDialog.newInstance(mItem.id).show(
                             childFragmentManager,
                             "edit_details"
                         )
@@ -197,22 +208,20 @@ class ExpenseListFragment : ExpenseListItemFragment() {
 
                 binding.listItemBtnDelete.apply {
                     setOnClickListener {
-                        ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.item.id)
+                        ConfirmDeleteDialog.newInstance(confirmId = this@OtherExpenseHolder.mItem.id)
                             .show(childFragmentManager, null)
                     }
                 }
             }
 
-            override fun bind(item: FullExpense, payloads: List<Any>?) {
-                this.item = item
-
-                binding.listItemTitle.text = this.item.expense.date.formatted
+            override fun updateHeaderFields() {
+                binding.listItemTitle.text = this.mItem.expense.date.formatted
                 binding.listItemTitle2.text =
-                    getStringOrElse(R.string.currency_fmt, "-", this.item.expense.amount)
-                binding.listItemSubtitle.text = this.item.purpose.name
-
-                setVisibilityFromPayloads(payloads)
+                    getStringOrElse(R.string.currency_fmt, "-", this.mItem.expense.amount)
+                binding.listItemSubtitle.text = this.mItem.purpose.name
             }
+
+            override fun updateDetailsFields() {}
         }
     }
 

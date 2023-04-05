@@ -16,12 +16,15 @@
 
 package com.wtb.dashTracker.database.models
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.wtb.dashTracker.extensions.weekOfYear
-import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
+import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeListItemType
 import dev.benica.csvutil.CSVConvertible
 import dev.benica.csvutil.CSVConvertible.Column
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,6 +72,9 @@ data class Weekly(
     }
 }
 
+@ExperimentalAnimationApi
+@ExperimentalTextApi
+@ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 data class FullWeekly(
     @Embedded
@@ -76,7 +82,7 @@ data class FullWeekly(
 
     @Relation(parentColumn = "date", entityColumn = "week")
     val entries: List<DashEntry>
-) : ListItemType {
+) : IncomeListItemType {
     val isEmpty: Boolean
         get() = entries.isEmpty() && weekly.isIncomplete
 

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthly_expenses
+package com.wtb.dashTracker.ui.fragment_expenses.fragment_monthlies
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
@@ -42,24 +40,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import com.wtb.dashTracker.R
-import com.wtb.dashTracker.database.models.DashEntry
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.databinding.ListItemDetailsTableBinding
 import com.wtb.dashTracker.databinding.ListItemHolderBinding
-import com.wtb.dashTracker.extensions.*
+import com.wtb.dashTracker.extensions.getCurrencyString
+import com.wtb.dashTracker.extensions.setVisibleIfTrue
+import com.wtb.dashTracker.extensions.showOrHide
 import com.wtb.dashTracker.ui.dialog_confirm.composables.HeaderText
 import com.wtb.dashTracker.ui.dialog_confirm.composables.ValueText
 import com.wtb.dashTracker.ui.fragment_expenses.ExpenseListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
-import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
 import com.wtb.dashTracker.ui.theme.DashTrackerTheme
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
-import java.lang.Float.max
-import java.lang.Float.min
-import java.time.LocalDate
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -70,7 +65,6 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
     private val viewModel: MonthlyExpenseListViewModel by viewModels()
     private var purposes: List<ExpensePurpose>? = null
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -95,10 +89,12 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
     }
 
     inner class MonthlyExpenseAdapter :
-        ListItemFragment.BaseItemListAdapter<MonthlyExpenses>(DIFF_CALLBACK) {
+        BaseItemListAdapter<MonthlyExpenses, MonthlyExpenseAdapter.MonthlyExpenseHolder>(
+            DIFF_CALLBACK
+        ) {
 
         override fun onBindViewHolder(
-            holder: BaseItemHolder<MonthlyExpenses>,
+            holder: MonthlyExpenseHolder,
             position: Int,
             payloads: List<Any>
         ) {
@@ -107,7 +103,7 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
             }
         }
 
-        override fun onBindViewHolder(holder: BaseItemHolder<MonthlyExpenses>, position: Int) {
+        override fun onBindViewHolder(holder: MonthlyExpenseHolder, position: Int) {
             if (getItem(position)?.showInList == true) {
                 super.onBindViewHolder(holder, position)
             }
@@ -116,19 +112,16 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
         override fun getViewHolder(
             parent: ViewGroup,
             viewType: Int?
-        ): BaseItemHolder<MonthlyExpenses> = MonthlyExpenseHolder(parent)
+        ): MonthlyExpenseHolder = MonthlyExpenseHolder(parent)
 
         inner class MonthlyExpenseHolder(parent: ViewGroup) : BaseItemHolder<MonthlyExpenses>(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.list_item_holder, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.list_item_holder, parent, false)
         ) {
-            private val binding: ListItemHolderBinding = ListItemHolderBinding.bind(itemView)
+            private val binding = ListItemHolderBinding.bind(itemView)
+            private val detailsBinding = ListItemDetailsTableBinding.bind(itemView)
 
-            private val detailsBinding: ListItemDetailsTableBinding =
-                ListItemDetailsTableBinding.bind(itemView)
-
-            override val collapseArea: Array<View>
-                get() = arrayOf(binding.listItemDetails)
+            override val collapseArea: Map<View, Int?>
+                get() = mapOf(binding.listItemDetails to null)
 
             override val backgroundArea: LinearLayout
                 get() = binding.listItemWrapper
@@ -136,41 +129,41 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
             override val bgCard: CardView
                 get() = binding.root
 
-            override fun bind(item: MonthlyExpenses, payloads: List<Any>?) {
-                this.item = item
+            override val parentFrag: ListItemFragment
+                get() = this@MonthlyExpenseListFragment
 
+            override fun updateHeaderFields() {
                 binding.apply {
                     listItemTitle.text =
-                        this@MonthlyExpenseHolder.item.date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
+                        this@MonthlyExpenseHolder.mItem.date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
 
-                    listItemTitle2.text = getCurrencyString(item.total)
+                    listItemTitle2.text = getCurrencyString(mItem.total)
 
-                    listItemSubtitle.revealIfTrue(false)
-                    listItemSubtitle2.revealIfTrue(false)
-                    listItemSubtitle2Label.revealIfTrue(false)
-
-                    listItemBtnEdit.visibility = GONE
-                    listItemBtnDelete.visibility = GONE
+                    listItemSubtitle.showOrHide(false, animate = false)
+                    listItemSubtitle2.showOrHide(false, animate = false)
+                    listItemSubtitle2Label.showOrHide(false, animate = false)
                 }
+            }
 
+            override fun updateDetailsFields() {
                 detailsBinding.apply {
                     listItemWorkMiles.text =
-                        getString(R.string.odometer_fmt, item.workMiles)
+                        getString(R.string.odometer_fmt, mItem.workMiles)
 
-                    listItemTotalMiles.text = item.totalMiles.toString()
+                    listItemTotalMiles.text = mItem.totalMiles.toString()
 
                     listItemPctWorkMiles.text =
-                        getString(R.string.percent_int, item.workMilePercentDisplay)
+                        getString(R.string.percent_int, mItem.workMilePercentDisplay)
 
-                    val showWorkCosts = item.workCost > 0f
+                    val showWorkCosts = mItem.workCost > 0f
                     listItemWorkCosts.apply {
                         setVisibleIfTrue(showWorkCosts)
-                        text = getString(R.string.currency_fmt, item.workCost)
+                        text = getString(R.string.currency_fmt, mItem.workCost)
                     }
 
                     listItemWorkCostsLabel.setVisibleIfTrue(showWorkCosts)
 
-                    val showTopDetailsTable = item.workMiles > 0f
+                    val showTopDetailsTable = mItem.workMiles > 0f
                     val showBottomDetailsTable = purposes?.isNotEmpty() == true
 
                     detailsTableSplit.setVisibleIfTrue(showTopDetailsTable && showBottomDetailsTable)
@@ -182,21 +175,21 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
                         if (showBottomDetailsTable) {
                             setContent {
                                 DashTrackerTheme {
-                                    MonthlyExpensesDetails(item, purposes)
+                                    MonthlyExpensesDetails(mItem, purposes)
                                 }
                             }
                         }
                     }
                 }
-
-                setVisibilityFromPayloads(payloads)
             }
         }
     }
 
     @Composable
     private fun MonthlyExpensesDetails(item: MonthlyExpenses, purposes: List<ExpensePurpose>?) {
+
         val mPurposes: MutableList<ExpensePurpose>? = purposes?.toMutableList()
+
         Column {
             item.expenses.toList().sortedByDescending { it.second }.forEach {
                 mPurposes?.remove(it.first)
@@ -250,105 +243,4 @@ class MonthlyExpenseListFragment : ExpenseListItemFragment() {
                         oldItem.expenses == newItem.expenses
         }
     }
-}
-
-@ExperimentalCoroutinesApi
-fun MutableCollection<MonthlyExpenses>.fix(): List<MonthlyExpenses> {
-    val res = this.sortedByDescending { it.date }
-
-    res.forEachIndexed { index, monthlyExpenses ->
-        val prevMonthlyExpense = res.getOrNull(index + 1)
-        monthlyExpenses.adjustEndStartOdometers(prevMonthlyExpense)
-    }
-
-    return res
-}
-
-@ExperimentalCoroutinesApi
-class MonthlyExpenses(val date: LocalDate) : ListItemType {
-    private val _expenses: MutableMap<ExpensePurpose, Float> = mutableMapOf()
-    val expenses: Map<ExpensePurpose, Float>
-        get() = _expenses
-
-    internal var startOdometer: Float? = null
-    internal var endOdometer: Float? = null
-    internal var workMiles: Float = 0f
-
-    internal val totalMiles: Int
-        get() = endOdometer?.let { eo -> startOdometer?.let { so -> eo - so } }?.toInt() ?: 0
-
-    private val workMilePercent: Float
-        get() = if (totalMiles != 0) {
-            workMiles / totalMiles
-        } else {
-            0f
-        }
-
-    internal val workMilePercentDisplay: Int
-        get() = (workMilePercent * 100).toInt()
-
-    internal val workCost: Float
-        get() = workMilePercent * total
-
-    val total: Float
-        get() = expenses.values.reduceOrNull { acc, v ->
-            acc + v
-        } ?: 0f
-
-    val showInList: Boolean
-        get() = total > 0f || workMiles > 0f
-
-    fun addExpense(purpose: ExpensePurpose, amount: Float) {
-        val current = _expenses.getOrDefault(purpose, 0f)
-        _expenses[purpose] = current + amount
-    }
-
-    fun addEntry(entry: DashEntry) {
-        val newStart: Float? = entry.startOdometer
-        val oldStart: Float? = startOdometer
-
-        startOdometer =
-            if (newStart != null && oldStart != null) {
-                min(newStart, oldStart)
-            } else newStart ?: oldStart
-
-        val newEnd: Float? = entry.endOdometer
-        val oldEnd: Float? = endOdometer
-
-        endOdometer =
-            if (newEnd != null && oldEnd != null) {
-                max(newEnd, oldEnd)
-            } else newEnd ?: oldEnd
-
-        val addedMiles = entry.mileage ?: 0f
-        workMiles += addedMiles
-    }
-
-    fun getAmount(purpose: ExpensePurpose): Float = expenses.getOrDefault(purpose, 0f)
-
-    fun adjustEndStartOdometers(other: MonthlyExpenses?) {
-        if (other != null && this.date.isPreviousMonth(other.date)) {
-            val currStart = this.startOdometer
-            val prevEnd = other.endOdometer
-            when {
-                currStart == null && prevEnd != null -> {
-                    this.startOdometer = prevEnd
-                }
-                currStart != null && prevEnd == null -> {
-                    other.endOdometer = currStart
-                }
-                currStart != null &&
-                        prevEnd != null &&
-                        currStart > prevEnd -> {
-                    val mid: Float = (currStart + prevEnd) / 2
-                    this.startOdometer = mid
-                    other.endOdometer = mid
-                }
-            }
-        }
-    }
-}
-
-fun LocalDate.isPreviousMonth(other: LocalDate): Boolean {
-    return this.minusMonths(1) == other
 }

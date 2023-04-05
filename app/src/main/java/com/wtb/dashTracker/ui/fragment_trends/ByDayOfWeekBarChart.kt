@@ -20,6 +20,7 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.TableLayout
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -44,7 +45,6 @@ import com.wtb.dashTracker.extensions.getCurrencyString
 import com.wtb.dashTracker.extensions.getFloatString
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.fragment_trends.ByDayOfWeekBarChart.Companion.safeDiv
-import com.wtb.dashTracker.views.ExpandableTableLayout
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.DayOfWeek
 
@@ -144,7 +144,7 @@ class ByDayOfWeekBarChart(
         setGridBackgroundColor(context.getAttrColor(R.attr.colorChartBackground))
     }
 
-    override val filterTable: ExpandableTableLayout
+    override val filterTable: TableLayout
         get() = binding.tableFilters
 
 

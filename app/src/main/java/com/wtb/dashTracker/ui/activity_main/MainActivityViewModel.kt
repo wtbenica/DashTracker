@@ -17,6 +17,9 @@
 package com.wtb.dashTracker.ui.activity_main
 
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,6 +35,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
+@ExperimentalAnimationApi
+@ExperimentalMaterial3Api
+@ExperimentalTextApi
 @ExperimentalCoroutinesApi
 class MainActivityViewModel : ViewModel() {
     private val repository = Repository.get()
