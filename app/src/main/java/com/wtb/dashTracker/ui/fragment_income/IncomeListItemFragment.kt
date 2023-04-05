@@ -32,15 +32,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.wtb.dashTracker.BuildConfig
-import com.wtb.dashTracker.database.models.FullWeekly
 import com.wtb.dashTracker.extensions.getCpmIrsStdString
 import com.wtb.dashTracker.extensions.getCpmString
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionTypeViewModel
 import com.wtb.dashTracker.ui.activity_main.MainActivity
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
-import com.wtb.dashTracker.ui.fragment_income.fragment_weeklies.WeeklyListFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ExpandableAdapter
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemFragment
 import com.wtb.dashTracker.ui.fragment_list_item_base.ListItemType
@@ -135,7 +132,6 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
             payloads: List<Any>
         ) {
             if (payloads.isNotEmpty()) {
-                debugLog("onBindViewHolder | $payloads | updateDeductionType", this is WeeklyListFragment.FullWeeklyAdapter)
                 holder.updateDeductionType()
             }
 
@@ -221,15 +217,9 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
         override fun bind(item: T, payloads: List<Any>?) {
             if (!mIsInitialized || this.mItem != item) {
                 super.bind(item, payloads)
-                if (item is FullWeekly) {
-                    debugLog("bind | first time | ${item.weekly.date}")
-                }
                 launchObservers()
             }
 
-            if (item is FullWeekly) {
-                debugLog("bind | ${item.weekly.date} | updateExpenseFields")
-            }
             updateExpenseFields()
         }
 

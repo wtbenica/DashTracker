@@ -35,7 +35,6 @@ import com.wtb.dashTracker.databinding.FragItemListBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
 import com.wtb.dashTracker.ui.activity_main.ScrollableFragment
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment.IncomeItemListAdapter.Companion.PayloadField
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -120,7 +119,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             if (payloads.isEmpty()) {
                 super.onBindViewHolder(holder, position, payloads)
             } else {
-                debugLog("onBindViewHolder | $payloads")
+
                 holder.setExpandedFromPayloads(payloads)
             }
         }
@@ -150,10 +149,6 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
         PagingDataAdapter<ItemType, HolderType>(diffCallback), ExpandableAdapter {
 
         override var mExpandedPosition: Int? = null
-            set(value) {
-                debugLog("Setting expanded position: $value")
-                field = value
-            }
 
         override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
             super.onAttachedToRecyclerView(recyclerView)
@@ -169,7 +164,7 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
             if (payloads.isEmpty()) {
                 super.onBindViewHolder(holder, position, payloads)
             } else {
-                debugLog("onBindViewHolder | $payloads")
+
                 holder.setExpandedFromPayloads(payloads)
             }
         }
@@ -265,7 +260,8 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                     val lastVisibleItemPosition: Int
 
                     (parentFrag.recyclerView.layoutManager as? LinearLayoutManager).let {
-                        firstVisibleItemPosition = it?.findFirstVisibleItemPosition() ?: Int.MAX_VALUE
+                        firstVisibleItemPosition =
+                            it?.findFirstVisibleItemPosition() ?: Int.MAX_VALUE
                         lastVisibleItemPosition = it?.findLastVisibleItemPosition() ?: Int.MIN_VALUE
                     }
                     if (bindingAdapterPosition in firstVisibleItemPosition..lastVisibleItemPosition) {
@@ -280,15 +276,9 @@ abstract class ListItemFragment : Fragment(), ScrollableFragment {
                                     return super.calculateSpeedPerPixel(displayMetrics) * 3
                                 }
 
-                                override fun onStart() {
-                                    super.onStart()
-                                    this@BaseItemHolder.debugLog("scroller onStart | target: $targetPosition")
-                                }
-
                                 override fun onStop() {
                                     super.onStop()
 
-                                    this@BaseItemHolder.debugLog("scroller onStop")
                                     collapseArea.toList().forEach { (it, target) ->
                                         it.showOrHide(
                                             shouldShow = true,
@@ -367,7 +357,6 @@ interface ExpandableAdapter {
         get() = object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
-                debugLog("onItemRangeInserted")
                 // update new expanded position
                 mExpandedPosition = mExpandedPosition?.let {
                     if (it >= positionStart)
@@ -379,7 +368,6 @@ interface ExpandableAdapter {
 
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
-                debugLog("onItemRangeRemoved")
                 // update new expanded position
                 mExpandedPosition = mExpandedPosition?.let {
                     if (it >= positionStart + itemCount)

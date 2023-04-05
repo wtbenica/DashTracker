@@ -30,7 +30,6 @@ import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.FullEntry
 import com.wtb.dashTracker.databinding.ActivityMainActiveDashBarBinding
 import com.wtb.dashTracker.extensions.*
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.views.ActiveDashBar.Companion.ADBState.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -83,7 +82,7 @@ class ActiveDashBar @JvmOverloads constructor(
         serviceState: ADBState,
         onComplete: (() -> Unit)? = null
     ) {
-        debugLog("onServiceStateUpdated")
+
         binding.apply {
             when (serviceState) {
                 INACTIVE -> { // Always collapse

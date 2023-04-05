@@ -42,7 +42,6 @@ import com.wtb.dashTracker.databinding.YearlyMileageGridBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.ui.activity_main.DeductionCallback
-import com.wtb.dashTracker.ui.activity_main.debugLog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExpenseBreakdown
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogMileageBreakdown
 import com.wtb.dashTracker.ui.fragment_income.IncomeListItemFragment
@@ -131,7 +130,6 @@ class YearlyListFragment :
                 get() {
                     val irsStd = deductionType == DeductionType.IRS_STD
                     val multValues = expenseValues.size > 1
-                    debugLog("irs? $irsStd | mult? $multValues | res? ${irsStd && multValues}")
                     return irsStd && multValues
                 }
 

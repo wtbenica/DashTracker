@@ -959,7 +959,7 @@ class MainActivity : AuthenticatedActivity(),
          */
         internal fun updateUi() {
             fun updateTopAppBarVisibility(onComplete: (() -> Unit)? = null) {
-                debugLog("updateTopAppBarVisibility")
+               
                 when (serviceState) {
                     ADBState.INACTIVE -> {
                         binding.summaryBar.root.showOrHide(
