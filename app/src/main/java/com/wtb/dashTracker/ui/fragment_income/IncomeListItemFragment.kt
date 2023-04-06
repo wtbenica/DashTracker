@@ -232,7 +232,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
                 holderDeductionTypeFlow.collectLatest { dt ->
                     deductionType = dt
                     getExpenseValues(dt).let { ev ->
-                        (parentFrag.requireContext() as MainActivity).runOnUiThread {
+                        (parentFrag.context as MainActivity?)?.runOnUiThread {
                             updateExpenseValues(ev)
                         }
                     }

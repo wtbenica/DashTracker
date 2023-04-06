@@ -119,7 +119,7 @@
         android:layout_column="0"
         android:layout_columnWeight="1"
         android:layout_marginStart="@dimen/margin_half"
-        tools:text="$18.25" />
+        tools:text="$21.43" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/act_main_last_week_total"
