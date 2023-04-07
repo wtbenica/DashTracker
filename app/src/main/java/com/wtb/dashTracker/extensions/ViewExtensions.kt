@@ -259,8 +259,8 @@ fun View.revealToHeightIfTrue(
     }
 }
 
-fun View.setVisibleIfTrue(boolean: Boolean, elseVisibility: Int = GONE) {
-    val newVisibility = if (boolean) VISIBLE else elseVisibility
+fun View.setVisibleIfTrue(shouldShow: Boolean, elseVisibility: Int = GONE) {
+    val newVisibility = if (shouldShow) VISIBLE else elseVisibility
     if (visibility != newVisibility) {
         visibility = newVisibility
         requestLayout()
