@@ -78,7 +78,7 @@ val borderStrokeWidth: Dp
 fun DefaultOutlinedCard(
     modifier: Modifier = Modifier,
     outlineColor: Color? = null,
-    content: @Composable() (ColumnScope.() -> Unit)
+    content: @Composable (ColumnScope.() -> Unit)
 ): Unit = OutlinedCard(
     modifier = Modifier
         .fillMaxWidth()
@@ -98,7 +98,7 @@ fun DefaultOutlinedCard(
 fun CustomOutlinedCard(
     modifier: Modifier = Modifier,
     padding: Dp? = null,
-    content: @Composable() (ColumnScope.() -> Unit)
+    content: @Composable (ColumnScope.() -> Unit)
 ): Unit = DefaultOutlinedCard {
     Column(
         modifier = Modifier.padding(padding ?: marginDefault())

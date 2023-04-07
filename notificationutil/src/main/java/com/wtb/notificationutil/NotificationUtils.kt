@@ -98,7 +98,7 @@ class NotificationUtils(private val context: Context, private var nd: Notificati
      * Initializes a [NotificationCompat.Builder] from [nd] [NotificationData]
      *
      * @param mainText the text to show in the notification
-     * @param channelId the id of the [NotificationChannel] to use for the notification
+     * @param bigText the text to show in the expanded notification
      * @return an initialized [NotificationCompat.Builder]
      */
     private fun updateNotificationBuilder(

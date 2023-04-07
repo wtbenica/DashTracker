@@ -174,7 +174,7 @@ class PermissionsHelper(val context: Context) {
         DARK(R.string.pref_theme_option_dark, AppCompatDelegate.MODE_NIGHT_YES);
     }
 
-    fun uiModeByDisplayName(mode: String): UiMode {
+    private fun uiModeByDisplayName(mode: String): UiMode {
         return UiMode.values().firstOrNull { context.getString(it.displayName) == mode }
             ?: UiMode.SYSTEM
     }

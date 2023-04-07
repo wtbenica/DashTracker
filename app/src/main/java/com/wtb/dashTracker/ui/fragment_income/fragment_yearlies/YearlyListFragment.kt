@@ -288,7 +288,7 @@ class YearlyListFragment :
                         if (deductionType == DeductionType.IRS_STD) {
                             0f
                         } else {
-                            expenseValues.get(12) ?: 0f
+                            expenseValues.getOrDefault(12, 0f)
                         }
 
                     detailsBinding.listItemYearlyCpm.text =
