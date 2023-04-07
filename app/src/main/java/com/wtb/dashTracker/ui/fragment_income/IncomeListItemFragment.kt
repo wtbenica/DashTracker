@@ -156,7 +156,7 @@ abstract class IncomeListItemFragment<T : IncomeListItemFragment.IncomeListItemT
 
         companion object {
             enum class PayloadField {
-                EXPANDED, DEDUCTION
+                EXPANDED, DEDUCTION, SHOW_BPAS
             }
         }
     }

@@ -62,7 +62,6 @@ class WeeklyListFragment :
     override val entryAdapter: FullWeeklyAdapter = FullWeeklyAdapter().apply {
         registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                // TODO: Is this on purpose? is it that when loading it takes list to the end? check it out one day
                 binding.itemListRecyclerView.scrollToPosition(positionStart)
             }
         })
@@ -70,7 +69,6 @@ class WeeklyListFragment :
 
     private val viewModel: WeeklyViewModel by viewModels()
 
-    // TODO: Switch to notify items changes and check payloads
     @SuppressLint("NotifyDataSetChanged")
     private val sharedPrefsListener = OnSharedPreferenceChangeListener { sharedPrefs, key ->
         if (key == requireContext().PREF_SHOW_BASE_PAY_ADJUSTS) {
@@ -80,7 +78,6 @@ class WeeklyListFragment :
             recyclerView.layoutManager = null
             recyclerView.adapter = entryAdapter
             recyclerView.layoutManager = myLayoutManager
-            entryAdapter.notifyDataSetChanged()
         }
     }
 
