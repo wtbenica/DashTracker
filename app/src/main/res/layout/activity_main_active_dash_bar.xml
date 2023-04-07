@@ -77,7 +77,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAlignment="textEnd"
-                        tools:text="4h 20m" />
+                        tools:text="2h 20m" />
                 </LinearLayout>
 
                 <ImageButton
@@ -156,21 +156,21 @@
                     style="@style/ActiveDashTextView.Value"
                     android:layout_row="1"
                     android:layout_column="0"
-                    tools:text="$0.27" />
+                    tools:text="$0.26" />
 
                 <TextView
                     android:id="@+id/val_mileage"
                     style="@style/ActiveDashTextView.Value"
                     android:layout_row="1"
                     android:layout_column="2"
-                    tools:text="52.8mi" />
+                    tools:text="35.8mi" />
 
                 <TextView
                     android:id="@+id/val_cost"
                     style="@style/ActiveDashTextView.Value"
                     android:layout_row="1"
                     android:layout_column="4"
-                    tools:text="$14.75" />
+                    tools:text="$9.31" />
             </GridLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

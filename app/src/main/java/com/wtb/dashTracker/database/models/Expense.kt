@@ -52,6 +52,7 @@ data class Expense(
         get() = pricePerGal?.let { amount?.let { a -> a / it } }
 
     companion object : CSVConvertible<Expense> {
+    	// Purposely omitted id bc it is not used as a foreign key anywhere
         private enum class Columns(val headerName: String, val getValue: KProperty1<Expense, *>) {
             DATE("Date", Expense::date),
             AMOUNT("Amount", Expense::amount),
