@@ -332,4 +332,5 @@
     <string name="lbl_tracking_active">Tracking Active</string>
     <string name="header_cpm">Est. Cost Per Mile</string>
     <string name="percent_format">%.2f%%</string>
+    <string name="lbl_total">Total</string>
 </resources>

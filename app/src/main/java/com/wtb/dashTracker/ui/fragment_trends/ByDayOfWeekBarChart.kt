@@ -71,8 +71,7 @@ class ByDayOfWeekBarChart(
 
     private val dailyStats: List<DailyStats>
         get() {
-            val res = collectDailyStats()
-            return res
+            return collectDailyStats()
         }
 
     @IdRes

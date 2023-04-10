@@ -52,7 +52,10 @@ open class ConfirmationDialogExport(
 
             binding.exportNotesBtn.icon = AppCompatResources.getDrawable(requireContext(), rs)
 
-            binding.exportNotesText.showOrHide(binding.exportNotesText.visibility == GONE)
+            binding.exportNotesText.showOrHide(
+                shouldShow = binding.exportNotesText.visibility == GONE,
+                onHiddenVisibility = GONE
+            )
         }
 
         binding.noButton.apply {

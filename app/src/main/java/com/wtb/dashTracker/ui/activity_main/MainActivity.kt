@@ -957,7 +957,7 @@ class MainActivity : AuthenticatedActivity(),
         /**
          * Animate fab icon and adb visibility depending on [serviceState].
          */
-        internal fun updateUi() {
+        private fun updateUi() {
             fun updateTopAppBarVisibility(onComplete: (() -> Unit)? = null) {
                
                 when (serviceState) {

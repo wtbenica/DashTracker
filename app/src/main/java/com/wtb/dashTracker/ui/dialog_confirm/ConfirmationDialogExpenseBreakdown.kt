@@ -151,7 +151,7 @@ fun EBTPreview() {
         addEntry(
             DashEntry(entryId = 1, startOdometer = 250f, endOdometer = 300f)
         )
-        expenses = mapOf<ExpensePurpose, Float>(
+        expenses = mapOf(
             ExpensePurpose(0, "Fred") to 4f,
             ExpensePurpose(1, "Mochi") to 5f,
             ExpensePurpose(1, "Mochi") to 5f,

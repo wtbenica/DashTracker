@@ -161,11 +161,5 @@ abstract class DTChart @JvmOverloads constructor(
     internal var mWeeklies = listOf<FullWeekly>()
 }
 
-/**
- * TODO
- *
- * @param res
- * @return
- */
 fun Context.getDimen(@DimenRes res: Int): Float =
     resources.getDimension(res) / resources.displayMetrics.density

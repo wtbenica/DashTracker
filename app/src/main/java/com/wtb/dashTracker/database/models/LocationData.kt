@@ -76,7 +76,7 @@ class LocationData constructor(
         get() = time?.format(dtfDateTime)
 
     /**
-     * Calculates the approximate distance in miles from [this] to [loc]
+     * Calculates the approximate distance in miles to [loc]
      */
     fun distanceTo(loc: LocationData): Double {
         val distResults = floatArrayOf(0f)

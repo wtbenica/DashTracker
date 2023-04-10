@@ -134,7 +134,7 @@
                                     android:background="@null"
                                     android:paddingStart="@dimen/margin_default"
                                     android:paddingEnd="0dp"
-                                    android:text="Total"
+                                    android:text="@string/lbl_total"
                                     android:textColor="?attr/colorTextPrimary" />
 
                                 <TextView
