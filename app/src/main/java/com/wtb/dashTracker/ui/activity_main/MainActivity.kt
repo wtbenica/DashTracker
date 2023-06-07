@@ -75,6 +75,7 @@ import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
 import com.wtb.dashTracker.ui.activity_authenticated.AuthenticatedActivity
 import com.wtb.dashTracker.ui.activity_get_permissions.OnboardingMileageActivity
+import com.wtb.dashTracker.ui.activity_scan_receipt.ScanReceiptActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIVITY_RESULT_NEEDS_RESTART
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
@@ -227,6 +228,13 @@ class MainActivity : AuthenticatedActivity(),
             importPacks = convertPacksImport,
             action = this::insertOrReplace,
         )
+
+    private val scanReceiptLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val data = it.data?.getBooleanExtra("Need to put a name here", true)
+
+            // do stuff here
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -662,7 +670,15 @@ class MainActivity : AuthenticatedActivity(),
                 startActivity(intent)
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            R.id.action_scan_receipt -> {
+                expectedExit = true
+                val intent = Intent(this, ScanReceiptActivity::class.java)
+                scanReceiptLauncher.launch(intent)
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 
@@ -959,7 +975,7 @@ class MainActivity : AuthenticatedActivity(),
          */
         private fun updateUi() {
             fun updateTopAppBarVisibility(onComplete: (() -> Unit)? = null) {
-               
+
                 when (serviceState) {
                     ADBState.INACTIVE -> {
                         binding.summaryBar.root.showOrHide(

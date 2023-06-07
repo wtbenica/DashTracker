@@ -71,4 +71,11 @@
         android:title="@string/label_action_licenses"
         app:iconTint="?attr/colorOverflowMenuItemIcon"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_scan_receipt"
+        android:icon="@drawable/ic_arrow_expand"
+        android:title="Scan Receipt"
+        app:iconTint="?attr/colorOverflowMenuItemIcon"
+        app:showAsAction="never" />
 </menu>

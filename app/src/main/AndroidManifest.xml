@@ -8,7 +8,10 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Camera permissions -->
+    <uses-feature android:name="android.hardware.camera.any" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".DashTrackerApplication"
@@ -20,42 +23,39 @@
         android:supportsRtl="true"
         android:theme="@style/SplashScreen"
         tools:targetApi="tiramisu">
-
+        <activity
+            android:name=".ui.activity_scan_receipt.ScanReceiptActivity"
+            android:theme="@style/Base.DasherCompanion"
+            android:exported="false" />
         <activity
             android:name=".ui.activity_main.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashScreen">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.activity_welcome.WelcomeActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.activity_get_permissions.OnboardingMileageActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.activity_settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
             android:theme="@style/SettingsActivityTheme" />
-
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
             android:screenOrientation="portrait"
             android:theme="@style/LicensesActivitiesTheme" />
-
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:screenOrientation="portrait"

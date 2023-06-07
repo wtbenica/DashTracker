@@ -22,12 +22,12 @@
     <dimen name="margin_narrow">5dp</dimen>
     <dimen name="margin_skinny">2dp</dimen>
 
-<!--    <dimen name="margin_extra_wide">64dp</dimen>-->
-<!--    <dimen name="margin_wide">24dp</dimen>-->
-<!--    <dimen name="margin_default">16dp</dimen>-->
-<!--    <dimen name="margin_half">8dp</dimen>-->
-<!--    <dimen name="margin_narrow">4dp</dimen>-->
-<!--    <dimen name="margin_skinny">2dp</dimen>-->
+    <!--    <dimen name="margin_extra_wide">64dp</dimen>-->
+    <!--    <dimen name="margin_wide">24dp</dimen>-->
+    <!--    <dimen name="margin_default">16dp</dimen>-->
+    <!--    <dimen name="margin_half">8dp</dimen>-->
+    <!--    <dimen name="margin_narrow">4dp</dimen>-->
+    <!--    <dimen name="margin_skinny">2dp</dimen>-->
 
     <dimen name="fab_menu_offset">16dp</dimen>
     <dimen name="min_touch_target">48dp</dimen>
@@ -42,4 +42,5 @@
     <dimen name="fragment_padding_for_bottom_nav">72dp</dimen>
     <dimen name="chart_fragment_bottom_padding">72dp</dimen>
     <dimen name="bg_edit_text_border">1dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>
