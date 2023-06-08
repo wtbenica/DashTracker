@@ -18,24 +18,32 @@ package com.wtb.dashTracker.ui.activity_scan_receipt
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
+import android.media.Image
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
+import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.wtb.dashTracker.databinding.ActivityScanReceiptBinding
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class ScanReceiptActivity : AppCompatActivity() {
+@ExperimentalGetImage class ScanReceiptActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityScanReceiptBinding
 
     private var imageCapture: ImageCapture? = null
@@ -78,7 +86,6 @@ class ScanReceiptActivity : AppCompatActivity() {
 
         // Set up the listeners for take photo and video capture buttons
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
-        viewBinding.videoCaptureButton.setOnClickListener { captureVideo() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
@@ -109,6 +116,10 @@ class ScanReceiptActivity : AppCompatActivity() {
                     val msg = "Success: ${outputFileResults.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
+                    setResult(RESULT_OK, Intent().apply {
+                        putExtra("savedUri", outputFileResults.savedUri)
+                        data = outputFileResults.savedUri
+                    })
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -117,8 +128,6 @@ class ScanReceiptActivity : AppCompatActivity() {
             }
         )
     }
-
-    private fun captureVideo() {}
 
     private fun startCamera() {
         val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> =
@@ -136,6 +145,7 @@ class ScanReceiptActivity : AppCompatActivity() {
             imageCapture = ImageCapture.Builder().build()
 
             val imageAnalyzer = ImageAnalysis.Builder()
+                .setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
                 .build()
                 .also {
                     it.setAnalyzer(cameraExecutor, BasicAnalyzer())
@@ -149,7 +159,7 @@ class ScanReceiptActivity : AppCompatActivity() {
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture, imageAnalyzer
                 )
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 Log.e(TAG, "Use case binding failed", e)
             }
         }, ContextCompat.getMainExecutor(this))
@@ -180,9 +190,20 @@ class ScanReceiptActivity : AppCompatActivity() {
     }
 }
 
-private class BasicAnalyzer : ImageAnalysis.Analyzer {
-    override fun analyze(image: ImageProxy) {
-        // TODO: Do some analysis stuff here
-    }
+@ExperimentalGetImage private class BasicAnalyzer : ImageAnalysis.Analyzer {
+    override fun analyze(imageProxy: ImageProxy) {
+        val recognizer: TextRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
+        val mediaImage: Image? = imageProxy.image
+        if (mediaImage != null) {
+            val image: InputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            recognizer.process(image)
+                .addOnSuccessListener { visionText: Text ->
+
+                }
+                .addOnFailureListener { e ->
+
+                }
+        }
+   }
 }

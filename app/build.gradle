@@ -150,10 +150,12 @@ dependencies {
     implementation 'com.google.mlkit:text-recognition:16.0.0'
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.8.20'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.1'
 
     implementation files('../../MyLibraries/CsvUtil-release.aar')
     implementation project(path: ':mileageTracker')
     implementation project(path: ':notificationutil')
+    testImplementation 'junit:junit:4.12'
 
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
@@ -171,4 +173,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
+
+    // Text recognition dependencies
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.0'
 }

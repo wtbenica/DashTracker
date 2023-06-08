@@ -41,6 +41,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -66,6 +67,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.mlkit.vision.common.InputImage
 import com.wtb.dashTracker.BuildConfig
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.*
@@ -117,6 +119,7 @@ import dev.benica.mileagetracker.LocationService.ServiceState.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
+import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -137,13 +140,15 @@ internal fun Any.errorLog(message: String) {
     if (DEBUGGING) Log.e(TAG, message)
 }
 
+@ExperimentalGetImage
 /**
- * Primary [AppCompatActivity] for DashTracker. Contains [BottomNavigationView] for switching
+ * Primary [AppCompatActivity] for DashTracker.
+ * Contains [BottomNavigationView] for switching
  * between [IncomeFragment], [ExpenseListFragment], and
  * [com.wtb.dashTracker.ui.fragment_trends.ChartsFragment];
- * [FloatingActionButton] for starting/stopping [LocationService]; new item menu for
- * [EntryDialog], [WeeklyDialog], and [ExpenseDialog]; options menu for
- * [ConfirmationDialogImport], [ConfirmationDialogExport],
+ * [FloatingActionButton] for starting/stopping [LocationService]; new
+ * item menu for [EntryDialog], [WeeklyDialog], and [ExpenseDialog];
+ * options menu for [ConfirmationDialogImport], [ConfirmationDialogExport],
  * [OssLicensesMenuActivity].
  */
 @ExperimentalAnimationApi
@@ -167,20 +172,16 @@ class MainActivity : AuthenticatedActivity(),
     private var currDestination: Int = R.id.navigation_income
 
     /**
-     * Flag that prevents [EndDashDialog] from being shown if the active entry was deleted, as
-     * opposed to when it was stopped
+     * Flag that prevents [EndDashDialog] from being shown if the active entry
+     * was deleted, as opposed to when it was stopped
      */
     private var activeEntryDeleted: Boolean = false
 
-    /**
-     * Flag to differentiate user-input scrolling vs programmatic scrolling
-     */
+    /** Flag to differentiate user-input scrolling vs programmatic scrolling */
     internal var isShowingOrHidingToolbars: Boolean = false
 
     // TODO: This is in permissionsHelper, no?
-    /**
-     * Has [REQUIRED_PERMISSIONS] && pref [LOCATION_ENABLED] is true
-     */
+    /** Has [REQUIRED_PERMISSIONS] && pref [LOCATION_ENABLED] is true */
     private val trackingEnabled: Boolean
         get() {
             val hasPermissions = this.hasPermissions(*REQUIRED_PERMISSIONS)
@@ -192,7 +193,8 @@ class MainActivity : AuthenticatedActivity(),
 
     // Launchers
     /**
-     * Launcher for [OnboardingMileageActivity]. On result, calls [ActiveDash.resumeOrStartNewTrip]
+     * Launcher for [OnboardingMileageActivity]. On result, calls
+     * [ActiveDash.resumeOrStartNewTrip]
      */
     private val onboardMileageTrackingLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -202,9 +204,9 @@ class MainActivity : AuthenticatedActivity(),
         }
 
     /**
-     * Settings activity launcher - for launching [SettingsActivity] for result. checks data
-     * intent for [ACTIVITY_RESULT_NEEDS_RESTART]. If true, settings which require the app to
-     * restart were changed.
+     * Settings activity launcher - for launching [SettingsActivity] for
+     * result. checks data intent for [ACTIVITY_RESULT_NEEDS_RESTART].
+     * If true, settings which require the app to restart were changed.
      */
     private val settingsActivityLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -231,9 +233,26 @@ class MainActivity : AuthenticatedActivity(),
 
     private val scanReceiptLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val data = it.data?.getBooleanExtra("Need to put a name here", true)
-
+            val uri: Uri = it.data?.data ?: return@registerForActivityResult
             // do stuff here
+            val image: InputImage
+            try {
+                image = InputImage.fromFilePath(this, uri)
+
+                CoroutineScope(Dispatchers.Default).launch {
+                    val expense = ReceiptAnalyzer.extractExpense(image)
+
+                    expense?.let {
+                        CoroutineScope(Dispatchers.Default).launch {
+                            val id = viewModel.upsertAsync(it)
+                            ExpenseDialog.newInstance(id)
+                                .show(supportFragmentManager, "new_expense_dialog")
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -373,8 +392,8 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Creates a new [DashEntry] and saves it. Opens a [StartDashDialog] with the
-         * [DashEntry.entryId]
+         * Creates a new [DashEntry] and saves it. Opens a [StartDashDialog] with
+         * the [DashEntry.entryId]
          */
         fun showStartDashDialog() {
             CoroutineScope(Dispatchers.Default).launch {
@@ -385,8 +404,10 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Checks [RESULT_START_DASH_CONFIRM_START] and [ARG_ENTRY_ID]. It loads [ARG_ENTRY_ID] as the active entry. If
-         * [RESULT_START_DASH_CONFIRM_START] is true, it passes [ARG_ENTRY_ID] to [MainActivityViewModel.loadActiveEntry].
+         * Checks [RESULT_START_DASH_CONFIRM_START] and [ARG_ENTRY_ID].
+         * It loads [ARG_ENTRY_ID] as the active entry. If
+         * [RESULT_START_DASH_CONFIRM_START] is true, it passes
+         * [ARG_ENTRY_ID] to [MainActivityViewModel.loadActiveEntry].
          */
         fun setStartDashDialogResultListener() {
             supportFragmentManager.setFragmentResultListener(
@@ -403,8 +424,8 @@ class MainActivity : AuthenticatedActivity(),
             }
 
             /**
-             * Checks [ARG_MODIFICATION_STATE] result from an [EntryDialog]. If it is
-             * [ModificationState.DELETED], calls [clearActiveEntry] before
+             * Checks [ARG_MODIFICATION_STATE] result from an [EntryDialog]. If
+             * it is [ModificationState.DELETED], calls [clearActiveEntry] before
              * [MainActivityViewModel.deleteEntry]
              */
             supportFragmentManager.setFragmentResultListener(
@@ -424,8 +445,8 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Sets [FloatingActionButton]'s [OnClickListener] to start/stop dashes. Initializes
-         * [ActiveDashBar].
+         * Sets [FloatingActionButton]'s [OnClickListener] to start/stop dashes.
+         * Initializes [ActiveDashBar].
          */
         fun initMainActivityBinding() {
             fun isRecyclerViewAtTop(): Boolean {
@@ -520,9 +541,7 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     override fun onResume() {
-        /**
-         * Deletes any files created from import/export
-         */
+        /** Deletes any files created from import/export */
         fun cleanupFiles() {
             if (fileList().isNotEmpty()) {
                 fileList().forEach { name ->
@@ -682,17 +701,16 @@ class MainActivity : AuthenticatedActivity(),
         }
     }
 
-    /**
-     * Stops current dash by calling [ActiveDash.stopDash] on [entryId]
-     */
+    /** Stops current dash by calling [ActiveDash.stopDash] on [entryId] */
     private fun endDash(entryId: Long? = null) {
         activeDash.stopDash(entryId)
     }
 
     /**
-     * Clear active entry - if the active entry id is [id], sets [activeEntryDeleted] to true, so
-     * that the [EndDashDialog] isn't triggered, and calls [MainActivityViewModel.loadActiveEntry]
-     * with null as the argument.
+     * Clear active entry - if the active entry id is
+     * [id], sets [activeEntryDeleted] to true, so that
+     * the [EndDashDialog] isn't triggered, and calls
+     * [MainActivityViewModel.loadActiveEntry] with null as the argument.
      *
      * @param id
      */
@@ -820,7 +838,8 @@ class MainActivity : AuthenticatedActivity(),
 
     // TODO: This might should be moved to AuthenticatedActivity
     /**
-     * If there's an auth error, this is used to call authenticate again with the same parameters
+     * If there's an auth error, this is used to call authenticate again with
+     * the same parameters
      */
     private fun reAuthenticate() {
         authenticate(
@@ -849,10 +868,7 @@ class MainActivity : AuthenticatedActivity(),
     override val currentCpm: Float?
         get() = activeDash.activeCpm
 
-    /**
-     * Keeps track of the current dash and current pause state.
-     *
-     */
+    /** Keeps track of the current dash and current pause state. */
     inner class ActiveDash {
         // Active Entry
         internal var activeEntry: FullEntry? = null
@@ -865,10 +881,11 @@ class MainActivity : AuthenticatedActivity(),
         internal var locationServiceState: ServiceState? = null
 
         /**
-         * If [activeEntryId] is not null, calls [startLocationService] to start/restart the
-         * location service. If [activeEntryId] is null, the location service is started with a new
-         * [DashEntry]. If the location service is already started with a different [DashEntry],
-         * that [DashEntry] is set as [activeEntry], otherwise the new [DashEntry] is.
+         * If [activeEntryId] is not null, calls [startLocationService] to
+         * start/restart the location service. If [activeEntryId] is null, the
+         * location service is started with a new [DashEntry]. If the location
+         * service is already started with a different [DashEntry], that
+         * [DashEntry] is set as [activeEntry], otherwise the new [DashEntry] is.
          */
         fun resumeOrStartNewTrip() {
             bindLocationService()
@@ -915,9 +932,7 @@ class MainActivity : AuthenticatedActivity(),
             }
         }
 
-        /**
-         * Updates [locationServiceState] from [LocationService.serviceState]
-         */
+        /** Updates [locationServiceState] from [LocationService.serviceState] */
         fun initLocSvcObserver() {
             CoroutineScope(Dispatchers.Default).launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -929,8 +944,9 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Calls [unbindService] on [locationServiceConnection], sets [locationServiceBound] to
-         * false, [locationServiceConnection] to null, and [locationService] to null.
+         * Calls [unbindService] on [locationServiceConnection], sets
+         * [locationServiceBound] to false, [locationServiceConnection]
+         * to null, and [locationService] to null.
          */
         internal fun unbindLocationService() {
             if (locationServiceBound && locationServiceConnection != null) {
@@ -970,9 +986,7 @@ class MainActivity : AuthenticatedActivity(),
                 )
         }
 
-        /**
-         * Animate fab icon and adb visibility depending on [serviceState].
-         */
+        /** Animate fab icon and adb visibility depending on [serviceState]. */
         private fun updateUi() {
             fun updateTopAppBarVisibility(onComplete: (() -> Unit)? = null) {
 
@@ -1087,9 +1101,7 @@ class MainActivity : AuthenticatedActivity(),
 
         internal var locationServiceBound: Boolean = false
 
-        /**
-         * lock to prevent location service from being started multiple times
-         */
+        /** lock to prevent location service from being started multiple times */
         private var startingService = false
 
         private var stopOnBind = false
@@ -1097,7 +1109,8 @@ class MainActivity : AuthenticatedActivity(),
         private var startOnBindId: Long? = null
 
         /**
-         * Launches [OnboardingMileageActivity] to check for permissions, and, if location is enabled, calls [resumeOrStartNewTrip]
+         * Launches [OnboardingMileageActivity] to check for permissions, and, if
+         * location is enabled, calls [resumeOrStartNewTrip]
          */
         private fun startTracking() {
             startOnBind = false
@@ -1110,9 +1123,9 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * If [locationService] is not null, calls [LocationService.stop]  If [locationService]
-         * is null, meaning the service is not currently bound, the service will be stopped once
-         * it is bound.
+         * If [locationService] is not null, calls [LocationService.stop] If
+         * [locationService] is null, meaning the service is not currently bound,
+         * the service will be stopped once it is bound.
          */
         private fun stopTracking() {
             locationService.let {
@@ -1154,13 +1167,15 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Calls [LocationService.start] on [locationService] using [saveLocation] as the
-         * locationHandler parameter.
+         * Calls [LocationService.start] on [locationService] using [saveLocation]
+         * as the locationHandler parameter.
          *
-         * @param tripId passed to [LocationService.start] as the newTripId parameter
-         * @return the id that [locationService] is using. If the service was not already started, it
-         * will be the same as [tripId]. If the return value is not the same as [tripId], it means
-         * that the service was already started with a different id
+         * @param tripId passed to [LocationService.start] as the newTripId
+         *     parameter
+         * @return the id that [locationService] is using. If the service was not
+         *     already started, it will be the same as [tripId]. If the return
+         *     value is not the same as [tripId], it means that the service was
+         *     already started with a different id
          */
         private fun startLocationService(tripId: Long): Long? {
             startOnBind = true
@@ -1244,10 +1259,11 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Returns a [ServiceConnection] that, in [ServiceConnection.onServiceConnected] saves the
-         * service binding to [locationService], initiates observers on it, and loads the
-         * [activeEntry] if the [LocationService] is already started. It will stop the service if
-         * [stopOnBind] is set to true.
+         * Returns a [ServiceConnection] that, in
+         * [ServiceConnection.onServiceConnected] saves the service binding
+         * to [locationService], initiates observers on it, and loads the
+         * [activeEntry] if the [LocationService] is already started.
+         * It will stop the service if [stopOnBind] is set to true.
          *
          * @param onBind any actions to perform once the [LocationService] is bound
          * @return a [ServiceConnection]
@@ -1356,8 +1372,8 @@ interface ScrollableFragment {
 }
 
 /**
- * Marker interface for a fragment that adjusts based on [DeductionType]. Does not currently
- * serve a purpose
+ * Marker interface for a fragment that adjusts based on [DeductionType].
+ * Does not currently serve a purpose
  */
 interface DeductionCallback
 

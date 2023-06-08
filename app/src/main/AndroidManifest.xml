@@ -24,10 +24,6 @@
         android:theme="@style/SplashScreen"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".ui.activity_scan_receipt.ScanReceiptActivity"
-            android:theme="@style/Base.DasherCompanion"
-            android:exported="false" />
-        <activity
             android:name=".ui.activity_main.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
@@ -38,6 +34,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activity_scan_receipt.ScanReceiptActivity"
+            android:exported="false"
+            android:theme="@style/Base.DasherCompanion" />
         <activity
             android:name=".ui.activity_welcome.WelcomeActivity"
             android:exported="false"
@@ -85,6 +85,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr" />
     </application>
 
 </manifest>

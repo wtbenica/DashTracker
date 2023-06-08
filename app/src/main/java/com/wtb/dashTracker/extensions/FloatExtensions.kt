@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.extensions
 
+import kotlin.math.abs
 import kotlin.math.floor
 
 /**
@@ -27,3 +28,8 @@ fun Float.toCurrencyString(): String =
     } else {
         "%.0f".format(this)
     }
+
+/**
+ * Compares two floats - abs([this]/[b] - 1) < [delta]
+ */
+fun Float.equalsDelta(b: Float, delta: Float): Boolean = abs(this / b - 1) < delta
