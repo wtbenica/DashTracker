@@ -32,7 +32,9 @@ import android.util.Log
 import android.view.*
 import android.view.View.*
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.activity.viewModels
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
@@ -243,15 +245,32 @@ class MainActivity : AuthenticatedActivity(),
                     val expense = ReceiptAnalyzer.extractExpense(image)
 
                     expense?.let {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            val id = viewModel.upsertAsync(it)
-                            ExpenseDialog.newInstance(id)
-                                .show(supportFragmentManager, "new_expense_dialog")
-                        }
+                        val id = viewModel.upsertAsync(it)
+                        ExpenseDialog.newInstance(id)
+                            .show(supportFragmentManager, "new_expense_dialog")
                     }
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
+            }
+        }
+
+    private val pickPhotoToReceiptScanLauncher: ActivityResultLauncher<PickVisualMediaRequest> =
+        registerForActivityResult(PickVisualMedia()) { uri ->
+            if (uri != null) {
+                val image = InputImage.fromFilePath(this, uri)
+
+                CoroutineScope(Dispatchers.Default).launch {
+                    val expense = ReceiptAnalyzer.extractExpense(image)
+
+                    expense?.let {
+                        val id = viewModel.upsertAsync(it)
+                        ExpenseDialog.newInstance(id)
+                            .show(supportFragmentManager, "new_expense_dialog")
+                    }
+                }
+            } else {
+                Log.d(TAG, "Something went wrong picking photo")
             }
         }
 
@@ -695,6 +714,11 @@ class MainActivity : AuthenticatedActivity(),
                 scanReceiptLauncher.launch(intent)
                 true
             }
+            R.id.action_scan_gallery_receipt -> {
+                expectedExit = true
+                pickPhotoToReceiptScanLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                true
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }
@@ -1051,35 +1075,40 @@ class MainActivity : AuthenticatedActivity(),
         ): ADBState {
             val mTrackingEnabled = trackingEnabled
 
-            val res = if (afterId == null) { // stopping or stopped
-                if (beforeId != null) {
-                    stopDash(beforeId)
+            val res = when (afterId) {
+                null -> { // stopping or stopped
+                    if (beforeId != null) {
+                        stopDash(beforeId)
+                    }
+
+                    ADBState.INACTIVE
                 }
-
-                ADBState.INACTIVE
-            } else { // starting or continuing
-                if (beforeId == null && !locationServiceBound) {
-                    startTracking()
-                }
-
-                if (mTrackingEnabled) {
-                    if (!trackingEnabledPrevious) {
-                        // tracking has been enabled
-                        resumeOrStartNewTrip()
+                else -> { // starting or continuing
+                    if (beforeId == null && !locationServiceBound) {
+                        startTracking()
                     }
 
-                    if (showMini) {
-                        ADBState.TRACKING_COLLAPSED
-                    } else {
-                        ADBState.TRACKING_FULL
-                    }
-                } else {
-                    if (locationServiceBound || trackingEnabledPrevious) {
-                        // either location service hasn't been stopped or tracking was disabled
-                        stopTracking()
-                    }
+                    when {
+                        mTrackingEnabled -> {
+                            if (!trackingEnabledPrevious) {
+                                // tracking has been enabled
+                                resumeOrStartNewTrip()
+                            }
 
-                    ADBState.TRACKING_DISABLED
+                            when {
+                                showMini -> ADBState.TRACKING_COLLAPSED
+                                else -> ADBState.TRACKING_FULL
+                            }
+                        }
+                        else -> {
+                            if (locationServiceBound || trackingEnabledPrevious) {
+                                // either location service hasn't been stopped or tracking was disabled
+                                stopTracking()
+                            }
+
+                            ADBState.TRACKING_DISABLED
+                        }
+                    }
                 }
             }
 

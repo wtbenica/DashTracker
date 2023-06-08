@@ -37,8 +37,10 @@ class ReceiptAnalyzer {
         }
 
         internal suspend fun extractExpense(image: InputImage): Expense? {
+            Log.d(TAG, "extractExpense")
             val text = analyze(image)
             val values = text.textBlocks.filter { block ->
+                Log.d(TAG, "BLOCK: ${block.text}")
                 containsExpenseLikeValue(block.text)
             }.flatMap { block ->
                 block.lines.map { line -> line.text }
@@ -79,6 +81,8 @@ class ReceiptAnalyzer {
             val nines = candidates.filter {
                 it.pricePerGal.toString().last() == '9'
             }.toSet()
+
+            Log.d(TAG, "nines: $nines\ncandidates: $candidates")
 
             return if (nines.isNotEmpty()) {
                 nines
