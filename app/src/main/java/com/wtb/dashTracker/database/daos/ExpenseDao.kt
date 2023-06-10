@@ -16,6 +16,7 @@
 
 package com.wtb.dashTracker.database.daos
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
@@ -27,6 +28,7 @@ import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
 import com.wtb.dashTracker.database.models.FullExpense
 import com.wtb.dashTracker.database.models.FullExpensePurpose
+import com.wtb.dashTracker.ui.activity_main.TAG
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
@@ -60,6 +62,19 @@ abstract class ExpenseDao : BaseDao<Expense>("Expense", "expenseId") {
         val query = SimpleSQLiteQuery("DELETE FROM Expense WHERE expenseId = $id")
 
         return executeRawQuery(query)
+    }
+
+    fun checkForDuplicate(expense: Expense): Boolean {
+        val query =
+            SimpleSQLiteQuery("SELECT COUNT(*) " +
+                    "FROM expense " +
+                    "WHERE date = ${expense.date} " +
+                    "AND amount = ${expense.amount} " +
+                    "AND pricePerGal = ${expense.pricePerGal}")
+
+        val count = executeRawQuery(query)
+        Log.d(TAG, "Matching: $count")
+        return count == 0
     }
 
 

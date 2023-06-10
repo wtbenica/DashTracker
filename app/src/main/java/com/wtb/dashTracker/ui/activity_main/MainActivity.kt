@@ -31,6 +31,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.view.View.*
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -236,18 +237,26 @@ class MainActivity : AuthenticatedActivity(),
     private val scanReceiptLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val uri: Uri = it.data?.data ?: return@registerForActivityResult
-            // do stuff here
             val image: InputImage
             try {
                 image = InputImage.fromFilePath(this, uri)
 
                 CoroutineScope(Dispatchers.Default).launch {
                     val expense = ReceiptAnalyzer.extractExpense(image)
-
                     expense?.let {
-                        val id = viewModel.upsertAsync(it)
-                        ExpenseDialog.newInstance(id)
-                            .show(supportFragmentManager, "new_expense_dialog")
+                        if (!viewModel.checkForDuplicateExpense(expense = expense)) {
+                            val id = viewModel.upsertAsync(it)
+                            ExpenseDialog.newInstance(id)
+                                .show(supportFragmentManager, "new_expense_dialog")
+                        } else {
+                            runOnUiThread {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Expense already entered",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
                     }
                 }
             } catch (e: IOException) {
@@ -612,7 +621,10 @@ class MainActivity : AuthenticatedActivity(),
         super.onPause()
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+    override fun onSaveInstanceState(
+        outState: Bundle,
+        outPersistentState: PersistableBundle
+    ) {
         outState.putBoolean(ARG_EXPECTED_EXIT, expectedExit)
 
         super.onSaveInstanceState(outState, outPersistentState)
@@ -677,7 +689,8 @@ class MainActivity : AuthenticatedActivity(),
             R.id.action_new_entry -> {
                 CoroutineScope(Dispatchers.Default).launch {
                     val id = viewModel.upsertAsync(DashEntry())
-                    EntryDialog.newInstance(id).show(supportFragmentManager, "new_entry_dialog")
+                    EntryDialog.newInstance(id)
+                        .show(supportFragmentManager, "new_entry_dialog")
                 }
                 true
             }
@@ -750,8 +763,10 @@ class MainActivity : AuthenticatedActivity(),
             entries = models.get<DashEntry, DashEntry.Companion>().ifEmpty { null },
             weeklies = models.get<Weekly, Weekly.Companion>().ifEmpty { null },
             expenses = models.get<Expense, Expense.Companion>().ifEmpty { null },
-            purposes = models.get<ExpensePurpose, ExpensePurpose.Companion>().ifEmpty { null },
-            locationData = models.get<LocationData, LocationData.Companion>().ifEmpty { null }
+            purposes = models.get<ExpensePurpose, ExpensePurpose.Companion>()
+                .ifEmpty { null },
+            locationData = models.get<LocationData, LocationData.Companion>()
+                .ifEmpty { null }
         )
     }
 

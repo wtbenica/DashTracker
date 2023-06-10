@@ -28,18 +28,15 @@ import com.wtb.dashTracker.database.models.*
 import com.wtb.dashTracker.extensions.endOfWeek
 import com.wtb.dashTracker.repository.DeductionType
 import com.wtb.dashTracker.repository.Repository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
 @ExperimentalTextApi
 @ExperimentalCoroutinesApi
-class MainActivityViewModel : ViewModel() {
+class MainActivityViewModel(private val dispatcher: CoroutineDispatcher = Dispatchers.Default) : ViewModel() {
     private val repository = Repository.get()
 
     private val _activeEntryId = MutableStateFlow(AUTO_ID)
@@ -108,7 +105,7 @@ class MainActivityViewModel : ViewModel() {
     suspend fun insertSus(dataModel: DataModel): Long = repository.saveModelSus(dataModel)
 
     suspend fun upsertAsync(dataModel: DataModel): Long =
-        withContext(Dispatchers.Default) {
+        withContext(dispatcher) {
             repository.upsertModel(dataModel)
         }
 
@@ -127,8 +124,9 @@ class MainActivityViewModel : ViewModel() {
         repository.insertOrReplace(entries, weeklies, expenses, purposes, locationData)
     }
 
-    companion object {
+    fun checkForDuplicateExpense(expense: Expense): Boolean = repository.checkForDuplicate(expense)
 
+    companion object {
         fun getHourlyFromWeeklies(list: List<FullWeekly>): Float {
             return if (list.isNotEmpty()) {
                 val hours = list.map { w -> w.hours }.reduce { acc, fl -> acc + fl }
