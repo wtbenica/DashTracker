@@ -120,6 +120,7 @@ import java.util.concurrent.Executors
                         putExtra("savedUri", outputFileResults.savedUri)
                         data = outputFileResults.savedUri
                     })
+                    this@ScanReceiptActivity.finish()
                 }
 
                 override fun onError(exception: ImageCaptureException) {

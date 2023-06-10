@@ -97,6 +97,7 @@ open class SimpleViewConfirmationDialog :
             negAction: LambdaWrapper? = null,
             @StringRes posButton2: Int? = null,
             posAction2: LambdaWrapper? = null,
+            singleButton: Boolean = false
         ): SimpleViewConfirmationDialog = SimpleViewConfirmationDialog().apply {
             arguments = Bundle().apply {
                 text?.let { putInt(ARG_TEXT_CONTENT, it) }
@@ -109,6 +110,7 @@ open class SimpleViewConfirmationDialog :
                 putParcelable(ARG_NEG_ACTION, negAction)
                 posButton2?.let { putInt(ARG_POS_TEXT_2, it) }
                 putParcelable(ARG_POS_ACTION_2, posAction2)
+                putBoolean(ARG_SINGLE_BUTTON, singleButton)
             }
         }
     }

@@ -32,7 +32,9 @@ import android.util.Log
 import android.view.*
 import android.view.View.*
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.activity.viewModels
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
@@ -83,8 +85,10 @@ import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIV
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleViewConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFICATION_STATE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.REQUEST_KEY_DATA_MODEL_DIALOG
@@ -234,24 +238,55 @@ class MainActivity : AuthenticatedActivity(),
     private val scanReceiptLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val uri: Uri = it.data?.data ?: return@registerForActivityResult
-            // do stuff here
             val image: InputImage
             try {
                 image = InputImage.fromFilePath(this, uri)
 
                 CoroutineScope(Dispatchers.Default).launch {
                     val expense = ReceiptAnalyzer.extractExpense(image)
-
                     expense?.let {
-                        CoroutineScope(Dispatchers.Default).launch {
+                        if (!viewModel.checkForDuplicateExpense(expense = expense)) {
                             val id = viewModel.upsertAsync(it)
                             ExpenseDialog.newInstance(id)
                                 .show(supportFragmentManager, "new_expense_dialog")
+                        } else {
+                            SimpleViewConfirmationDialog.newInstance(
+                                text = R.string.duplicate_expense_message,
+                                requestKey = "duplicate_expense_dialog",
+                                title = getString(R.string.duplicate_expense_title),
+                                posButton = R.string.ok,
+                                singleButton = true,
+                            ).show(supportFragmentManager, "duplicate_expense_dialog")
                         }
-                    }
+                    } ?: SimpleViewConfirmationDialog.newInstance(
+                        text = R.string.no_expense_data_extracted,
+                        requestKey = "no_receipt_found_dialog",
+                        title = getString(R.string.no_expense_data_extracted_title),
+                        posButton = R.string.ok,
+                        singleButton = true,
+                    ).show(supportFragmentManager, "no_receipt_found_dialog")
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
+            }
+        }
+
+    private val pickPhotoToReceiptScanLauncher: ActivityResultLauncher<PickVisualMediaRequest> =
+        registerForActivityResult(PickVisualMedia()) { uri ->
+            if (uri != null) {
+                val image = InputImage.fromFilePath(this, uri)
+
+                CoroutineScope(Dispatchers.Default).launch {
+                    val expense = ReceiptAnalyzer.extractExpense(image)
+
+                    expense?.let {
+                        val id = viewModel.upsertAsync(it)
+                        ExpenseDialog.newInstance(id)
+                            .show(supportFragmentManager, "new_expense_dialog")
+                    }
+                }
+            } else {
+                Log.d(TAG, "Something went wrong picking photo")
             }
         }
 
@@ -593,7 +628,10 @@ class MainActivity : AuthenticatedActivity(),
         super.onPause()
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+    override fun onSaveInstanceState(
+        outState: Bundle,
+        outPersistentState: PersistableBundle
+    ) {
         outState.putBoolean(ARG_EXPECTED_EXIT, expectedExit)
 
         super.onSaveInstanceState(outState, outPersistentState)
@@ -658,7 +696,8 @@ class MainActivity : AuthenticatedActivity(),
             R.id.action_new_entry -> {
                 CoroutineScope(Dispatchers.Default).launch {
                     val id = viewModel.upsertAsync(DashEntry())
-                    EntryDialog.newInstance(id).show(supportFragmentManager, "new_entry_dialog")
+                    EntryDialog.newInstance(id)
+                        .show(supportFragmentManager, "new_entry_dialog")
                 }
                 true
             }
@@ -695,6 +734,11 @@ class MainActivity : AuthenticatedActivity(),
                 scanReceiptLauncher.launch(intent)
                 true
             }
+            R.id.action_scan_gallery_receipt -> {
+                expectedExit = true
+                pickPhotoToReceiptScanLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                true
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }
@@ -726,8 +770,10 @@ class MainActivity : AuthenticatedActivity(),
             entries = models.get<DashEntry, DashEntry.Companion>().ifEmpty { null },
             weeklies = models.get<Weekly, Weekly.Companion>().ifEmpty { null },
             expenses = models.get<Expense, Expense.Companion>().ifEmpty { null },
-            purposes = models.get<ExpensePurpose, ExpensePurpose.Companion>().ifEmpty { null },
-            locationData = models.get<LocationData, LocationData.Companion>().ifEmpty { null }
+            purposes = models.get<ExpensePurpose, ExpensePurpose.Companion>()
+                .ifEmpty { null },
+            locationData = models.get<LocationData, LocationData.Companion>()
+                .ifEmpty { null }
         )
     }
 
@@ -1051,35 +1097,40 @@ class MainActivity : AuthenticatedActivity(),
         ): ADBState {
             val mTrackingEnabled = trackingEnabled
 
-            val res = if (afterId == null) { // stopping or stopped
-                if (beforeId != null) {
-                    stopDash(beforeId)
+            val res = when (afterId) {
+                null -> { // stopping or stopped
+                    if (beforeId != null) {
+                        stopDash(beforeId)
+                    }
+
+                    ADBState.INACTIVE
                 }
-
-                ADBState.INACTIVE
-            } else { // starting or continuing
-                if (beforeId == null && !locationServiceBound) {
-                    startTracking()
-                }
-
-                if (mTrackingEnabled) {
-                    if (!trackingEnabledPrevious) {
-                        // tracking has been enabled
-                        resumeOrStartNewTrip()
+                else -> { // starting or continuing
+                    if (beforeId == null && !locationServiceBound) {
+                        startTracking()
                     }
 
-                    if (showMini) {
-                        ADBState.TRACKING_COLLAPSED
-                    } else {
-                        ADBState.TRACKING_FULL
-                    }
-                } else {
-                    if (locationServiceBound || trackingEnabledPrevious) {
-                        // either location service hasn't been stopped or tracking was disabled
-                        stopTracking()
-                    }
+                    when {
+                        mTrackingEnabled -> {
+                            if (!trackingEnabledPrevious) {
+                                // tracking has been enabled
+                                resumeOrStartNewTrip()
+                            }
 
-                    ADBState.TRACKING_DISABLED
+                            when {
+                                showMini -> ADBState.TRACKING_COLLAPSED
+                                else -> ADBState.TRACKING_FULL
+                            }
+                        }
+                        else -> {
+                            if (locationServiceBound || trackingEnabledPrevious) {
+                                // either location service hasn't been stopped or tracking was disabled
+                                stopTracking()
+                            }
+
+                            ADBState.TRACKING_DISABLED
+                        }
+                    }
                 }
             }
 

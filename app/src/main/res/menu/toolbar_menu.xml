@@ -74,8 +74,15 @@
 
     <item
         android:id="@+id/action_scan_receipt"
-        android:icon="@drawable/ic_arrow_expand"
+        android:icon="@drawable/ic_scan"
         android:title="Scan Receipt"
+        app:iconTint="?attr/colorOverflowMenuItemIcon"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_scan_gallery_receipt"
+        android:icon="@drawable/ic_arrow_expand"
+        android:title="Pick Receipt from Gallery"
         app:iconTint="?attr/colorOverflowMenuItemIcon"
         app:showAsAction="never" />
 </menu>

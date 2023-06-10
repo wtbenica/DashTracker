@@ -71,9 +71,7 @@ class Repository private constructor(private val context: Context) {
     internal val standardMileageDeductionTable: StandardMileageDeductionTable
         get() = StandardMileageDeductionTable()
 
-    /**
-     * Dash Entry
-     */
+    /** Dash Entry */
     val allEntries: Flow<List<DashEntry>> = entryDao.getAll()
 
     private suspend fun allEntries(): List<DashEntry> = entryDao.getAllSuspend()
@@ -94,9 +92,9 @@ class Repository private constructor(private val context: Context) {
         }
     ).flow
 
-    fun deleteEntryById(id: Long) {
-        CoroutineScope(Dispatchers.Default).launch {
-            withContext(Dispatchers.Default) {
+    fun deleteEntryById(id: Long, dispatcher: CoroutineDispatcher = Dispatchers.Default) {
+        CoroutineScope(dispatcher).launch {
+            withContext(dispatcher) {
                 entryDao.deleteById(id)
             }.let {
                 entryPagingSource?.invalidate()
@@ -128,9 +126,7 @@ class Repository private constructor(private val context: Context) {
         }
 
 
-    /**
-     * Weekly
-     */
+    /** Weekly */
     val allWeeklies: Flow<List<FullWeekly>> = weeklyDao.getAllCompleteWeekly()
 
     private suspend fun allWeeklies(): List<Weekly> = weeklyDao.getAllSuspend()
@@ -154,9 +150,7 @@ class Repository private constructor(private val context: Context) {
 
     fun getBasePayAdjustFlowById(id: Long): Flow<Weekly?> = weeklyDao.getFlow(id)
 
-    /**
-     * Yearly
-     */
+    /** Yearly */
     suspend fun getAnnualCostPerMile(year: Int, purpose: DeductionType): Map<Int, Float>? =
         when (purpose) {
             DeductionType.NONE -> {
@@ -173,17 +167,13 @@ class Repository private constructor(private val context: Context) {
             }
         }
 
-    /**
-     * Expense
-     */
+    /** Expense */
     private suspend fun allExpenses(): List<Expense> = expenseDao.getAllSuspend()
 
     val allExpenses: Flow<List<FullExpense>> = expenseDao.getAllFullExpenses()
 
     private suspend fun allExpensePurposes(): List<ExpensePurpose> =
         expensePurposeDao.getAllSuspend()
-
-    private suspend fun allLocationData(): List<LocationData> = locationDao.getAllSuspend()
 
     val allExpensePurposes: Flow<List<ExpensePurpose>> = expensePurposeDao.getAll()
 
@@ -215,20 +205,17 @@ class Repository private constructor(private val context: Context) {
         }
     }
 
-    /**
-     * Expense Purpose
-     */
-    suspend fun getPurposeIdByName(name: String): Int? =
-        expensePurposeDao.getPurposeIdByName(name)
-
-    private suspend fun allPurposes(): List<ExpensePurpose> = expensePurposeDao.getAllSuspend()
+    fun checkForDuplicate(expense: Expense): Boolean = expenseDao.checkForDuplicate(expense)
 
     fun getExpensePurposeFlowById(id: Long): Flow<ExpensePurpose?> =
         expensePurposeDao.getFlow(id)
 
     /**
-     * Generic<DataModel> functions
+     * Location
      */
+    private suspend fun allLocationData(): List<LocationData> = locationDao.getAllSuspend()
+
+    /** Generic<DataModel> functions */
     fun upsertModel(model: DataModel): Long =
         when (model) {
             is DashEntry -> {
@@ -259,8 +246,8 @@ class Repository private constructor(private val context: Context) {
 
 
     /**
-     * returns -1L if model is [LocationData] and there is a foreign key constraint exception
-     * (e.g. dashentry has been deleted)
+     * returns -1L if model is [LocationData] and there is a foreign key
+     * constraint exception (e.g. dashentry has been deleted)
      */
     suspend fun saveModelSus(model: DataModel): Long =
         when (model) {
@@ -300,10 +287,11 @@ class Repository private constructor(private val context: Context) {
         csvUtil.import(activityResultLauncher)
 
     /**
-     * For only the parameters that are passed arguments, the corresponding database table's
-     * records will be deleted and replaced with the items in the passed list. The default
-     * argument, null, will not make any changes to the corresponding table. An empty list will
-     * delete all records from the table.
+     * For only the parameters that are passed arguments, the corresponding
+     * database table's records will be deleted and replaced with the items in
+     * the passed list. The default argument, null, will not make any changes
+     * to the corresponding table. An empty list will delete all records from
+     * the table.
      */
     // TODO: This needs some error checking for SQLiteConstraintException. E.g. there are existing
     //  expenses, but the imported file has an empty expenses, existing expenses are never cleared,
@@ -313,16 +301,17 @@ class Repository private constructor(private val context: Context) {
         weeklies: List<Weekly>? = null,
         expenses: List<Expense>? = null,
         purposes: List<ExpensePurpose>? = null,
-        locationData: List<LocationData>? = null
+        locationData: List<LocationData>? = null,
+        dispatcher: CoroutineDispatcher = Dispatchers.Default
     ) {
         CoroutineScope(Dispatchers.Default).launch {
-            withContext(Dispatchers.Default) {
+            withContext(dispatcher) {
                 weeklies?.let {
                     weeklyDao.clear()
                     weeklyDao.upsertAllSus(it)
                 }
             }.let {
-                withContext(Dispatchers.Default) {
+                withContext(dispatcher) {
                     entries?.let {
                         entryDao.clear()
                         entryDao.upsertAllSus(it)
@@ -336,25 +325,29 @@ class Repository private constructor(private val context: Context) {
             }
         }
 
-        CoroutineScope(Dispatchers.Default).launch {
-            if (expenses != null && purposes != null) {
-                expenseDao.clear()
-                expensePurposeDao.clear()
-                withContext(Dispatchers.Default) {
-                    expensePurposeDao.upsertAllSus(purposes)
-                }.let {
+        CoroutineScope(dispatcher).launch {
+            when {
+                expenses != null && purposes != null -> {
+                    expenseDao.clear()
+                    expensePurposeDao.clear()
+                    withContext(dispatcher) {
+                        expensePurposeDao.upsertAllSus(purposes)
+                    }.let {
+                        expenseDao.upsertAllSus(expenses)
+                    }
+                }
+                expenses != null -> {
+                    expenseDao.clear()
                     expenseDao.upsertAllSus(expenses)
                 }
-            } else if (expenses != null) {
-                expenseDao.clear()
-                expenseDao.upsertAllSus(expenses)
-            } else if (purposes != null) {
-                // TODO: This was a quick fix. didn't think about unintended consequences
-                try {
-                    expensePurposeDao.clear()
-                    expensePurposeDao.upsertAllSus(purposes)
-                } catch (e: SQLiteConstraintException) {
-                    errorLog(e.toString())
+                purposes != null -> {
+                    // TODO: This was a quick fix. didn't think about unintended consequences
+                    try {
+                        expensePurposeDao.clear()
+                        expensePurposeDao.upsertAllSus(purposes)
+                    } catch (e: SQLiteConstraintException) {
+                        errorLog(e.toString())
+                    }
                 }
             }
         }

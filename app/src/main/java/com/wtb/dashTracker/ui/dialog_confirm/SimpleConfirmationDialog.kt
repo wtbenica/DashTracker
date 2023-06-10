@@ -126,7 +126,8 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
             }?.action
             posButtonIsDefault = getBoolean(ARG_POS_IS_DEFAULT, true)
 
-            negButton = getIntNotZero(ARG_NEG_TEXT) ?: R.string.cancel
+            val isSingleButton = getBoolean(ARG_SINGLE_BUTTON, false)
+            negButton = getIntNotZero(ARG_NEG_TEXT) ?: R.string.cancel.takeIf { !isSingleButton }
             negAction = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 getParcelable(ARG_NEG_ACTION, LambdaWrapper::class.java)
             } else {
@@ -337,6 +338,17 @@ abstract class SimpleConfirmationDialog<ContentArea : View, ContentType : Any, T
         protected val ARG_POS_ACTION_2: String = "${BuildConfig.APPLICATION_ID}.pos_action_2"
 
         @JvmStatic
-        protected val ARG_POS_2_IS_DEFAULT: String = "${BuildConfig.APPLICATION_ID}.pos_2_is_default"
+        protected val ARG_POS_2_IS_DEFAULT: String =
+            "${BuildConfig.APPLICATION_ID}.pos_2_is_default"
+
+        @JvmStatic
+        protected val ARG_SINGLE_BUTTON: String = "${BuildConfig.APPLICATION_ID}.single_button"
     }
 }
+
+// TODO: To make the newInstance of children simpler, should use this
+data class Button(
+    @StringRes val text: Int,
+    val action: LambdaWrapper?,
+    val isDefault: Boolean
+)

@@ -156,6 +156,7 @@ dependencies {
     implementation project(path: ':mileageTracker')
     implementation project(path: ':notificationutil')
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:5.3.1'
 
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
