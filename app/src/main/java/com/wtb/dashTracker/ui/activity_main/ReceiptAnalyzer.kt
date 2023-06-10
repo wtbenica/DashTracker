@@ -51,6 +51,10 @@ class ReceiptAnalyzer {
                 ?: getGasExpense(values)
         }
 
+        /**
+         * Returns any text from [text] that contains a value of
+         * [Pattern.ONLY_0_00]
+         */
         internal fun extractPossibleExpenseValuesFromBlocks(text: Text): List<String> {
             /** Returns true if [block] contains a substring of the format '0.00(0)' */
             fun containsExpenseLikeValue(block: Text.TextBlock): Boolean =

@@ -31,7 +31,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.view.View.*
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -86,8 +85,10 @@ import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.ACTIV
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.EXTRA_SETTINGS_ACTIVITY_IS_AUTHENTICATED
 import com.wtb.dashTracker.ui.activity_settings.SettingsActivity.Companion.INTENT_EXTRA_PRE_AUTH
 import com.wtb.dashTracker.ui.activity_welcome.WelcomeActivity
+import com.wtb.dashTracker.ui.dialog_confirm.ConfirmDialog
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogExport
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogImport
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleViewConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.ARG_MODIFICATION_STATE
 import com.wtb.dashTracker.ui.dialog_edit_data_model.EditDataModelDialog.Companion.REQUEST_KEY_DATA_MODEL_DIALOG
@@ -249,13 +250,13 @@ class MainActivity : AuthenticatedActivity(),
                             ExpenseDialog.newInstance(id)
                                 .show(supportFragmentManager, "new_expense_dialog")
                         } else {
-                            runOnUiThread {
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    "Expense already entered",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            SimpleViewConfirmationDialog.newInstance(
+                                text = R.string.duplicate_expense_message,
+                                requestKey = "duplicate_expense_dialog",
+                                title = getString(R.string.duplicate_expense_title),
+                                posButton = R.string.ok,
+                                singleButton = true,
+                            ).show(supportFragmentManager, "duplicate_expense_dialog")
                         }
                     }
                 }
