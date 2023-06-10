@@ -258,7 +258,13 @@ class MainActivity : AuthenticatedActivity(),
                                 singleButton = true,
                             ).show(supportFragmentManager, "duplicate_expense_dialog")
                         }
-                    }
+                    } ?: SimpleViewConfirmationDialog.newInstance(
+                        text = R.string.no_expense_data_extracted,
+                        requestKey = "no_receipt_found_dialog",
+                        title = getString(R.string.no_expense_data_extracted_title),
+                        posButton = R.string.ok,
+                        singleButton = true,
+                    ).show(supportFragmentManager, "no_receipt_found_dialog")
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
