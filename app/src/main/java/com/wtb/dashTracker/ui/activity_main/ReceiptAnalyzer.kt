@@ -32,10 +32,10 @@ import kotlin.math.pow
 class ReceiptAnalyzer {
     companion object {
         /**
-         * Extracts expenses from a receipt.
+         * Extract expense - Extracts a list of expenses from [image].
          *
          * @param image The receipt image.
-         * @return A list of expenses.
+         * @return A list of [Expense]s.
          */
         suspend fun extractExpense(image: InputImage): Expense? {
             val text: Text = extractTextFromImage(image)
@@ -48,24 +48,27 @@ class ReceiptAnalyzer {
 
             return expenses?.first().takeIf { expenses?.count() == 1 }
                 ?: expenses?.first().takeIf { expenses?.isNotEmpty() == true }
-                ?: getGasExpense(values)
+                ?: getExpense(values)
         }
 
         /**
-         * Returns any text from [text] that contains a value of
-         * [Pattern.ONLY_0_00]
+         * Extract possible expense values from blocks - Extracts a list of
+         * possible expense values from [text].
+         *
+         * @param text The text from the receipt image.
+         * @return A list of possible expense values.
          */
         internal fun extractPossibleExpenseValuesFromBlocks(text: Text): List<String> {
             /** Returns true if [block] contains a substring of the format '0.00(0)' */
             fun containsExpenseLikeValue(block: Text.TextBlock): Boolean =
-                block.text.contains(Pattern.ONLY_0_00.regex)
+                block.text.contains(ReceiptValuePattern.ONLY_0_00.regex)
 
             /**
              * Returns a list of substrings from [text] of the pattern
-             * [Pattern.POSSIBLE_RECEIPT_AMOUNT]
+             * [ReceiptValuePattern.POSSIBLE_RECEIPT_AMOUNT]
              */
             fun extractPossibleExpenseValue(text: String): List<String> {
-                return Pattern.POSSIBLE_RECEIPT_AMOUNT.regex.findAll(text).map {
+                return ReceiptValuePattern.POSSIBLE_RECEIPT_AMOUNT.regex.findAll(text).map {
                     it.value
                 }.toList()
             }
@@ -79,20 +82,27 @@ class ReceiptAnalyzer {
             }
         }
 
+        /**
+         * Extract possible dates from blocks - Extracts a list of possible dates
+         * from [text].
+         *
+         * @param text The text from the receipt image.
+         * @return A list of possible dates.
+         */
         fun extractPossibleDatesFromBlocks(text: Text): List<LocalDate> {
             /**
              * Returns true if [block] contains a substring of the format
-             * [Pattern.DATE]
+             * [ReceiptValuePattern.DATE]
              */
             fun containsPossibleDate(block: Text.TextBlock): Boolean =
-                block.text.contains(Pattern.DATE.regex)
+                block.text.contains(ReceiptValuePattern.DATE.regex)
 
             /**
              * Returns a list of substrings from [text] of the pattern
-             * [Pattern.POSSIBLE_RECEIPT_AMOUNT]
+             * [ReceiptValuePattern.POSSIBLE_RECEIPT_AMOUNT]
              */
             fun extractDate(text: String): List<LocalDate> {
-                return Pattern.DATE.regex.findAll(text).mapNotNull {
+                return ReceiptValuePattern.DATE.regex.findAll(text).mapNotNull {
                     var res: LocalDate? = null
                     dfPatterns.forEach { df ->
                         try {
@@ -116,14 +126,25 @@ class ReceiptAnalyzer {
             }
         }
 
-        /** Extracts text from image */
+        /**
+         * Extract text from image - Uses [TextRecognizer] to extract text from
+         * [image].
+         *
+         * @param image The image to extract text from.
+         * @return The text from [image].
+         */
         private suspend fun extractTextFromImage(image: InputImage): Text {
             val recognizer: TextRecognizer =
                 TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
             return recognizer.process(image).await()
         }
 
-        /** Looks for any ppg * gallon = amount from a list of values */
+
+        /**
+         * Look for price gallon amount triplets - Looks for price, gallons, amount
+         * triplets in [values] and then returns a set of [Expense]s for each
+         * combination of date from [dates] and price gallon amount triplet found.
+         */
         internal fun lookForPriceGallonAmountTriplets(
             values: List<String>,
             dates: List<LocalDate>
@@ -187,69 +208,45 @@ class ReceiptAnalyzer {
             return nines.takeIf { it.isNotEmpty() } ?: candidates.takeIf { it.isNotEmpty() }
         }
 
-        internal fun getGasExpense(values: List<String>): Expense? {
-            val ppgCandidates: List<String> = Pattern.POSSIBLE_PPG.filter(values)
+        /**
+         * Get expense - Returns any [Expense]s from [values] if one can be found.
+         *
+         * @param values A list of values from the receipt
+         */
+        internal fun getExpense(values: List<String>): Expense? {
+            // these are left as strings in case there is any surrounding text that
+            // might indicate what the value is, e.g. "PPG", "Credit Price", etc.
+            val ppgs: List<String> = ReceiptValuePattern.POSSIBLE_PPG.filter(values)
 
-            val galCandidates: List<Float> =
-                Pattern.POSSIBLE_GALLONS.filter(values).mapNotNull { it.toFloatOrNull() }
+            val gallons: List<Float> =
+                ReceiptValuePattern.POSSIBLE_GALLONS.filter(values).mapNotNull { it.toFloatOrNull() }
 
-            val amountCandidates: List<String> = Pattern.POSSIBLE_RECEIPT_AMOUNT.filter(values)
+            // these are left as strings in case there is any surrounding text that
+            // might indicate what the value is, e.g. "Total", "Amount", etc.
+            val totals: List<String> = ReceiptValuePattern.POSSIBLE_RECEIPT_AMOUNT.filter(values)
 
-            return getBestGuessExpense(ppgCandidates, galCandidates, amountCandidates)
-        }
-
-        private fun getBestGuessExpense(
-            ppgs: List<String>,
-            gallons: List<Float>,
-            amounts: List<String>
-        ): Expense? {
-            val combos = getCombos(ppgs, gallons, amounts)
-
-            val bestAmount: Float? = getBestAmount(amounts)
+            val bestTotal: Float? = getBestTotal(totals)
 
             val bestGallons: Float? = getBestGallons(gallons)
 
             val bestPpg: Float? = getBestPpg(ppgs)
 
-            val res: Expense? = when (combos) {
-                C.NONE,
-                C.G -> null
-                C.A_G -> getExpenseFromAG(bestGallons, bestAmount)
-                C.P_G -> getExpenseFromPG(bestGallons, bestPpg)
-                C.A_P_G -> getExpenseFromAPG(bestAmount, gallons, ppgs, bestPpg)
-                else -> Expense(amount = bestAmount, pricePerGal = bestPpg)
-            }
-
-            return res
+            return ExpenseFactory.getExpense(bestTotal, bestGallons, bestPpg, gallons, ppgs)
         }
 
-        private fun getCombos(
-            ppgs: List<String>,
-            gallons: List<Float>,
-            amounts: List<String>
-        ): C {
-            val pEmpty = ppgs.isEmpty()
-            val gEmpty = gallons.isEmpty()
-            val aEmpty = amounts.isEmpty()
-
-            return when {
-                aEmpty && pEmpty && gEmpty -> C.NONE
-                aEmpty && pEmpty -> C.G
-                aEmpty && gEmpty -> C.P
-                pEmpty && gEmpty -> C.A
-                pEmpty -> C.A_G
-                gEmpty -> C.A_P
-                aEmpty -> C.P_G
-                else -> C.A_P_G
-            }
-        }
-
-        private fun getBestAmount(amounts: List<String>): Float? {
+        /**
+         * Get best total - Tries to determine the best candidate for the total
+         * from [amounts].
+         *
+         * @param amounts The amounts from the receipt.
+         * @return The best total from [amounts] or null if none can be found.
+         */
+        private fun getBestTotal(amounts: List<String>): Float? {
             fun getRegexScore(str: String): Int {
                 return when {
-                    Pattern.ONLY_TOTAL_DEBIT_OR_CREDIT.matches(str) -> Int.MAX_VALUE
-                    Pattern.ONLY_DOLLAR_SIGN_0_00.matches(str) -> Int.MAX_VALUE - 1
-                    Pattern.ONLY_0_00.matches(str) -> Int.MAX_VALUE - 2
+                    ReceiptValuePattern.ONLY_TOTAL_DEBIT_OR_CREDIT.matches(str) -> Int.MAX_VALUE
+                    ReceiptValuePattern.ONLY_DOLLAR_SIGN_0_00.matches(str) -> Int.MAX_VALUE - 1
+                    ReceiptValuePattern.ONLY_0_00.matches(str) -> Int.MAX_VALUE - 2
                     else -> ((str.dollarStringToFloat(2) ?: 0f) * 100f).toInt()
                 }
             }
@@ -266,6 +263,13 @@ class ReceiptAnalyzer {
             return res?.dollarStringToFloat(2)
         }
 
+        /**
+         * Get best gallons - Tries to determine the best candidate for the gallons
+         * from [gallons].
+         *
+         * @param gallons The gallons from the receipt.
+         * @return The best gallons from [gallons] or null if none can be found.
+         */
         private fun getBestGallons(gallons: List<Float>): Float? {
             fun pickBestGallons(): Float {
                 // TODO: This might be improved
@@ -283,6 +287,14 @@ class ReceiptAnalyzer {
             return res
         }
 
+        /**
+         * Get best ppg - Tries to determine the best candidate for the price per
+         * gallon from [ppgs].
+         *
+         * @param ppgs The price per gallon from the receipt.
+         * @return The best price per gallon from [ppgs] or null if none can be
+         *     found.
+         */
         internal fun getBestPpg(ppgs: List<String>): Float? {
             fun pickBestPpg(): String? {
                 // TODO: This might be improved
@@ -314,57 +326,14 @@ class ReceiptAnalyzer {
             return res?.dollarStringToFloat(3)
         }
 
-        private fun getExpenseFromAG(
-            bestGallons: Float?,
-            bestAmount: Float?
-        ): Expense? {
-            val ppg = bestGallons?.let { g -> bestAmount?.let { a -> a / g } }
-            return ppg?.let { Expense(pricePerGal = ppg) }
-        }
-
-        private fun getExpenseFromPG(
-            bestGallons: Float?,
-            bestPpg: Float?
-        ): Expense? {
-            val amount = bestGallons?.let { g -> bestPpg?.let { p -> g * p } }
-            return amount?.let { Expense(amount = amount, pricePerGal = bestPpg) }
-        }
-
-        private fun getExpenseFromAPG(
-            bestAmount: Float?,
-            gallons: List<Float>,
-            ppgs: List<String>,
-            bestPpg: Float?
-        ): Expense {
-            val ppg: Float?
-            val amount: Float? = bestAmount
-
-            if (listOf(gallons, ppgs).all { it.count() == 1 }) {
-                ppg = bestPpg
-            } else { // 1 a, and multiple p & g
-                val candidates = mutableListOf<Pair<String?, Float?>>()
-
-                for (p in ppgs) {
-                    for (g in gallons) {
-                        val strippedP =
-                            p.dollarStringToFloat()
-                        if (strippedP?.let { it * g } == amount) {
-                            candidates.add(Pair(p, g))
-                        }
-                    }
-                }
-
-                ppg = if (candidates.isNotEmpty()) {
-                    candidates.first().first?.dollarStringToFloat(3)
-                } else {
-                    bestPpg
-                }
-            }
-
-            return Expense(amount = amount, pricePerGal = ppg)
-        }
-
-        private fun String.dollarStringToFloat(decimals: Int? = null): Float? =
+        /**
+         * Dollar string to float - Converts a string like "$0.00" to a float like 0.00
+         *
+         * @param decimals The number of decimals to round to, defaults to 0
+         * @return The float value of the string, or null if it could not be
+         *     converted
+         */
+        fun String.dollarStringToFloat(decimals: Int? = null): Float? =
             this.filter { it != '$' && !it.isLetter() }.toFloatOrNull()
                 ?.times(10.0.pow(n = decimals ?: 0))?.apply {
                     if (decimals != null) {
@@ -372,7 +341,10 @@ class ReceiptAnalyzer {
                     }
                 }?.toFloat()?.div(10.0.pow(n = decimals ?: 0))?.toFloat()
 
-        enum class Pattern(private val pattern: String) {
+        /**
+         * Receipt value pattern - A list of regex patterns to match against.
+         */
+        enum class ReceiptValuePattern(private val pattern: String) {
             DATE("(?i)(?:(?:\\d{1,2}[.\\/-]\\d{1,2}[.\\/-]\\d{2}(?:\\d{2})?))|(?:(?:\\d{1,2}\\s+)?(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|July|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(?:\\d{1,2}(?:,)?\\s+)?\\d{2}(?:\\d{2})?)"),
             ONLY_0_00("\\d+\\.\\d{2}"),
             ONLY_DOLLAR_SIGN_0_00("\\$${ONLY_0_00}"),
@@ -408,8 +380,8 @@ class ReceiptAnalyzer {
             "dd MMM yy"
         )
 
-        enum class C {
-            NONE, A, P, G, A_P, A_G, P_G, A_P_G
+        enum class FoundValues {
+            NONE, TOTAL, PPG, GALS, TOTAL_PPG, TOTAL_GALS, PPG_GALS, ALL
         }
     }
 }

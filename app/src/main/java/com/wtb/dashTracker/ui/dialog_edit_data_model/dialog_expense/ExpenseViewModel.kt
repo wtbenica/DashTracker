@@ -37,5 +37,7 @@ class ExpenseViewModel : ListItemViewModel<Expense>() {
     val expensePurposes: Flow<List<ExpensePurpose>> = repository.allExpensePurposes
 
     val fullPurposes: Flow<List<FullExpensePurpose>> = repository.allFullPurposes
+
+    fun checkForDuplicateExpense(expense: Expense): Boolean = repository.checkForDuplicate(expense)
 }
 

@@ -17,7 +17,10 @@
 package com.wtb.dashTracker.ui.dialog_edit_data_model.dialog_expense
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,11 +28,16 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
+import com.google.mlkit.vision.common.InputImage
 import com.wtb.dashTracker.R
 import com.wtb.dashTracker.database.models.Expense
 import com.wtb.dashTracker.database.models.ExpensePurpose
@@ -39,6 +47,9 @@ import com.wtb.dashTracker.databinding.DialogFragExpensePurposeDropdownFooterBin
 import com.wtb.dashTracker.databinding.DialogListItemButtonsBinding
 import com.wtb.dashTracker.extensions.*
 import com.wtb.dashTracker.ui.activity_main.MainActivity
+import com.wtb.dashTracker.ui.activity_main.ReceiptAnalyzer
+import com.wtb.dashTracker.ui.activity_main.TAG
+import com.wtb.dashTracker.ui.activity_scan_receipt.ScanReceiptActivity
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_DAY
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_PICKER_NEW_MONTH
@@ -46,6 +57,7 @@ import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Compan
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.ARG_DATE_TEXTVIEW
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogDatePicker.Companion.REQUEST_KEY_DATE
 import com.wtb.dashTracker.ui.dialog_confirm.ConfirmationDialogEditPurposes
+import com.wtb.dashTracker.ui.dialog_confirm.SimpleViewConfirmationDialog
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.REQUEST_KEY_DIALOG_ADD_OR_MODIFY_PURPOSE
 import com.wtb.dashTracker.ui.dialog_confirm.add_modify_purpose.ConfirmationDialogAddOrModifyPurpose.Companion.RESULT_PURPOSE_ID
@@ -56,12 +68,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.time.LocalDate
+import java.time.LocalTime
 
+@ExperimentalGetImage
 @ExperimentalAnimationApi
 @ExperimentalTextApi
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
+/**
+ * This is the dialog that is used to add or edit an expense
+ */
 class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
     override var item: Expense? = null
@@ -75,6 +93,80 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
 
     override val itemType: String
         get() = "Expense"
+
+
+    /**
+     * This is the launcher for the scan receipt activity
+     */
+    private val scanReceiptLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            Log.d(TAG, "Intent returned from scan receipt activity")
+            val uri: Uri = it.data?.data ?: return@registerForActivityResult
+            extractExpenseFromImageUri(uri)
+        }
+
+    /**
+     * Opens an Image from [uri] and tries to extract text that can be used to fill in the
+     * expense fields
+     */
+    private fun extractExpenseFromImageUri(uri: Uri) {
+        val image: InputImage
+        try {
+            image = InputImage.fromFilePath(requireContext(), uri)
+
+            CoroutineScope(Dispatchers.Default).launch {
+                Log.d(TAG, "Extracting expense from image")
+                val expense = ReceiptAnalyzer.extractExpense(image)
+                Log.d(TAG, "Expense extracted: $expense")
+                expense?.let {
+                    if (viewModel.checkForDuplicateExpense(expense = expense)) {
+                        SimpleViewConfirmationDialog.newInstance(
+                            text = R.string.duplicate_expense_message,
+                            requestKey = "duplicate_expense_dialog",
+                            title = getString(R.string.duplicate_expense_title),
+                            posButton = R.string.ok,
+                            singleButton = true,
+                        ).show(childFragmentManager, "duplicate_expense_dialog")
+                    } else {
+                        (context as MainActivity?)?.runOnUiThread {
+                            binding.fragExpensePrice.setText(
+                                getStringOrElse(
+                                    R.string.gas_price_edit,
+                                    "",
+                                    expense.pricePerGal
+                                )
+                            )
+                            binding.fragExpenseAmount.setText(
+                                expense.amount?.toCurrencyString() ?: ""
+                            )
+                            binding.fragExpenseDate.setLocalDate(expense.date)
+                        }
+                    }
+                } ?: SimpleViewConfirmationDialog.newInstance(
+                    text = R.string.no_expense_data_extracted,
+                    requestKey = "no_receipt_found_dialog",
+                    title = getString(R.string.no_expense_data_extracted_title),
+                    posButton = R.string.ok,
+                    singleButton = true,
+                ).show(childFragmentManager, "no_receipt_found_dialog")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * This is the launcher for the image picker. It is used to get the image from the gallery
+     * and then pass it to the [extractExpenseFromImageUri] function.
+     */
+    private val pickPhotoToReceiptScanLauncher: ActivityResultLauncher<PickVisualMediaRequest> =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                extractExpenseFromImageUri(uri)
+            } else {
+                Log.d(TAG, "Something went wrong picking photo")
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -145,20 +237,33 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
                     }
 
                 }
+
+            fragExpenseScanReceiptBtn.setOnClickListener {
+                val intent = Intent(context, ScanReceiptActivity::class.java)
+                scanReceiptLauncher.launch(intent)
+            }
+
+            fragExpenseUseSavedPhotoBtn.setOnClickListener {
+                pickPhotoToReceiptScanLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
         }
 
-    // TODO: add this and make a setLocalTime also
-    fun TextView.setLocalDate(date: LocalDate) {
+    // TODO: add this in other classes
+    private fun TextView.setLocalDate(date: LocalDate) {
         text = date.format(dtfDate)
         tag = date
+    }
+
+    private fun TextView.setLocalTime(time: LocalTime) {
+        text = time.format(dtfTime)
+        tag = time
     }
 
     override fun updateUI() {
         (context as MainActivity?)?.runOnUiThread {
             val tempExpense = item
             if (tempExpense != null) {
-                binding.fragExpenseDate.text = tempExpense.date.format(dtfDate)
-                binding.fragExpenseDate.tag = tempExpense.date
+                binding.fragExpenseDate.setLocalDate(tempExpense.date)
 
                 binding.fragExpenseAmount.setText(tempExpense.amount?.toCurrencyString() ?: "")
                 binding.fragExpensePrice.setText(
@@ -270,6 +375,12 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     companion object {
+        /**
+         * Creates a new instance of [ExpenseDialog]
+         *
+         * @param expenseId the id of the [Expense] to edit
+         * @return a new instance of [ExpenseDialog]
+         */
         fun newInstance(expenseId: Long): ExpenseDialog =
             ExpenseDialog().apply {
                 arguments = Bundle().apply {
@@ -279,6 +390,9 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
     }
 
     @ExperimentalAnimationApi
+    /**
+     * [RecyclerView.ViewHolder] for the [ExpensePurpose] spinner
+     */
     inner class PurposeAdapter(
         context: Context,
         private val itemList: Array<ExpensePurpose>
@@ -360,14 +474,15 @@ class ExpenseDialog : EditDataModelDialog<Expense, DialogFragExpenseBinding>() {
         }
 
         /**
-         * @return [indexOfFirst] [ExpensePurpose] in itemList with [ExpensePurpose.purposeId] [id]
+         * @return [indexOfFirst] [ExpensePurpose] in itemList with
+         *     [ExpensePurpose.purposeId] [id]
          */
         fun getPositionById(id: Long): Int =
             itemList.indexOfFirst { purpose -> id == purpose.purposeId }
 
         /**
-         * @return [indexOfFirst] [ExpensePurpose] in itemList with [ExpensePurpose.name]
-         * [expenseName]
+         * @return [indexOfFirst] [ExpensePurpose] in itemList with
+         *     [ExpensePurpose.name] [expenseName]
          */
         fun getPositionByName(expenseName: String): Int =
             itemList.indexOfFirst { purpose -> expenseName == purpose.name }

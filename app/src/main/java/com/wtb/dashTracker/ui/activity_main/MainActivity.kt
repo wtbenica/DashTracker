@@ -136,14 +136,31 @@ internal val Any.TAG: String
 private var IS_TESTING = false
 
 private const val DEBUGGING = true
+
+/**
+ * Debug log - only prints if [DEBUGGING] is true
+ *
+ * @param message
+ * @param condition
+ */
 internal fun Any.debugLog(message: String, condition: Boolean = true) {
     if (DEBUGGING && condition) Log.d(TAG, message)
 }
 
+/**
+ * Error log - only prints if [DEBUGGING] is true
+ *
+ * @param message
+ */
 internal fun Any.errorLog(message: String) {
     if (DEBUGGING) Log.e(TAG, message)
 }
 
+/**
+ * Main activity
+ *
+ * @constructor Create empty Main activity
+ */
 @ExperimentalGetImage
 /**
  * Primary [AppCompatActivity] for DashTracker.
@@ -751,10 +768,7 @@ class MainActivity : AuthenticatedActivity(),
     }
 
     /**
-     * Clear active entry - if the active entry id is
-     * [id], sets [activeEntryDeleted] to true, so that
-     * the [EndDashDialog] isn't triggered, and calls
-     * [MainActivityViewModel.loadActiveEntry] with null as the argument.
+     * Clear active entry
      *
      * @param id
      */
@@ -765,6 +779,11 @@ class MainActivity : AuthenticatedActivity(),
         }
     }
 
+    /**
+     * insert or replace - inserts or replaces the given models
+     *
+     * @param models [ModelMap] of models to insert or replace
+     */
     private fun insertOrReplace(models: ModelMap) {
         viewModel.insertOrReplace(
             entries = models.get<DashEntry, DashEntry.Companion>().ifEmpty { null },
@@ -900,6 +919,9 @@ class MainActivity : AuthenticatedActivity(),
         supportActionBar?.hide()
     }
 
+    /**
+     * On unlock - called when the user has authenticated.
+     */
     private fun onUnlock() {
         isAuthenticated = true
         expectedExit = false
@@ -914,7 +936,12 @@ class MainActivity : AuthenticatedActivity(),
     override val currentCpm: Float?
         get() = activeDash.activeCpm
 
-    /** Keeps track of the current dash and current pause state. */
+
+    /**
+     * Active dash
+     *
+     * @constructor Create empty Active dash
+     */
     inner class ActiveDash {
         // Active Entry
         internal var activeEntry: FullEntry? = null
@@ -926,13 +953,7 @@ class MainActivity : AuthenticatedActivity(),
 
         internal var locationServiceState: ServiceState? = null
 
-        /**
-         * If [activeEntryId] is not null, calls [startLocationService] to
-         * start/restart the location service. If [activeEntryId] is null, the
-         * location service is started with a new [DashEntry]. If the location
-         * service is already started with a different [DashEntry], that
-         * [DashEntry] is set as [activeEntry], otherwise the new [DashEntry] is.
-         */
+        /** Resume or start new trip */
         fun resumeOrStartNewTrip() {
             bindLocationService()
 
@@ -961,9 +982,9 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Opens [EndDashDialog] and calls [stopTracking]
+         * Stop dash
          *
-         * @param entryId the id of the dash to stop
+         * @param entryId
          */
         fun stopDash(entryId: Long?) {
             val id = entryId ?: activeEntryId ?: AUTO_ID
@@ -978,7 +999,7 @@ class MainActivity : AuthenticatedActivity(),
             }
         }
 
-        /** Updates [locationServiceState] from [LocationService.serviceState] */
+        /** Init loc svc observer */
         fun initLocSvcObserver() {
             CoroutineScope(Dispatchers.Default).launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -989,11 +1010,7 @@ class MainActivity : AuthenticatedActivity(),
             }
         }
 
-        /**
-         * Calls [unbindService] on [locationServiceConnection], sets
-         * [locationServiceBound] to false, [locationServiceConnection]
-         * to null, and [locationService] to null.
-         */
+        /** Unbind location service */
         internal fun unbindLocationService() {
             if (locationServiceBound && locationServiceConnection != null) {
                 unbindService(locationServiceConnection!!)
@@ -1084,11 +1101,12 @@ class MainActivity : AuthenticatedActivity(),
         }
 
         /**
-         * Stops or starts tracking based on incoming activeEntry
+         * Update active dash state
          *
-         * @param afterId id of the new activeEntry
-         * @param beforeId id of the previous activeEntry
-         * @return the current [ADBState]
+         * @param afterId
+         * @param beforeId
+         * @param showMini
+         * @return
          */
         internal fun updateActiveDashState(
             afterId: Long?,
@@ -1190,6 +1208,7 @@ class MainActivity : AuthenticatedActivity(),
             }
         }
 
+        /** Bind location service */
         internal fun bindLocationService() {
             fun onBind() {
                 activeEntryId?.let { id ->
@@ -1418,13 +1437,19 @@ class MainActivity : AuthenticatedActivity(),
     private var isTesting: Boolean = false
 }
 
+/**
+ * Scrollable fragment
+ *
+ * @constructor Create empty Scrollable fragment
+ */
 interface ScrollableFragment {
     val isAtTop: Boolean
 }
 
 /**
- * Marker interface for a fragment that adjusts based on [DeductionType].
- * Does not currently serve a purpose
+ * Deduction callback
+ *
+ * @constructor Create empty Deduction callback
  */
 interface DeductionCallback
 

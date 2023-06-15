@@ -17,7 +17,7 @@
 package com.wtb.dashTracker.ui.activity_main
 
 import com.wtb.dashTracker.ui.activity_main.ReceiptAnalyzer.Companion.getBestPpg
-import com.wtb.dashTracker.ui.activity_main.ReceiptAnalyzer.Companion.getGasExpense
+import com.wtb.dashTracker.ui.activity_main.ReceiptAnalyzer.Companion.getExpense
 import com.wtb.dashTracker.ui.activity_main.ReceiptAnalyzer.Companion.lookForPriceGallonAmountTriplets
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -50,7 +50,7 @@ internal class ReceiptAnalyzerTest {
     @Test
     fun getGasExpenseTest() {
         val testList = listOf("4.204", "DEBIT $20.36", "$4.759", "$20.01", "$0.35", "$20.36")
-        val res = getGasExpense(testList)
+        val res = getExpense(testList)
         assertEquals(20.36f, res?.amount)
         assertEquals(4.759f, res?.pricePerGal)
     }
